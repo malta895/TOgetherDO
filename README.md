@@ -1,6 +1,6 @@
-# mobile_applications
+# Mobile Applications
 
-A new Flutter project.
+App for the course Design and Implementation of Mobile Applications @ Polimi 
 
 ## Getting Started
 

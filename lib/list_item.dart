@@ -34,10 +34,11 @@ class MessageItem implements ListItem {
   MessageItem(this.listName, this.listDescription);
 
   Widget buildTitle(BuildContext context) {
-    return Text(listName);
+    return Text(
+      listName,
+      style: TextStyle(fontWeight: FontWeight.bold),
+    );
   }
 
   Widget buildSubtitle(BuildContext context) => Text(listDescription);
 }
-
-

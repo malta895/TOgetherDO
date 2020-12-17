@@ -46,7 +46,15 @@ class _ListHomePage extends State<ListHomePage> {
                 subtitle: item.buildSubtitle(context),
               );
             },
-          )),
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: ()=>{
+              // TODO implement list creation logic
+            },
+            icon: Icon(Icons.add),
+            label: Text('ADD LIST'),
+          ),
+        ),
     );
   }
 }

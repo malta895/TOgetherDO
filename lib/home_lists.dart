@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import 'list_view_page.dart';
 import 'list_item.dart';
 
 //TODO fetch actual data from backend
@@ -20,8 +19,8 @@ class ListHomePage extends StatefulWidget {
 
 class _ListHomePage extends State<ListHomePage> {
   final String title = 'Home Page - ListApp';
-  int _selectedDestination =
-      0; // the current destination selected in the Drawer
+  // the current destination selected in the Drawer
+  int _selectedDestination = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -45,24 +44,19 @@ class _ListHomePage extends State<ListHomePage> {
             padding: EdgeInsets.zero,
             children: [
               DrawerHeader(
-                // TODO put little profile here?
-                margin: EdgeInsets.zero,
-                padding: EdgeInsets.zero,
-                child: Stack(children:
-                  <Widget>[
+                  // TODO put little profile here?
+                  margin: EdgeInsets.zero,
+                  padding: EdgeInsets.zero,
+                  child: Stack(children: <Widget>[
                     Positioned(
-                      bottom: 12.0,
-                      left: 16.0,
-                      child: Text("Flutter Step-by-Step",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.w500)
-                      )
-                    ),
-                  ]
-                )
-              ),
+                        bottom: 12.0,
+                        left: 16.0,
+                        child: Text("Flutter Step-by-Step",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.w500))),
+                  ])),
               Divider(
                 height: 1,
                 thickness: 1,
@@ -101,11 +95,19 @@ class _ListHomePage extends State<ListHomePage> {
           // Provide a builder function. This is where the magic happens.
           // Convert each item into a widget based on the type of item it is.
           itemBuilder: (context, index) {
-            final item = items[index];
+            final ListItem item = items[index];
 
             return ListTile(
               title: item.buildTitle(context),
               subtitle: item.buildSubtitle(context),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ListViewRoute(item)
+                  ),
+                );
+              },
             );
           },
         ),

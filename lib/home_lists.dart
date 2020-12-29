@@ -1,17 +1,11 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'list_view_page.dart';
-import 'list_item.dart';
 import 'app_drawer.dart';
-
-//TODO fetch actual data from backend
-final List<ListItem> items = [
-  MessageItem("First list", "Description of the first list"),
-  MessageItem("Second list", "Description of the second list"),
-  MessageItem("USA trip", "From NY to San Francisco"),
-  MessageItem("Christmas presents", "Christmas 2020"),
-];
+import 'models/alist.dart';
 
 class ListHomePage extends StatefulWidget {
   @override
@@ -22,6 +16,39 @@ class _ListHomePage extends State<ListHomePage> {
   final String title = 'ListApp';
   // the current destination selected in the Drawer
   int _selectedDestination = 0;
+
+  //TODO fetch actual data from backend
+  final List<AList> _aLists = [
+    AList(1, "First list", "Description of the first list"),
+    AList(2, "Second list", "Description of the second list"),
+    AList(3, "USA trip", "From NY to San Francisco"),
+    AList(4, "Christmas presents", "Christmas 2020"),
+  ];
+
+  Widget _buildListItems(BuildContext context) {
+    return ListView.builder(
+      itemCount: _aLists.length,
+      itemBuilder: (context, i) {
+        return _buildRow(context, _aLists[i]);
+      },
+    );
+  }
+
+  Widget _buildRow(BuildContext context,AList aList) {
+    return ListTile(
+      title: Text(
+        aList.name,
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text(aList.description),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (BuildContext context) => ListViewRoute(aList)),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,28 +68,7 @@ class _ListHomePage extends State<ListHomePage> {
           ],
         ),
         drawer: a_drawer(_selectedDestination, selectDestination),
-        body: ListView.builder(
-          // Let the ListView know how many items it needs to build.
-          itemCount: items.length,
-          // Provide a builder function. This is where the magic happens.
-          // Convert each item into a widget based on the type of item it is.
-          itemBuilder: (context, index) {
-            final ListItem item = items[index];
-
-            return ListTile(
-              title: item.buildTitle(context),
-              subtitle: item.buildSubtitle(context),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ListViewRoute(item)
-                  ),
-                );
-              },
-            );
-          },
-        ),
+        body: _buildListItems(context),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => {
             // TODO implement list creation logic

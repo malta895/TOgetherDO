@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-class new_item extends StatelessWidget {
+class NewListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

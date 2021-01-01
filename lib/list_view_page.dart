@@ -4,20 +4,22 @@ import 'package:flutter/widgets.dart';
 import 'new_item.dart';
 import 'models/alist.dart';
 
-class ListViewRoute extends StatelessWidget {
-
+class ListViewRoute extends StatefulWidget {
   final AList aList;
 
   ListViewRoute(this.aList);
 
-  //TODO fetch from backend
-  final List<AListItem> _listItems = [
-    AListItem.constructSimpleItem(
-        1, "Simple element - undone", "A simple undone element"),
-    AListItem.constructSimpleItem(
-        2, "Simple element - done", "A simple done element"),
-    AListItem.constructSimpleItem(
-        3, "Buy groceries", "go to buy some groceries"),
+  @override
+  _ListViewRouteState createState() => _ListViewRouteState();
+}
+
+class _ListViewRouteState extends State<ListViewRoute> {
+  AListMember _member = AListMember(1, "foo", "Mario", "Rossi");
+
+  final List<BaseItem> _listItems = [
+    SimpleItem(1, "Simple element - undone", "A simple undone element"),
+    SimpleItem(2, "Simple element - done", "A simple done element"),
+    SimpleItem(3, "Buy groceries", "go to buy some groceries"),
   ];
 
   Widget _buildListItems() {
@@ -29,21 +31,32 @@ class ListViewRoute extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(AListItem aListItem) {
-    return CheckboxListTile(
-      title: Text(aListItem.name),
-      value: false,
-      onChanged: (bool value) {
-        // TODO implement fullfillment logic
-      },
-    );
+  Widget _buildRow(BaseItem aListItem) {
+    //depending on the quantity of selectable items, we return a checkbox or a normal ListTile
+    if (aListItem.maxQuantity() == 1)
+      return CheckboxListTile(
+        title: Text(aListItem.name),
+        value: aListItem.isFulfilled(),
+        selected: aListItem.isFulfilled(),
+        onChanged: (bool value) {
+          setState(() {
+            if (value) {
+              aListItem.fulfill(_member, 1);
+            } else {
+              aListItem.unfulfill(_member);
+            }
+          });
+        },
+      );
+    else
+      throw UnimplementedError();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(aList.name),
+        title: Text(widget.aList.name),
       ),
       body: _buildListItems(),
       floatingActionButton: FloatingActionButton.extended(

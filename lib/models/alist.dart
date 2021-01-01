@@ -2,6 +2,8 @@
 import 'dart:collection';
 import 'dart:core';
 
+import 'package:flutter/material.dart';
+
 class AList {
   // A at the start to avoid confusion with Dart List
   // TODO make sure everything's here
@@ -34,60 +36,77 @@ class AListMember {
   int get hashCode => id;
 }
 
-class AListItem {
-  // TODO maybe is better to make this a base class and subclass with the other types of items (purchasable, with quantity, without quantity etc)
+class AListFulfillment {
+  // the user who completed the list item
+  final AListMember member;
 
+  // The quantity completed by the user. At least can be 1
+  final int quantityCompleted;
+  // if the list item has a price, this contains the amount countributed by the user
+  final double priceContribution;
+
+  AListFulfillment(this.member, this.quantityCompleted, this.priceContribution);
+}
+
+abstract class BaseItem {
   final int id;
   final String name;
   final String description;
-  final bool isPurchasable;
-  final int price;
-  final int quantity;
-  final bool isShareable;
 
-  // members who completed this item. the int is the quantity of fulfilled items
-  HashMap<AListMember, int> _fulfillments;
+  BaseItem(this.id, this.name, this.description);
 
-  AListItem(this.id, this.name, this.description, this.isPurchasable,
-      this.price, this.quantity, this.isShareable);
+  bool isFulfilled();
 
-  bool isCompleted() {
-    // do the cumulative sum of all the fullfillments, if it equals the quantity the element is complete
-    int fulfilledQuantity =
-        _fulfillments.values.reduce((value, element) => value + element);
+  void fulfill(AListMember member, int quantityFulfilled);
 
-    return fulfilledQuantity >= quantity;
+  void unfulfill(AListMember member);
+
+  int maxQuantity();
+
+  int quantityPerMember();
+
+}
+
+//This item can have just one fulfiller
+class SimpleItem extends BaseItem{
+
+  AListMember _fulfiller;
+
+  SimpleItem(int id, String name, String description) : super(id, name, description);
+
+  @override
+  bool isFulfilled() {
+    return _fulfiller != null;
   }
 
-  AListItem.constructSimpleItem(int id, String name, String description)
-      : this.id = id,
-        this.name = name,
-        this.description = description,
-        isPurchasable = false,
-        price = null,
-        quantity = 0,
-        isShareable = false;
+  @override
+  void fulfill(AListMember member, int quantityFulfilled) {
+    if(_fulfiller == null){
+      _fulfiller = member;
+    }
 
-  void fulfillSingle(AListMember member) => fulfill(member, 1);
-  void fulfill(AListMember member, int fulfilledQuantity) {
-    // fulfill this element with a quantity. check the constraints on the quantity
-    _fulfillments.update(member, (previousQuantity) {
-      if (previousQuantity + fulfilledQuantity <= quantity) {
-        return previousQuantity + fulfilledQuantity;
-      } else {
-        return quantity; // TODO throw an error instead
-      }
-    }, ifAbsent: () {
-      if (fulfilledQuantity <= quantity) {
-        return fulfilledQuantity;
-      } else {
-        return quantity; // TODO throw an error instead
-      }
-    });
+    assert(isFulfilled());
   }
 
-  void unFulfill(AListMember member) {
-    // completely remove member from the fulfillments
-    _fulfillments.remove(member);
+  @override
+  void unfulfill(AListMember member) {
+    if(_fulfiller != null){
+      _fulfiller = null;
+    }
+
+    assert(!isFulfilled());
   }
+
+  @override
+  int maxQuantity() {
+    return 1;
+  }
+
+  @override
+  int quantityPerMember() {
+    return 1;
+  }
+
+
+
 }

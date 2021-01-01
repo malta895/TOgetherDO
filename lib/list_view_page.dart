@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -37,7 +40,28 @@ class _ListViewRouteState extends State<ListViewRoute> {
   final AListMember _member;
   final AList _aList;
 
-  _ListViewRouteState(this._member, this._aList);
+  final HashMap<AListMember, Color> _assignedColors =
+      HashMap<AListMember, Color>();
+
+  _ListViewRouteState(this._member, this._aList) {
+    var it = _aList.members.iterator;
+    int index = 0;
+    while (index <= Colors.primaries.length && it.moveNext()) {
+      _assignedColors[it.current] = Colors.primaries[index];
+      ++index;
+    }
+    index = 0;
+    while (index <= Colors.accents.length && it.moveNext()) {
+      _assignedColors[it.current] = Colors.accents[index];
+      ++index;
+    }
+    // if at this point we still have members just take random colors
+    while (it.moveNext()) {
+      _assignedColors[it.current] =
+          Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
+              .withOpacity(1.0);
+    }
+  }
 
   Widget _buildListItems() {
     return ListView.builder(
@@ -63,8 +87,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
                   children: [
                     Icon(
                       Icons.person,
-                      color: Colors
-                          .red, // TODO randomize and assign a color to each member of the current list
+                      color: _assignedColors[aListItem.getFulfillers()[0]],
                     ),
                     Text(
                       aListItem.getFulfillers()[0].firstName,

@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 
 class AList {
   // A at the start to avoid confusion with Dart List
-  // TODO make sure everything's here
 
   final int id;
   final String name;
@@ -17,12 +16,13 @@ class AList {
   //Set and not List because Sets have unique elements
   Set<AListMember> members;
 
+  Set<BaseItem> items;
+
   AList(this.id, this.name, this.description);
 }
 
 // a member of a list
 class AListMember {
-  // TODO make sure everything's here
   final int id;
   final String username;
   final String firstName;
@@ -55,24 +55,27 @@ abstract class BaseItem {
 
   BaseItem(this.id, this.name, this.description);
 
+  bool isFulfilledBy(AListMember member);
+
   bool isFulfilled();
 
   void fulfill(AListMember member, int quantityFulfilled);
 
   void unfulfill(AListMember member);
 
+  List<AListMember> getFulfillers();
+
   int maxQuantity();
 
   int quantityPerMember();
-
 }
 
 //This item can have just one fulfiller
-class SimpleItem extends BaseItem{
-
+class SimpleItem extends BaseItem {
   AListMember _fulfiller;
 
-  SimpleItem(int id, String name, String description) : super(id, name, description);
+  SimpleItem(int id, String name, String description)
+      : super(id, name, description);
 
   @override
   bool isFulfilled() {
@@ -81,7 +84,7 @@ class SimpleItem extends BaseItem{
 
   @override
   void fulfill(AListMember member, int quantityFulfilled) {
-    if(_fulfiller == null){
+    if (_fulfiller == null) {
       _fulfiller = member;
     }
 
@@ -90,11 +93,12 @@ class SimpleItem extends BaseItem{
 
   @override
   void unfulfill(AListMember member) {
-    if(_fulfiller != null){
+    //do not allow the unfulfillment of other members
+    if (member == _fulfiller) {
       _fulfiller = null;
     }
 
-    assert(!isFulfilled());
+    assert(!isFulfilledBy(member));
   }
 
   @override
@@ -107,6 +111,13 @@ class SimpleItem extends BaseItem{
     return 1;
   }
 
+  @override
+  List<AListMember> getFulfillers() {
+    return [_fulfiller];
+  }
 
-
+  @override
+  bool isFulfilledBy(AListMember member) {
+    return member == _fulfiller;
+  }
 }

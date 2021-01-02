@@ -74,32 +74,29 @@ class _ListViewRouteState extends State<ListViewRoute> {
 
   Widget _buildRow(BaseItem aListItem) {
     //depending on the quantity of selectable items, we return a checkbox or a normal ListTile
-    if (aListItem.maxQuantity() == 1)
+    if (aListItem.maxQuantity == 1)
       return CheckboxListTile(
-        title: () {
-          if (aListItem.isFulfilled())
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(aListItem.name),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.person,
-                      color: _assignedColors[aListItem.getFulfillers()[0]],
-                    ),
-                    Text(
-                      aListItem.getFulfillers()[0].firstName,
-                      textScaleFactor: 0.7,
-                    )
-                  ],
-                )
-              ],
-            );
-          else
-            return Text(aListItem.name);
-        }(),
+        title: aListItem.isFulfilled()
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(aListItem.name),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.person,
+                        color: _assignedColors[aListItem.getFulfillers()[0]],
+                      ),
+                      Text(
+                        aListItem.getFulfillers()[0].firstName,
+                        textScaleFactor: 0.7,
+                      )
+                    ],
+                  )
+                ],
+              )
+            : Text(aListItem.name),
         value: aListItem.isFulfilled(),
         selected: aListItem.isFulfilled(),
         onChanged: (bool value) {

@@ -27,6 +27,7 @@ class AListMember {
   final String username;
   final String firstName;
   final String lastName;
+  final bool isAdmin = false;
 
   AListMember(this.id, this.username, this.firstName, this.lastName);
 
@@ -48,26 +49,27 @@ class AListFulfillment {
   AListFulfillment(this.member, this.quantityCompleted, this.priceContribution);
 }
 
-abstract class BaseItem {
+//Any type of item. the specific types will implement in different ways the methods
+abstract class BaseItem extends ChangeNotifier {
   final int id;
   final String name;
   final String description;
+  final int maxQuantity;
+  final int quantityPerMember;
 
-  BaseItem(this.id, this.name, this.description);
+  BaseItem(this.id, this.name, this.description, this.maxQuantity,
+      this.quantityPerMember);
 
   bool isFulfilledBy(AListMember member);
 
   bool isFulfilled();
 
-  void fulfill(AListMember member, int quantityFulfilled);
+  //fulfill, aka complete, this list item, with a quantity. returns false if the item was fulfilled already
+  bool fulfill(AListMember member, int quantityFulfilled);
 
-  void unfulfill(AListMember member);
+  bool unfulfill(AListMember member);
 
   List<AListMember> getFulfillers();
-
-  int maxQuantity();
-
-  int quantityPerMember();
 }
 
 //This item can have just one fulfiller
@@ -75,7 +77,11 @@ class SimpleItem extends BaseItem {
   AListMember _fulfiller;
 
   SimpleItem(int id, String name, String description)
-      : super(id, name, description);
+      : super(id, name, description, 1, 1);
+
+  AListMember get fulfiller {
+    return _fulfiller;
+  }
 
   @override
   bool isFulfilled() {
@@ -83,41 +89,102 @@ class SimpleItem extends BaseItem {
   }
 
   @override
-  void fulfill(AListMember member, int quantityFulfilled) {
+  bool fulfill(AListMember member, int quantityFulfilled) {
     if (_fulfiller == null) {
       _fulfiller = member;
+      notifyListeners();
+      return true;
     }
 
-    assert(isFulfilled());
+    return false;
   }
 
   @override
-  void unfulfill(AListMember member) {
+  bool unfulfill(AListMember member) {
     //do not allow the unfulfillment of other members
     if (member == _fulfiller) {
       _fulfiller = null;
+      notifyListeners();
+      return true;
     }
-
-    assert(!isFulfilledBy(member));
-  }
-
-  @override
-  int maxQuantity() {
-    return 1;
-  }
-
-  @override
-  int quantityPerMember() {
-    return 1;
+    return false;
   }
 
   @override
   List<AListMember> getFulfillers() {
-    return [_fulfiller];
+    return UnmodifiableListView<AListMember>([_fulfiller]);
   }
 
   @override
   bool isFulfilledBy(AListMember member) {
     return member == _fulfiller;
   }
+}
+
+//List item with multiple fulfillments, members can fulfill once
+class MultiFulfillmentItem extends BaseItem {
+  Set<AListMember> _fulfillers = Set<AListMember>();
+
+  MultiFulfillmentItem(int id, String name, String description, int maxQuantity)
+      : super(id, name, description, maxQuantity, 1);
+
+  @override
+  bool fulfill(AListMember member, int quantityFulfilled) {
+    return _fulfillers.add(member);
+  }
+
+  @override
+  List<AListMember> getFulfillers() {
+    return UnmodifiableListView<AListMember>(_fulfillers);
+  }
+
+  @override
+  bool isFulfilled() {
+    return _fulfillers.length == maxQuantity;
+  }
+
+  @override
+  bool isFulfilledBy(AListMember member) {
+    return _fulfillers.contains(member);
+  }
+
+  @override
+  bool unfulfill(AListMember member) {
+    return _fulfillers.remove(member);
+  }
+}
+
+//List item with multiple fulfillments, members can fulfill more times
+class MultiFulfillmentMemberItem extends BaseItem {
+  Set<AListMember> _fulfillers = Set<AListMember>();
+
+
+  MultiFulfillmentMemberItem(int id, String name, String description, int maxQuantity, int maxItemsPerMember)
+  : super(id, name, description, maxQuantity, maxItemsPerMember);
+
+  @override
+  bool fulfill(AListMember member, int quantityFulfilled) {
+    return _fulfillers.add(member);
+  }
+
+  @override
+  List<AListMember> getFulfillers() {
+    return UnmodifiableListView<AListMember>(_fulfillers);
+  }
+
+  @override
+  bool isFulfilled() {
+    return _fulfillers.length == maxQuantity;
+  }
+
+  @override
+  bool isFulfilledBy(AListMember member) {
+    return _fulfillers.contains(member);
+  }
+
+  @override
+  bool unfulfill(AListMember member) {
+    return _fulfillers.remove(member);
+  }
+
 }

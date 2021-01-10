@@ -60,7 +60,7 @@ abstract class BaseItem extends ChangeNotifier {
   BaseItem(this.id, this.name, this.description, this.maxQuantity,
       this.quantityPerMember);
 
-  bool isFulfilledBy(AListMember member);
+  int isFulfilledBy(AListMember member);
 
   bool isFulfilled();
 
@@ -116,8 +116,8 @@ class SimpleItem extends BaseItem {
   }
 
   @override
-  bool isFulfilledBy(AListMember member) {
-    return member == _fulfiller;
+  int isFulfilledBy(AListMember member) {
+    return member == _fulfiller ? 1 : 0;
   }
 }
 
@@ -144,8 +144,8 @@ class MultiFulfillmentItem extends BaseItem {
   }
 
   @override
-  bool isFulfilledBy(AListMember member) {
-    return _fulfillers.contains(member);
+  int isFulfilledBy(AListMember member) {
+    return _fulfillers.contains(member) ? 1 : 0;
   }
 
   @override
@@ -156,35 +156,41 @@ class MultiFulfillmentItem extends BaseItem {
 
 //List item with multiple fulfillments, members can fulfill more times
 class MultiFulfillmentMemberItem extends BaseItem {
-  Set<AListMember> _fulfillers = Set<AListMember>();
+  //map each member with a number representing how many times they have fulfilled
+  Map<AListMember, int> _fulfillers = Map<AListMember, int>();
 
-
-  MultiFulfillmentMemberItem(int id, String name, String description, int maxQuantity, int maxItemsPerMember)
-  : super(id, name, description, maxQuantity, maxItemsPerMember);
+  MultiFulfillmentMemberItem(int id, String name, String description,
+      int maxQuantity, int maxItemsPerMember)
+      : super(id, name, description, maxQuantity, maxItemsPerMember);
 
   @override
   bool fulfill(AListMember member, int quantityFulfilled) {
-    return _fulfillers.add(member);
+    // TODO control all constraints of this item and list
+    _fulfillers[member] = quantityFulfilled;
+    return quantityFulfilled > 0;
   }
 
   @override
   List<AListMember> getFulfillers() {
-    return UnmodifiableListView<AListMember>(_fulfillers);
+    return UnmodifiableListView<AListMember>(_fulfillers.keys);
   }
 
   @override
   bool isFulfilled() {
-    return _fulfillers.length == maxQuantity;
+    // the item is complete when the max quantity has been reached.
+    return _fulfillers.isEmpty
+        ? false
+        : _fulfillers.values.reduce((total, element) => total + element) >=
+            maxQuantity;
   }
 
   @override
-  bool isFulfilledBy(AListMember member) {
-    return _fulfillers.contains(member);
+  int isFulfilledBy(AListMember member) {
+    return _fulfillers[member] == null ? 0 : _fulfillers[member];
   }
 
   @override
   bool unfulfill(AListMember member) {
-    return _fulfillers.remove(member);
+    return _fulfillers.remove(member) != null;
   }
-
 }

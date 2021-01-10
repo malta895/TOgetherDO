@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 
 import 'new_item.dart';
 import 'models/alist.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 class ListViewRoute extends StatefulWidget {
   final AList aList;
@@ -27,6 +28,8 @@ class ListViewRoute extends StatefulWidget {
       SimpleItem(1, "Simple element - undone", "A simple undone element"),
       SimpleItem(2, "Simple element - done", "A simple done element"),
       SimpleItem(3, "Buy groceries", "go to buy some groceries"),
+      MultiFulfillmentMemberItem(
+          4, "Buy movie tickets", "go to buy some movie tickets", 5, 3),
     ]);
     aList.items.elementAt(1).fulfill(aList.members.elementAt(0), 1);
   }
@@ -67,15 +70,16 @@ class _ListViewRouteState extends State<ListViewRoute> {
     return ListView.builder(
       itemCount: _aList.items.length,
       itemBuilder: (context, i) {
-        return _buildRow(_aList.items.elementAt(i));
+        return _buildRow(context, _aList.items.elementAt(i));
       },
     );
   }
 
-  Widget _buildRow(BaseItem aListItem) {
-    //depending on the quantity of selectable items, we return a checkbox or a normal ListTile
-    if (aListItem.maxQuantity == 1)
-      return CheckboxListTile(
+  Widget _buildRow(BuildContext context, BaseItem aListItem) {
+
+    switch(aListItem.runtimeType){
+      case SimpleItem:
+             return CheckboxListTile(
         title: aListItem.isFulfilled()
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -110,8 +114,55 @@ class _ListViewRouteState extends State<ListViewRoute> {
           });
         },
       );
-    else
-      throw UnimplementedError();
+      case MultiFulfillmentMemberItem:
+      return ListTile(
+        title: aListItem.isFulfilledBy(_member) > 0
+        ? Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(aListItem.name),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.person,
+                  color: _assignedColors[aListItem.getFulfillers()[0]],
+                ),
+                Text(
+                  "${aListItem.getFulfillers()[0].firstName} ${aListItem.isFulfilledBy(_member)}",
+                  textScaleFactor: 0.7,
+                )
+              ],
+            )
+          ],
+        )
+        : Text(aListItem.name),
+        selected: aListItem.isFulfilled(),
+        onTap: () => _showNumberPicker(context, aListItem, 0, _aList.maxItems,
+          aListItem.isFulfilledBy(_member)),
+      );
+      default:
+      throw UnimplementedError("This list item type, ${aListItem.runtimeType} doesn't have an implemented way to be displayed yet!");
+    }
+
+  }
+
+  void _showNumberPicker(BuildContext context, BaseItem aListItem, int minValue,
+      int maxValue, int initialValue) {
+    showDialog<int>(
+        context: context,
+        builder: (BuildContext context) {
+          return NumberPickerDialog.integer(
+            minValue: minValue,
+            maxValue: maxValue,
+            title: Text("How many times have you completed this item?"),
+            initialIntegerValue: initialValue,
+          );
+        }).then((int value) {
+      if (value != null) {
+        setState(() => aListItem.fulfill(_member, value));
+      }
+    });
   }
 
   @override

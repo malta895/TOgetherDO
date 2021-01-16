@@ -76,75 +76,74 @@ class _ListViewRouteState extends State<ListViewRoute> {
   }
 
   Widget _buildRow(BuildContext context, BaseItem aListItem) {
-
-    switch(aListItem.runtimeType){
+    switch (aListItem.runtimeType) {
       case SimpleItem:
-             return CheckboxListTile(
-        title: aListItem.isFulfilled()
-            ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(aListItem.name),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.person,
-                        color: _assignedColors[aListItem.getFulfillers()[0]],
-                      ),
-                      Text(
-                        aListItem.getFulfillers()[0].firstName,
-                        textScaleFactor: 0.7,
-                      )
-                    ],
-                  )
-                ],
-              )
-            : Text(aListItem.name),
-        value: aListItem.isFulfilled(),
-        selected: aListItem.isFulfilled(),
-        onChanged: (bool value) {
-          // TODO make async, make not selectable until the server has responded
-          setState(() {
-            if (value) {
-              aListItem.fulfill(_member, 1);
-            } else {
-              aListItem.unfulfill(_member);
-            }
-          });
-        },
-      );
-      case MultiFulfillmentMemberItem:
-      return ListTile(
-        title: aListItem.isFulfilledBy(_member) > 0
-        ? Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(aListItem.name),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.person,
-                  color: _assignedColors[aListItem.getFulfillers()[0]],
-                ),
-                Text(
-                  "${aListItem.getFulfillers()[0].firstName} ${aListItem.isFulfilledBy(_member)}",
-                  textScaleFactor: 0.7,
+        return CheckboxListTile(
+          title: aListItem.isFulfilled()
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(aListItem.name),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.person,
+                          color: _assignedColors[aListItem.getFulfillers()[0]],
+                        ),
+                        Text(
+                          aListItem.getFulfillers()[0].firstName,
+                          textScaleFactor: 0.7,
+                        )
+                      ],
+                    )
+                  ],
                 )
-              ],
-            )
-          ],
-        )
-        : Text(aListItem.name),
-        selected: aListItem.isFulfilled(),
-        onTap: () => _showNumberPicker(context, aListItem, 0, _aList.maxItems,
-          aListItem.isFulfilledBy(_member)),
-      );
+              : Text(aListItem.name),
+          value: aListItem.isFulfilled(),
+          selected: aListItem.isFulfilled(),
+          onChanged: (bool value) {
+            // TODO make async, make not selectable until the server has responded
+            setState(() {
+              if (value) {
+                aListItem.fulfill(_member, 1);
+              } else {
+                aListItem.unfulfill(_member);
+              }
+            });
+          },
+        );
+      case MultiFulfillmentMemberItem:
+        return ListTile(
+          title: aListItem.isFulfilledBy(_member) > 0
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(aListItem.name),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.person,
+                          color: _assignedColors[aListItem.getFulfillers()[0]],
+                        ),
+                        Text(
+                          "${aListItem.getFulfillers()[0].firstName} ${aListItem.isFulfilledBy(_member)}",
+                          textScaleFactor: 0.7,
+                        )
+                      ],
+                    )
+                  ],
+                )
+              : Text(aListItem.name),
+          selected: aListItem.isFulfilled(),
+          onTap: () => _showNumberPicker(context, aListItem, 0, _aList.maxItems,
+              aListItem.isFulfilledBy(_member)),
+        );
       default:
-      throw UnimplementedError("This list item type, ${aListItem.runtimeType} doesn't have an implemented way to be displayed yet!");
+        throw UnimplementedError(
+            "This list item type, ${aListItem.runtimeType} doesn't have an implemented way to be displayed yet!");
     }
-
   }
 
   void _showNumberPicker(BuildContext context, BaseItem aListItem, int minValue,

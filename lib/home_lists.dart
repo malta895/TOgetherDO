@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 
 import 'list_view_page.dart';
 import 'app_drawer.dart';
+import 'new_list.dart';
 import 'models/alist.dart';
 
 class ListHomePage extends StatefulWidget {
@@ -34,7 +35,7 @@ class _ListHomePage extends State<ListHomePage> {
     );
   }
 
-  Widget _buildRow(BuildContext context,AList aList) {
+  Widget _buildRow(BuildContext context, AList aList) {
     return ListTile(
       title: Text(
         aList.name,
@@ -44,7 +45,8 @@ class _ListHomePage extends State<ListHomePage> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (BuildContext context) => ListViewRoute(aList)),
+          MaterialPageRoute(
+              builder: (BuildContext context) => ListViewRoute(aList)),
         );
       },
     );
@@ -71,7 +73,10 @@ class _ListHomePage extends State<ListHomePage> {
         body: _buildListItems(context),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => {
-            // TODO implement list creation logic
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => NewList()),
+            )
           },
           icon: Icon(Icons.add),
           label: Text('NEW LIST'),

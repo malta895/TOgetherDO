@@ -29,36 +29,6 @@ class DropdownMenu extends StatefulWidget {
   _CounterState createState() => _CounterState();
 } */
 
-class AddMember extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Column(
-          children: <Widget>[
-            Text(
-              "Add participant",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16.0,
-              ),
-            )
-          ],
-        ),
-        Column(
-          children: <Widget>[
-            IconButton(
-                // TODO: IconButton actually adds a member
-                icon: Icon(Icons.person_add),
-                tooltip: 'Add a participant',
-                onPressed: () => {print("Member added")})
-          ],
-        ),
-      ],
-    );
-  }
-}
-
 // Define a corresponding State class.
 // This class holds data related to the form.
 class _MyCustomFormState extends State<MyCustomForm> {
@@ -101,10 +71,9 @@ class _MyCustomFormState extends State<MyCustomForm> {
                 )),
             DropdownMenu(),
             // Counter(),
-            AddMember(),
             Padding(
               padding:
-                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
+                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 0),
               child: ElevatedButton(
                 onPressed: () {
                   // TODO: change this to add the item to the list

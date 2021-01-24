@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mobile_applications/home_lists.dart';
+import 'package:mobile_applications/profile.dart';
 
-Drawer a_drawer(_selectedDestination, selectDestination) {
+Drawer a_drawer(_selectedDestination, selectDestination, context) {
   return Drawer(
     child: ListView(
       children: <Widget>[
         InkWell(
-          onTap: () {
-            print("tapped"); // TODO: add navigation to profile page
+          onTap: () => {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProfilePage()),
+            )
           },
           child: DrawerHeader(
             margin: EdgeInsets.zero,
@@ -28,7 +33,7 @@ Drawer a_drawer(_selectedDestination, selectDestination) {
                   alignment: Alignment.centerRight,
                   child: Text(
                     'John Reed',
-                    style: TextStyle(color: Colors.black, fontSize: 20.0),
+                    style: TextStyle(color: Colors.cyan[700], fontSize: 20.0),
                   ),
                 ),
                 Align(
@@ -52,7 +57,8 @@ Drawer a_drawer(_selectedDestination, selectDestination) {
           leading: Icon(Icons.list),
           title: Text('My Lists'),
           selected: _selectedDestination == 0,
-          onTap: () => selectDestination(0),
+          onTap: () => selectDestination(
+              0, MaterialPageRoute(builder: (context) => ListHomePage())),
         ),
         ListTile(
           leading: Icon(Icons.settings),

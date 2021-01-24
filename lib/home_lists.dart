@@ -54,14 +54,7 @@ class _ListHomePage extends State<ListHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-          primaryColor: Colors.amber,
-          appBarTheme: AppBarTheme(
-            centerTitle: true,
-          )),
-      title: title,
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           // leading: Icon(Icons.menu), // not needed, automatically added by Drawer
           title: Text(title),
@@ -69,7 +62,7 @@ class _ListHomePage extends State<ListHomePage> {
             Icon(Icons.search),
           ],
         ),
-        drawer: a_drawer(_selectedDestination, selectDestination),
+        drawer: a_drawer(_selectedDestination, selectDestination, context),
         body: _buildListItems(context),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => {
@@ -80,15 +73,14 @@ class _ListHomePage extends State<ListHomePage> {
           },
           icon: Icon(Icons.add),
           label: Text('NEW LIST'),
-        ),
-      ),
-    );
+        ));
   }
 
-  void selectDestination(int index) {
+  void selectDestination(int index, route) {
     // Changes the state of the navigation drawer
     setState(() {
       _selectedDestination = index;
+      Navigator.push(context, route);
     });
   }
 }

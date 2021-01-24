@@ -75,6 +75,9 @@ class _MyCustomFormState extends State<MyCustomForm> {
               padding:
                   const EdgeInsets.symmetric(vertical: 16.0, horizontal: 0),
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.pinkAccent[700],
+                ),
                 onPressed: () {
                   // TODO: change this to add the item to the list
 

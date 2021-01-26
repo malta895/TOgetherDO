@@ -10,8 +10,6 @@ class AList {
   final int id;
   final String name;
   final String description;
-  final int maxMembers = 5;
-  final int maxItems = 5;
 
   //Set and not List because Sets have unique elements
   Set<AListMember> members;
@@ -22,8 +20,6 @@ class AList {
 }
 
 class FriendList {
-  // A at the start to avoid confusion with Dart List
-
   final String name;
   final String email;
 

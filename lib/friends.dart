@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import 'models/alist.dart';
 import 'app_drawer.dart';
 import 'new_list.dart';
+import 'models/user.dart';
 
 class FriendsList extends StatefulWidget {
   @override
@@ -16,21 +16,26 @@ class _FriendsList extends State<FriendsList> {
   int _selectedDestination = 2;
 
   //TODO fetch actual data from backend
-  final List<FriendList> _friends = [
-    FriendList("Lorenzo Amici", "lorenzo.amici@mail.com"),
-    FriendList("Luca Maltagliati", "luca.malta@mail.com")
-  ];
+
+  final User _user =
+      User("Luca", "Maltagliati", "luca.malta@mail.com", "malta");
 
   Widget _buildListItems(BuildContext context) {
+    _user.addFriendship(
+      Friendship(
+          User("Lorenzo", "Amici", "lorenzo.amici@mail.com",
+              "lorenzo.amici@mail.com"),
+          true),
+    ); // TODO remove when data are fetched from backenxd
     return ListView.builder(
-      itemCount: _friends.length,
+      itemCount: _user.friendships.length,
       itemBuilder: (context, i) {
-        return _buildRow(context, _friends[i]);
+        return _buildRow(context, _user.friendships[i].user);
       },
     );
   }
 
-  Widget _buildRow(BuildContext context, FriendList FList) {
+  Widget _buildRow(BuildContext context, User friend) {
     return Container(
         decoration: BoxDecoration(
             border: Border(
@@ -40,12 +45,12 @@ class _FriendsList extends State<FriendsList> {
         ))),
         child: ListTile(
           title: Text(
-            FList.name,
+            friend.getFullName(),
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: Text(FList.email),
+          subtitle: Text(friend.email),
           onTap: () {
-            print(FList.name);
+            print(friend.getFullName());
           },
         ));
   }

@@ -28,10 +28,14 @@ class ListViewRoute extends StatefulWidget {
       SimpleItem(1, "Simple element - undone", "A simple undone element"),
       SimpleItem(2, "Simple element - done", "A simple done element"),
       SimpleItem(3, "Buy groceries", "go to buy some groceries"),
-      MultiFulfillmentMemberItem(
-          4, "Buy movie tickets", "go to buy some movie tickets", 5, 3),
+      MultiFulfillmentItem(
+          4, "Buy movie tickets", "go to buy some movie tickets", 5),
+      MultiFulfillmentMemberItem(5, "Lord of the rings trilogy",
+          "the complete lord of the rings trilogy", 5, 3),
     ]);
     aList.items.elementAt(1).fulfill(aList.members.elementAt(0), 1);
+    aList.items.elementAt(4).fulfill(aList.members.elementAt(0), 3);
+    aList.items.elementAt(4).fulfill(aList.members.elementAt(1), 2);
   }
 
   @override
@@ -75,6 +79,24 @@ class _ListViewRouteState extends State<ListViewRoute> {
     );
   }
 
+  void _showNumberPicker(BuildContext context, BaseItem aListItem, int minValue,
+      int initialValue) {
+    showDialog<int>(
+        context: context,
+        builder: (BuildContext context) {
+          return NumberPickerDialog.integer(
+            minValue: minValue,
+            maxValue: 50,
+            title: Text("How many times have you completed this item?"),
+            initialIntegerValue: initialValue,
+          );
+        }).then((int value) {
+      if (value != null) {
+        setState(() => aListItem.fulfill(_member, value));
+      }
+    });
+  }
+
   Widget _buildRow(BuildContext context, BaseItem aListItem) {
     switch (aListItem.runtimeType) {
       case SimpleItem:
@@ -113,55 +135,79 @@ class _ListViewRouteState extends State<ListViewRoute> {
             });
           },
         );
-      case MultiFulfillmentMemberItem:
-        return ListTile(
-          title: aListItem.isFulfilledBy(_member) > 0
+      case MultiFulfillmentItem:
+        return CheckboxListTile(
+          title: aListItem.isFulfilled()
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(aListItem.name),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.person,
-                          color: _assignedColors[aListItem.getFulfillers()[0]],
-                        ),
-                        Text(
-                          "${aListItem.getFulfillers()[0].firstName} ${aListItem.isFulfilledBy(_member)}",
-                          textScaleFactor: 0.7,
-                        )
-                      ],
-                    )
-                  ],
-                )
+                      Text(aListItem.name),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.person,
+                            color:
+                                _assignedColors[aListItem.getFulfillers()[0]],
+                          ),
+                          Text(
+                            "${aListItem.getFulfillers()[0].firstName} ${aListItem.isFulfilledBy(_member)}",
+                            textScaleFactor: 0.7,
+                          )
+                        ],
+                      )
+                    ])
               : Text(aListItem.name),
+          value: aListItem.isFulfilled(),
           selected: aListItem.isFulfilled(),
-          onTap: () => _showNumberPicker(context, aListItem, 0, _aList.maxItems,
-              aListItem.isFulfilledBy(_member)),
+          onChanged: (bool value) {
+            // TODO make async, make not selectable until the server has responded
+            setState(() {
+              if (value) {
+                aListItem.fulfill(_member, 1);
+              } else {
+                aListItem.unfulfill(_member);
+              }
+            });
+          },
         );
-      default:
-        throw UnimplementedError(
-            "This list item type, ${aListItem.runtimeType} doesn't have an implemented way to be displayed yet!");
-    }
-  }
 
-  void _showNumberPicker(BuildContext context, BaseItem aListItem, int minValue,
-      int maxValue, int initialValue) {
-    showDialog<int>(
-        context: context,
-        builder: (BuildContext context) {
-          return NumberPickerDialog.integer(
-            minValue: minValue,
-            maxValue: maxValue,
-            title: Text("How many times have you completed this item?"),
-            initialIntegerValue: initialValue,
+      case MultiFulfillmentMemberItem:
+        List<Widget> itemColumns = List<Widget>();
+        for (AListMember member in aListItem.getFulfillers()) {
+          {
+            itemColumns.add(Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.person,
+                  color: _assignedColors[member],
+                ),
+                Text(
+                  "${member.firstName} ${aListItem.isFulfilledBy(member)}",
+                  textScaleFactor: 0.7,
+                )
+              ],
+            ));
+          }
+          return ListTile(
+            title: aListItem.getFulfillers().length > 0
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(aListItem.name),
+                      Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: itemColumns),
+                    ],
+                  )
+                : Text(aListItem.name),
+            selected: aListItem.isFulfilled(),
+            onTap: () => _showNumberPicker(
+                context, aListItem, 0, aListItem.isFulfilledBy(_member)),
           );
-        }).then((int value) {
-      if (value != null) {
-        setState(() => aListItem.fulfill(_member, value));
-      }
-    });
+        }
+    }
   }
 
   @override

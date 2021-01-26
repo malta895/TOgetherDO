@@ -16,6 +16,6 @@ class MyApp extends StatelessWidget {
             appBarTheme: AppBarTheme(
               centerTitle: true,
             )),
-        home: ListHomePage());
+        home: ListHomePage()); // TODO switch to login page
   }
 }

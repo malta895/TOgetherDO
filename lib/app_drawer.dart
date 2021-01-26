@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mobile_applications/friends.dart';
 import 'package:mobile_applications/home_lists.dart';
 import 'package:mobile_applications/profile.dart';
+import 'package:mobile_applications/settigs_page.dart';
 
 Drawer a_drawer(_selectedDestination, selectDestination, context) {
   return Drawer(
@@ -64,13 +66,15 @@ Drawer a_drawer(_selectedDestination, selectDestination, context) {
           leading: Icon(Icons.settings),
           title: Text('Settings'),
           selected: _selectedDestination == 1,
-          onTap: () => selectDestination(1),
+          onTap: () => selectDestination(
+              1, MaterialPageRoute(builder: (context) => SettingsPage())),
         ),
         ListTile(
           leading: Icon(Icons.people),
           title: Text('Friends'),
           selected: _selectedDestination == 2,
-          onTap: () => selectDestination(2),
+          onTap: () => selectDestination(
+              2, MaterialPageRoute(builder: (context) => FriendsList())),
         ),
       ],
     ),

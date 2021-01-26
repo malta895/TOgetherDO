@@ -21,6 +21,15 @@ class AList {
   AList(this.id, this.name, this.description);
 }
 
+class FriendList {
+  // A at the start to avoid confusion with Dart List
+
+  final String name;
+  final String email;
+
+  FriendList(this.name, this.email);
+}
+
 // a member of a list
 class AListMember {
   final int id;

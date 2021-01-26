@@ -1,61 +1,51 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import 'list_view_page.dart';
+import 'models/alist.dart';
 import 'app_drawer.dart';
 import 'new_list.dart';
-import 'models/alist.dart';
 
-class ListHomePage extends StatefulWidget {
+class FriendsList extends StatefulWidget {
   @override
-  _ListHomePage createState() => _ListHomePage();
+  _FriendsList createState() => _FriendsList();
 }
 
-class _ListHomePage extends State<ListHomePage> {
-  final String title = 'ListApp';
+class _FriendsList extends State<FriendsList> {
+  final String title = 'Friends';
   // the current destination selected in the Drawer
-  int _selectedDestination = 0;
+  int _selectedDestination = 2;
 
   //TODO fetch actual data from backend
-  final List<AList> _aLists = [
-    AList(1, "First list", "Description of the first list"),
-    AList(2, "Second list", "Description of the second list"),
-    AList(3, "USA trip", "From NY to San Francisco"),
-    AList(4, "Christmas presents", "Christmas 2020"),
+  final List<FriendList> _friends = [
+    FriendList("Lorenzo Amici", "lorenzo.amici@mail.com"),
+    FriendList("Luca Maltagliati", "luca.malta@mail.com")
   ];
 
   Widget _buildListItems(BuildContext context) {
     return ListView.builder(
-      itemCount: _aLists.length,
+      itemCount: _friends.length,
       itemBuilder: (context, i) {
-        return _buildRow(context, _aLists[i]);
+        return _buildRow(context, _friends[i]);
       },
     );
   }
 
-  Widget _buildRow(BuildContext context, AList aList) {
+  Widget _buildRow(BuildContext context, FriendList FList) {
     return Container(
         decoration: BoxDecoration(
             border: Border(
                 bottom: BorderSide(
-          //                   <--- left side
           color: Colors.grey,
           width: 0.8,
         ))),
         child: ListTile(
           title: Text(
-            aList.name,
+            FList.name,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: Text(aList.description),
+          subtitle: Text(FList.email),
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) => ListViewRoute(aList)),
-            );
+            print(FList.name);
           },
         ));
   }

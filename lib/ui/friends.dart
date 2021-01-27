@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import 'app_drawer.dart';
-import 'new_list.dart';
-import 'models/user.dart';
+import 'package:mobile_applications/ui/app_drawer.dart';
+import 'package:mobile_applications/ui/new_list.dart';
+import 'package:mobile_applications/models/user.dart';
 
 class FriendsList extends StatefulWidget {
   @override

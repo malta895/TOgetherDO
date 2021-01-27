@@ -4,8 +4,8 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import 'new_item.dart';
-import 'models/alist.dart';
+import 'package:mobile_applications/ui/new_item.dart';
+import 'package:mobile_applications/models/alist.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 class ListViewRoute extends StatefulWidget {

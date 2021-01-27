@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'home_lists.dart';
-import 'theme.dart';
-import 'settings_page.dart';
+import './ui/home_lists.dart';
+import './ui/theme.dart';
+import './ui/settings_page.dart';
+import 'package:mobile_applications/ui/home_lists.dart';
 
 void main() {
   runApp(MyApp());

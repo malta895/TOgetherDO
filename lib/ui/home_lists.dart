@@ -3,10 +3,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import 'list_view_page.dart';
-import 'app_drawer.dart';
-import 'new_list.dart';
-import 'models/alist.dart';
+import 'package:mobile_applications/ui/list_view_page.dart';
+import 'package:mobile_applications/ui/app_drawer.dart';
+import 'package:mobile_applications/ui/new_list.dart';
+import 'package:mobile_applications/models/alist.dart';
 
 class ListHomePage extends StatefulWidget {
   @override

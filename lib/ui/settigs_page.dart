@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:settings_ui/settings_ui.dart';
 
-import 'app_drawer.dart';
+
+import 'package:mobile_applications/ui/app_drawer.dart';
 
 class SettingsPage extends StatefulWidget {
   @override

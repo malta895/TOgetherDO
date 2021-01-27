@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'home_lists.dart';
+import 'package:mobile_applications/ui/home_lists.dart';
 
 void main() {
   runApp(MyApp());

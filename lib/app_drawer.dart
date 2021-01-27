@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/friends.dart';
 import 'package:mobile_applications/home_lists.dart';
 import 'package:mobile_applications/profile.dart';
-import 'package:mobile_applications/settigs_page.dart';
+import 'package:mobile_applications/settings_page.dart';
 
 Drawer a_drawer(_selectedDestination, selectDestination, context) {
   return Drawer(

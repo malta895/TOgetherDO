@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "165211053617",
+    "project_id": "mobile-applications-96cd5",
+    "storage_bucket": "mobile-applications-96cd5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:165211053617:android:bdeccd7570becdecc9ff10",
+        "android_client_info": {
+          "package_name": "com.maltalawrence.listapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "165211053617-rt5634q1qj14oi4adpl6hmm6hco1cr19.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2dW6bPlYcshzbkF2lTiII7_0AWUKwt9A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "165211053617-rt5634q1qj14oi4adpl6hmm6hco1cr19.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

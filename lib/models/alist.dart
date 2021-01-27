@@ -19,13 +19,6 @@ class AList {
   AList(this.id, this.name, this.description);
 }
 
-class FriendList {
-  final String name;
-  final String email;
-
-  FriendList(this.name, this.email);
-}
-
 // a member of a list
 class AListMember {
   final int id;

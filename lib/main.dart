@@ -4,12 +4,19 @@ import './ui/home_lists.dart';
 import './ui/theme.dart';
 import 'package:mobile_applications/ui/home_lists.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // TODO conditionally show login page or home lists page, if the user is logged in or not
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  ThemeData _darkTheme = ThemeData(
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+
+  final ThemeData _darkTheme = ThemeData(
       brightness: Brightness.dark,
       primaryColor: Colors.cyan[700],
       accentColor: Colors.pinkAccent,
@@ -17,20 +24,39 @@ class MyApp extends StatelessWidget {
         centerTitle: true,
       ));
 
-  ThemeData _lightTheme = ThemeData(
+  final ThemeData _lightTheme = ThemeData(
       primaryColor: Colors.cyan[700],
       accentColor: Colors.pinkAccent[700],
       brightness: Brightness.light,
       appBarTheme: AppBarTheme(
         centerTitle: true,
       ));
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
+
+  ChangeNotifierProvider<ThemeChanger> _appWithThemeBuilder() {
     return ChangeNotifierProvider<ThemeChanger>(
       builder: (_) => ThemeChanger(_lightTheme),
-      child: new MaterialAppWithTheme(),
-    ); // TODO switch to login page
+      child: MaterialAppWithTheme(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: _initialization,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            // TODO replace with something better, maybe create a common error/waiting widget and populate with the according message
+            return Text(
+              "An error has occurred while connecting to the server."
+            );
+          }
+
+          if (snapshot.connectionState == ConnectionState.done) {
+            return _appWithThemeBuilder();
+          }
+
+          return Text("loading"); //TODO replace with something better
+        });
   }
 }
 

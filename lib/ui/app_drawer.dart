@@ -18,9 +18,8 @@ Drawer a_drawer(_selectedDestination, selectDestination, context) {
           },
           child: DrawerHeader(
             margin: EdgeInsets.zero,
-            decoration: BoxDecoration(
-              color: Colors.white,
-            ),
+            decoration:
+                BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
             child: Stack(
               children: <Widget>[
                 Align(
@@ -35,7 +34,8 @@ Drawer a_drawer(_selectedDestination, selectDestination, context) {
                   alignment: Alignment.centerRight,
                   child: Text(
                     'John Reed',
-                    style: TextStyle(color: Colors.cyan[700], fontSize: 20.0),
+                    style: TextStyle(
+                        color: Theme.of(context).primaryColor, fontSize: 20.0),
                   ),
                 ),
                 Align(

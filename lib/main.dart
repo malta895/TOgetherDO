@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import './ui/home_lists.dart';
 import './ui/theme.dart';
-import './ui/settings_page.dart';
 import 'package:mobile_applications/ui/home_lists.dart';
 
 void main() {
@@ -11,9 +10,9 @@ void main() {
 
 class MyApp extends StatelessWidget {
   ThemeData _darkTheme = ThemeData(
-      primaryColor: Colors.cyan[700],
-      accentColor: Colors.pinkAccent[700],
       brightness: Brightness.dark,
+      primaryColor: Colors.cyan[700],
+      accentColor: Colors.pinkAccent,
       appBarTheme: AppBarTheme(
         centerTitle: true,
       ));
@@ -29,7 +28,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<ThemeChanger>(
-      builder: (_) => ThemeChanger(_darkTheme),
+      builder: (_) => ThemeChanger(_lightTheme),
       child: new MaterialAppWithTheme(),
     ); // TODO switch to login page
   }

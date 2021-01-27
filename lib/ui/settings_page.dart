@@ -18,9 +18,9 @@ class _SettingsPage extends State<SettingsPage> {
   bool _darkMode = false;
 
   ThemeData _darkTheme = ThemeData(
-      primaryColor: Colors.cyan[700],
-      accentColor: Colors.pinkAccent[700],
       brightness: Brightness.dark,
+      primaryColor: Colors.cyan[700],
+      accentColor: Colors.pinkAccent,
       appBarTheme: AppBarTheme(
         centerTitle: true,
       ));

@@ -48,8 +48,7 @@ class MyApp extends StatelessWidget {
           if (snapshot.hasError) {
             // TODO replace with something better, maybe create a common error/waiting widget and populate with the according message
             return Text(
-              "An error has occurred while connecting to the server."
-            );
+                "An error has occurred while connecting to the server.");
           }
 
           if (snapshot.connectionState == ConnectionState.done) {
@@ -69,7 +68,7 @@ class MaterialAppWithTheme extends StatelessWidget {
     return MaterialApp(
       // home: ListHomePage(),
       // TODO anziche mostrare direttamente la pagina di login inserire un meccanismo per controllare
-      // se l'utente è già loggato e rimandarlo alla home page nel caso 
+      // se l'utente è già loggato e rimandarlo alla home page nel caso
       home: LoginWidget(),
       theme: theme.getTheme(),
     );

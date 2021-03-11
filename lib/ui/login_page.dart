@@ -50,8 +50,7 @@ class _LoginWidgetState extends State<LoginWidget> {
               builder: (_buildContext) => widgetLoginFreshUserAndPassword(),
             ));
           },
-          logo: TypeLogo.userPassword
-        ),
+          logo: TypeLogo.userPassword),
     ];
 
     return LoginFresh(
@@ -62,9 +61,7 @@ class _LoginWidgetState extends State<LoginWidget> {
         // potremmo mettere uno slideshow con degli screen dimostrativi dell'app
         // per ora rimanda alla home normale con le liste
         Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ListHomePage())
-        );
+            context, MaterialPageRoute(builder: (context) => ListHomePage()));
       },
       isFooter: true,
       widgetFooter: this.widgetFooter(),

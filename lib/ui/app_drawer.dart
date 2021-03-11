@@ -5,7 +5,7 @@ import 'package:mobile_applications/ui/home_lists.dart';
 import 'package:mobile_applications/ui/profile.dart';
 import 'package:mobile_applications/ui/settings_page.dart';
 
-Drawer a_drawer(_selectedDestination, selectDestination, context) {
+Drawer app_drawer(_selectedDestination, selectDestination, context) {
   return Drawer(
     child: ListView(
       children: <Widget>[

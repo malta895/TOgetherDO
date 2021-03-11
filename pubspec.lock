@@ -149,6 +149,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.4"
+  login_fresh:
+    dependency: "direct main"
+    description:
+      name: login_fresh
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.8"
   matcher:
     dependency: transitive
     description:

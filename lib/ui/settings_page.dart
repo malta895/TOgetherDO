@@ -64,7 +64,7 @@ class _SettingsPage extends State<SettingsPage> {
       appBar: AppBar(
         title: Text(title),
       ),
-      drawer: a_drawer(_selectedDestination, selectDestination, context),
+      drawer: app_drawer(_selectedDestination, selectDestination, context),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[

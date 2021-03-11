@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_applications/ui/login_page.dart';
 import 'package:provider/provider.dart';
 import './ui/home_lists.dart';
 import './ui/theme.dart';
@@ -66,7 +67,8 @@ class MaterialAppWithTheme extends StatelessWidget {
     final theme = Provider.of<ThemeChanger>(context);
 
     return MaterialApp(
-      home: ListHomePage(),
+      // home: ListHomePage(),
+      home: LoginWidget(),
       theme: theme.getTheme(),
     );
   }

@@ -68,6 +68,8 @@ class MaterialAppWithTheme extends StatelessWidget {
 
     return MaterialApp(
       // home: ListHomePage(),
+      // TODO anziche mostrare direttamente la pagina di login inserire un meccanismo per controllare
+      // se l'utente è già loggato e rimandarlo alla home page nel caso 
       home: LoginWidget(),
       theme: theme.getTheme(),
     );

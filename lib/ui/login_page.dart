@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:login_fresh/login_fresh.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mobile_applications/ui/home_lists.dart';
 
 class LoginWidget extends StatefulWidget {
-
-
   @override
   _LoginWidgetState createState() => _LoginWidgetState();
 }
 
 class _LoginWidgetState extends State<LoginWidget> {
-
-
   @override
   Widget build(BuildContext context) {
     return buildLoginFresh();
@@ -20,18 +18,30 @@ class _LoginWidgetState extends State<LoginWidget> {
     List<LoginFreshTypeLoginModel> listLogin = [
       LoginFreshTypeLoginModel(
           callFunction: (BuildContext _buildContext) {
-            // develop what they want the facebook to do when the user clicks
+            // TODO develop what they want the facebook to do when the user clicks
+            Fluttertoast.showToast(
+              msg: "Facebook Login!",
+              toastLength: Toast.LENGTH_SHORT,
+            );
           },
           logo: TypeLogo.facebook),
       LoginFreshTypeLoginModel(
           callFunction: (BuildContext _buildContext) {
-            // develop what they want the Google to do when the user clicks
+            // TODO develop what they want the Google to do when the user clicks
+            Fluttertoast.showToast(
+              msg: "Google Login!",
+              toastLength: Toast.LENGTH_SHORT,
+            );
           },
           logo: TypeLogo.google),
       LoginFreshTypeLoginModel(
           callFunction: (BuildContext _buildContext) {
             print("APPLE");
-            // develop what they want the Apple to do when the user clicks
+            // TODO develop what they want the Apple to do when the user clicks
+            Fluttertoast.showToast(
+              msg: "Apple Login!",
+              toastLength: Toast.LENGTH_SHORT,
+            );
           },
           logo: TypeLogo.apple),
       LoginFreshTypeLoginModel(
@@ -40,14 +50,21 @@ class _LoginWidgetState extends State<LoginWidget> {
               builder: (_buildContext) => widgetLoginFreshUserAndPassword(),
             ));
           },
-          logo: TypeLogo.userPassword),
+          logo: TypeLogo.userPassword
+        ),
     ];
 
     return LoginFresh(
       pathLogo: 'assets/logo.png',
       isExploreApp: true,
       functionExploreApp: () {
-        // develop what they want the ExploreApp to do when the user clicks
+        // TODO develop what they want the ExploreApp to do when the user clicks
+        // potremmo mettere uno slideshow con degli screen dimostrativi dell'app
+        // per ora rimanda alla home normale con le liste
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ListHomePage())
+        );
       },
       isFooter: true,
       widgetFooter: this.widgetFooter(),

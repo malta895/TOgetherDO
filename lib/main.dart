@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
 
   ChangeNotifierProvider<ThemeChanger> _appWithThemeBuilder() {
     return ChangeNotifierProvider<ThemeChanger>(
-      builder: (_) => ThemeChanger(_lightTheme),
+      create: (_) => ThemeChanger(_lightTheme),
       child: MaterialAppWithTheme(),
     );
   }

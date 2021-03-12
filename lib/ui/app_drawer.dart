@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/ui/friends.dart';
 import 'package:mobile_applications/ui/home_lists.dart';
+import 'package:mobile_applications/ui/login_page.dart';
 import 'package:mobile_applications/ui/profile.dart';
 import 'package:mobile_applications/ui/settings_ui.dart';
 
@@ -75,6 +76,13 @@ Drawer app_drawer(_selectedDestination, selectDestination, context) {
           selected: _selectedDestination == 2,
           onTap: () => selectDestination(
               2, MaterialPageRoute(builder: (context) => FriendsList())),
+        ),
+        ListTile(
+          leading: Icon(Icons.logout),
+          title: Text('Logout'),
+          selected: _selectedDestination == 2,
+          onTap: () => selectDestination(
+              2, MaterialPageRoute(builder: (context) => LoginWidget())), // TODO Perform logout logic too
         ),
       ],
     ),

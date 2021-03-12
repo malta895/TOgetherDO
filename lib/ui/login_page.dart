@@ -60,8 +60,9 @@ class _LoginWidgetState extends State<LoginWidget> {
         // TODO develop what they want the ExploreApp to do when the user clicks
         // potremmo mettere uno slideshow con degli screen dimostrativi dell'app
         // per ora rimanda alla home normale con le liste
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => ListHomePage()));
+        Navigator.pushReplacement( //pushReplacement prevents returning to login page by pressing "back" key on the phone
+            context, MaterialPageRoute(builder: (context) => ListHomePage())
+          );
       },
       isFooter: true,
       widgetFooter: this.widgetFooter(),

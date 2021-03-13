@@ -6,7 +6,7 @@ import 'package:mobile_applications/ui/login_page.dart';
 import 'package:mobile_applications/ui/profile.dart';
 import 'package:mobile_applications/ui/settings_ui.dart';
 
-Drawer app_drawer(_selectedDestination, selectDestination, context) {
+Drawer appDrawer(_selectedDestination, selectDestination, context) {
   return Drawer(
     child: ListView(
       children: <Widget>[
@@ -60,7 +60,8 @@ Drawer app_drawer(_selectedDestination, selectDestination, context) {
           title: Text('My Lists'),
           selected: _selectedDestination == 0,
           onTap: () => selectDestination(
-              0, MaterialPageRoute(builder: (context) => ListHomePage())),
+              index: 0,
+              route: MaterialPageRoute(builder: (context) => ListHomePage())),
         ),
         ListTile(
           leading: Icon(Icons.settings),
@@ -74,14 +75,19 @@ Drawer app_drawer(_selectedDestination, selectDestination, context) {
           title: Text('Friends'),
           selected: _selectedDestination == 2,
           onTap: () => selectDestination(
-              2, MaterialPageRoute(builder: (context) => FriendsList())),
+              index: 2,
+              route: MaterialPageRoute(builder: (context) => FriendsList())
+            ),
         ),
         ListTile(
           leading: Icon(Icons.logout),
           title: Text('Logout'),
           selected: _selectedDestination == 2,
           onTap: () => selectDestination(
-              2, MaterialPageRoute(builder: (context) => LoginWidget())), // TODO Perform logout logic too
+                index: 3,
+                route: MaterialPageRoute(builder: (context) => LoginWidget()),
+                pushReplacement: true,// cannot go back into application when we logout
+            ), // TODO Perform logout logic too
         ),
       ],
     ),

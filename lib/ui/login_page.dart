@@ -78,6 +78,8 @@ class _LoginWidgetState extends State<LoginWidget> {
           String password) {
         isRequest(true);
 
+        //TODO login user/password logic
+
         Future.delayed(Duration(seconds: 2), () {
           print('-------------- function call----------------');
           print(user);
@@ -103,6 +105,8 @@ class _LoginWidgetState extends State<LoginWidget> {
       funResetPassword:
           (BuildContext _context, Function isRequest, String email) {
         isRequest(true);
+
+        // TODO RESET PASSWORD LOGIC
 
         Future.delayed(Duration(seconds: 2), () {
           print('-------------- function call----------------');
@@ -143,6 +147,8 @@ class _LoginWidgetState extends State<LoginWidget> {
           print(signUpModel.name);
 
           isRequest(false);
+
+          //TODO SIGNUP LOGIC
         });
   }
 }

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_applications/ui/login_page.dart';
 import 'package:provider/provider.dart';
-import './ui/home_lists.dart';
-import './ui/theme.dart';
-import 'package:mobile_applications/ui/home_lists.dart';
+import 'package:mobile_applications/ui/theme.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 
@@ -15,6 +13,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  // initialize Firebase application
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
   final ThemeData _darkTheme = ThemeData(
@@ -43,6 +42,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
+      // Initialize Flutter Fire (firebase)
         future: _initialization,
         builder: (context, snapshot) {
           if (snapshot.hasError) {

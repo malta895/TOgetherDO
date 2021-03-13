@@ -70,7 +70,7 @@ class _ListHomePage extends State<ListHomePage> {
             Icon(Icons.search),
           ],
         ),
-        drawer: app_drawer(_selectedDestination, selectDestination, context),
+        drawer: appDrawer(_selectedDestination, selectDestination, context),
         body: _buildListItems(context),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => {
@@ -84,11 +84,15 @@ class _ListHomePage extends State<ListHomePage> {
         ));
   }
 
-  void selectDestination(int index, route) {
+  void selectDestination({int index, route, bool pushReplacement = false}) {
     // Changes the state of the navigation drawer
     setState(() {
       _selectedDestination = index;
-      Navigator.push(context, route);
+      if (pushReplacement) {
+        Navigator.pushReplacement(context, route);
+      } else {
+        Navigator.push(context, route);
+      }
     });
   }
 }

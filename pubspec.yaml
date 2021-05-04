@@ -38,6 +38,7 @@ dependencies:
 
   # Fresh Login library
   login_fresh: ^1.0.8
+  settings_ui: ^1.0.0
   
 dev_dependencies:
   flutter_test:

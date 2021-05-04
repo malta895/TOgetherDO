@@ -4,6 +4,7 @@ import 'package:mobile_applications/ui/friends.dart';
 import 'package:mobile_applications/ui/home_lists.dart';
 import 'package:mobile_applications/ui/profile.dart';
 import 'package:mobile_applications/ui/settings_page.dart';
+import 'package:mobile_applications/ui/settings_ui.dart';
 
 Drawer app_drawer(_selectedDestination, selectDestination, context) {
   return Drawer(
@@ -67,7 +68,7 @@ Drawer app_drawer(_selectedDestination, selectDestination, context) {
           title: Text('Settings'),
           selected: _selectedDestination == 1,
           onTap: () => selectDestination(
-              1, MaterialPageRoute(builder: (context) => SettingsPage())),
+              1, MaterialPageRoute(builder: (context) => SettingsScreen())),
         ),
         ListTile(
           leading: Icon(Icons.people),

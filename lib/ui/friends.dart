@@ -26,7 +26,7 @@ class _FriendsList extends State<FriendsList> {
           User("Lorenzo", "Amici", "lorenzo.amici@mail.com",
               "lorenzo.amici@mail.com"),
           true),
-    ); // TODO remove when data are fetched from backenxd
+    ); // TODO remove when data are fetched from backend
     return ListView.builder(
       itemCount: _user.friendships.length,
       itemBuilder: (context, i) {

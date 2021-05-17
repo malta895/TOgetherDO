@@ -138,20 +138,20 @@ import 'package:flutter/widgets.dart';
                   padding: EdgeInsets.all(20.0),
                   child:  */
 
-              ListView.separated(
-                padding: const EdgeInsets.all(8),
-                itemCount: entries.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    height: 50,
-                    color: Colors.amber[colorCodes[index]],
-                    child: Center(child: Text('Entry ${entries[index]}')),
-                  );
-                },
-                separatorBuilder: (BuildContext context, int index) =>
-                    const Divider(),
-              )
-            ])); FINO A QUI FIRST DRAFT*/
+            //   ListView.separated(
+            //     padding: const EdgeInsets.all(8),
+            //     itemCount: entries.length,
+            //     itemBuilder: (BuildContext context, int index) {
+            //       return Container(
+            //         height: 50,
+            //         color: Colors.amber[colorCodes[index]],
+            //         child: Center(child: Text('Entry ${entries[index]}')),
+            //       );
+            //     },
+            //     separatorBuilder: (BuildContext context, int index) =>
+            //         const Divider(),
+            //   )
+            // ])); FINO A QUI FIRST DRAFT*/
 
 /* Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

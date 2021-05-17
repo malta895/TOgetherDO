@@ -26,8 +26,7 @@ Drawer app_drawer(_selectedDestination, selectDestination, context) {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                        'http://www.bbk.ac.uk/mce/wp-content/uploads/2015/03/8327142885_9b447935ff.jpg'),
+                    backgroundImage: AssetImage("assets/sample-profile.png"),
                     radius: 40.0,
                   ),
                 ),

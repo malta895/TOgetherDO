@@ -65,7 +65,7 @@ class _FriendsList extends State<FriendsList> {
             Icon(Icons.search),
           ],
         ),
-        drawer: app_drawer(_selectedDestination, selectDestination, context),
+        drawer: appDrawer(_selectedDestination, selectDestination, context),
         body: _buildListItems(context),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => {

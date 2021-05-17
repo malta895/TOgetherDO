@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/ui/friends.dart';
 import 'package:mobile_applications/ui/home_lists.dart';
+import 'package:mobile_applications/ui/login_page.dart';
 import 'package:mobile_applications/ui/profile.dart';
 import 'package:mobile_applications/ui/settings_ui.dart';
 
-Drawer app_drawer(_selectedDestination, selectDestination, context) {
+Drawer appDrawer(_selectedDestination, selectDestination, context) {
   return Drawer(
     child: ListView(
       children: <Widget>[
@@ -25,8 +26,7 @@ Drawer app_drawer(_selectedDestination, selectDestination, context) {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cG9ydHJhaXR8ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80'),
+                    backgroundImage: AssetImage("assets/sample-profile.png"),
                     radius: 40.0,
                   ),
                 ),
@@ -60,7 +60,8 @@ Drawer app_drawer(_selectedDestination, selectDestination, context) {
           title: Text('My Lists'),
           selected: _selectedDestination == 0,
           onTap: () => selectDestination(
-              0, MaterialPageRoute(builder: (context) => ListHomePage())),
+              index: 0,
+              route: MaterialPageRoute(builder: (context) => ListHomePage())),
         ),
         ListTile(
           leading: Icon(Icons.settings),
@@ -74,7 +75,19 @@ Drawer app_drawer(_selectedDestination, selectDestination, context) {
           title: Text('Friends'),
           selected: _selectedDestination == 2,
           onTap: () => selectDestination(
-              2, MaterialPageRoute(builder: (context) => FriendsList())),
+              index: 2,
+              route: MaterialPageRoute(builder: (context) => FriendsList())),
+        ),
+        ListTile(
+          leading: Icon(Icons.logout),
+          title: Text('Logout'),
+          selected: _selectedDestination == 2,
+          onTap: () => selectDestination(
+            index: 3,
+            route: MaterialPageRoute(builder: (context) => LoginWidget()),
+            pushReplacement:
+                true, // cannot go back into application when we logout
+          ), // TODO Perform logout logic too
         ),
       ],
     ),

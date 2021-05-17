@@ -68,7 +68,8 @@ Drawer appDrawer(_selectedDestination, selectDestination, context) {
           title: Text('Settings'),
           selected: _selectedDestination == 1,
           onTap: () => selectDestination(
-              1, MaterialPageRoute(builder: (context) => SettingsScreen())),
+              index: 1,
+              route: MaterialPageRoute(builder: (context) => SettingsScreen())),
         ),
         ListTile(
           leading: Icon(Icons.people),

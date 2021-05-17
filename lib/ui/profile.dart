@@ -290,21 +290,29 @@ class _ProfilePage extends State<ProfilePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cG9ydHJhaXR8ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80',
+              Stack(alignment: const Alignment(1.2, 1.2), children: [
+                CircleAvatar(
+                  backgroundImage: NetworkImage(
+                    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cG9ydHJhaXR8ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80',
+                  ),
+                  radius: 70.0,
                 ),
-                radius: 70.0,
-              ),
+                IconButton(
+                    icon: const Icon(Icons.add_a_photo),
+                    color: Colors.white,
+                    onPressed: () {
+                      print("Photo pushed");
+                    })
+              ]),
               SizedBox(
                 height: 30.0,
               ),
               Text(
                 "John Reed",
                 style: TextStyle(
-                  fontSize: 22.0,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               )
             ],

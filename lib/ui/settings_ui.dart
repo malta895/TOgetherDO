@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:mobile_applications/ui/app_drawer.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -9,10 +10,13 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool lockInBackground = true;
 
+  int _selectedDestination = 1;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Settings UI')),
+      drawer: app_drawer(_selectedDestination, selectDestination, context),
       body: SettingsList(
         sections: [
           SettingsSection(
@@ -71,5 +75,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
     );
+  }
+
+  void selectDestination(int index, route) {
+    // Changes the state of the navigation drawer
+    setState(() {
+      _selectedDestination = index;
+      Navigator.push(context, route);
+    });
   }
 }

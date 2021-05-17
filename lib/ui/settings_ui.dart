@@ -16,7 +16,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Settings UI')),
-      drawer: app_drawer(_selectedDestination, selectDestination, context),
+      drawer: appDrawer(_selectedDestination, selectDestination, context),
       body: SettingsList(
         sections: [
           SettingsSection(

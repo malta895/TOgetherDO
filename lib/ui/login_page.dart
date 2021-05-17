@@ -140,6 +140,8 @@ class _LoginWidgetState extends State<LoginWidget> {
             SignUpModel signUpModel) {
           isRequest(true);
 
+          //TODO SIGNUP LOGIC
+
           print(signUpModel.email);
           print(signUpModel.password);
           print(signUpModel.repeatPassword);
@@ -148,7 +150,7 @@ class _LoginWidgetState extends State<LoginWidget> {
 
           isRequest(false);
 
-          //TODO SIGNUP LOGIC
+
         });
   }
 }

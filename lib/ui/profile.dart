@@ -351,7 +351,7 @@ class _ProfilePage extends State<ProfilePage> {
         appBar: AppBar(
             // leading: Icon(Icons.menu), // not needed, automatically added by Drawer
             title: Text(title)),
-        drawer: app_drawer(_selectedDestination, selectDestination, context),
+        drawer: appDrawer(_selectedDestination, selectDestination, context),
         body: _buildProfile(context));
   }
 

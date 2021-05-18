@@ -81,20 +81,25 @@ class _ListViewRouteState extends State<ListViewRoute> {
 
   void _showNumberPicker(BuildContext context, BaseItem aListItem, int minValue,
       int initialValue) {
-    showDialog<int>(
+    showDialog<void>(
         context: context,
         builder: (BuildContext context) {
-          return NumberPickerDialog.integer(
-            minValue: minValue,
-            maxValue: 50,
-            title: Text("How many times have you completed this item?"),
-            initialIntegerValue: initialValue,
-          );
-        }).then((int value) {
-      if (value != null) {
-        setState(() => aListItem.fulfill(_member, value));
-      }
-    });
+          int _currentValue = initialValue;
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              title: Text("How many times have you completed this item?"),
+              content: NumberPicker(
+                minValue: minValue,
+                maxValue: 50,
+                value: _currentValue,
+                onChanged: (value) => setState(() {
+                  aListItem.fulfill(_member, value);
+                  _currentValue = aListItem.isFulfilledBy(_member);
+                }),
+              ),
+            );
+          });
+        });
   }
 
   Widget _buildRow(BuildContext context, BaseItem aListItem) {
@@ -173,7 +178,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
         );
 
       case MultiFulfillmentMemberItem:
-        List<Widget> itemColumns = List<Widget>();
+        List<Widget> itemColumns = [];
         for (AListMember member in aListItem.getFulfillers()) {
           {
             itemColumns.add(Column(

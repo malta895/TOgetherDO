@@ -25,7 +25,7 @@ dependencies:
     sdk: flutter
 
   # used to choose the number of people of a list
-  numberpicker: ^1.3.0
+  numberpicker: ^2.1.1
   cupertino_icons: ^1.0.0
   shared_preferences: '>2.0.0'
 
@@ -33,20 +33,22 @@ dependencies:
   provider: ^5.0.0
 
   # needed to show Toast popups
-  fluttertoast: ^7.1.6 
+  fluttertoast: ^8.0.6
 
   # Firebase stuff
   firebase_core: "^1.1.1"
   firebase_auth: "^1.1.4"
 
   # Fresh Login library, for the login screen
-  login_fresh: ^1.0.8
+  # login_fresh: ^1.0.8
 
   settings_ui: ^1.0.0
 
 
   # Flutter login, alternative login screen
-  flutter_login: ^1.1.0
+  # flutter_login: ^1.1.0
+  flutter_login: ^2.0.0-nullsafety.0
+
 
   
 dev_dependencies:

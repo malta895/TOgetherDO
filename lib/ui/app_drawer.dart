@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/ui/friends.dart';
 import 'package:mobile_applications/ui/home_lists.dart';
-import 'package:mobile_applications/ui/login_page.dart';
+// import 'package:mobile_applications/ui/login_page.dart';
 import 'package:mobile_applications/ui/profile.dart';
 import 'package:mobile_applications/ui/settings_ui.dart';
 
@@ -85,7 +85,8 @@ Drawer appDrawer(_selectedDestination, selectDestination, context) {
           selected: _selectedDestination == 2,
           onTap: () => selectDestination(
             index: 3,
-            route: MaterialPageRoute(builder: (context) => LoginWidget()),
+            // TODO logout logic
+            // route: MaterialPageRoute(builder: (context) => LoginWidget()),
             pushReplacement:
                 true, // cannot go back into application when we logout
           ), // TODO Perform logout logic too

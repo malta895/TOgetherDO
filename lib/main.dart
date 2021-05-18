@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_applications/ui/login_page.dart';
+import 'package:mobile_applications/ui/home_lists.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile_applications/ui/theme.dart';
 
@@ -69,7 +69,7 @@ class MaterialAppWithTheme extends StatelessWidget {
       // home: ListHomePage(),
       // TODO anziche mostrare direttamente la pagina di login inserire un meccanismo per controllare
       // se l'utente è già loggato e rimandarlo alla home page nel caso
-      home: LoginWidget(),
+      home: ListHomePage(),
       theme: theme.getTheme(),
     );
   }

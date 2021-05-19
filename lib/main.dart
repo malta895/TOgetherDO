@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mobile_applications/ui/login/login_page.dart';
+import 'package:mobile_applications/ui/login/login_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile_applications/ui/theme.dart';
 
@@ -74,11 +74,12 @@ class MaterialAppWithTheme extends StatelessWidget {
     final theme = Provider.of<ThemeChanger>(context);
 
     return MaterialApp(
-      // home: ListHomePage(),
-      // TODO anziche mostrare direttamente la pagina di login inserire un meccanismo per controllare
-      // se l'utente è già loggato e rimandarlo alla home page nel caso
-      home: LoginPage(),
+      initialRoute: LoginScreen.routeName, //the LoginScreen is always seen as first when we open the app
       theme: theme.getTheme(),
+      routes: {
+        LoginScreen.routeName: (context) => LoginScreen(),
+        
+      }
     );
   }
 }

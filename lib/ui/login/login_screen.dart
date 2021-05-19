@@ -2,10 +2,9 @@ import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mobile_applications/constants.dart';
-import 'package:mobile_applications/ui/home_lists.dart';
+import '../../constants.dart';
+import '../home_lists.dart';
 import 'custom_route.dart';
-import 'dashboard_screen.dart';
 import 'package:email_validator/email_validator.dart';
 import 'users.dart';
 
@@ -188,6 +187,7 @@ class LoginScreen extends StatelessWidget {
         return _loginUser(loginData);
       },
       onSubmitAnimationCompleted: () {
+        print('homepage from onSubmitAnimation');
         Navigator.of(context).pushReplacement(FadePageRoute(
           builder: (context) => ListHomePage(),
         ));

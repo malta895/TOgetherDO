@@ -9,6 +9,4 @@ class ListAppAuthenticator {
       ListAppAuthenticator._privateConstructor();
 
   static ListAppAuthenticator get instance => _instance;
-
-  
 }

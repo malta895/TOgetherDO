@@ -33,7 +33,7 @@ dependencies:
   provider: ^5.0.0
 
   # needed to show Toast popups
-  fluttertoast: ^8.0.6
+  # fluttertoast: ^8.0.6
 
   # Firebase stuff
   firebase_core: "^1.1.1"
@@ -41,7 +41,17 @@ dependencies:
 
   settings_ui: ^1.0.0
 
-  flutter_login: ^2.0.0-nullsafety.0
+
+  # since a package has not been released yet, I need to get it from github
+  # TODO replace with package as soon is released
+    # flutter_login: ^2.0.0-nullsafety.0 # bugged package
+  flutter_login:
+    git:
+      url: https://github.com/NearHuscarl/flutter_login
+      ref: 3837c68491fa9d6ff5dd68ef74774d8011fdd91c
+
+  email_validator: ^2.0.1
+  font_awesome_flutter: ^9.0.0
   
 dev_dependencies:
   flutter_test:

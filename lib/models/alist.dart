@@ -110,8 +110,7 @@ class SimpleItem extends BaseItem {
 
   @override
   List<AListMember> getFulfillers() {
-    if (_fulfiller == null)
-      return UnmodifiableListView<AListMember>([]);
+    if (_fulfiller == null) return UnmodifiableListView<AListMember>([]);
 
     return UnmodifiableListView<AListMember>([_fulfiller!]);
   }
@@ -188,7 +187,6 @@ class MultiFulfillmentMemberItem extends BaseItem {
   @override
   int quantityFulfilledBy(AListMember member) {
     return _fulfillers[member] == null ? 0 : _fulfillers[member]!;
-
   }
 
   @override

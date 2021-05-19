@@ -1,17 +1,22 @@
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
-import 'constants.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mobile_applications/constants.dart';
+import 'package:mobile_applications/ui/home_lists.dart';
 import 'custom_route.dart';
 import 'dashboard_screen.dart';
+import 'package:email_validator/email_validator.dart';
 import 'users.dart';
 
 class LoginScreen extends StatelessWidget {
   static const routeName = '/auth';
 
+  @Deprecated('remove this and wait for actual login')
   Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
 
   Future<String?> _loginUser(LoginData data) {
+    //TODO replace with login logic
     return Future.delayed(loginTime).then((_) {
       if (!mockUsers.containsKey(data.name)) {
         return 'Username not exists';
@@ -23,7 +28,15 @@ class LoginScreen extends StatelessWidget {
     });
   }
 
+  Future<String?>? _facebookLogin() {
+    //TODO Implement actual facebook login
+    return Future.delayed(loginTime).then((_) {
+      return null;
+    });
+  }
+
   Future<String?> _recoverPassword(String name) {
+    //TODO replace with recover password logic
     return Future.delayed(loginTime).then((_) {
       if (!mockUsers.containsKey(name)) {
         return 'Username not exists';
@@ -36,10 +49,28 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return FlutterLogin(
       title: Constants.appName,
-      logo: 'assets/images/ecorp.png',
+      logo: Constants.appLogoPath,
       logoTag: Constants.logoTag,
       titleTag: Constants.titleTag,
-      // loginAfterSignUp: false,
+      loginAfterSignUp: false,
+      loginProviders: <LoginProvider>[
+        LoginProvider(
+          icon: FontAwesomeIcons.facebookF,
+          callback: _facebookLogin,
+        ),
+        LoginProvider(
+            icon: FontAwesomeIcons.google,
+            callback: () async {
+              // TODO implement google login
+              return Future.delayed(loginTime);
+            }),
+        LoginProvider(
+            icon: FontAwesomeIcons.linkedin,
+            callback: () async {
+              // TODO implement linkedin login
+              return Future.delayed(loginTime);
+            }),
+      ],
       // hideForgotPasswordButton: true,
       // hideSignUpButton: true,
       // messages: LoginMessages(
@@ -134,14 +165,12 @@ class LoginScreen extends StatelessWidget {
       //     // shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(55.0)),
       //   ),
       // ),
-      emailValidator: (value) {
-        if (!value!.contains('@') || !value.endsWith('.com')) {
-          return "Email must contain '@' and end with '.com'";
-        }
-        return null;
+      userValidator: (email) {
+        if (EmailValidator.validate(email!)) return null;
+        return "Please insert a valid email address";
       },
-      passwordValidator: (value) {
-        if (value!.isEmpty) {
+      passwordValidator: (password) {
+        if (password!.isEmpty) {
           return 'Password is empty';
         }
         return null;
@@ -160,16 +189,16 @@ class LoginScreen extends StatelessWidget {
       },
       onSubmitAnimationCompleted: () {
         Navigator.of(context).pushReplacement(FadePageRoute(
-          builder: (context) => DashboardScreen(),
+          builder: (context) => ListHomePage(),
         ));
       },
       onRecoverPassword: (name) {
         print('Recover password info');
         print('Name: $name');
         return _recoverPassword(name);
-        // Show new password dialog
+        // TODO Show new password dialog
       },
-      showDebugButtons: true,
+      showDebugButtons: true, //TODO remove when no longer needed
     );
   }
 }

@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_applications/ui/home_lists.dart';
+import 'package:flutter/services.dart';
+import 'package:mobile_applications/ui/login/login_page.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile_applications/ui/theme.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 
 void main() {
+  // NOTE this stuff comes from login example, not sure if it is needed
+  // SystemChrome.setSystemUIOverlayStyle(
+  //     SystemUiOverlayStyle(
+  //     systemNavigationBarColor:
+  //         SystemUiOverlayStyle.dark.systemNavigationBarColor,
+  //   ),
+  // );
   WidgetsFlutterBinding.ensureInitialized();
 
   // TODO conditionally show login page or home lists page, if the user is logged in or not
@@ -42,7 +50,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      // Initialize Flutter Fire (firebase)
+        // Initialize Flutter Fire (firebase)
         future: _initialization,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -69,7 +77,7 @@ class MaterialAppWithTheme extends StatelessWidget {
       // home: ListHomePage(),
       // TODO anziche mostrare direttamente la pagina di login inserire un meccanismo per controllare
       // se l'utente è già loggato e rimandarlo alla home page nel caso
-      home: ListHomePage(),
+      home: LoginPage(),
       theme: theme.getTheme(),
     );
   }

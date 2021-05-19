@@ -12,9 +12,9 @@ class AList {
   final String description;
 
   //Set and not List because Sets have unique elements
-  Set<AListMember> members;
+  late Set<AListMember> members;
 
-  Set<BaseItem> items;
+  late Set<BaseItem> items;
 
   AList(this.id, this.name, this.description);
 }
@@ -30,7 +30,7 @@ class AListMember {
   AListMember(this.id, this.username, this.firstName, this.lastName);
 
   @override
-  bool operator ==(other) => other.id == id;
+  bool operator ==(other) => other is AListMember && other.id == id;
   @override
   int get hashCode => id;
 }
@@ -58,7 +58,7 @@ abstract class BaseItem extends ChangeNotifier {
   BaseItem(this.id, this.name, this.description, this.maxQuantity,
       this.quantityPerMember);
 
-  int isFulfilledBy(AListMember member);
+  int quantityFulfilledBy(AListMember member);
 
   bool isFulfilled();
 
@@ -72,12 +72,12 @@ abstract class BaseItem extends ChangeNotifier {
 
 //This item can have just one fulfiller
 class SimpleItem extends BaseItem {
-  AListMember _fulfiller;
+  AListMember? _fulfiller;
 
   SimpleItem(int id, String name, String description)
       : super(id, name, description, 1, 1);
 
-  AListMember get fulfiller {
+  AListMember? get fulfiller {
     return _fulfiller;
   }
 
@@ -110,11 +110,14 @@ class SimpleItem extends BaseItem {
 
   @override
   List<AListMember> getFulfillers() {
-    return UnmodifiableListView<AListMember>([_fulfiller]);
+    if (_fulfiller == null)
+      return UnmodifiableListView<AListMember>([]);
+
+    return UnmodifiableListView<AListMember>([_fulfiller!]);
   }
 
   @override
-  int isFulfilledBy(AListMember member) {
+  int quantityFulfilledBy(AListMember member) {
     return member == _fulfiller ? 1 : 0;
   }
 }
@@ -142,7 +145,7 @@ class MultiFulfillmentItem extends BaseItem {
   }
 
   @override
-  int isFulfilledBy(AListMember member) {
+  int quantityFulfilledBy(AListMember member) {
     return _fulfillers.contains(member) ? 1 : 0;
   }
 
@@ -183,8 +186,9 @@ class MultiFulfillmentMemberItem extends BaseItem {
   }
 
   @override
-  int isFulfilledBy(AListMember member) {
-    return _fulfillers[member] == null ? 0 : _fulfillers[member];
+  int quantityFulfilledBy(AListMember member) {
+    return _fulfillers[member] == null ? 0 : _fulfillers[member]!;
+
   }
 
   @override

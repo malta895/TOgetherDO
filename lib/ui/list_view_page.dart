@@ -11,7 +11,7 @@ import 'package:numberpicker/numberpicker.dart';
 class ListViewRoute extends StatefulWidget {
   final AList aList;
   //the member currently logged in, TODO make it final and get it from session
-  AListMember currentMember;
+  late AListMember currentMember;
 
   ListViewRoute(this.aList) {
     aList.members = Set<AListMember>();
@@ -86,6 +86,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
         builder: (BuildContext context) {
           int _currentValue = initialValue;
           return StatefulBuilder(builder: (context, setState) {
+            //we need it to be stateful because the widget state can change while the dialog is opened
             return AlertDialog(
               title: Text("How many times have you completed this item?"),
               content: NumberPicker(
@@ -93,8 +94,9 @@ class _ListViewRouteState extends State<ListViewRoute> {
                 maxValue: 50,
                 value: _currentValue,
                 onChanged: (value) => setState(() {
+                  //TODO Maybe better to put the buttons
                   aListItem.fulfill(_member, value);
-                  _currentValue = aListItem.isFulfilledBy(_member);
+                  _currentValue = value;
                 }),
               ),
             );
@@ -129,10 +131,10 @@ class _ListViewRouteState extends State<ListViewRoute> {
               : Text(aListItem.name),
           value: aListItem.isFulfilled(),
           selected: aListItem.isFulfilled(),
-          onChanged: (bool value) {
+          onChanged: (bool? value) {
             // TODO make async, make not selectable until the server has responded
             setState(() {
-              if (value) {
+              if (value == true) {
                 aListItem.fulfill(_member, 1);
               } else {
                 aListItem.unfulfill(_member);
@@ -156,7 +158,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
                                 _assignedColors[aListItem.getFulfillers()[0]],
                           ),
                           Text(
-                            "${aListItem.getFulfillers()[0].firstName} ${aListItem.isFulfilledBy(_member)}",
+                            "${aListItem.getFulfillers()[0].firstName} ${aListItem.quantityFulfilledBy(_member)}",
                             textScaleFactor: 0.7,
                           )
                         ],
@@ -165,10 +167,10 @@ class _ListViewRouteState extends State<ListViewRoute> {
               : Text(aListItem.name),
           value: aListItem.isFulfilled(),
           selected: aListItem.isFulfilled(),
-          onChanged: (bool value) {
+          onChanged: (bool? value) {
             // TODO make async, make not selectable until the server has responded
             setState(() {
-              if (value) {
+              if (value == true) {
                 aListItem.fulfill(_member, 1);
               } else {
                 aListItem.unfulfill(_member);
@@ -189,7 +191,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
                   color: _assignedColors[member],
                 ),
                 Text(
-                  "${member.firstName} ${aListItem.isFulfilledBy(member)}",
+                  "${member.firstName} ${aListItem.quantityFulfilledBy(member)}",
                   textScaleFactor: 0.7,
                 )
               ],
@@ -209,10 +211,14 @@ class _ListViewRouteState extends State<ListViewRoute> {
                 : Text(aListItem.name),
             selected: aListItem.isFulfilled(),
             onTap: () => _showNumberPicker(
-                context, aListItem, 0, aListItem.isFulfilledBy(_member)),
+                context, aListItem, 0, aListItem.quantityFulfilledBy(_member)),
           );
         }
     }
+    //the code should never reach this point, but we need it for null check
+    return ListTile(
+      title: Text("Empty element"),
+    );
   }
 
   @override

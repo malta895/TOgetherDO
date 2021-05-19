@@ -271,7 +271,7 @@ class _ProfilePage extends State<ProfilePage> {
 
   final List<String> Properties = ["Name", "Email", "Password"];
 
-  List<String> Elements;
+  List<String> Elements = [];
 
   Widget _buildProfile(BuildContext context) {
     Elements = [

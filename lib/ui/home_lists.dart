@@ -84,7 +84,7 @@ class _ListHomePage extends State<ListHomePage> {
         ));
   }
 
-  void selectDestination({int index, route, bool pushReplacement = false}) {
+  void selectDestination({required int index, route, bool pushReplacement = false}) {
     // Changes the state of the navigation drawer
     setState(() {
       _selectedDestination = index;

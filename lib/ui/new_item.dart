@@ -19,7 +19,7 @@ class MyCustomForm extends StatefulWidget {
 }
 
 class DropdownMenu extends StatefulWidget {
-  DropdownMenu({Key key}) : super(key: key);
+  DropdownMenu({Key? key}) : super(key: key);
 
   @override
   _DropdownMenuState createState() => _DropdownMenuState();
@@ -63,7 +63,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                       labelText: 'Enter the item title',
                       labelStyle: TextStyle(color: Colors.black)),
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value?.isEmpty == true) {
                       return 'Please enter some text';
                     }
                     return null;
@@ -83,7 +83,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
 
                   // Validate returns true if the form is valid, or false
                   // otherwise.
-                  if (_formKey.currentState.validate()) {
+                  if (_formKey.currentState?.validate() == true) {
                     // If the form is valid, display a Snackbar.
                     Scaffold.of(context).showSnackBar(
                         SnackBar(content: Text('Processing Data')));
@@ -159,9 +159,9 @@ class _DropdownMenuState extends State<DropdownMenu> {
               height: 2,
               color: Colors.black,
             ),
-            onChanged: (String newValue) {
+            onChanged: (String? newValue) {
               setState(() {
-                dropdownValue = newValue;
+                dropdownValue = newValue!;
               });
               hideMultipleSelection();
             },

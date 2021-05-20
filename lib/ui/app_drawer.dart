@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/services/authentication.dart';
@@ -116,7 +114,7 @@ class _ListAppDrawer extends State<ListAppDrawer> {
               title: Text('Logout'),
               selected: _selectedDestination == 2,
               onTap: () {
-                ListAppAuthenticator.instance.logout();
+                ListAppAuth.instance.logout();
                 selectDestination(
                   index: 3,
                   routeName: LoginScreen.routeName,

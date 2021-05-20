@@ -186,14 +186,14 @@ class LoginScreen extends StatelessWidget {
         print('Name: ${loginData.name}');
         print('Password: ${loginData.password}');
 
-        return ListAppAuthenticator.instance
+        return ListAppAuth.instance
             .loginViaEmailPassword(loginData.name, loginData.password);
       },
       onSignup: (loginData) {
         print('Signup info');
         print('Name: ${loginData.name}');
         print('Password: ${loginData.password}');
-        return ListAppAuthenticator.instance
+        return ListAppAuth.instance
             .signupWithEmailAndPassword(loginData.name, loginData.password);
       },
       onSubmitAnimationCompleted: () {

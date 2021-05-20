@@ -2,8 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/ui/app_drawer.dart';
+import 'package:tuple/tuple.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -17,18 +18,14 @@ class _ProfilePage extends State<ProfilePage> {
   //TODO fetch actual data from backend
   //TODO implement password
 
-  final CurrentUser =
-      User("John", "Reed", "john.redd@mail.com", "john.redd@mail.com");
+  final _currentUser = ListAppAuth.instance.loggedInUser;
 
-  final List<String> Properties = ["Name", "Email", "Password"];
-
-  List<String> Elements = [];
 
   Widget _buildProfile(BuildContext context) {
-    Elements = [
-      CurrentUser.firstName + " " + CurrentUser.lastName,
-      CurrentUser.email,
-      CurrentUser.firstName
+    List<Tuple2<String, String>> _elements = [
+      Tuple2('Name', _currentUser!.displayName ?? ''),
+      Tuple2('Email', _currentUser!.email ?? ''),
+      // Tuple2('Username', _currentUser!.displayName)
     ];
     return Container(
         child: Column(children: <Widget>[
@@ -43,6 +40,7 @@ class _ProfilePage extends State<ProfilePage> {
             children: <Widget>[
               Stack(alignment: const Alignment(1.2, 1.2), children: [
                 CircleAvatar(
+                  // TODO replace with profile image
                   backgroundImage: NetworkImage(
                     'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cG9ydHJhaXR8ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80',
                   ),
@@ -70,15 +68,15 @@ class _ProfilePage extends State<ProfilePage> {
           ))),
       Expanded(
           child: ListView.builder(
-        itemCount: 3,
+        itemCount: _elements.length,
         itemBuilder: (context, i) {
-          return _buildRow(context, Elements[i], Properties[i]);
+          return _buildRow(context, _elements[i].item1, _elements[i].item2);
         },
       ))
     ]));
   }
 
-  Widget _buildRow(BuildContext context, String Element, String Property) {
+  Widget _buildRow(BuildContext context, String key, String value) {
     return Container(
         decoration: BoxDecoration(
             border: Border(
@@ -89,13 +87,13 @@ class _ProfilePage extends State<ProfilePage> {
         ))),
         child: ListTile(
             title: Text(
-              Property,
+              key,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                   color: Colors.pinkAccent[700]),
             ),
-            subtitle: Text(Element,
+            subtitle: Text(value,
                 style: TextStyle(fontSize: 16, color: Colors.grey[700])),
             trailing: IconButton(
                 icon: const Icon(Icons.create),

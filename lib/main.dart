@@ -76,7 +76,7 @@ class MaterialAppWithTheme extends StatelessWidget {
     final theme = Provider.of<ThemeChanger>(context);
 
     return MaterialApp(
-        initialRoute: ListAppAuthenticator.instance.isSomeoneLoggedIn()
+        initialRoute: ListAppAuth.instance.isSomeoneLoggedIn()
             ? ListHomePage.routeName
             : LoginScreen.routeName,
         theme: theme.getTheme(),

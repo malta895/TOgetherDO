@@ -24,6 +24,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  tuple: '^2.0.0'
+
   # used to choose the number of people of a list
   numberpicker: ^2.1.1
   cupertino_icons: ^1.0.0

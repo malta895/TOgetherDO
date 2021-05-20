@@ -2,14 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 ///A wrapper of FirebaseAuth, that provides a better interface to the login ui
 ///It is a Singleton, get it with [ListAppAuth.instance]
-class ListAppAuthenticator {
+class ListAppAuth {
   // This class is a singleton
-  ListAppAuthenticator._privateConstructor();
+  ListAppAuth._privateConstructor();
 
-  static final ListAppAuthenticator _instance =
-      ListAppAuthenticator._privateConstructor();
+  static final ListAppAuth _instance =
+      ListAppAuth._privateConstructor();
 
-  static ListAppAuthenticator get instance => _instance;
+  static ListAppAuth get instance => _instance;
 
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 

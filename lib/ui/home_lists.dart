@@ -9,12 +9,14 @@ import 'package:mobile_applications/ui/new_list.dart';
 import 'package:mobile_applications/models/alist.dart';
 
 class ListHomePage extends StatefulWidget {
+  static final String routeName = "/home";
   @override
   _ListHomePage createState() => _ListHomePage();
 }
 
 class _ListHomePage extends State<ListHomePage> {
   final String title = 'ListApp';
+
   // the current destination selected in the Drawer
   int _selectedDestination = 0;
 
@@ -85,12 +87,17 @@ class _ListHomePage extends State<ListHomePage> {
   }
 
   void selectDestination(
-      {required int index, route, bool pushReplacement = false}) {
+      {required int index,
+      route,
+      String? routeName,
+      bool pushReplacement = false}) {
     // Changes the state of the navigation drawer
     setState(() {
       _selectedDestination = index;
       if (pushReplacement) {
-        Navigator.pushReplacement(context, route);
+        if (route != null) Navigator.pushReplacement(context, route);
+        if (routeName != null)
+          Navigator.pushReplacementNamed(context, routeName);
       } else {
         Navigator.push(context, route);
       }

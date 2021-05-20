@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/ui/friends.dart';
 import 'package:mobile_applications/ui/home_lists.dart';
+import 'package:mobile_applications/ui/login/login_screen.dart';
 import 'package:mobile_applications/ui/profile.dart';
 import 'package:mobile_applications/ui/settings_ui.dart';
 
@@ -79,17 +81,18 @@ Drawer appDrawer(_selectedDestination, selectDestination, context) {
               route: MaterialPageRoute(builder: (context) => FriendsList())),
         ),
         ListTile(
-          leading: Icon(Icons.logout),
-          title: Text('Logout'),
-          selected: _selectedDestination == 2,
-          onTap: () => selectDestination(
-            index: 3,
-            // TODO logout logic
-            // route: MaterialPageRoute(builder: (context) => LoginWidget()),
-            pushReplacement:
-                true, // cannot go back into application when we logout
-          ), // TODO Perform logout logic too
-        ),
+            leading: Icon(Icons.logout),
+            title: Text('Logout'),
+            selected: _selectedDestination == 2,
+            onTap: () {
+              ListAppAuthenticator.instance.logout();
+              selectDestination(
+                index: 3,
+                routeName: LoginScreen.routeName,
+                pushReplacement:
+                    true, // cannot go back into application when we logout
+              );
+            }),
       ],
     ),
   );

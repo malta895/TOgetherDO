@@ -2,6 +2,7 @@ import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mobile_applications/services/authentication.dart';
 import '../../constants.dart';
 import '../home_lists.dart';
 import 'custom_route.dart';
@@ -12,7 +13,7 @@ class LoginScreen extends StatelessWidget {
   static const routeName = '/auth';
 
   @Deprecated('remove this and wait for actual login')
-  Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
+  Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 500);
 
   Future<String?> _loginUser(LoginData data) {
     //TODO replace with login logic
@@ -67,6 +68,12 @@ class LoginScreen extends StatelessWidget {
             icon: FontAwesomeIcons.linkedin,
             callback: () async {
               // TODO implement linkedin login
+              return Future.delayed(loginTime);
+            }),
+        LoginProvider(
+            icon: FontAwesomeIcons.apple,
+            callback: () async {
+              // TODO implement apple login
               return Future.delayed(loginTime);
             }),
       ],
@@ -178,16 +185,19 @@ class LoginScreen extends StatelessWidget {
         print('Login info');
         print('Name: ${loginData.name}');
         print('Password: ${loginData.password}');
-        return _loginUser(loginData);
+
+        return ListAppAuthenticator.instance
+            .loginViaEmailPassword(loginData.name, loginData.password);
       },
       onSignup: (loginData) {
         print('Signup info');
         print('Name: ${loginData.name}');
         print('Password: ${loginData.password}');
-        return _loginUser(loginData);
+        return ListAppAuthenticator.instance
+            .signupWithEmailAndPassword(loginData.name, loginData.password);
       },
       onSubmitAnimationCompleted: () {
-        print('homepage from onSubmitAnimation');
+        print("Login successful");
         Navigator.of(context).pushReplacement(FadePageRoute(
           builder: (context) => ListHomePage(),
         ));
@@ -195,7 +205,7 @@ class LoginScreen extends StatelessWidget {
       onRecoverPassword: (name) {
         print('Recover password info');
         print('Name: $name');
-        return _recoverPassword(name);
+        // return _recoverPassword(name);
         // TODO Show new password dialog
       },
       showDebugButtons: true, //TODO remove when no longer needed

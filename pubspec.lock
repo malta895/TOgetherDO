@@ -145,7 +145,7 @@ packages:
       path: "."
       ref: "3837c68491fa9d6ff5dd68ef74774d8011fdd91c"
       resolved-ref: "3837c68491fa9d6ff5dd68ef74774d8011fdd91c"
-      url: "https://github.com/NearHuscarl/flutter_login"
+      url: "https://github.com/malta895/flutter_login"
     source: git
     version: "2.0.0-nullsafety.0"
   flutter_test:

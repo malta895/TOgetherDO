@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile_applications/services/authentication.dart';
+import 'package:mobile_applications/ui/home_lists.dart';
 import 'package:mobile_applications/ui/login/login_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile_applications/ui/theme.dart';
@@ -54,7 +56,7 @@ class MyApp extends StatelessWidget {
         future: _initialization,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            // TODO replace with something better, maybe create a common error/waiting widget and populate with the according message
+            // FIXME create a proper error page
             return Text(
                 "An error has occurred while connecting to the server.");
           }
@@ -74,12 +76,13 @@ class MaterialAppWithTheme extends StatelessWidget {
     final theme = Provider.of<ThemeChanger>(context);
 
     return MaterialApp(
-      initialRoute: LoginScreen.routeName, //the LoginScreen is always seen as first when we open the app
-      theme: theme.getTheme(),
-      routes: {
-        LoginScreen.routeName: (context) => LoginScreen(),
-        
-      }
-    );
+        initialRoute: ListAppAuthenticator.instance.isSomeoneLoggedIn()
+            ? ListHomePage.routeName
+            : LoginScreen.routeName,
+        theme: theme.getTheme(),
+        routes: {
+          LoginScreen.routeName: (context) => LoginScreen(),
+          ListHomePage.routeName: (context) => ListHomePage()
+        });
   }
 }

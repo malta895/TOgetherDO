@@ -260,8 +260,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePage extends State<ProfilePage> {
   final String title = 'My profile';
-  // TODO modify this because in the drawer there isn't a destination for the profile
-  int _selectedDestination = 4;
+  final int drawerSelectedDestination = 0;
 
   //TODO fetch actual data from backend
   //TODO implement password
@@ -359,15 +358,7 @@ class _ProfilePage extends State<ProfilePage> {
         appBar: AppBar(
             // leading: Icon(Icons.menu), // not needed, automatically added by Drawer
             title: Text(title)),
-        drawer: appDrawer(_selectedDestination, selectDestination, context),
+        drawer: ListAppDrawer(),
         body: _buildProfile(context));
-  }
-
-  void selectDestination(int index, route) {
-    // Changes the state of the navigation drawer
-    setState(() {
-      _selectedDestination = index;
-      Navigator.push(context, route);
-    });
   }
 }

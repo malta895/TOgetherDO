@@ -13,8 +13,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPage extends State<SettingsPage> {
   final String title = 'Settings';
-  // the current destination selected in the Drawer
-  int _selectedDestination = 1;
+  final int _drawerSelectedDestination = 1;
   bool _darkMode = false;
 
   ThemeData _darkTheme = ThemeData(
@@ -64,7 +63,7 @@ class _SettingsPage extends State<SettingsPage> {
       appBar: AppBar(
         title: Text(title),
       ),
-      drawer: appDrawer(_selectedDestination, selectDestination, context),
+      drawer: ListAppDrawer(),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
@@ -98,7 +97,7 @@ class _SettingsPage extends State<SettingsPage> {
         appBar: AppBar(
             // leading: Icon(Icons.menu), // not needed, automatically added by Drawer
             title: Text(title)),
-        drawer: a_drawer(_selectedDestination, selectDestination, context),
+        drawer: ListAppDrawer(),
         body: Padding(
             padding: EdgeInsets.only(top: 20.0),
             child: SettingsList(
@@ -124,11 +123,5 @@ class _SettingsPage extends State<SettingsPage> {
             )));
   } */
 
-  void selectDestination(int index, route) {
-    // Changes the state of the navigation drawer
-    setState(() {
-      _selectedDestination = index;
-      Navigator.push(context, route);
-    });
-  }
+
 }

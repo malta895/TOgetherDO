@@ -13,7 +13,7 @@ class FriendsList extends StatefulWidget {
 class _FriendsList extends State<FriendsList> {
   final String title = 'Friends';
   // the current destination selected in the Drawer
-  int _selectedDestination = 2;
+  final int _drawerSelectedDestination = 2;
 
   //TODO fetch actual data from backend
 
@@ -65,7 +65,7 @@ class _FriendsList extends State<FriendsList> {
             Icon(Icons.search),
           ],
         ),
-        drawer: appDrawer(_selectedDestination, selectDestination, context),
+        drawer: ListAppDrawer(),
         body: _buildListItems(context),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => {
@@ -79,11 +79,4 @@ class _FriendsList extends State<FriendsList> {
         ));
   }
 
-  void selectDestination(int index, route) {
-    // Changes the state of the navigation drawer
-    setState(() {
-      _selectedDestination = index;
-      Navigator.push(context, route);
-    });
-  }
 }

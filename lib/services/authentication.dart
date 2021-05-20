@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
+///A wrapper of FirebaseAuth, that provides a better interface to the login ui
+///It is a Singleton, get it with [ListAppAuth.instance]
 class ListAppAuthenticator {
   // This class is a singleton
   ListAppAuthenticator._privateConstructor();
@@ -11,13 +13,13 @@ class ListAppAuthenticator {
 
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  // returns the current logged in user, null if no one is loggedIn
-  User? loggedInUser() {
+  /// returns the current logged in user, null if no one is loggedIn
+  User? get loggedInUser {
     return _firebaseAuth.currentUser;
   }
 
   bool isSomeoneLoggedIn() {
-    return loggedInUser() != null;
+    return loggedInUser != null;
   }
 
   Future<void> logout() async {

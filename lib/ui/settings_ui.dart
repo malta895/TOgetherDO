@@ -16,7 +16,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Settings UI')),
-      drawer: appDrawer(_selectedDestination, selectDestination, context),
+      drawer: ListAppDrawer(),
       body: SettingsList(
         sections: [
           SettingsSection(
@@ -77,11 +77,4 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void selectDestination(int index, route) {
-    // Changes the state of the navigation drawer
-    setState(() {
-      _selectedDestination = index;
-      Navigator.push(context, route);
-    });
-  }
 }

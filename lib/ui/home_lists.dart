@@ -18,7 +18,7 @@ class _ListHomePage extends State<ListHomePage> {
   final String title = 'ListApp';
 
   // the current destination selected in the Drawer
-  int _selectedDestination = 0;
+  static final int _drawerSelectedDestination = 0;
 
   //TODO fetch actual data from backend
   final List<AList> _aLists = [
@@ -72,7 +72,7 @@ class _ListHomePage extends State<ListHomePage> {
             Icon(Icons.search),
           ],
         ),
-        drawer: appDrawer(_selectedDestination, selectDestination, context),
+        drawer: ListAppDrawer(),
         body: _buildListItems(context),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => {
@@ -86,21 +86,5 @@ class _ListHomePage extends State<ListHomePage> {
         ));
   }
 
-  void selectDestination(
-      {required int index,
-      route,
-      String? routeName,
-      bool pushReplacement = false}) {
-    // Changes the state of the navigation drawer
-    setState(() {
-      _selectedDestination = index;
-      if (pushReplacement) {
-        if (route != null) Navigator.pushReplacement(context, route);
-        if (routeName != null)
-          Navigator.pushReplacementNamed(context, routeName);
-      } else {
-        Navigator.push(context, route);
-      }
-    });
-  }
+
 }

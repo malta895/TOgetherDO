@@ -65,7 +65,6 @@ class _ListHomePage extends State<ListHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          // leading: Icon(Icons.menu), // not needed, automatically added by Drawer
           title: Text(title),
           actions: [
             Icon(Icons.search),

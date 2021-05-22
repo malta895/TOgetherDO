@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/ui/app_drawer.dart';
 import 'package:mobile_applications/ui/friends.dart';
@@ -31,14 +30,15 @@ Future<void> main() async {
 
 class ListApp extends StatelessWidget {
   /// Use MultiProvider once to add every provider we need to have in our app
-  MultiProvider _appWithProviders() {
+  MultiProvider _appWithProviders(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<ThemeChanger>(
           create: (_) => ThemeChanger(ThemeChanger.lightTheme),
         ),
         ChangeNotifierProvider<ListAppDrawerStateInfo>(
-            create: (_) => ListAppDrawerStateInfo()),
+          create: (_) => ListAppDrawerStateInfo(),
+        ),
         Provider<ListAppAuthProvider>(
             create: (_) => ListAppAuthProvider(FirebaseAuth.instance)),
         StreamProvider(
@@ -53,7 +53,7 @@ class ListApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _appWithProviders();
+    return _appWithProviders(context);
   }
 }
 

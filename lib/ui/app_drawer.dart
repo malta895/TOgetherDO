@@ -9,13 +9,21 @@ import 'package:mobile_applications/ui/settings_ui.dart';
 import 'package:provider/provider.dart';
 
 class ListAppDrawerStateInfo with ChangeNotifier {
-  int _currentDrawerIndex = 0;
+  static final Map<String, int> destinationsRouteNamesAndIndexes = {
+    ListHomePage.routeName: 0,
+    SettingsScreen.routeName: 1,
+    FriendsPage.routeName: 2,
+  };
+  int? _currentDrawerIndex;
 
-  int get currentDrawerIndex => _currentDrawerIndex;
+  ListAppDrawerStateInfo() {
+    _currentDrawerIndex = 0;
+    notifyListeners();
+  }
 
-  set currentDrawerIndex(int drawerIndex) {
-    print(_currentDrawerIndex);
-    print(drawerIndex);
+  int? get currentDrawerIndex => _currentDrawerIndex;
+
+  set currentDrawerIndex(int? drawerIndex) {
     _currentDrawerIndex = drawerIndex;
     notifyListeners();
   }
@@ -29,50 +37,30 @@ class ListAppDrawer extends StatelessWidget {
     ListHomePage.routeName: 0,
     SettingsScreen.routeName: 1,
     FriendsPage.routeName: 2,
-    LoginScreen.routeName: 3
   };
-
-  /// helper function to change the state and the current page when selecting a new destination in the drawer
-  void _selectDestination(
-      {required int index,
-      required BuildContext context,
-      required String destinationRouteName,
-      bool pushReplacement = false}) {
-    Navigator.of(context).pop();
-
-    Provider.of<ListAppDrawerStateInfo>(context, listen: false)
-        .currentDrawerIndex = index;
-
-    if (_currentRouteName == destinationRouteName) return;
-
-    if (pushReplacement) {
-      Navigator.pushReplacementNamed(context, destinationRouteName);
-    } else {
-      Navigator.pushNamed(context, destinationRouteName);
-    }
-  }
 
   ListTile _generateMenuItem(
       {required Icon icon,
       required BuildContext context,
       required String title,
+      required int? currentDrawerIndex,
       required String destinationRouteName,
       bool pushReplacement = false,
-      void Function()? callback}) {
+      void Function()? onTap}) {
     return ListTile(
         leading: icon,
         title: Text(title),
-        selected: Provider.of<ListAppDrawerStateInfo>(context, listen: false)
-                .currentDrawerIndex ==
-            _destinationsRouteNamesAndIndexes[_currentRouteName],
+        selected: _destinationsRouteNamesAndIndexes[destinationRouteName]
+                ?.compareTo(currentDrawerIndex ?? -1) ==
+            0,
         onTap: () {
-          callback?.call();
+          onTap?.call();
 
           Navigator.of(context).pop();
 
           Provider.of<ListAppDrawerStateInfo>(context, listen: false)
                   .currentDrawerIndex =
-              _destinationsRouteNamesAndIndexes[destinationRouteName]!;
+              _destinationsRouteNamesAndIndexes[destinationRouteName];
 
           if (_currentRouteName == destinationRouteName) return;
 
@@ -86,8 +74,10 @@ class ListAppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int currentDrawerIndex =
+    int? currentDrawerIndex =
         Provider.of<ListAppDrawerStateInfo>(context).currentDrawerIndex;
+
+    print("build " + currentDrawerIndex.toString());
 
     return Drawer(
       child: ListView(
@@ -141,18 +131,21 @@ class ListAppDrawer extends StatelessWidget {
           _generateMenuItem(
             icon: Icon(Icons.list),
             context: context,
+            currentDrawerIndex: currentDrawerIndex,
             title: "My Lists",
             destinationRouteName: ListHomePage.routeName,
           ),
           _generateMenuItem(
             icon: Icon(Icons.settings),
             context: context,
+            currentDrawerIndex: currentDrawerIndex,
             title: "Settings",
             destinationRouteName: SettingsScreen.routeName,
           ),
           _generateMenuItem(
             icon: Icon(Icons.people),
             context: context,
+            currentDrawerIndex: currentDrawerIndex,
             title: "Friends",
             destinationRouteName: FriendsPage.routeName,
           ),
@@ -160,9 +153,10 @@ class ListAppDrawer extends StatelessWidget {
               icon: Icon(Icons.logout),
               context: context,
               title: "Logout",
+              currentDrawerIndex: currentDrawerIndex,
               destinationRouteName: LoginScreen.routeName,
               pushReplacement: true,
-              callback: () => context.read<ListAppAuthProvider>().logout()),
+              onTap: () => context.read<ListAppAuthProvider>().logout()),
         ],
       ),
     );

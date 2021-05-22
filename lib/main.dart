@@ -67,8 +67,8 @@ class MaterialAppWithTheme extends StatelessWidget {
 
     return MaterialApp(
         initialRoute: firebaseUser == null
-            ? ListHomePage.routeName
-            : LoginScreen.routeName,
+            ? LoginScreen.routeName
+            : ListHomePage.routeName,
         theme: themeChanger.currentTheme,
         routes: {
           LoginScreen.routeName: (context) => LoginScreen(),

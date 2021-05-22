@@ -74,8 +74,6 @@ class ListAppNavDrawer extends StatelessWidget {
         Provider.of<ListAppNavDrawerStateInfo>(context).currentDrawerIndex ??
             _destinationsRouteNamesAndIndexes[_currentRouteName];
 
-    print("build " + currentDrawerIndex.toString());
-
     return Drawer(
       child: ListView(
         children: <Widget>[

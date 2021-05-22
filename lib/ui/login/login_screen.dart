@@ -154,11 +154,11 @@ class LoginScreen extends StatelessWidget {
       //   ),
       // ),
       userValidator: (email) {
-        if (EmailValidator.validate(email!)) return null;
+        if (email != null && EmailValidator.validate(email)) return null;
         return "Please insert a valid email address";
       },
       passwordValidator: (password) {
-        if (password!.isEmpty) {
+        if (password?.isEmpty ?? false) {
           return 'Password is empty';
         }
         return null;

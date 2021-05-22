@@ -85,7 +85,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                   // otherwise.
                   if (_formKey.currentState?.validate() == true) {
                     // If the form is valid, display a Snackbar.
-                    Scaffold.of(context).showSnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Processing Data')));
                   }
                 },
@@ -187,12 +187,12 @@ class _DropdownMenuState extends State<DropdownMenu> {
                             color: Colors.black,
                             fontSize: 16.0,
                           ))),
-                  FlatButton(
+                  TextButton(
                     child: Icon(
                       Icons.remove,
                       color: Colors.black,
                     ),
-                    minWidth: 5.0,
+                    // minWidth: 5.0,
                     onPressed: decrementCounter,
                   ),
                   Container(

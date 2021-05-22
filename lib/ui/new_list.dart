@@ -115,7 +115,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                   // otherwise.
                   if (_formKey.currentState?.validate() == true) {
                     // If the form is valid, display a Snackbar.
-                    Scaffold.of(context).showSnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Processing Data')));
                   }
                 },

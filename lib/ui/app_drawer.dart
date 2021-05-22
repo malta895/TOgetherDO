@@ -14,12 +14,8 @@ class ListAppDrawerStateInfo with ChangeNotifier {
     SettingsScreen.routeName: 1,
     FriendsPage.routeName: 2,
   };
-  int? _currentDrawerIndex;
 
-  ListAppDrawerStateInfo() {
-    _currentDrawerIndex = 0;
-    notifyListeners();
-  }
+  int? _currentDrawerIndex = 0;
 
   int? get currentDrawerIndex => _currentDrawerIndex;
 
@@ -75,7 +71,8 @@ class ListAppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     int? currentDrawerIndex =
-        Provider.of<ListAppDrawerStateInfo>(context).currentDrawerIndex;
+        Provider.of<ListAppDrawerStateInfo>(context).currentDrawerIndex ??
+            _destinationsRouteNamesAndIndexes[_currentRouteName];
 
     print("build " + currentDrawerIndex.toString());
 

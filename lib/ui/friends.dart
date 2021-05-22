@@ -30,7 +30,7 @@ class _FriendsList extends State<FriendsList> {
     return ListView.builder(
       itemCount: _user.friendships.length,
       itemBuilder: (context, i) {
-        return _buildRow(context, _user.friendships[i].user);
+        return _buildRow(context, _user.friendships.elementAt(i).user);
       },
     );
   }
@@ -45,12 +45,12 @@ class _FriendsList extends State<FriendsList> {
         ))),
         child: ListTile(
           title: Text(
-            friend.getFullName(),
+            friend.fullName,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: Text(friend.email),
           onTap: () {
-            print(friend.getFullName());
+            print(friend.fullName);
           },
         ));
   }

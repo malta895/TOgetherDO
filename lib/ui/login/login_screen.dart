@@ -8,6 +8,7 @@ import '../home_lists.dart';
 import 'custom_route.dart';
 import 'package:email_validator/email_validator.dart';
 import 'users.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
   static const routeName = '/auth';
@@ -186,14 +187,14 @@ class LoginScreen extends StatelessWidget {
         print('Name: ${loginData.name}');
         print('Password: ${loginData.password}');
 
-        return ListAppAuth.instance
+        return context.read<ListAppAuthProvider>()
             .loginViaEmailPassword(loginData.name, loginData.password);
       },
       onSignup: (loginData) {
         print('Signup info');
         print('Name: ${loginData.name}');
         print('Password: ${loginData.password}');
-        return ListAppAuth.instance
+        return context.read<ListAppAuthProvider>()
             .signupWithEmailAndPassword(loginData.name, loginData.password);
       },
       onSubmitAnimationCompleted: () {

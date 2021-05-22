@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_applications/services/authentication.dart';
@@ -8,7 +9,7 @@ import 'package:mobile_applications/ui/theme.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+Future<void> main() async {
   // NOTE this stuff comes from login example, not sure if it is needed
   // SystemChrome.setSystemUIOverlayStyle(
   //     SystemUiOverlayStyle(
@@ -18,13 +19,12 @@ void main() {
   // );
   WidgetsFlutterBinding.ensureInitialized();
 
+  await Firebase.initializeApp();
+
   runApp(ListApp());
 }
 
 class ListApp extends StatelessWidget {
-  // initialize Firebase application
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-
   final ThemeData _darkTheme = ThemeData(
       brightness: Brightness.dark,
       primaryColor: Colors.cyan[700],
@@ -48,6 +48,13 @@ class ListApp extends StatelessWidget {
         ChangeNotifierProvider<ThemeChanger>(
           create: (_) => ThemeChanger(_lightTheme),
         ),
+        Provider<ListAppAuthProvider>(
+            create: (_) => ListAppAuthProvider(FirebaseAuth.instance)),
+        StreamProvider(
+          create: (context) => context.read<ListAppAuthProvider>().authState,
+          //initially no user is logged in
+          initialData: null,
+        )
       ],
       child: MaterialAppWithTheme(),
     );
@@ -55,22 +62,7 @@ class ListApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        // Initialize Flutter Fire (firebase)
-        future: _initialization,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            // FIXME create a proper error page
-            return Text(
-                "An error has occurred while connecting to the server.");
-          }
-
-          if (snapshot.connectionState == ConnectionState.done) {
-            return _appWithProviders();
-          }
-
-          return Text("loading"); //TODO replace with something better
-        });
+    return _appWithProviders();
   }
 }
 
@@ -79,8 +71,11 @@ class MaterialAppWithTheme extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeChanger>(context);
 
+    /// The User instance watched from firebase
+    final firebaseUser = context.watch<User?>();
+
     return MaterialApp(
-        initialRoute: ListAppAuth.instance.isSomeoneLoggedIn()
+        initialRoute: firebaseUser == null
             ? ListHomePage.routeName
             : LoginScreen.routeName,
         theme: theme.getTheme(),

@@ -6,6 +6,7 @@ import 'package:mobile_applications/ui/home_lists.dart';
 import 'package:mobile_applications/ui/login/login_screen.dart';
 import 'package:mobile_applications/ui/profile.dart';
 import 'package:mobile_applications/ui/settings_ui.dart';
+import 'package:provider/provider.dart';
 
 class ListAppDrawer extends StatefulWidget {
   @override
@@ -114,7 +115,7 @@ class _ListAppDrawer extends State<ListAppDrawer> {
               title: Text('Logout'),
               selected: _selectedDestination == 2,
               onTap: () {
-                ListAppAuth.instance.logout();
+                context.read<ListAppAuthProvider>().logout();
                 selectDestination(
                   index: 3,
                   routeName: LoginScreen.routeName,

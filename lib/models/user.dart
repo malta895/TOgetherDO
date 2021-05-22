@@ -1,29 +1,35 @@
+import 'dart:collection';
+
+/// An user of the application
 class User {
-  // an user of the application
+  String _firstName;
+  String _lastName;
+  final String _email;
+  final String _username;
 
-  String firstName;
-  String lastName;
-  final String email;
-  final String
-      username; // will be the same as email, left here because is required by backend at login
+  Set<Friendship> _friendships = {};
 
-  List<Friendship> friendships = [];
+  User(this._firstName, this._lastName, this._email, this._username);
 
-  User(this.firstName, this.lastName, this.email, this.username);
+  String get fullName => _firstName + ' ' + _lastName;
+  String get firstName => _firstName;
+  String get email => _email;
+  String get username => _username;
 
-  String getFullName() {
-    return firstName + ' ' + lastName;
-  }
+  UnmodifiableSetView<Friendship> get friendships =>
+      UnmodifiableSetView(_friendships);
 
-  void addFriendship(Friendship friendship) {
-    friendships.add(friendship);
-  }
+  bool addFriendship(Friendship friendship) => _friendships.add(friendship);
 }
 
+/// It represents the friendship among more users
 class Friendship {
-  final User user;
+  final User _user;
 
-  final bool accepted;
+  final bool _accepted;
 
-  Friendship(this.user, this.accepted);
+  User get user => _user;
+  bool get accepted => _accepted;
+
+  Friendship(this._user, this._accepted);
 }

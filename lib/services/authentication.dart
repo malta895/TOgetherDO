@@ -1,29 +1,24 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 ///A wrapper of FirebaseAuth, that provides a better interface to the login ui
-///It is a Singleton, get it with [ListAppAuth.instance]
-class ListAppAuth {
-  // This class is a singleton
-  ListAppAuth._privateConstructor();
+///It is a Singleton, get it with [ListAppAuthProvider.instance]
+class ListAppAuthProvider {
+  ListAppAuthProvider(this.firebaseAuth);
 
-  static final ListAppAuth _instance =
-      ListAppAuth._privateConstructor();
-
-  static ListAppAuth get instance => _instance;
-
-  FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseAuth firebaseAuth;
 
   /// returns the current logged in user, null if no one is loggedIn
   User? get loggedInUser {
-    return _firebaseAuth.currentUser;
+    return firebaseAuth.currentUser;
   }
 
-  bool isSomeoneLoggedIn() {
-    return loggedInUser != null;
-  }
+  Stream<User?> get authState => firebaseAuth.idTokenChanges();
+
+  Future<bool> isSomeoneLoggedIn() => authState.isEmpty;
 
   Future<void> logout() async {
-    await _firebaseAuth.signOut();
+    await firebaseAuth.signOut();
   }
 
   //every method returns null when successfull
@@ -31,7 +26,7 @@ class ListAppAuth {
   Future<String?>? signupWithEmailAndPassword(
       String email, String password) async {
     try {
-      UserCredential userCredential = await _firebaseAuth
+      UserCredential userCredential = await firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
 
       return null;
@@ -56,7 +51,7 @@ class ListAppAuth {
 
   Future<String?>? loginViaEmailPassword(String email, String password) async {
     try {
-      UserCredential userCredential = await _firebaseAuth
+      UserCredential userCredential = await firebaseAuth
           .signInWithEmailAndPassword(email: email, password: password);
 
       return null;

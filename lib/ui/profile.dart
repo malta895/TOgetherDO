@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/ui/app_drawer.dart';
+import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -18,13 +19,13 @@ class _ProfilePage extends State<ProfilePage> {
   //TODO fetch actual data from backend
   //TODO implement password
 
-  final _currentUser = ListAppAuth.instance.loggedInUser;
 
 
   Widget _buildProfile(BuildContext context) {
+      final _currentUser = context.read<ListAppAuthProvider>().loggedInUser;
     List<Tuple2<String, String>> _elements = [
-      Tuple2('Name', _currentUser!.displayName ?? ''),
-      Tuple2('Email', _currentUser!.email ?? ''),
+      Tuple2('Name', _currentUser?.displayName ?? ''),
+      Tuple2('Email', _currentUser?.email ?? ''),
       // Tuple2('Username', _currentUser!.displayName)
     ];
     return Container(

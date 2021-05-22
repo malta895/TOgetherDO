@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import 'package:mobile_applications/ui/app_drawer.dart';
+import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/new_list.dart';
 import 'package:mobile_applications/models/user.dart';
 
@@ -64,7 +64,7 @@ class _FriendsList extends State<FriendsPage> {
             Icon(Icons.search),
           ],
         ),
-        drawer: ListAppDrawer(FriendsPage.routeName),
+        drawer: ListAppNavDrawer(FriendsPage.routeName),
         body: _buildListItems(context),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => {

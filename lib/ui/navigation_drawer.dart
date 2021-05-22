@@ -8,7 +8,7 @@ import 'package:mobile_applications/ui/profile.dart';
 import 'package:mobile_applications/ui/settings_ui.dart';
 import 'package:provider/provider.dart';
 
-class ListAppDrawerStateInfo with ChangeNotifier {
+class ListAppNavDrawerStateInfo with ChangeNotifier {
   static final Map<String, int> destinationsRouteNamesAndIndexes = {
     ListHomePage.routeName: 0,
     SettingsScreen.routeName: 1,
@@ -25,9 +25,9 @@ class ListAppDrawerStateInfo with ChangeNotifier {
   }
 }
 
-class ListAppDrawer extends StatelessWidget {
+class ListAppNavDrawer extends StatelessWidget {
   final String _currentRouteName;
-  ListAppDrawer(this._currentRouteName);
+  ListAppNavDrawer(this._currentRouteName);
 
   final Map<String, int> _destinationsRouteNamesAndIndexes = {
     ListHomePage.routeName: 0,
@@ -54,7 +54,7 @@ class ListAppDrawer extends StatelessWidget {
 
           Navigator.of(context).pop();
 
-          Provider.of<ListAppDrawerStateInfo>(context, listen: false)
+          Provider.of<ListAppNavDrawerStateInfo>(context, listen: false)
                   .currentDrawerIndex =
               _destinationsRouteNamesAndIndexes[destinationRouteName];
 
@@ -71,7 +71,7 @@ class ListAppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     int? currentDrawerIndex =
-        Provider.of<ListAppDrawerStateInfo>(context).currentDrawerIndex ??
+        Provider.of<ListAppNavDrawerStateInfo>(context).currentDrawerIndex ??
             _destinationsRouteNamesAndIndexes[_currentRouteName];
 
     print("build " + currentDrawerIndex.toString());

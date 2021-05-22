@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
-import 'package:mobile_applications/ui/app_drawer.dart';
+import 'package:mobile_applications/ui/navigation_drawer.dart';
 
 class SettingsScreen extends StatefulWidget {
   static final String routeName = "/settings_ui";
@@ -15,7 +15,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Settings UI')),
-      drawer: ListAppDrawer(SettingsScreen.routeName),
+      drawer: ListAppNavDrawer(SettingsScreen.routeName),
       body: SettingsList(
         sections: [
           SettingsSection(

@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_applications/services/authentication.dart';
-import 'package:mobile_applications/ui/app_drawer.dart';
+import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/friends.dart';
 import 'package:mobile_applications/ui/home_lists.dart';
 
@@ -36,8 +36,8 @@ class ListApp extends StatelessWidget {
         ChangeNotifierProvider<ThemeChanger>(
           create: (_) => ThemeChanger(ThemeChanger.lightTheme),
         ),
-        ChangeNotifierProvider<ListAppDrawerStateInfo>(
-          create: (_) => ListAppDrawerStateInfo(),
+        ChangeNotifierProvider<ListAppNavDrawerStateInfo>(
+          create: (_) => ListAppNavDrawerStateInfo(),
         ),
         Provider<ListAppAuthProvider>(
             create: (_) => ListAppAuthProvider(FirebaseAuth.instance)),

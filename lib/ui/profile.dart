@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/services/authentication.dart';
-import 'package:mobile_applications/ui/app_drawer.dart';
+import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 
@@ -109,7 +109,7 @@ class _ProfilePage extends State<ProfilePage> {
         appBar: AppBar(
             // leading: Icon(Icons.menu), // not needed, automatically added by Drawer
             title: Text(title)),
-        drawer: ListAppDrawer(ProfilePage.routeName),
+        drawer: ListAppNavDrawer(ProfilePage.routeName),
         body: _buildProfile(context));
   }
 }

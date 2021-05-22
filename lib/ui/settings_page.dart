@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
-import 'app_drawer.dart';
+import 'navigation_drawer.dart';
 import 'theme.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -46,7 +46,7 @@ class _SettingsPage extends State<SettingsPage> {
       appBar: AppBar(
         title: Text(title),
       ),
-      drawer: ListAppDrawer(SettingsPage.routeName),
+      drawer: ListAppNavDrawer(SettingsPage.routeName),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[

@@ -18,11 +18,10 @@ void main() {
   // );
   WidgetsFlutterBinding.ensureInitialized();
 
-  // TODO conditionally show login page or home lists page, if the user is logged in or not
-  runApp(MyApp());
+  runApp(ListApp());
 }
 
-class MyApp extends StatelessWidget {
+class ListApp extends StatelessWidget {
   // initialize Firebase application
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
@@ -42,9 +41,14 @@ class MyApp extends StatelessWidget {
         centerTitle: true,
       ));
 
-  ChangeNotifierProvider<ThemeChanger> _appWithThemeBuilder() {
-    return ChangeNotifierProvider<ThemeChanger>(
-      create: (_) => ThemeChanger(_lightTheme),
+  /// Use MultiProvider once to add every provider we need to have in our app
+  MultiProvider _appWithProviders() {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ThemeChanger>(
+          create: (_) => ThemeChanger(_lightTheme),
+        ),
+      ],
       child: MaterialAppWithTheme(),
     );
   }
@@ -62,7 +66,7 @@ class MyApp extends StatelessWidget {
           }
 
           if (snapshot.connectionState == ConnectionState.done) {
-            return _appWithThemeBuilder();
+            return _appWithProviders();
           }
 
           return Text("loading"); //TODO replace with something better

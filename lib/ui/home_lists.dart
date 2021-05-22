@@ -85,6 +85,4 @@ class _ListHomePage extends State<ListHomePage> {
           label: Text('NEW LIST'),
         ));
   }
-
-
 }

@@ -78,5 +78,4 @@ class _FriendsList extends State<FriendsList> {
           label: Text('NEW LIST'),
         ));
   }
-
 }

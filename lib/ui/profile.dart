@@ -19,10 +19,8 @@ class _ProfilePage extends State<ProfilePage> {
   //TODO fetch actual data from backend
   //TODO implement password
 
-
-
   Widget _buildProfile(BuildContext context) {
-      final _currentUser = context.read<ListAppAuthProvider>().loggedInUser;
+    final _currentUser = context.read<ListAppAuthProvider>().loggedInUser;
     List<Tuple2<String, String>> _elements = [
       Tuple2('Name', _currentUser?.displayName ?? ''),
       Tuple2('Email', _currentUser?.email ?? ''),

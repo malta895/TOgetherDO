@@ -128,6 +128,3 @@ class _ListAppDrawer extends State<ListAppDrawer> {
     );
   }
 }
-
-/// returns the drawer of the app, visible as menu on the left side
-// Drawer appDrawer(_selectedDestination, selectDestination, context) {}

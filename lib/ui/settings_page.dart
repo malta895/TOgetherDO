@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mobile_applications/ui/mixins/stateful_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
@@ -7,30 +8,13 @@ import 'app_drawer.dart';
 import 'theme.dart';
 
 class SettingsPage extends StatefulWidget {
-  @override
+  static final String routeName = "/settings";
   _SettingsPage createState() => _SettingsPage();
 }
 
 class _SettingsPage extends State<SettingsPage> {
   final String title = 'Settings';
-  final int _drawerSelectedDestination = 1;
   bool _darkMode = false;
-
-  ThemeData _darkTheme = ThemeData(
-      brightness: Brightness.dark,
-      primaryColor: Colors.cyan[700],
-      accentColor: Colors.pinkAccent,
-      appBarTheme: AppBarTheme(
-        centerTitle: true,
-      ));
-
-  ThemeData _lightTheme = ThemeData(
-      primaryColor: Colors.cyan[700],
-      accentColor: Colors.pinkAccent[700],
-      brightness: Brightness.light,
-      appBarTheme: AppBarTheme(
-        centerTitle: true,
-      ));
 
   @override
   void initState() {
@@ -79,9 +63,9 @@ class _SettingsPage extends State<SettingsPage> {
                 value: _darkMode,
                 onChanged: (bool value) {
                   if (value) {
-                    _themeChanger.setTheme(_darkTheme);
+                    _themeChanger.currentTheme = ThemeChanger.darkTheme;
                   } else {
-                    _themeChanger.setTheme(_lightTheme);
+                    _themeChanger.currentTheme = ThemeChanger.darkTheme;
                   }
                   _setDarkMode();
                 },

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/ui/home_lists.dart';
+
 import 'package:mobile_applications/ui/login/login_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile_applications/ui/theme.dart';
@@ -25,28 +26,13 @@ Future<void> main() async {
 }
 
 class ListApp extends StatelessWidget {
-  final ThemeData _darkTheme = ThemeData(
-      brightness: Brightness.dark,
-      primaryColor: Colors.cyan[700],
-      accentColor: Colors.pinkAccent,
-      appBarTheme: AppBarTheme(
-        centerTitle: true,
-      ));
-
-  final ThemeData _lightTheme = ThemeData(
-      primaryColor: Colors.cyan[700],
-      accentColor: Colors.pinkAccent[700],
-      brightness: Brightness.light,
-      appBarTheme: AppBarTheme(
-        centerTitle: true,
-      ));
 
   /// Use MultiProvider once to add every provider we need to have in our app
   MultiProvider _appWithProviders() {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<ThemeChanger>(
-          create: (_) => ThemeChanger(_lightTheme),
+          create: (_) => ThemeChanger(ThemeChanger.lightTheme),
         ),
         Provider<ListAppAuthProvider>(
             create: (_) => ListAppAuthProvider(FirebaseAuth.instance)),
@@ -69,7 +55,7 @@ class ListApp extends StatelessWidget {
 class MaterialAppWithTheme extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeChanger>(context);
+    final themeChanger = Provider.of<ThemeChanger>(context);
 
     /// The User instance watched from firebase
     final firebaseUser = context.watch<User?>();
@@ -78,7 +64,7 @@ class MaterialAppWithTheme extends StatelessWidget {
         initialRoute: firebaseUser == null
             ? ListHomePage.routeName
             : LoginScreen.routeName,
-        theme: theme.getTheme(),
+        theme: themeChanger.currentTheme,
         routes: {
           LoginScreen.routeName: (context) => LoginScreen(),
           ListHomePage.routeName: (context) => ListHomePage()

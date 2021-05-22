@@ -10,15 +10,14 @@ import 'package:mobile_applications/models/alist.dart';
 
 class ListHomePage extends StatefulWidget {
   static final String routeName = "/home";
+  static final String humanReadableName = "My Lists";
+
   @override
   _ListHomePage createState() => _ListHomePage();
 }
 
 class _ListHomePage extends State<ListHomePage> {
   final String title = 'ListApp';
-
-  // the current destination selected in the Drawer
-  static final int _drawerSelectedDestination = 0;
 
   //TODO fetch actual data from backend
   final List<AList> _aLists = [
@@ -72,7 +71,7 @@ class _ListHomePage extends State<ListHomePage> {
             Icon(Icons.search),
           ],
         ),
-        drawer: ListAppDrawer(),
+        drawer: ListAppDrawer(ListHomePage.routeName),
         body: _buildListItems(context),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => {

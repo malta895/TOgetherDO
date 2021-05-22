@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 
 class ProfilePage extends StatefulWidget {
+  static final String routeName = "/profile";
+
   @override
   _ProfilePage createState() => _ProfilePage();
 }
@@ -107,7 +109,7 @@ class _ProfilePage extends State<ProfilePage> {
         appBar: AppBar(
             // leading: Icon(Icons.menu), // not needed, automatically added by Drawer
             title: Text(title)),
-        drawer: ListAppDrawer(),
+        drawer: ListAppDrawer(ProfilePage.routeName),
         body: _buildProfile(context));
   }
 }

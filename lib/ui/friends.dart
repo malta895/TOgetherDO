@@ -5,18 +5,17 @@ import 'package:mobile_applications/ui/app_drawer.dart';
 import 'package:mobile_applications/ui/new_list.dart';
 import 'package:mobile_applications/models/user.dart';
 
-class FriendsList extends StatefulWidget {
+class FriendsPage extends StatefulWidget {
+  static final String routeName = "/friends";
+
   @override
   _FriendsList createState() => _FriendsList();
 }
 
-class _FriendsList extends State<FriendsList> {
+class _FriendsList extends State<FriendsPage> {
   final String title = 'Friends';
-  // the current destination selected in the Drawer
-  final int _drawerSelectedDestination = 2;
 
   //TODO fetch actual data from backend
-
   final User _user =
       User("Luca", "Maltagliati", "luca.malta@mail.com", "malta");
 
@@ -65,7 +64,7 @@ class _FriendsList extends State<FriendsList> {
             Icon(Icons.search),
           ],
         ),
-        drawer: ListAppDrawer(),
+        drawer: ListAppDrawer(FriendsPage.routeName),
         body: _buildListItems(context),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => {

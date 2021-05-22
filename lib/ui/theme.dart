@@ -23,7 +23,7 @@ class ThemeChanger with ChangeNotifier {
 
   ThemeData get currentTheme => _currentTheme;
 
-  set currentTheme(ThemeData theme){
+  set currentTheme(ThemeData theme) {
     _currentTheme = theme;
     notifyListeners();
   }

@@ -3,6 +3,7 @@ import 'package:settings_ui/settings_ui.dart';
 import 'package:mobile_applications/ui/app_drawer.dart';
 
 class SettingsScreen extends StatefulWidget {
+  static final String routeName = "/settings_ui";
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }
@@ -10,13 +11,11 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool lockInBackground = true;
 
-  int _selectedDestination = 1;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Settings UI')),
-      drawer: ListAppDrawer(),
+      drawer: ListAppDrawer(SettingsScreen.routeName),
       body: SettingsList(
         sections: [
           SettingsSection(

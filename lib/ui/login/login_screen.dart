@@ -7,7 +7,6 @@ import '../../constants.dart';
 import '../home_lists.dart';
 import 'custom_route.dart';
 import 'package:email_validator/email_validator.dart';
-import 'users.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -15,19 +14,6 @@ class LoginScreen extends StatelessWidget {
 
   @Deprecated('remove this and wait for actual login')
   Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 500);
-
-  Future<String?> _loginUser(LoginData data) {
-    //TODO replace with login logic
-    return Future.delayed(loginTime).then((_) {
-      if (!mockUsers.containsKey(data.name)) {
-        return 'Username not exists';
-      }
-      if (mockUsers[data.name] != data.password) {
-        return 'Password does not match';
-      }
-      return null;
-    });
-  }
 
   Future<String?>? _facebookLogin() {
     //TODO Implement actual facebook login
@@ -38,12 +24,7 @@ class LoginScreen extends StatelessWidget {
 
   Future<String?> _recoverPassword(String name) {
     //TODO replace with recover password logic
-    return Future.delayed(loginTime).then((_) {
-      if (!mockUsers.containsKey(name)) {
-        return 'Username not exists';
-      }
-      return null;
-    });
+    return Future.delayed(loginTime).then((_) => "implement");
   }
 
   @override

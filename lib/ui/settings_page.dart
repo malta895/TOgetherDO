@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:mobile_applications/ui/mixins/stateful_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
@@ -47,7 +46,7 @@ class _SettingsPage extends State<SettingsPage> {
       appBar: AppBar(
         title: Text(title),
       ),
-      drawer: ListAppDrawer(),
+      drawer: ListAppDrawer(SettingsPage.routeName),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[

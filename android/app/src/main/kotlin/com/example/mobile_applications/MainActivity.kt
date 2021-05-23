@@ -1,4 +1,4 @@
-package com.example.mobile_applications
+package com.maltalawrence.listapp
 
 import io.flutter.embedding.android.FlutterActivity
 

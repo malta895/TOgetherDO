@@ -1,4 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 ///A wrapper of FirebaseAuth, that provides a better interface to the login ui
@@ -73,6 +75,62 @@ class ListAppAuthProvider {
         default:
           return 'Unknown error!';
       }
+    }
+  }
+
+  Future<String?>? loginViaGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn(
+          scopes: <String>[
+            'email',
+            'https://www.googleapis.com/auth/contacts.readonly'
+          ]).signIn();
+
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+
+      if (googleAuth == null) return "Error while trying to obtain credentials";
+
+      final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+
+      UserCredential userCredential =
+          await firebaseAuth.signInWithCredential(credential);
+      return null;
+    } on FirebaseAuthException catch (e) {
+      print(e);
+      return e.message;
+    } on PlatformException catch (e) {
+      print(e.toString());
+      return e.code;
+    }
+  }
+
+    Future<String?>? signupViaGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn(
+          scopes: <String>[
+            'email',
+            'https://www.googleapis.com/auth/contacts.readonly'
+          ]).signIn();
+
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+
+      if (googleAuth == null) return "Error while trying to obtain credentials";
+
+      final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+
+      UserCredential userCredential =
+          await firebaseAuth.signInWithCredential(credential);
+      return null;
+    } on FirebaseAuthException catch (e) {
+      print(e);
+      return e.message;
+    } on PlatformException catch (e) {
+      print(e.toString());
+      return e.code;
     }
   }
 }

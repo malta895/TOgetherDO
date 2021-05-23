@@ -12,19 +12,11 @@ import 'package:provider/provider.dart';
 class LoginScreen extends StatelessWidget {
   static const routeName = '/auth';
 
-  @Deprecated('remove this and wait for actual login')
-  Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 500);
-
   Future<String?>? _facebookLogin() {
     //TODO Implement actual facebook login
-    return Future.delayed(loginTime).then((_) {
+    return Future.delayed(Duration(milliseconds: timeDilation.ceil() * 500)).then((_) {
       return null;
     });
-  }
-
-  Future<String?> _recoverPassword(String name) {
-    //TODO replace with recover password logic
-    return Future.delayed(loginTime).then((_) => "implement");
   }
 
   @override
@@ -44,19 +36,7 @@ class LoginScreen extends StatelessWidget {
             icon: FontAwesomeIcons.google,
             callback: () async {
               // TODO implement google login
-              return Future.delayed(loginTime);
-            }),
-        LoginProvider(
-            icon: FontAwesomeIcons.linkedin,
-            callback: () async {
-              // TODO implement linkedin login
-              return Future.delayed(loginTime);
-            }),
-        LoginProvider(
-            icon: FontAwesomeIcons.apple,
-            callback: () async {
-              // TODO implement apple login
-              return Future.delayed(loginTime);
+              return context.read<ListAppAuthProvider>().loginViaGoogle();
             }),
       ],
       // hideForgotPasswordButton: true,

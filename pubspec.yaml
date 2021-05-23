@@ -30,6 +30,7 @@ dependencies:
   numberpicker: ^2.1.1
   cupertino_icons: ^1.0.0
   shared_preferences: '>2.0.0'
+  settings_ui: ^1.0.0
 
   # for changing the theme
   provider: ^5.0.0
@@ -40,19 +41,22 @@ dependencies:
   # Firebase stuff
   firebase_core: "^1.1.1"
   firebase_auth: "^1.1.4"
+  cloud_firestore: ^2.2.0
 
-  settings_ui: ^1.0.0
 
 
+
+  # Login stuff
   # Let's use the most recent version from github, since there are features that we need
   flutter_login:
     git:
       url: https://github.com/malta895/flutter_login
       ref: ffca0e6a137003c8d0bce6994fa47f0fda885a54
-
   email_validator: ^2.0.1
+  google_sign_in: ^5.0.3
+ 
   font_awesome_flutter: ^9.0.0
-  cloud_firestore: ^2.2.0
+
   
 dev_dependencies:
   flutter_test:

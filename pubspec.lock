@@ -164,8 +164,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "3837c68491fa9d6ff5dd68ef74774d8011fdd91c"
-      resolved-ref: "3837c68491fa9d6ff5dd68ef74774d8011fdd91c"
+      ref: ffca0e6a137003c8d0bce6994fa47f0fda885a54
+      resolved-ref: ffca0e6a137003c8d0bce6994fa47f0fda885a54
       url: "https://github.com/malta895/flutter_login"
     source: git
     version: "2.0.0-nullsafety.0"

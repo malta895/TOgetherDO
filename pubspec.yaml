@@ -48,7 +48,7 @@ dependencies:
   flutter_login:
     git:
       url: https://github.com/malta895/flutter_login
-      ref: 3837c68491fa9d6ff5dd68ef74774d8011fdd91c
+      ref: ffca0e6a137003c8d0bce6994fa47f0fda885a54
 
   email_validator: ^2.0.1
   font_awesome_flutter: ^9.0.0

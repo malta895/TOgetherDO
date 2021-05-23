@@ -153,6 +153,7 @@ class LoginScreen extends StatelessWidget {
       //     // shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(55.0)),
       //   ),
       // ),
+      userType: LoginUserType.email,
       userValidator: (email) {
         if (email != null && EmailValidator.validate(email)) return null;
         return "Please insert a valid email address";

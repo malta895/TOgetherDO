@@ -54,6 +54,7 @@ dependencies:
       ref: ffca0e6a137003c8d0bce6994fa47f0fda885a54
   email_validator: ^2.0.1
   google_sign_in: ^5.0.3
+  flutter_facebook_auth: ^3.4.0
  
   font_awesome_flutter: ^9.0.0
 

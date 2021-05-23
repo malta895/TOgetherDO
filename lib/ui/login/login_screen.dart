@@ -12,13 +12,6 @@ import 'package:provider/provider.dart';
 class LoginScreen extends StatelessWidget {
   static const routeName = '/auth';
 
-  Future<String?>? _facebookLogin() {
-    //TODO Implement actual facebook login
-    return Future.delayed(Duration(milliseconds: timeDilation.ceil() * 500)).then((_) {
-      return null;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
@@ -30,12 +23,13 @@ class LoginScreen extends StatelessWidget {
       loginProviders: <LoginProvider>[
         LoginProvider(
           icon: FontAwesomeIcons.facebookF,
-          callback: _facebookLogin,
+          callback: () async {
+            return context.read<ListAppAuthProvider>().loginViaFacebook();
+          },
         ),
         LoginProvider(
             icon: FontAwesomeIcons.google,
             callback: () async {
-              // TODO implement google login
               return context.read<ListAppAuthProvider>().loginViaGoogle();
             }),
       ],

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ListApp</string>
+    <string name="facebook_app_id">568150744166653</string>
+    <string name="fb_login_protocol_scheme">fb568150744166653</string>
+</resources>

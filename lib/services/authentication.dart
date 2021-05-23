@@ -106,31 +106,5 @@ class ListAppAuthProvider {
     }
   }
 
-    Future<String?>? signupViaGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn(
-          scopes: <String>[
-            'email',
-            'https://www.googleapis.com/auth/contacts.readonly'
-          ]).signIn();
 
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
-
-      if (googleAuth == null) return "Error while trying to obtain credentials";
-
-      final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
-
-      UserCredential userCredential =
-          await firebaseAuth.signInWithCredential(credential);
-      return null;
-    } on FirebaseAuthException catch (e) {
-      print(e);
-      return e.message;
-    } on PlatformException catch (e) {
-      print(e.toString());
-      return e.code;
-    }
-  }
 }

@@ -11,12 +11,6 @@ import 'package:mobile_applications/ui/settings_ui.dart';
 import 'package:provider/provider.dart';
 
 class ListAppNavDrawerStateInfo with ChangeNotifier {
-  static final Map<String, int> destinationsRouteNamesAndIndexes = {
-    ListHomePage.routeName: 0,
-    SettingsScreen.routeName: 1,
-    FriendsPage.routeName: 2,
-  };
-
   int? _currentDrawerIndex = 0;
 
   int? get currentDrawerIndex => _currentDrawerIndex;
@@ -31,29 +25,44 @@ class ListAppNavDrawer extends StatelessWidget {
   final String _currentRouteName;
   ListAppNavDrawer(this._currentRouteName);
 
-  final Map<String, int> _destinationsRouteNamesAndIndexes = {
+  final Map<String, int?> _destinationsRouteNamesAndIndexes = {
     ListHomePage.routeName: 0,
     SettingsScreen.routeName: 1,
     FriendsPage.routeName: 2,
+    ProfilePage.routeName: null,
   };
 
   Widget _buildUserAccountsDrawerHeader(BuildContext context) {
     final firebaseUser = context.read<ListAppAuthProvider>().loggedInUser!;
-    final Future<ListAppUser?> currentUser =
+    final Future<ListAppUser?> currentUserFuture =
         ListAppUserManager.instance.getUserByEmail(firebaseUser.email!);
 
     return FutureBuilder<ListAppUser?>(
-        future: currentUser,
+        future: currentUserFuture,
         builder: (BuildContext context, AsyncSnapshot<ListAppUser?> snapshot) {
-          ListAppUser? user = snapshot.data;
+          ListAppUser? currentUser = snapshot.data;
           return UserAccountsDrawerHeader(
-              accountName: Text(user?.fullName ?? "loading..."),
-
-              accountEmail: Text(user?.email ?? "loading..."),
+              accountName: Text(
+                currentUser?.fullName ?? "loading...",
+                style: TextStyle(
+                    // color: Theme.of(context).secondaryHeaderColor,
+                    fontSize: 20.0),
+              ),
+              accountEmail: Text(
+                currentUser?.email ?? "loading...",
+                style: TextStyle(
+                  color: Colors.white70,
+                ),
+              ),
               currentAccountPicture: CircleAvatar(
-                backgroundImage: AssetImage(
-                    "assets/sample-profile.png"), //TODO add actual image
-                child: Text(user?.initials ?? ""),
+                backgroundImage: () {
+                  //TODO add actual image from firestore
+                  final String? photoURL = firebaseUser.photoURL;
+
+                  if (photoURL != null) return NetworkImage(photoURL);
+
+                  return AssetImage("assets/sample-profile.png");
+                }() as ImageProvider,
               ),
               onDetailsPressed: () => {
                     //TODO implement something that actually works
@@ -74,11 +83,15 @@ class ListAppNavDrawer extends StatelessWidget {
         future: currentUser,
         builder: (BuildContext context, AsyncSnapshot<ListAppUser?> snapshot) =>
             InkWell(
-              onTap: () => {
+              onTap: () {
+                Provider.of<ListAppNavDrawerStateInfo>(context, listen: false)
+                        .currentDrawerIndex =
+                    _destinationsRouteNamesAndIndexes[ProfilePage.routeName];
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => ProfilePage()),
-                )
+                );
               },
               child: DrawerHeader(
                 margin: EdgeInsets.zero,
@@ -89,8 +102,14 @@ class ListAppNavDrawer extends StatelessWidget {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: CircleAvatar(
-                        backgroundImage:
-                            AssetImage("assets/sample-profile.png"),
+                        backgroundImage: () {
+                          //TODO add actual image from firestore
+                          final String? photoURL = firebaseUser.photoURL;
+
+                          if (photoURL != null) return NetworkImage(photoURL);
+
+                          return AssetImage("assets/sample-profile.png");
+                        }() as ImageProvider,
                         radius: 40.0,
                       ),
                     ),

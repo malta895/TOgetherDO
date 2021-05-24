@@ -37,54 +37,85 @@ class ListAppNavDrawer extends StatelessWidget {
     FriendsPage.routeName: 2,
   };
 
+  Widget _buildUserAccountsDrawerHeader(BuildContext context) {
+    final firebaseUser = context.read<ListAppAuthProvider>().loggedInUser!;
+    final Future<ListAppUser?> currentUser =
+        ListAppUserManager.instance.getUserByEmail(firebaseUser.email!);
+
+    return FutureBuilder<ListAppUser?>(
+        future: currentUser,
+        builder: (BuildContext context, AsyncSnapshot<ListAppUser?> snapshot) {
+          ListAppUser? user = snapshot.data;
+          return UserAccountsDrawerHeader(
+              accountName: Text(user?.fullName ?? "loading..."),
+
+              accountEmail: Text(user?.email ?? "loading..."),
+              currentAccountPicture: CircleAvatar(
+                backgroundImage: AssetImage(
+                    "assets/sample-profile.png"), //TODO add actual image
+                child: Text(user?.initials ?? ""),
+              ),
+              onDetailsPressed: () => {
+                    //TODO implement something that actually works
+                    Navigator.pushNamed(
+                      context,
+                      ProfilePage.routeName,
+                    )
+                  });
+        });
+  }
+
   Widget _buildUserDetailsInkWell(BuildContext context) {
     final firebaseUser = context.read<ListAppAuthProvider>().loggedInUser!;
     final Future<ListAppUser?> currentUser =
         ListAppUserManager.instance.getUserByEmail(firebaseUser.email!);
 
     return FutureBuilder<ListAppUser?>(
-      future: currentUser,
-      builder: (BuildContext context, AsyncSnapshot<ListAppUser?> snapshot) => InkWell(
-      onTap: () => {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => ProfilePage()),
-        )
-      },
-      child: DrawerHeader(
-        margin: EdgeInsets.zero,
-        decoration:
-            BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
-        child: Stack(
-          children: <Widget>[
-            Align(
-              alignment: Alignment.centerLeft,
-              child: CircleAvatar(
-                backgroundImage: AssetImage("assets/sample-profile.png"),
-                radius: 40.0,
-              ),
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child:  Text(
-                snapshot.data?.fullName ?? "",
-                style: TextStyle(
-                    color: Theme.of(context).primaryColor, fontSize: 20.0),
-              ),
-            ),
-            Align(
-              alignment: Alignment.centerRight + Alignment(0, .3),
-              child: Text(
-                snapshot.data?.email ?? '',
-                style: TextStyle(
-                  color: Colors.grey,
+        future: currentUser,
+        builder: (BuildContext context, AsyncSnapshot<ListAppUser?> snapshot) =>
+            InkWell(
+              onTap: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => ProfilePage()),
+                )
+              },
+              child: DrawerHeader(
+                margin: EdgeInsets.zero,
+                decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor),
+                child: Stack(
+                  children: <Widget>[
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: CircleAvatar(
+                        backgroundImage:
+                            AssetImage("assets/sample-profile.png"),
+                        radius: 40.0,
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        snapshot.data?.fullName ?? "",
+                        style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 20.0),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight + Alignment(0, .3),
+                      child: Text(
+                        snapshot.data?.email ?? '',
+                        style: TextStyle(
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-    ));
+            ));
   }
 
   ListTile _buildMenuItem(
@@ -129,6 +160,8 @@ class ListAppNavDrawer extends StatelessWidget {
     return Drawer(
       child: ListView(
         children: <Widget>[
+          //TODO choose which DrawerHeader we should use
+          _buildUserAccountsDrawerHeader(context),
           _buildUserDetailsInkWell(context),
           Divider(
             height: 1,

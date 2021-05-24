@@ -24,6 +24,7 @@ class ListAppUser {
       this.username});
 
   String get fullName => firstName + ' ' + lastName;
+  String get initials => firstName.substring(0, 1) + lastName.substring(0,1);
 
   UnmodifiableSetView<Friendship> get friendships =>
       UnmodifiableSetView(_friendships);

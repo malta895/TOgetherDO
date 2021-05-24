@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'user.g.dart';
 
 /// An user of the application
-@JsonSerializable()
+@JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class ListAppUser {
   ///the name of the collection used as a table/collection name in the database
   static const String COLLECTION_NAME = 'users';

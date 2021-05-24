@@ -16,14 +16,20 @@ class _FriendsList extends State<FriendsPage> {
   final String title = 'Friends';
 
   //TODO fetch actual data from backend
-  final User _user =
-      User("Luca", "Maltagliati", "luca.malta@mail.com", "malta");
+  final ListAppUser _user = ListAppUser(
+      firstName: "Luca",
+      lastName: "Maltagliati",
+      email: "luca.malta@mail.com",
+      username: "malta");
 
   Widget _buildListItems(BuildContext context) {
     _user.addFriendship(
       Friendship(
-          User("Lorenzo", "Amici", "lorenzo.amici@mail.com",
-              "lorenzo.amici@mail.com"),
+          ListAppUser(
+              firstName: "Lorenzo",
+              lastName: "Amici",
+              email: "lorenzo.amici@mail.com",
+              username: "lorenzo.amici@mail.com"),
           true),
     ); // TODO remove when data are fetched from backend
     return ListView.builder(
@@ -34,7 +40,7 @@ class _FriendsList extends State<FriendsPage> {
     );
   }
 
-  Widget _buildRow(BuildContext context, User friend) {
+  Widget _buildRow(BuildContext context, ListAppUser friend) {
     return Container(
         decoration: BoxDecoration(
             border: Border(

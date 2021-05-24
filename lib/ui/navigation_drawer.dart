@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/services/authentication.dart';
+import 'package:mobile_applications/services/user_manager.dart';
+import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/ui/friends.dart';
 import 'package:mobile_applications/ui/home_lists.dart';
 import 'package:mobile_applications/ui/login/login_screen.dart';
@@ -35,7 +37,57 @@ class ListAppNavDrawer extends StatelessWidget {
     FriendsPage.routeName: 2,
   };
 
-  ListTile _generateMenuItem(
+  Widget _buildUserDetailsInkWell(BuildContext context) {
+    final firebaseUser = context.read<ListAppAuthProvider>().loggedInUser!;
+    final Future<ListAppUser?> currentUser =
+        ListAppUserManager.instance.getUserByEmail(firebaseUser.email!);
+
+    return FutureBuilder<ListAppUser?>(
+      future: currentUser,
+      builder: (BuildContext context, AsyncSnapshot<ListAppUser?> snapshot) => InkWell(
+      onTap: () => {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => ProfilePage()),
+        )
+      },
+      child: DrawerHeader(
+        margin: EdgeInsets.zero,
+        decoration:
+            BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
+        child: Stack(
+          children: <Widget>[
+            Align(
+              alignment: Alignment.centerLeft,
+              child: CircleAvatar(
+                backgroundImage: AssetImage("assets/sample-profile.png"),
+                radius: 40.0,
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child:  Text(
+                snapshot.data?.fullName ?? "",
+                style: TextStyle(
+                    color: Theme.of(context).primaryColor, fontSize: 20.0),
+              ),
+            ),
+            Align(
+              alignment: Alignment.centerRight + Alignment(0, .3),
+              child: Text(
+                snapshot.data?.email ?? '',
+                style: TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ));
+  }
+
+  ListTile _buildMenuItem(
       {required Icon icon,
       required BuildContext context,
       required String title,
@@ -77,74 +129,33 @@ class ListAppNavDrawer extends StatelessWidget {
     return Drawer(
       child: ListView(
         children: <Widget>[
-          InkWell(
-            onTap: () => {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => ProfilePage()),
-              )
-            },
-            child: DrawerHeader(
-              margin: EdgeInsets.zero,
-              decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor),
-              child: Stack(
-                children: <Widget>[
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: CircleAvatar(
-                      backgroundImage: AssetImage("assets/sample-profile.png"),
-                      radius: 40.0,
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      'John Reed',
-                      style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontSize: 20.0),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight + Alignment(0, .3),
-                    child: Text(
-                      'john.reed@mail.com',
-                      style: TextStyle(
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          _buildUserDetailsInkWell(context),
           Divider(
             height: 1,
             thickness: 1,
           ),
-          _generateMenuItem(
+          _buildMenuItem(
             icon: Icon(Icons.list),
             context: context,
             currentDrawerIndex: currentDrawerIndex,
             title: "My Lists",
             destinationRouteName: ListHomePage.routeName,
           ),
-          _generateMenuItem(
+          _buildMenuItem(
             icon: Icon(Icons.settings),
             context: context,
             currentDrawerIndex: currentDrawerIndex,
             title: "Settings",
             destinationRouteName: SettingsScreen.routeName,
           ),
-          _generateMenuItem(
+          _buildMenuItem(
             icon: Icon(Icons.people),
             context: context,
             currentDrawerIndex: currentDrawerIndex,
             title: "Friends",
             destinationRouteName: FriendsPage.routeName,
           ),
-          _generateMenuItem(
+          _buildMenuItem(
               icon: Icon(Icons.logout),
               context: context,
               title: "Logout",

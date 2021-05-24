@@ -1,34 +1,48 @@
 import 'dart:collection';
+import 'package:json_annotation/json_annotation.dart';
+
+part 'user.g.dart';
 
 /// An user of the application
-class User {
-  String _firstName;
-  String _lastName;
-  final String _email;
-  final String _username;
+@JsonSerializable()
+class ListAppUser {
+  ///the name of the collection used as a table/collection name in the database
+  static const String COLLECTION_NAME = 'users';
 
+  String firstName;
+  String lastName;
+  final String email;
+  final String? username;
+
+  @JsonKey(ignore: true)
   Set<Friendship> _friendships = {};
 
-  User(this._firstName, this._lastName, this._email, this._username);
+  ListAppUser(
+      {required this.firstName,
+      required this.lastName,
+      required this.email,
+      this.username});
 
-  String get fullName => _firstName + ' ' + _lastName;
-  String get firstName => _firstName;
-  String get email => _email;
-  String get username => _username;
+  String get fullName => firstName + ' ' + lastName;
 
   UnmodifiableSetView<Friendship> get friendships =>
       UnmodifiableSetView(_friendships);
 
   bool addFriendship(Friendship friendship) => _friendships.add(friendship);
+
+  factory ListAppUser.fromJson(Map<String, dynamic> json) =>
+      _$ListAppUserFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ListAppUserToJson(this);
 }
 
 /// It represents the friendship among more users
 class Friendship {
-  final User _user;
+  final ListAppUser _user;
 
   final bool _accepted;
 
-  User get user => _user;
+  ListAppUser get user => _user;
   bool get accepted => _accepted;
 
   Friendship(this._user, this._accepted);

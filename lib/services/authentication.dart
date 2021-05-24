@@ -3,8 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
+
 ///A wrapper of FirebaseAuth, that provides a better interface to the login ui
-///It is a Singleton, get it with [ListAppAuthProvider.instance]
+///It is used with a Provider, get it with Provider.of(context).read<ListAppAuthProvider>()
 class ListAppAuthProvider {
   ListAppAuthProvider(this.firebaseAuth);
 

@@ -12,6 +12,12 @@ ListAppUser _$ListAppUserFromJson(Map<String, dynamic> json) {
     lastName: json['lastName'] as String,
     email: json['email'] as String,
     username: json['username'] as String?,
+    phoneNumber: json['phoneNumber'] as String?,
+    profilePictureURL: json['profilePictureURL'] as String?,
+    friends: (json['friends'] as List<dynamic>?)
+            ?.map((e) => ListAppUser.fromJson(e as Map<String, dynamic>))
+            .toSet() ??
+        {},
   );
 }
 
@@ -21,4 +27,7 @@ Map<String, dynamic> _$ListAppUserToJson(ListAppUser instance) =>
       'lastName': instance.lastName,
       'email': instance.email,
       'username': instance.username,
+      'phoneNumber': instance.phoneNumber,
+      'profilePictureURL': instance.profilePictureURL,
+      'friends': instance.friends.toList(),
     };

@@ -1,6 +1,6 @@
-import 'dart:collection';
 import 'package:json_annotation/json_annotation.dart';
 
+// We need to specify which file the generated serialization code will be saved to
 part 'user.g.dart';
 
 /// An user of the application
@@ -12,39 +12,30 @@ class ListAppUser {
   String firstName;
   String lastName;
   final String email;
-  final String? username;
 
-  @JsonKey(ignore: true)
-  Set<Friendship> _friendships = {};
+  ///The username. It is not mandatory as the email is the current authentication method
+  String? username;
+  String? phoneNumber;
+  String? profilePictureURL;
 
+  @JsonKey(defaultValue: const {})
+  final Set<ListAppUser> friends;
+  
   ListAppUser(
       {required this.firstName,
       required this.lastName,
       required this.email,
-      this.username});
+      this.username,
+      this.phoneNumber,
+      this.profilePictureURL,
+      this.friends = const {},
+  });
 
   String get fullName => firstName + ' ' + lastName;
-  String get initials => firstName.substring(0, 1) + lastName.substring(0,1);
-
-  UnmodifiableSetView<Friendship> get friendships =>
-      UnmodifiableSetView(_friendships);
-
-  bool addFriendship(Friendship friendship) => _friendships.add(friendship);
+  String get initials => firstName.substring(0, 1) + lastName.substring(0, 1);
 
   factory ListAppUser.fromJson(Map<String, dynamic> json) =>
       _$ListAppUserFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListAppUserToJson(this);
-}
-
-/// It represents the friendship among more users
-class Friendship {
-  final ListAppUser _user;
-
-  final bool _accepted;
-
-  ListAppUser get user => _user;
-  bool get accepted => _accepted;
-
-  Friendship(this._user, this._accepted);
 }

@@ -60,6 +60,7 @@ dependencies:
 
 
   json_annotation: ^4.0.1
+  firebase_storage: ^8.1.0
 
   
 dev_dependencies:

@@ -20,22 +20,20 @@ class _FriendsList extends State<FriendsPage> {
       firstName: "Luca",
       lastName: "Maltagliati",
       email: "luca.malta@mail.com",
-      username: "malta");
+      username: "malta",
+      friends: {
+        ListAppUser(
+            firstName: "Lorenzo",
+            lastName: "Amici",
+            email: "lorenzo.amici@mail.com",
+            username: "lorenzo.amici@mail.com"),
+      });
 
   Widget _buildListItems(BuildContext context) {
-    _user.addFriendship(
-      Friendship(
-          ListAppUser(
-              firstName: "Lorenzo",
-              lastName: "Amici",
-              email: "lorenzo.amici@mail.com",
-              username: "lorenzo.amici@mail.com"),
-          true),
-    ); // TODO remove when data are fetched from backend
     return ListView.builder(
-      itemCount: _user.friendships.length,
+      itemCount: _user.friends.length,
       itemBuilder: (context, i) {
-        return _buildRow(context, _user.friendships.elementAt(i).user);
+        return _buildRow(context, _user.friends.elementAt(i));
       },
     );
   }

@@ -4,7 +4,7 @@ class ThemeChanger with ChangeNotifier {
   static final ThemeData darkTheme = ThemeData(
       brightness: Brightness.dark,
       primaryColor: Colors.cyan[700],
-      accentColor: Colors.pinkAccent,
+      accentColor: Colors.pinkAccent[400],
       appBarTheme: AppBarTheme(
         centerTitle: true,
       ));
@@ -23,7 +23,7 @@ class ThemeChanger with ChangeNotifier {
 
   ThemeData get currentTheme => _currentTheme;
 
-  set currentTheme(ThemeData theme) {
+  setCurrentTheme(ThemeData theme) {
     _currentTheme = theme;
     notifyListeners();
   }

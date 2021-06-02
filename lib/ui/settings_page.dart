@@ -61,11 +61,11 @@ class _SettingsPage extends State<SettingsPage> {
                 title: const Text('Dark Mode'),
                 value: _darkMode,
                 onChanged: (bool value) {
-                  if (value) {
+                  /*if (value) {
                     _themeChanger.currentTheme = ThemeChanger.darkTheme;
                   } else {
                     _themeChanger.currentTheme = ThemeChanger.darkTheme;
-                  }
+                  }*/
                   _setDarkMode();
                 },
                 secondary: const Icon(Icons.bedtime),

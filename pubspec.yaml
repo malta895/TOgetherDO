@@ -43,9 +43,6 @@ dependencies:
   firebase_auth: "^1.1.4"
   cloud_firestore: ^2.2.0
 
-
-
-
   # Login stuff
   # Let's use the most recent version from github, since there are features that we need
   flutter_login:

@@ -61,7 +61,8 @@ class _MyCustomFormState extends State<MyCustomForm> {
                         borderSide: BorderSide(color: Colors.black, width: 1.0),
                       ),
                       labelText: 'Enter the item title',
-                      labelStyle: TextStyle(color: Colors.black)),
+                      labelStyle: TextStyle(
+                          color: Theme.of(context).textTheme.headline1!.color)),
                   validator: (value) {
                     if (value?.isEmpty == true) {
                       return 'Please enter some text';
@@ -143,110 +144,112 @@ class _DropdownMenuState extends State<DropdownMenu> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          DropdownButton<String>(
-            value: dropdownValue,
-            icon: Icon(Icons.arrow_drop_down),
-            iconSize: 24,
-            elevation: 16,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 16.0,
-            ),
-            underline: Container(
-              height: 2,
-              color: Colors.black,
-            ),
-            onChanged: (String? newValue) {
-              setState(() {
-                dropdownValue = newValue!;
-              });
-              hideMultipleSelection();
-            },
-            items: <String>[
-              'Simple item',
-              'Multiple instance item',
-              'Multiple people item'
-            ].map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-          ),
-          Visibility(
-              visible: visibleItem,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                      child: Text('Number of item: ',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16.0,
-                          ))),
-                  TextButton(
-                    child: Icon(
-                      Icons.remove,
-                      color: Colors.black,
-                    ),
-                    // minWidth: 5.0,
-                    onPressed: decrementCounter,
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
+        Widget>[
+      DropdownButton<String>(
+        value: dropdownValue,
+        icon: Icon(Icons.arrow_drop_down),
+        iconSize: 24,
+        elevation: 16,
+        style: TextStyle(
+          color: Theme.of(context).textTheme.headline1!.color,
+          fontSize: 16.0,
+        ),
+        underline: Container(
+          height: 2,
+          color: Colors.black,
+        ),
+        onChanged: (String? newValue) {
+          setState(() {
+            dropdownValue = newValue!;
+          });
+          hideMultipleSelection();
+        },
+        items: <String>[
+          'Simple item',
+          'Multiple instance item',
+          'Multiple people item'
+        ].map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+      ),
+      Visibility(
+          visible: visibleItem,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                  child: Text('Number of item: ',
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.headline1!.color,
+                        fontSize: 16.0,
+                      ))),
+              TextButton(
+                child: Icon(
+                  Icons.remove,
+                  color: Theme.of(context).textTheme.headline1!.color,
+                ),
+                // minWidth: 5.0,
+                onPressed: decrementCounter,
+              ),
+              Container(
+                  padding: const EdgeInsets.all(4.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                        color: Theme.of(context).textTheme.headline1!.color!),
+                    borderRadius: BorderRadius.circular(6),
                   ),
-                  Container(
-                      padding: const EdgeInsets.all(4.0),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text("$counter",
-                          style:
-                              TextStyle(color: Colors.black, fontSize: 20.0))),
-                  FlatButton(
-                    child: Icon(Icons.add, color: Colors.black),
-                    minWidth: 5.0,
-                    onPressed: incrementCounter,
-                  )
-                ],
-              )),
-          Visibility(
-              visible: visiblePeople,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                      child: Text('Number of people: ',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16.0,
-                          ))),
-                  FlatButton(
-                    child: Icon(
-                      Icons.remove,
-                      color: Colors.black,
-                    ),
-                    minWidth: 5.0,
-                    onPressed: decrementCounter,
+                  child: Text("$counter",
+                      style: TextStyle(
+                          color: Theme.of(context).textTheme.headline1!.color,
+                          fontSize: 20.0))),
+              TextButton(
+                child: Icon(Icons.add,
+                    color: Theme.of(context).textTheme.headline1!.color),
+                onPressed: incrementCounter,
+              )
+            ],
+          )),
+      Visibility(
+          visible: visiblePeople,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                  child: Text('Number of people: ',
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.headline1!.color,
+                        fontSize: 16.0,
+                      ))),
+              TextButton(
+                child: Icon(
+                  Icons.remove,
+                  color: Theme.of(context).textTheme.headline1!.color,
+                ),
+                onPressed: decrementCounter,
+              ),
+              Container(
+                  padding: const EdgeInsets.all(4.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                        color: Theme.of(context).textTheme.headline1!.color!),
+                    borderRadius: BorderRadius.circular(6),
                   ),
-                  Container(
-                      padding: const EdgeInsets.all(4.0),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text("$counter",
-                          style:
-                              TextStyle(color: Colors.black, fontSize: 20.0))),
-                  FlatButton(
-                    child: Icon(Icons.add, color: Colors.black),
-                    minWidth: 5.0,
-                    onPressed: incrementCounter,
-                  )
-                ],
-              ))
-        ]);
+                  child: Text("$counter",
+                      style: TextStyle(
+                          color: Theme.of(context).textTheme.headline1!.color,
+                          fontSize: 20.0))),
+              TextButton(
+                child: Icon(Icons.add,
+                    color: Theme.of(context).textTheme.headline1!.color),
+                onPressed: incrementCounter,
+              )
+            ],
+          ))
+    ]);
   }
 }
 

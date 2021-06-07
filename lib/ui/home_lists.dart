@@ -27,6 +27,22 @@ class _ListHomePage extends State<ListHomePage> {
     AList(4, "Christmas presents", "Christmas 2020"),
   ];
 
+  /*@override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  _loadSettings() async {
+    SharedPreferences sharedPrefs =
+        await SharedPreferencesManager.getSharedPreferencesInstance();
+    setState(() {
+      myEmailController.text = (sharedPrefs.getString(SharedPreferencesManager.emailKey) ?? "");
+      _isNotification = (sharedPrefs.getBool(SharedPreferencesManager.notificationKey) ??false);
+      myTotalItemController.text = (sharedPrefs.getInt(SharedPreferencesManager.totalItems) ?? 0).toString();
+    });
+  }*/
+
   Widget _buildListItems(BuildContext context) {
     return ListView.builder(
       itemCount: _aLists.length,

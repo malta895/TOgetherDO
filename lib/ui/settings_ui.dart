@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:settings_ui/settings_ui.dart';
+import 'package:mobile_applications/services/shared_pref.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/theme.dart';
@@ -12,52 +12,36 @@ class SettingsScreen extends StatefulWidget {
   _SettingsScreenState createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+/*class _SettingsScreenState extends State<SettingsScreen> {
   bool _lightTheme = true;
 
-  //Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-
-  void onThemeChanged(bool value, ThemeChanger themeChanger) async {
+  /*void onThemeChanged(bool value, ThemeChanger themeChanger) async {
     (value)
         ? themeChanger.setCurrentTheme(ThemeChanger.darkTheme)
         : themeChanger.setCurrentTheme(ThemeChanger.lightTheme);
 
-    var prefs = await SharedPreferences.getInstance();
+    var prefs = await SharedPreferencesManager.getSharedPreferencesInstance();
     await prefs.setBool('darkMode', value);
-  }
+  }*/
 
-  Future<bool> setTheme(ThemeChanger themeChanger) async {
-    SharedPreferences _prefs = await SharedPreferences.getInstance();
+  Future<bool> setTheme() async {
+    SharedPreferences _prefs =
+        await SharedPreferencesManager.getSharedPreferencesInstance();
     bool value = _prefs.getBool('darkMode') ?? false;
-    print("Value in settings");
-    print(value);
-    /*(value)
-        ? themeChanger.setCurrentTheme(ThemeChanger.darkTheme)
-        : themeChanger.setCurrentTheme(ThemeChanger.lightTheme);*/
 
     return value;
   }
-
-  /* @override
-  void initState() {
-    super.initState();
-    _lightTheme = _prefs.then((SharedPreferences prefs) {
-      return (prefs.getInt('counter') ?? 0);
-    });
-  } */
 
   @override
   Widget build(BuildContext context) {
     final themeChanger = Provider.of<ThemeChanger>(context);
 
-    /*setTheme(themeChanger).then((value) {
+    setTheme().then((value) {
       _lightTheme = value;
-      print("Light theme dentro funzione");
-      print(_lightTheme);
-    });*/
+    });
 
     return FutureBuilder(
-        future: setTheme(themeChanger),
+        future: setTheme(),
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
           if (snapshot.hasData) {
             _lightTheme = snapshot.data!;
@@ -134,43 +118,87 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         subtitle: Text(
                             "Allow or disallow notifications for the app",
                             style: TextStyle(fontSize: 16, color: Colors.grey)),
-                        trailing: Switch(
-                            value: _lightTheme, onChanged: (bool value) {}))),
+                        trailing:
+                            Switch(value: true, onChanged: (bool value) {}))),
               ]));
         });
   }
+}*/
 
-  /* Scaffold(
+class _SettingsScreenState extends State<SettingsScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
         appBar: AppBar(title: Text('Settings UI')),
         drawer: ListAppNavDrawer(SettingsScreen.routeName),
-        body: Padding(
-          padding: EdgeInsets.only(top: 10),
-          child: SettingsList(
-            sections: [
-              SettingsSection(title: 'General', tiles: [
-                SettingsTile(
-                  title: 'Sync contacts',
-                  leading: Icon(Icons.sync_outlined),
-                  onPressed: (BuildContext context) {},
-                )
-              ]),
-              SettingsSection(
-                title: 'Personalization',
-                tiles: [
-                  SettingsTile.switchTile(
-                    title: 'Dark theme',
-                    leading: Icon(Icons.dark_mode_outlined),
-                    switchValue: _lightTheme,
-                    onToggle: (bool value) {
-                      setState(() {
-                        _lightTheme = value;
-                      });
-                      onThemeChanged(value, themeChanger);
-                    },
+        body: Column(children: [
+          Container(
+              decoration: BoxDecoration(
+                  border: Border(
+                      bottom: BorderSide(
+                //                   <--- left side
+                color: Colors.grey,
+                width: 0.8,
+              ))),
+              child: ListTile(
+                  title: Text(
+                    "Dark theme",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Theme.of(context).accentColor),
                   ),
-                ],
-              ),
-            ],
-          ),
-        )); */
+                  subtitle: Text("Toggle light or dark theme",
+                      style: TextStyle(fontSize: 16, color: Colors.grey)),
+                  trailing: Consumer<ThemeChanger>(
+                    builder: (context, notifier, child) => Switch(
+                        value: !notifier.darkThemeBool,
+                        onChanged: (bool value) {
+                          notifier.toggleTheme();
+                        }),
+                  ))),
+          Container(
+              decoration: BoxDecoration(
+                  border: Border(
+                      bottom: BorderSide(
+                //                   <--- left side
+                color: Colors.grey,
+                width: 0.8,
+              ))),
+              child: ListTile(
+                  title: Text(
+                    "Sync contacts",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Theme.of(context).accentColor),
+                  ),
+                  subtitle: Text("Synchronize your contacts",
+                      style: TextStyle(fontSize: 16, color: Colors.grey)),
+                  trailing: IconButton(
+                      icon: const Icon(Icons.sync_outlined),
+                      onPressed: () {
+                        print("Sync pushed");
+                      }))),
+          Container(
+              decoration: BoxDecoration(
+                  border: Border(
+                      bottom: BorderSide(
+                //                   <--- left side
+                color: Colors.grey,
+                width: 0.8,
+              ))),
+              child: ListTile(
+                  title: Text(
+                    "Allow Notifications",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Theme.of(context).accentColor),
+                  ),
+                  subtitle: Text("Allow or disallow notifications for the app",
+                      style: TextStyle(fontSize: 16, color: Colors.grey)),
+                  trailing: Switch(value: true, onChanged: (bool value) {}))),
+        ]));
+  }
 }

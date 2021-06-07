@@ -23,7 +23,7 @@ class AddMember extends StatelessWidget {
             Text(
               "Add participant",
               style: TextStyle(
-                color: Colors.black,
+                color: Theme.of(context).textTheme.headline1!.color,
                 fontSize: 16.0,
               ),
             )
@@ -33,7 +33,8 @@ class AddMember extends StatelessWidget {
           children: <Widget>[
             IconButton(
                 // TODO: IconButton actually adds a member
-                icon: Icon(Icons.person_add, color: Colors.pinkAccent[700]),
+                icon: Icon(Icons.person_add,
+                    color: Theme.of(context).accentColor),
                 tooltip: 'Add a participant',
                 onPressed: () => {print("Member added")})
           ],
@@ -85,13 +86,20 @@ class _MyCustomFormState extends State<MyCustomForm> {
                   decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(5.0),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                        borderSide: BorderSide(
+                            color:
+                                Theme.of(context).textTheme.headline1!.color!,
+                            width: 1.0),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                        borderSide: BorderSide(
+                            color:
+                                Theme.of(context).textTheme.headline1!.color!,
+                            width: 1.0),
                       ),
                       labelText: 'Enter the list title',
-                      labelStyle: TextStyle(color: Colors.black)),
+                      labelStyle: TextStyle(
+                          color: Theme.of(context).textTheme.headline1!.color)),
                   validator: (value) {
                     if (value?.isEmpty == true) {
                       return 'Please enter some text';
@@ -106,7 +114,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                   const EdgeInsets.symmetric(vertical: 16.0, horizontal: 0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.pinkAccent[700],
+                  primary: Theme.of(context).accentColor,
                 ),
                 onPressed: () {
                   // TODO: change this to add the item to the list
@@ -144,12 +152,12 @@ class _DropdownMenuState extends State<DropdownMenu> {
             iconSize: 24,
             elevation: 16,
             style: TextStyle(
-              color: Colors.black,
+              color: Theme.of(context).textTheme.headline1!.color,
               fontSize: 16.0,
             ),
             underline: Container(
               height: 2,
-              color: Colors.black,
+              color: Theme.of(context).textTheme.headline1!.color,
             ),
             onChanged: (newValue) {
               setState(() {
@@ -168,11 +176,12 @@ class _DropdownMenuState extends State<DropdownMenu> {
             children: [
               Text("I am the only one who can add participants",
                   style: TextStyle(
-                    color: Colors.black,
+                    color: Theme.of(context).textTheme.headline1!.color,
                     fontSize: 16.0,
                   )),
               Checkbox(
                   value: checkBoxValue,
+                  activeColor: Theme.of(context).accentColor,
                   onChanged: (newValue) {
                     setState(() {
                       checkBoxValue = newValue;

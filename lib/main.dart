@@ -10,7 +10,6 @@ import 'package:mobile_applications/ui/settings_page.dart';
 import 'package:mobile_applications/ui/settings_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile_applications/ui/theme.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 
@@ -26,7 +25,7 @@ Future<void> main() async {
 
   await Firebase.initializeApp();
 
-  SharedPreferences.setMockInitialValues({"darkTheme": true});
+  //SharedPreferences.setMockInitialValues({"darkTheme": true});
 
   runApp(ListApp());
 }
@@ -37,7 +36,7 @@ class ListApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<ThemeChanger>(
-          create: (_) => ThemeChanger(ThemeChanger.lightTheme),
+          create: (_) => ThemeChanger(),
         ),
         ChangeNotifierProvider<ListAppNavDrawerStateInfo>(
           create: (_) => ListAppNavDrawerStateInfo(),
@@ -61,40 +60,27 @@ class ListApp extends StatelessWidget {
 }
 
 class MaterialAppWithTheme extends StatelessWidget {
-  Future<ThemeData> setTheme(ThemeChanger themeChanger) async {
-    SharedPreferences _prefs = await SharedPreferences.getInstance();
-    bool value = _prefs.getBool('darkMode') ?? false;
-    print("Value tema");
-    print(value);
-    ThemeData currentTheme =
-        value ? ThemeChanger.darkTheme : ThemeChanger.lightTheme;
-    return currentTheme;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final themeChanger = Provider.of<ThemeChanger>(context);
-
-    ThemeData _currentTheme = themeChanger.currentTheme;
-
-    /// The User instance watched from firebase
     final firebaseUser = context.watch<User?>();
 
-    setTheme(themeChanger).then((value) {
-      _currentTheme = value;
-    });
-
-    return MaterialApp(
-        initialRoute: firebaseUser == null
-            ? LoginScreen.routeName
-            : ListHomePage.routeName,
-        theme: _currentTheme,
-        routes: {
-          LoginScreen.routeName: (context) => LoginScreen(),
-          ListHomePage.routeName: (context) => ListHomePage(),
-          SettingsPage.routeName: (context) => SettingsPage(),
-          FriendsPage.routeName: (context) => FriendsPage(),
-          SettingsScreen.routeName: (context) => SettingsScreen()
-        });
+    return ChangeNotifierProvider(
+      create: (_) => ThemeChanger(),
+      child: Consumer<ThemeChanger>(
+          builder: (context, ThemeChanger notifier, child) {
+        return MaterialApp(
+            initialRoute: firebaseUser == null
+                ? LoginScreen.routeName
+                : ListHomePage.routeName,
+            theme: notifier.darkThemeBool ? lightTheme : darkTheme,
+            routes: {
+              LoginScreen.routeName: (context) => LoginScreen(),
+              ListHomePage.routeName: (context) => ListHomePage(),
+              SettingsPage.routeName: (context) => SettingsPage(),
+              FriendsPage.routeName: (context) => FriendsPage(),
+              SettingsScreen.routeName: (context) => SettingsScreen()
+            });
+      }),
+    );
   }
 }

@@ -48,7 +48,7 @@ dependencies:
   flutter_login:
     git:
       url: https://github.com/malta895/flutter_login
-      ref: ffca0e6a137003c8d0bce6994fa47f0fda885a54
+      ref: 96a5c5b378f809cbb1b6f7d98caa8ab8c7dfb8b8
   email_validator: ^2.0.1
   google_sign_in: ^5.0.3
   flutter_facebook_auth: ^3.4.0
@@ -58,6 +58,7 @@ dependencies:
 
   json_annotation: ^4.0.1
   firebase_storage: ^8.1.0
+  flutter_signin_button: ^2.0.0
 
   
 dev_dependencies:

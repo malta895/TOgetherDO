@@ -332,11 +332,18 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: ffca0e6a137003c8d0bce6994fa47f0fda885a54
-      resolved-ref: ffca0e6a137003c8d0bce6994fa47f0fda885a54
+      ref: "96a5c5b378f809cbb1b6f7d98caa8ab8c7dfb8b8"
+      resolved-ref: "96a5c5b378f809cbb1b6f7d98caa8ab8c7dfb8b8"
       url: "https://github.com/malta895/flutter_login"
     source: git
     version: "2.0.0-nullsafety.0"
+  flutter_signin_button:
+    dependency: "direct main"
+    description:
+      name: flutter_signin_button
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter

@@ -8,6 +8,8 @@ import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/new_list.dart';
 import 'package:mobile_applications/models/alist.dart';
 
+import 'package:mobile_applications/ui/new_list.dart';
+
 class ListHomePage extends StatefulWidget {
   static final String routeName = "/home";
   static final String humanReadableName = "My Lists";

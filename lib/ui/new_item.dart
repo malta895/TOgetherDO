@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mobile_applications/models/alist.dart';
+import 'package:mobile_applications/ui/list_view_page.dart';
 
 class NewListItem extends StatelessWidget {
   @override
@@ -39,6 +41,8 @@ class _MyCustomFormState extends State<MyCustomForm> {
   // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
 
+  final titleController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
@@ -52,6 +56,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
             Padding(
                 padding: EdgeInsets.only(top: 10.0),
                 child: TextFormField(
+                  controller: titleController,
                   decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(5.0),
                       focusedBorder: OutlineInputBorder(
@@ -85,9 +90,12 @@ class _MyCustomFormState extends State<MyCustomForm> {
                   // Validate returns true if the form is valid, or false
                   // otherwise.
                   if (_formKey.currentState?.validate() == true) {
-                    // If the form is valid, display a Snackbar.
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Processing Data')));
+                    final BaseItem newItem =
+                        SimpleItem(5, titleController.text);
+                    Navigator.pop(
+                      context,
+                      newItem,
+                    );
                   }
                 },
                 child: Text('Submit'),

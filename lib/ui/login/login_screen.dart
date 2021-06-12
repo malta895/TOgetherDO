@@ -51,27 +51,27 @@ class LoginScreen extends StatelessWidget {
       //   flushbarTitleError: 'Oh no!',
       //   flushbarTitleSuccess: 'Succes!',
       // ),
-      // theme: LoginTheme(
-      //   primaryColor: Colors.teal,
-      //   accentColor: Colors.yellow,
-      //   errorColor: Colors.deepOrange,
-      //   pageColorLight: Colors.indigo.shade300,
-      //   pageColorDark: Colors.indigo.shade500,
-      //   titleStyle: TextStyle(
-      //     color: Colors.greenAccent,
-      //     fontFamily: 'Quicksand',
-      //     letterSpacing: 4,
-      //   ),
-      //   // beforeHeroFontSize: 50,
-      //   // afterHeroFontSize: 20,
-      //   bodyStyle: TextStyle(
-      //     fontStyle: FontStyle.italic,
-      //     decoration: TextDecoration.underline,
-      //   ),
-      //   textFieldStyle: TextStyle(
-      //     color: Colors.orange,
-      //     shadows: [Shadow(color: Colors.yellow, blurRadius: 2)],
-      //   ),
+      theme: LoginTheme(
+        //   primaryColor: Colors.teal,
+        //   accentColor: Colors.yellow,
+        //   errorColor: Colors.deepOrange,
+        //   pageColorLight: Colors.indigo.shade300,
+        //   pageColorDark: Colors.indigo.shade500,
+        //   titleStyle: TextStyle(
+        //     color: Colors.greenAccent,
+        //     fontFamily: 'Quicksand',
+        //     letterSpacing: 4,
+        //   ),
+        //   // beforeHeroFontSize: 50,
+        //   // afterHeroFontSize: 20,
+        bodyStyle: TextStyle(
+          color: Theme.of(context).textTheme.headline1!.color,
+        ),
+        textFieldStyle: TextStyle(
+          color: Theme.of(context).textTheme.headline1!.color,
+          // shadows: [Shadow(color: Colors.yellow, blurRadius: 2)],
+        ),
+      ),
       //   buttonStyle: TextStyle(
       //     fontWeight: FontWeight.w800,
       //     color: Colors.yellow,

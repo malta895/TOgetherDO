@@ -153,7 +153,17 @@ class _ProfilePage extends State<ProfilePage> {
             Container(
                 width: double.infinity,
                 height: 220.0,
-                color: Colors.cyan[700],
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                  begin: FractionalOffset.topCenter,
+                  end: FractionalOffset
+                      .bottomCenter, // 10% of the width, so there are ten blinds.
+                  colors: <Color>[
+                    Theme.of(context).primaryColor,
+                    Theme.of(context).accentColor
+                  ],
+                )),
+                //color: Colors.cyan[700],
                 child: Center(
                     child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,

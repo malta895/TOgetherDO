@@ -32,7 +32,7 @@ class ListAppNavDrawer extends StatelessWidget {
     ProfilePage.routeName: null,
   };
 
-  Widget _buildUserAccountsDrawerHeader(BuildContext context) {
+  /*Widget _buildUserAccountsDrawerHeader(BuildContext context) {
     final firebaseUser = context.read<ListAppAuthProvider>().loggedInUser!;
     final Future<ListAppUser?> currentUserFuture =
         ListAppUserManager.instance.getUserByEmail(firebaseUser.email!);
@@ -72,7 +72,7 @@ class ListAppNavDrawer extends StatelessWidget {
                     )
                   });
         });
-  }
+  }*/
 
   Widget _buildUserDetailsInkWell(BuildContext context) {
     final firebaseUser = context.read<ListAppAuthProvider>().loggedInUser!;
@@ -180,7 +180,7 @@ class ListAppNavDrawer extends StatelessWidget {
       child: ListView(
         children: <Widget>[
           //TODO choose which DrawerHeader we should use
-          _buildUserAccountsDrawerHeader(context),
+          //_buildUserAccountsDrawerHeader(context),
           _buildUserDetailsInkWell(context),
           Divider(
             height: 1,

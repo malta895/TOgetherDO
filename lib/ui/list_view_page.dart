@@ -24,7 +24,7 @@ class ListViewRoute extends StatefulWidget {
     currentMember = aList.members.elementAt(1);
 
     aList.items = Set<BaseItem>();
-    aList.items.addAll([
+    /* aList.items.addAll([
       SimpleItem(1, "Simple element - undone", "A simple undone element"),
       SimpleItem(2, "Simple element - done", "A simple done element"),
       SimpleItem(3, "Buy groceries", "go to buy some groceries"),
@@ -32,10 +32,19 @@ class ListViewRoute extends StatefulWidget {
           4, "Buy movie tickets", "go to buy some movie tickets", 5),
       MultiFulfillmentMemberItem(5, "Lord of the rings trilogy",
           "the complete lord of the rings trilogy", 5, 3),
+    ]); */
+    aList.items.addAll([
+      SimpleItem(1, "Simple element - undone"),
+      SimpleItem(2, "Simple element - done"),
+      SimpleItem(3, "Buy groceries"),
+      SimpleItem(
+          3, "This is a very long item title to see how it fits in the screen"),
+      MultiFulfillmentItem(4, "Buy movie tickets", 5),
+      MultiFulfillmentMemberItem(5, "Lord of the rings trilogy", 5, 3),
     ]);
     aList.items.elementAt(1).fulfill(aList.members.elementAt(0), 1);
-    aList.items.elementAt(4).fulfill(aList.members.elementAt(0), 3);
-    aList.items.elementAt(4).fulfill(aList.members.elementAt(1), 2);
+    aList.items.elementAt(5).fulfill(aList.members.elementAt(0), 3);
+    aList.items.elementAt(5).fulfill(aList.members.elementAt(1), 2);
   }
 
   @override
@@ -79,6 +88,21 @@ class _ListViewRouteState extends State<ListViewRoute> {
     );
   }
 
+  Widget _buildListMembers() {
+    return ListView.builder(
+      itemCount: _aList.members.length,
+      itemBuilder: (context, i) {
+        return _buildMemberRow(context, _aList.members.elementAt(i));
+      },
+    );
+  }
+
+  _addListItem(BaseItem item) {
+    setState(() {
+      _aList.items.add(item);
+    });
+  }
+
   void _showNumberPicker(BuildContext context, BaseItem aListItem, int minValue,
       int initialValue) {
     showDialog<void>(
@@ -110,22 +134,36 @@ class _ListViewRouteState extends State<ListViewRoute> {
         return CheckboxListTile(
           title: aListItem.isFulfilled()
               ? Row(
+                  mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(aListItem.name),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.person,
-                          color: _assignedColors[aListItem.getFulfillers()[0]],
-                        ),
-                        Text(
-                          aListItem.getFulfillers()[0].firstName,
-                          textScaleFactor: 0.7,
-                        )
-                      ],
-                    )
+                    Expanded(
+                      flex: 5,
+                      child: Text(
+                        aListItem.name,
+                        style: TextStyle(
+                            color: Colors.grey,
+                            decoration: TextDecoration.lineThrough),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.person,
+                            color:
+                                _assignedColors[aListItem.getFulfillers()[0]],
+                          ),
+                          Text(
+                            aListItem.getFulfillers()[0].firstName,
+                            textScaleFactor: 0.7,
+                          )
+                        ],
+                      ),
+                    ),
                   ],
                 )
               : Text(aListItem.name),
@@ -148,20 +186,23 @@ class _ListViewRouteState extends State<ListViewRoute> {
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                      Text(aListItem.name),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.person,
-                            color:
-                                _assignedColors[aListItem.getFulfillers()[0]],
-                          ),
-                          Text(
-                            "${aListItem.getFulfillers()[0].firstName} ${aListItem.quantityFulfilledBy(_member)}",
-                            textScaleFactor: 0.7,
-                          )
-                        ],
+                      Expanded(flex: 5, child: Text(aListItem.name)),
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.person,
+                              color:
+                                  _assignedColors[aListItem.getFulfillers()[0]],
+                            ),
+                            Text(
+                              "${aListItem.getFulfillers()[0].firstName} ${aListItem.quantityFulfilledBy(_member)}",
+                              textScaleFactor: 0.7,
+                            )
+                          ],
+                        ),
                       )
                     ])
               : Text(aListItem.name),
@@ -202,10 +243,13 @@ class _ListViewRouteState extends State<ListViewRoute> {
                 ? Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(aListItem.name),
-                      Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: itemColumns),
+                      Expanded(flex: 5, child: Text(aListItem.name)),
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: itemColumns),
+                      ),
                     ],
                   )
                 : Text(aListItem.name),
@@ -221,23 +265,68 @@ class _ListViewRouteState extends State<ListViewRoute> {
     );
   }
 
+  Widget _buildMemberRow(BuildContext context, AListMember member) {
+    return Container(
+        decoration: BoxDecoration(
+            border: Border(
+                bottom: BorderSide(
+          color: Colors.grey,
+          width: 0.8,
+        ))),
+        child: ListTile(
+            leading: Icon(Icons.person, color: _assignedColors[member]),
+            title: Text(
+              member.firstName + ' ' + member.lastName,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, color: _assignedColors[member]),
+            )));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.aList.name),
-      ),
-      body: _buildListItems(),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => NewListItem()),
-          )
-        },
-        icon: Icon(Icons.add),
-        label: Text('NEW ITEM'),
-      ),
+    return DefaultTabController(
+        length: 2,
+        initialIndex: 0,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(widget.aList.name),
+            bottom: TabBar(
+              indicatorColor: Colors.white,
+              tabs: [
+                Tab(text: 'ITEMS', icon: Icon(Icons.done)),
+                Tab(text: 'MEMBERS', icon: Icon(Icons.person)),
+              ],
+            ),
+          ),
+          body: TabBarView(
+            children: [
+              _buildListItems(),
+              _buildListMembers(),
+            ],
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            /*onPressed: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NewListItem()),
+              )
+            },*/
+            onPressed: () {
+              _navigateAndDisplaySelection(context);
+            },
+            icon: Icon(Icons.add),
+            label: Text('NEW ITEM'),
+          ),
+        ));
+  }
+
+  void _navigateAndDisplaySelection(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => NewListItem()),
     );
+    if (result != null) {
+      _addListItem(result);
+    }
   }
 }

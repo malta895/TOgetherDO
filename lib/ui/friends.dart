@@ -72,13 +72,14 @@ class _FriendsList extends State<FriendsPage> {
         body: _buildListItems(context),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => NewList()),
-            )
+            // TODO create and redirect to add friend page
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => AddFriend()),
+            // )
           },
           icon: Icon(Icons.add),
-          label: Text('NEW LIST'),
+          label: Text('ADD FRIEND'),
         ));
   }
 }

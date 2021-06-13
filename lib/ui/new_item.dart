@@ -91,7 +91,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                   // otherwise.
                   if (_formKey.currentState?.validate() == true) {
                     final BaseItem newItem =
-                        SimpleItem(id: 5, name: titleController.text);
+                        SimpleItem(name: titleController.text);
                     Navigator.pop(
                       context,
                       newItem,

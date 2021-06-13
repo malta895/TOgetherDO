@@ -8,18 +8,28 @@ import 'package:mobile_applications/ui/new_item.dart';
 import 'package:mobile_applications/models/alist.dart';
 import 'package:numberpicker/numberpicker.dart';
 
+import '../models/user.dart';
+
 class ListViewRoute extends StatefulWidget {
-  final AList aList;
+  final ListAppList aList;
   //the member currently logged in, TODO make it final and get it from session
-  late AListMember currentMember;
+  late ListAppUser currentMember;
 
   ListViewRoute(this.aList) {
-    aList.members = Set<AListMember>();
+    aList.members = Set<ListAppUser>();
 
     //TODO fetch from backend instead
     aList.members.addAll([
-      AListMember(1, "lawfriends", "Lorenzo", "Amici"),
-      AListMember(2, "malta.95", "Luca", "Maltagliati"),
+      ListAppUser(
+          username: "lawfriends",
+          firstName: "Lorenzo",
+          lastName: "Amici",
+          email: "lawfriends@gmail.com"),
+      ListAppUser(
+          username: "malta.95",
+          firstName: "Luca",
+          lastName: "Maltagliati",
+          email: "malta95@gmail.com"),
     ]);
     currentMember = aList.members.elementAt(1);
 
@@ -34,16 +44,14 @@ class ListViewRoute extends StatefulWidget {
           "the complete lord of the rings trilogy", 5, 3),
     ]); */
     aList.items.addAll([
-      SimpleItem(id: 1, name: "Simple element - undone"),
-      SimpleItem(id: 2, name: "Simple element - done"),
-      SimpleItem(id: 3, name: "Buy groceries"),
+      SimpleItem(name: "Simple element - undone"),
+      SimpleItem(name: "Simple element - done"),
+      SimpleItem(name: "Buy groceries"),
       SimpleItem(
-          id: 3,
           name:
               "This is a very long item title to see how it fits in the screen"),
-      MultiFulfillmentItem(id: 4, name: "Buy movie tickets", maxQuantity: 5),
+      MultiFulfillmentItem(name: "Buy movie tickets", maxQuantity: 5),
       MultiFulfillmentMemberItem(
-          id: 5,
           name: "Lord of the rings trilogy",
           maxQuantity: 5,
           maxItemsPerMember: 3),
@@ -59,11 +67,11 @@ class ListViewRoute extends StatefulWidget {
 }
 
 class _ListViewRouteState extends State<ListViewRoute> {
-  final AListMember _member;
-  final AList _aList;
+  final ListAppUser _member;
+  final ListAppList _aList;
 
-  final HashMap<AListMember, Color> _assignedColors =
-      HashMap<AListMember, Color>();
+  final HashMap<ListAppUser, Color> _assignedColors =
+      HashMap<ListAppUser, Color>();
 
   _ListViewRouteState(this._member, this._aList) {
     var it = _aList.members.iterator;
@@ -228,7 +236,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
 
       case MultiFulfillmentMemberItem:
         List<Widget> itemColumns = [];
-        for (AListMember member in aListItem.getFulfillers()) {
+        for (ListAppUser member in aListItem.getFulfillers()) {
           {
             itemColumns.add(Column(
               mainAxisSize: MainAxisSize.min,
@@ -271,7 +279,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
     );
   }
 
-  Widget _buildMemberRow(BuildContext context, AListMember member) {
+  Widget _buildMemberRow(BuildContext context, ListAppUser member) {
     return Container(
         decoration: BoxDecoration(
             border: Border(

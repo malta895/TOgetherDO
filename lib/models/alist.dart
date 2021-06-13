@@ -3,90 +3,78 @@ import 'dart:collection';
 import 'dart:core';
 
 import 'package:flutter/material.dart';
+import 'user.dart';
 
-class AList {
-  // A at the start to avoid confusion with Dart List
-
-  final int id;
+/// The list. Can be of various inherited types
+class ListAppList {
+  /// the id provided by the data source
+  final String? databaseId;
   final String name;
-  final String description;
+  final String? description;
 
   //Set and not List because Sets have unique elements
-  late Set<AListMember> members;
+  late Set<ListAppUser> members;
 
   late Set<BaseItem> items;
 
-  AList(this.id, this.name, this.description);
+  ListAppList({this.databaseId, required this.name, this.description});
 }
 
-// a member of a list
-class AListMember {
-  final int id;
-  final String username;
-  final String firstName;
-  final String lastName;
-  final bool isAdmin = false;
-
-  AListMember(this.id, this.username, this.firstName, this.lastName);
-
-  @override
-  bool operator ==(other) => other is AListMember && other.id == id;
-  @override
-  int get hashCode => id;
-}
-
-class AListFulfillment {
+class ListAppFulfillment {
   // the user who completed the list item
-  final AListMember member;
+  final ListAppUser member;
 
   // The quantity completed by the user. At least can be 1
   final int quantityCompleted;
   // if the list item has a price, this contains the amount countributed by the user
   final double priceContribution;
 
-  AListFulfillment(this.member, this.quantityCompleted, this.priceContribution);
+  ListAppFulfillment(
+      {required this.member,
+      required this.quantityCompleted,
+      required this.priceContribution});
 }
 
 //Any type of item. the specific types will implement in different ways the methods
 abstract class BaseItem extends ChangeNotifier {
-  final int id;
+  final String? databaseId;
   final String name;
   final String? description;
   final int maxQuantity;
   final int quantityPerMember;
 
   BaseItem(
-      {required this.id,
+      {this.databaseId,
       required this.name,
       this.description,
       required this.maxQuantity,
       required this.quantityPerMember});
 
-  int quantityFulfilledBy(AListMember member);
+  int quantityFulfilledBy(ListAppUser member);
 
   bool isFulfilled();
 
   //fulfill, aka complete, this list item, with a quantity. returns false if the item was fulfilled already
-  bool fulfill(AListMember member, int quantityFulfilled);
+  bool fulfill(ListAppUser member, int quantityFulfilled);
 
-  bool unfulfill(AListMember member);
+  bool unfulfill(ListAppUser member);
 
-  List<AListMember> getFulfillers();
+  List<ListAppUser> getFulfillers();
 }
 
 //This item can have just one fulfiller
 class SimpleItem extends BaseItem {
-  AListMember? _fulfiller;
+  ListAppUser? _fulfiller;
 
-  SimpleItem({required int id, required String name, String? description})
+  SimpleItem({String? databaseId, required String name, String? description})
       : super(
-            id: id,
+            databaseId: databaseId,
             name: name,
             description: description,
             maxQuantity: 1,
             quantityPerMember: 1);
 
-  AListMember? get fulfiller {
+  ListAppUser? get fulfiller {
     return _fulfiller;
   }
 
@@ -96,7 +84,7 @@ class SimpleItem extends BaseItem {
   }
 
   @override
-  bool fulfill(AListMember member, int quantityFulfilled) {
+  bool fulfill(ListAppUser member, int quantityFulfilled) {
     if (_fulfiller == null) {
       _fulfiller = member;
       notifyListeners();
@@ -107,7 +95,7 @@ class SimpleItem extends BaseItem {
   }
 
   @override
-  bool unfulfill(AListMember member) {
+  bool unfulfill(ListAppUser member) {
     //do not allow the unfulfillment of other members
     if (member == _fulfiller) {
       _fulfiller = null;
@@ -118,42 +106,42 @@ class SimpleItem extends BaseItem {
   }
 
   @override
-  List<AListMember> getFulfillers() {
-    if (_fulfiller == null) return UnmodifiableListView<AListMember>([]);
+  List<ListAppUser> getFulfillers() {
+    if (_fulfiller == null) return UnmodifiableListView<ListAppUser>([]);
 
-    return UnmodifiableListView<AListMember>([_fulfiller!]);
+    return UnmodifiableListView<ListAppUser>([_fulfiller!]);
   }
 
   @override
-  int quantityFulfilledBy(AListMember member) {
+  int quantityFulfilledBy(ListAppUser member) {
     return member == _fulfiller ? 1 : 0;
   }
 }
 
 //List item with multiple fulfillments, members can fulfill once
 class MultiFulfillmentItem extends BaseItem {
-  Set<AListMember> _fulfillers = Set<AListMember>();
+  Set<ListAppUser> _fulfillers = Set<ListAppUser>();
 
   MultiFulfillmentItem(
-      {required int id,
+      {String? databaseId,
       required String name,
       String? description,
       required int maxQuantity})
       : super(
-            id: id,
+            databaseId: databaseId,
             name: name,
             description: description,
             maxQuantity: maxQuantity,
             quantityPerMember: 1);
 
   @override
-  bool fulfill(AListMember member, int quantityFulfilled) {
+  bool fulfill(ListAppUser member, int quantityFulfilled) {
     return _fulfillers.add(member);
   }
 
   @override
-  List<AListMember> getFulfillers() {
-    return UnmodifiableListView<AListMember>(_fulfillers);
+  List<ListAppUser> getFulfillers() {
+    return UnmodifiableListView<ListAppUser>(_fulfillers);
   }
 
   @override
@@ -162,12 +150,12 @@ class MultiFulfillmentItem extends BaseItem {
   }
 
   @override
-  int quantityFulfilledBy(AListMember member) {
+  int quantityFulfilledBy(ListAppUser member) {
     return _fulfillers.contains(member) ? 1 : 0;
   }
 
   @override
-  bool unfulfill(AListMember member) {
+  bool unfulfill(ListAppUser member) {
     return _fulfillers.remove(member);
   }
 }
@@ -175,31 +163,31 @@ class MultiFulfillmentItem extends BaseItem {
 //List item with multiple fulfillments, members can fulfill more times
 class MultiFulfillmentMemberItem extends BaseItem {
   //map each member with a number representing how many times they have fulfilled
-  Map<AListMember, int> _fulfillers = Map<AListMember, int>();
+  Map<ListAppUser, int> _fulfillers = Map<ListAppUser, int>();
 
   MultiFulfillmentMemberItem(
-      {required int id,
+      {String? databaseId,
       required String name,
       String? description,
       required int maxQuantity,
       required int maxItemsPerMember})
       : super(
-            id: id,
+            databaseId: databaseId,
             name: name,
             description: description,
             maxQuantity: maxQuantity,
             quantityPerMember: maxItemsPerMember);
 
   @override
-  bool fulfill(AListMember member, int quantityFulfilled) {
+  bool fulfill(ListAppUser member, int quantityFulfilled) {
     // TODO control all constraints of this item and list
     _fulfillers[member] = quantityFulfilled;
     return quantityFulfilled > 0;
   }
 
   @override
-  List<AListMember> getFulfillers() {
-    return UnmodifiableListView<AListMember>(_fulfillers.keys);
+  List<ListAppUser> getFulfillers() {
+    return UnmodifiableListView<ListAppUser>(_fulfillers.keys);
   }
 
   @override
@@ -212,12 +200,12 @@ class MultiFulfillmentMemberItem extends BaseItem {
   }
 
   @override
-  int quantityFulfilledBy(AListMember member) {
+  int quantityFulfilledBy(ListAppUser member) {
     return _fulfillers[member] == null ? 0 : _fulfillers[member]!;
   }
 
   @override
-  bool unfulfill(AListMember member) {
+  bool unfulfill(ListAppUser member) {
     return _fulfillers.remove(member) != null;
   }
 }

@@ -22,11 +22,13 @@ class _ListHomePage extends State<ListHomePage> {
   final String title = 'ListApp';
 
   //TODO fetch actual data from backend
-  final List<AList> _aLists = [
-    AList(1, "First list", "Description of the first list"),
-    AList(2, "Second list", "Description of the second list"),
-    AList(3, "USA trip", "From NY to San Francisco"),
-    AList(4, "Christmas presents", "Christmas 2020"),
+  final List<ListAppList> _aLists = [
+    ListAppList(
+        name: "First list", description: "Description of the first list"),
+    ListAppList(
+        name: "Second list", description: "Description of the second list"),
+    ListAppList(name: "USA trip", description: "From NY to San Francisco"),
+    ListAppList(name: "Christmas presents", description: "Christmas 2020"),
   ];
 
   /*@override
@@ -54,7 +56,7 @@ class _ListHomePage extends State<ListHomePage> {
     );
   }
 
-  Widget _buildRow(BuildContext context, AList aList) {
+  Widget _buildRow(BuildContext context, ListAppList aList) {
     return Container(
         decoration: BoxDecoration(
             border: Border(
@@ -68,7 +70,7 @@ class _ListHomePage extends State<ListHomePage> {
             aList.name,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: Text(aList.description),
+          subtitle: Text(aList.description ?? ''),
           onTap: () {
             Navigator.push(
               context,

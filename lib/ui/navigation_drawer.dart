@@ -32,48 +32,6 @@ class ListAppNavDrawer extends StatelessWidget {
     ProfilePage.routeName: null,
   };
 
-  /*Widget _buildUserAccountsDrawerHeader(BuildContext context) {
-    final firebaseUser = context.read<ListAppAuthProvider>().loggedInUser!;
-    final Future<ListAppUser?> currentUserFuture =
-        ListAppUserManager.instance.getUserByEmail(firebaseUser.email!);
-
-    return FutureBuilder<ListAppUser?>(
-        future: currentUserFuture,
-        builder: (BuildContext context, AsyncSnapshot<ListAppUser?> snapshot) {
-          ListAppUser? currentUser = snapshot.data;
-          return UserAccountsDrawerHeader(
-              accountName: Text(
-                currentUser?.fullName ?? "loading...",
-                style: TextStyle(
-                    // color: Theme.of(context).secondaryHeaderColor,
-                    fontSize: 20.0),
-              ),
-              accountEmail: Text(
-                currentUser?.email ?? "loading...",
-                style: TextStyle(
-                  color: Colors.white70,
-                ),
-              ),
-              currentAccountPicture: CircleAvatar(
-                backgroundImage: () {
-                  //TODO add actual image from firestore
-                  final String? photoURL = firebaseUser.photoURL;
-
-                  if (photoURL != null) return NetworkImage(photoURL);
-
-                  return AssetImage("assets/sample-profile.png");
-                }() as ImageProvider,
-              ),
-              onDetailsPressed: () => {
-                    //TODO implement something that actually works
-                    Navigator.pushNamed(
-                      context,
-                      ProfilePage.routeName,
-                    )
-                  });
-        });
-  }*/
-
   Widget _buildUserDetailsInkWell(BuildContext context) {
     final firebaseUser = context.read<ListAppAuthProvider>().loggedInUser!;
     final Future<ListAppUser?> currentUser =

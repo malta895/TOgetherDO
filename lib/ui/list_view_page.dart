@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:mobile_applications/ui/new_item.dart';
-import 'package:mobile_applications/models/alist.dart';
+import 'package:mobile_applications/models/app_list.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 import '../models/user.dart';

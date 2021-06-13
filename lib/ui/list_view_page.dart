@@ -34,13 +34,19 @@ class ListViewRoute extends StatefulWidget {
           "the complete lord of the rings trilogy", 5, 3),
     ]); */
     aList.items.addAll([
-      SimpleItem(1, "Simple element - undone"),
-      SimpleItem(2, "Simple element - done"),
-      SimpleItem(3, "Buy groceries"),
+      SimpleItem(id: 1, name: "Simple element - undone"),
+      SimpleItem(id: 2, name: "Simple element - done"),
+      SimpleItem(id: 3, name: "Buy groceries"),
       SimpleItem(
-          3, "This is a very long item title to see how it fits in the screen"),
-      MultiFulfillmentItem(4, "Buy movie tickets", 5),
-      MultiFulfillmentMemberItem(5, "Lord of the rings trilogy", 5, 3),
+          id: 3,
+          name:
+              "This is a very long item title to see how it fits in the screen"),
+      MultiFulfillmentItem(id: 4, name: "Buy movie tickets", maxQuantity: 5),
+      MultiFulfillmentMemberItem(
+          id: 5,
+          name: "Lord of the rings trilogy",
+          maxQuantity: 5,
+          maxItemsPerMember: 3),
     ]);
     aList.items.elementAt(1).fulfill(aList.members.elementAt(0), 1);
     aList.items.elementAt(5).fulfill(aList.members.elementAt(0), 3);

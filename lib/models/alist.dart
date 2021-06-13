@@ -51,13 +51,16 @@ class AListFulfillment {
 abstract class BaseItem extends ChangeNotifier {
   final int id;
   final String name;
-  //final String description;
+  final String? description;
   final int maxQuantity;
   final int quantityPerMember;
 
-  /*BaseItem(this.id, this.name, this.description, this.maxQuantity,
-      this.quantityPerMember);*/
-  BaseItem(this.id, this.name, this.maxQuantity, this.quantityPerMember);
+  BaseItem(
+      {required this.id,
+      required this.name,
+      this.description,
+      required this.maxQuantity,
+      required this.quantityPerMember});
 
   int quantityFulfilledBy(AListMember member);
 
@@ -75,10 +78,13 @@ abstract class BaseItem extends ChangeNotifier {
 class SimpleItem extends BaseItem {
   AListMember? _fulfiller;
 
-  /* SimpleItem(int id, String name, String description)
-      : super(id, name, description, 1, 1); */
-  //SimpleItem(int id, String name, String description) : super(id, name, 1, 1);
-  SimpleItem(int id, String name) : super(id, name, 1, 1);
+  SimpleItem({required int id, required String name, String? description})
+      : super(
+            id: id,
+            name: name,
+            description: description,
+            maxQuantity: 1,
+            quantityPerMember: 1);
 
   AListMember? get fulfiller {
     return _fulfiller;
@@ -128,14 +134,17 @@ class SimpleItem extends BaseItem {
 class MultiFulfillmentItem extends BaseItem {
   Set<AListMember> _fulfillers = Set<AListMember>();
 
-  /* MultiFulfillmentItem(int id, String name, String description, int maxQuantity)
-      : super(id, name, description, maxQuantity, 1); */
-
-  /* MultiFulfillmentItem(int id, String name, String description, int maxQuantity)
-      : super(id, name, maxQuantity, 1);*/
-
-  MultiFulfillmentItem(int id, String name, int maxQuantity)
-      : super(id, name, maxQuantity, 1);
+  MultiFulfillmentItem(
+      {required int id,
+      required String name,
+      String? description,
+      required int maxQuantity})
+      : super(
+            id: id,
+            name: name,
+            description: description,
+            maxQuantity: maxQuantity,
+            quantityPerMember: 1);
 
   @override
   bool fulfill(AListMember member, int quantityFulfilled) {
@@ -168,15 +177,18 @@ class MultiFulfillmentMemberItem extends BaseItem {
   //map each member with a number representing how many times they have fulfilled
   Map<AListMember, int> _fulfillers = Map<AListMember, int>();
 
-  /* MultiFulfillmentMemberItem(int id, String name, String description,
-      int maxQuantity, int maxItemsPerMember)
-      : super(id, name, description, maxQuantity, maxItemsPerMember); */
-  /* MultiFulfillmentMemberItem(int id, String name, String description,
-      int maxQuantity, int maxItemsPerMember)
-      : super(id, name, maxQuantity, maxItemsPerMember); */
   MultiFulfillmentMemberItem(
-      int id, String name, int maxQuantity, int maxItemsPerMember)
-      : super(id, name, maxQuantity, maxItemsPerMember);
+      {required int id,
+      required String name,
+      String? description,
+      required int maxQuantity,
+      required int maxItemsPerMember})
+      : super(
+            id: id,
+            name: name,
+            description: description,
+            maxQuantity: maxQuantity,
+            quantityPerMember: maxItemsPerMember);
 
   @override
   bool fulfill(AListMember member, int quantityFulfilled) {

@@ -20,7 +20,7 @@ Future<void> main() async {
   //     systemNavigationBarColor:
   //         SystemUiOverlayStyle.dark.systemNavigationBarColor,
   //   ),
-  // );
+  // )
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp();

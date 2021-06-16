@@ -21,6 +21,7 @@ class ListAppList {
   //Set and not List because Sets have unique elements
   late Set<ListAppUser> members;
 
+  @JsonKey(ignore: true)
   late Set<BaseItem> items;
 
   ListAppList({this.databaseId, required this.name, this.description});

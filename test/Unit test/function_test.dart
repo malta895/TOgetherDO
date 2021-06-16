@@ -11,7 +11,7 @@ void main() {
     var simpleTestItem = SimpleItem(name: "testing item");
 
     test('The item should be fulfilled', () {
-      simpleTestItem.fulfill(userTest, 1);
+      simpleTestItem.fulfill(member: userTest);
       expect(simpleTestItem.fulfiller, userTest);
     });
 
@@ -25,7 +25,7 @@ void main() {
         MultiFulfillmentItem(name: "testing item", maxQuantity: 5);
 
     test('The item should be fulfilled', () {
-      multiFulfillmentTestItem.fulfill(userTest, 4);
+      multiFulfillmentTestItem.fulfill(member: userTest, quantityFulfilled: 4);
       expect(multiFulfillmentTestItem.getFulfillers().contains(userTest), true);
     });
 
@@ -37,10 +37,10 @@ void main() {
   });
   group('Testing MultiMemberItem', () {
     var multiMemberTestItem = MultiFulfillmentMemberItem(
-        name: "testing item", maxItemsPerMember: 3, maxQuantity: 5);
+        name: "testing item", quantityPerMember: 3, maxQuantity: 5);
 
     test('The item should be fulfilled', () {
-      multiMemberTestItem.fulfill(userTest, 3);
+      multiMemberTestItem.fulfill(member: userTest, quantityFulfilled: 5);
       expect(multiMemberTestItem.getFulfillers().contains(userTest), true);
     });
 

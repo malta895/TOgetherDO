@@ -55,11 +55,15 @@ class ListViewRoute extends StatefulWidget {
       MultiFulfillmentMemberItem(
           name: "Lord of the rings trilogy",
           maxQuantity: 5,
-          maxItemsPerMember: 3),
+          quantityPerMember: 3),
     ]);
-    aList.items.elementAt(1).fulfill(aList.members.elementAt(0), 1);
-    aList.items.elementAt(5).fulfill(aList.members.elementAt(0), 3);
-    aList.items.elementAt(5).fulfill(aList.members.elementAt(1), 2);
+    aList.items.elementAt(1).fulfill(member: aList.members.elementAt(0));
+    aList.items
+        .elementAt(5)
+        .fulfill(member: aList.members.elementAt(0), quantityFulfilled: 3);
+    aList.items
+        .elementAt(5)
+        .fulfill(member: aList.members.elementAt(1), quantityFulfilled: 2);
   }
 
   @override
@@ -134,7 +138,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
                 value: _currentValue,
                 onChanged: (value) => setState(() {
                   //TODO Maybe better to put the buttons
-                  aListItem.fulfill(_member, value);
+                  aListItem.fulfill(member: _member, quantityFulfilled: value);
                   _currentValue = value;
                 }),
               ),
@@ -189,7 +193,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
             // TODO make async, make not selectable until the server has responded
             setState(() {
               if (value == true) {
-                aListItem.fulfill(_member, 1);
+                aListItem.fulfill(member: _member);
               } else {
                 aListItem.unfulfill(_member);
               }
@@ -229,7 +233,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
             // TODO make async, make not selectable until the server has responded
             setState(() {
               if (value == true) {
-                aListItem.fulfill(_member, 1);
+                aListItem.fulfill(member: _member);
               } else {
                 aListItem.unfulfill(_member);
               }

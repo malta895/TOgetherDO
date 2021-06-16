@@ -9,8 +9,7 @@ import 'user.dart';
 
 part 'list_item.g.dart';
 
-//Any type of item. the specific types will implement in different ways the methods
-@JsonSerializable() // bsee https://flutter.dev/docs/development/data-and-backend/json#code-generation
+///Any type of item. the specific types will implement in different ways the methods
 abstract class BaseItem extends ChangeNotifier {
   final String? databaseId;
   final String name;
@@ -30,19 +29,15 @@ abstract class BaseItem extends ChangeNotifier {
   bool isFulfilled();
 
   //fulfill, aka complete, this list item, with a quantity. returns false if the item was fulfilled already
-  bool fulfill(ListAppUser member, int quantityFulfilled);
+  bool fulfill({required ListAppUser member, int quantityFulfilled = 0});
 
   bool unfulfill(ListAppUser member);
 
   List<ListAppUser> getFulfillers();
-
-  factory BaseItem.fromJson(Map<String, dynamic> json) =>
-      _$BaseItemFromJson(json);
-
-  Map<String, dynamic> toJson() => _$BaseItemToJson(this);
 }
 
-//This item can have just one fulfiller
+///This item can have just one fulfiller
+@JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class SimpleItem extends BaseItem {
   ListAppUser? _fulfiller;
 
@@ -63,9 +58,8 @@ class SimpleItem extends BaseItem {
     return _fulfiller != null;
   }
 
-  //QUESTION: why do we have quantityFulfilled for SimpleItem?
   @override
-  bool fulfill(ListAppUser member, int quantityFulfilled) {
+  bool fulfill({required ListAppUser member, int quantityFulfilled = 0}) {
     if (_fulfiller == null) {
       _fulfiller = member;
       notifyListeners();
@@ -97,9 +91,15 @@ class SimpleItem extends BaseItem {
   int quantityFulfilledBy(ListAppUser member) {
     return member == _fulfiller ? 1 : 0;
   }
+
+  factory SimpleItem.fromJson(Map<String, dynamic> json) =>
+      _$SimpleItemFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SimpleItemToJson(this);
 }
 
 //List item with multiple fulfillments, members can fulfill once
+@JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class MultiFulfillmentItem extends BaseItem {
   Set<ListAppUser> _fulfillers = Set<ListAppUser>();
 
@@ -116,7 +116,7 @@ class MultiFulfillmentItem extends BaseItem {
             quantityPerMember: 1);
 
   @override
-  bool fulfill(ListAppUser member, int quantityFulfilled) {
+  bool fulfill({required ListAppUser member, int quantityFulfilled = 1}) {
     return _fulfillers.add(member);
   }
 
@@ -139,9 +139,15 @@ class MultiFulfillmentItem extends BaseItem {
   bool unfulfill(ListAppUser member) {
     return _fulfillers.remove(member);
   }
+
+  factory MultiFulfillmentItem.fromJson(Map<String, dynamic> json) =>
+      _$MultiFulfillmentItemFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MultiFulfillmentItemToJson(this);
 }
 
-//List item with multiple fulfillments, members can fulfill more times
+///List item with multiple fulfillments, members can fulfill more times
+@JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class MultiFulfillmentMemberItem extends BaseItem {
   //map each member with a number representing how many times they have fulfilled
   Map<ListAppUser, int> _fulfillers = Map<ListAppUser, int>();
@@ -151,16 +157,16 @@ class MultiFulfillmentMemberItem extends BaseItem {
       required String name,
       String? description,
       required int maxQuantity,
-      required int maxItemsPerMember})
+      required int quantityPerMember})
       : super(
             databaseId: databaseId,
             name: name,
             description: description,
             maxQuantity: maxQuantity,
-            quantityPerMember: maxItemsPerMember);
+            quantityPerMember: quantityPerMember);
 
   @override
-  bool fulfill(ListAppUser member, int quantityFulfilled) {
+  bool fulfill({required ListAppUser member, int quantityFulfilled = 1}) {
     // TODO control all constraints of this item and list
     _fulfillers[member] = quantityFulfilled;
     return quantityFulfilled > 0;
@@ -189,4 +195,9 @@ class MultiFulfillmentMemberItem extends BaseItem {
   bool unfulfill(ListAppUser member) {
     return _fulfillers.remove(member) != null;
   }
+
+  factory MultiFulfillmentMemberItem.fromJson(Map<String, dynamic> json) =>
+      _$MultiFulfillmentMemberItemFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MultiFulfillmentMemberItemToJson(this);
 }

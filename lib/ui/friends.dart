@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-
-import 'package:mobile_applications/ui/navigation_drawer.dart';
-import 'package:mobile_applications/ui/new_list.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/ui/navigation_drawer.dart';
 
 class FriendsPage extends StatefulWidget {
   static final String routeName = "/friends";

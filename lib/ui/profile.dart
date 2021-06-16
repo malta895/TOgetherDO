@@ -3,12 +3,11 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:provider/provider.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:tuple/tuple.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -111,8 +110,7 @@ class _ProfilePage extends State<ProfilePage> {
                           .update({'email': newEmail!});
                       Navigator.pop(context);
                     } else {}
-                  })*/
-                  ;
+                  });*/
                 },
               ),
             ],

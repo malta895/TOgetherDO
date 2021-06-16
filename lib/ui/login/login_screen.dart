@@ -1,13 +1,13 @@
-import 'package:flutter/scheduler.dart' show timeDilation;
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_applications/services/authentication.dart';
+import 'package:provider/provider.dart';
+
 import '../../constants.dart';
 import '../home_lists.dart';
 import 'custom_route.dart';
-import 'package:email_validator/email_validator.dart';
-import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
   static const routeName = '/auth';

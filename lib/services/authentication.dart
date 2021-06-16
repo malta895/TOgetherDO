@@ -1,10 +1,9 @@
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 ///A wrapper of FirebaseAuth, that provides a better interface to the login ui
 ///It is used with a Provider, get it with Provider.of(context).read<ListAppAuthProvider>()
@@ -60,6 +59,7 @@ class ListAppAuthProvider {
     try {
       UserCredential userCredential = await firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
+      log(userCredential.toString());
 
       return null;
     } on FirebaseAuthException catch (e) {
@@ -85,6 +85,9 @@ class ListAppAuthProvider {
     try {
       UserCredential userCredential = await firebaseAuth
           .signInWithEmailAndPassword(email: email, password: password);
+
+      log(userCredential.toString());
+      print(userCredential);
 
       return null;
     } on FirebaseAuthException catch (e) {
@@ -126,7 +129,7 @@ class ListAppAuthProvider {
 
       UserCredential userCredential =
           await firebaseAuth.signInWithCredential(credential);
-      print(userCredential);
+      log(userCredential.toString());
       return null;
     } on FirebaseAuthException catch (e) {
       log(e.message ?? 'null error message');
@@ -155,6 +158,7 @@ Sorry for the inconvenience""";
 
       UserCredential userCredential =
           await firebaseAuth.signInWithCredential(facebookAuthCredential);
+      log(userCredential.toString());
     } on FirebaseAuthException catch (e) {
       return _switchErrorCode(e.code);
     }

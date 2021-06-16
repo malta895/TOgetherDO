@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:provider/provider.dart';
 
 import 'navigation_drawer.dart';
-import 'theme.dart';
 
 class SettingsPage extends StatefulWidget {
   static final String routeName = "/settings";
@@ -40,7 +38,7 @@ class _SettingsPage extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    ThemeChanger _themeChanger = Provider.of<ThemeChanger>(context);
+    // ThemeChanger _themeChanger = Provider.of<ThemeChanger>(context);
 
     return Scaffold(
       appBar: AppBar(

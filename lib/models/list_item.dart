@@ -36,11 +36,10 @@ abstract class BaseItem extends ChangeNotifier {
 
   List<ListAppUser> getFulfillers();
 
-    factory BaseItem.fromJson(Map<String, dynamic> json) =>
+  factory BaseItem.fromJson(Map<String, dynamic> json) =>
       _$BaseItemFromJson(json);
 
   Map<String, dynamic> toJson() => _$BaseItemToJson(this);
-
 }
 
 //This item can have just one fulfiller

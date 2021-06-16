@@ -68,6 +68,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  flutter_driver:
+    sdk: flutter
+
+  test: any
+
   # Needed to rename Android buildId, see https://pub.dev/packages/rename
   # rename: "1.2.0"
 

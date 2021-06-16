@@ -83,6 +83,7 @@ class SimpleItem extends BaseItem {
     return _fulfiller != null;
   }
 
+  //QUESTION: why do we have quantityFulfilled for SimpleItem?
   @override
   bool fulfill(ListAppUser member, int quantityFulfilled) {
     if (_fulfiller == null) {

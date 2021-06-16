@@ -5,36 +5,6 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'user.dart';
 
-/// The list. Can be of various inherited types
-class ListAppList {
-  /// the id provided by the data source
-  final String? databaseId;
-  final String name;
-  final String? description;
-
-  //Set and not List because Sets have unique elements
-  late Set<ListAppUser> members;
-
-  late Set<BaseItem> items;
-
-  ListAppList({this.databaseId, required this.name, this.description});
-}
-
-class ListAppFulfillment {
-  // the user who completed the list item
-  final ListAppUser member;
-
-  // The quantity completed by the user. At least can be 1
-  final int quantityCompleted;
-  // if the list item has a price, this contains the amount countributed by the user
-  final double priceContribution;
-
-  ListAppFulfillment(
-      {required this.member,
-      required this.quantityCompleted,
-      required this.priceContribution});
-}
-
 //Any type of item. the specific types will implement in different ways the methods
 abstract class BaseItem extends ChangeNotifier {
   final String? databaseId;

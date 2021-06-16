@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:mobile_applications/models/app_list.dart';
+import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/ui/list_view_page.dart';
+import 'package:mobile_applications/models/list_item.dart';
 
 class NewListItem extends StatelessWidget {
   @override

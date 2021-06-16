@@ -6,9 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/ui/list_view_page.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/new_list.dart';
-import 'package:mobile_applications/models/app_list.dart';
-
-import 'package:mobile_applications/ui/new_list.dart';
+import 'package:mobile_applications/models/list.dart';
 
 class ListHomePage extends StatefulWidget {
   static final String routeName = "/home";

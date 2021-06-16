@@ -1,3 +1,4 @@
+import 'package:mobile_applications/models/list_item.dart';
 import 'dart:math' as math;
 import 'dart:collection';
 
@@ -5,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:mobile_applications/ui/new_item.dart';
-import 'package:mobile_applications/models/app_list.dart';
+import 'package:mobile_applications/models/list.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 import '../models/user.dart';

@@ -1,5 +1,5 @@
+import 'package:mobile_applications/models/list_item.dart';
 import 'package:test/test.dart';
-import 'package:mobile_applications/models/app_list.dart';
 import 'package:mobile_applications/models/user.dart';
 
 void main() {

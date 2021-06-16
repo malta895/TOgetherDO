@@ -12,7 +12,7 @@ class ListAppUserManager {
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
 
   final _usersCollection = FirebaseFirestore.instance
-      .collection(ListAppUser.COLLECTION_NAME)
+      .collection(ListAppUser.collectionName)
       .withConverter<ListAppUser>(
           fromFirestore: (snapshots, _) =>
               ListAppUser.fromJson(snapshots.data()!),

@@ -1,11 +1,15 @@
 // This model represents a list of our application
 import 'dart:core';
 
+import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/list_item.dart';
 
 import 'user.dart';
 
+part 'list.g.dart';
+
 /// The list. Can be of various inherited types
+@JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class ListAppList {
   static const String collectionName = 'lists';
 
@@ -22,9 +26,9 @@ class ListAppList {
   ListAppList({this.databaseId, required this.name, this.description});
 
   factory ListAppList.fromJson(Map<String, dynamic> json) =>
-      throw UnimplementedError();
+      _$ListAppListFromJson(json);
 
-  Map<String, dynamic> toJson() => throw UnimplementedError();
+  Map<String, dynamic> toJson() => _$ListAppListToJson(this);
 }
 
 class ListAppFulfillment {

@@ -3,9 +3,14 @@ import 'dart:collection';
 import 'dart:core';
 
 import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
+
 import 'user.dart';
 
+part 'list_item.g.dart';
+
 //Any type of item. the specific types will implement in different ways the methods
+@JsonSerializable() // bsee https://flutter.dev/docs/development/data-and-backend/json#code-generation
 abstract class BaseItem extends ChangeNotifier {
   final String? databaseId;
   final String name;
@@ -30,6 +35,12 @@ abstract class BaseItem extends ChangeNotifier {
   bool unfulfill(ListAppUser member);
 
   List<ListAppUser> getFulfillers();
+
+    factory BaseItem.fromJson(Map<String, dynamic> json) =>
+      _$BaseItemFromJson(json);
+
+  Map<String, dynamic> toJson() => _$BaseItemToJson(this);
+
 }
 
 //This item can have just one fulfiller

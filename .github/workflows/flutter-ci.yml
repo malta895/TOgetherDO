@@ -32,7 +32,7 @@ jobs:
     - run: flutter analyze --no-fatal-warnings --no-fatal-infos
     
     # Run widget tests for our flutter project.
-    # - run: flutter test
+    - run: flutter test -r expanded
     
     # Build apk.
     - run: flutter build apk

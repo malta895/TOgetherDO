@@ -32,12 +32,24 @@ void main() {
       await tester.pumpWidget(createHomeScreen());
       expect(find.byType(ListView), findsOneWidget);
     });
-    testWidgets('Testing Scrolling', (tester) async {
+    /*testWidgets('Testing Scrolling', (tester) async {
       await tester.pumpWidget(createHomeScreen());
       expect(find.text('Item 0'), findsOneWidget);
       await tester.fling(find.byType(ListView), Offset(0, -200), 3000);
       await tester.pumpAndSettle();
       expect(find.text('Item 0'), findsNothing);
+    });*/
+    testWidgets('Testing tap on list', (tester) async {
+      await tester.pumpWidget(createHomeScreen());
+      await tester.tap(find.byKey(Key("Item tile")).first);
+      await tester.pumpAndSettle(Duration(seconds: 1));
+      expect(find.text("Buy groceries"), findsOneWidget);
+    });
+    testWidgets('Testing tap on "New List" button', (tester) async {
+      await tester.pumpWidget(createHomeScreen());
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle(Duration(seconds: 1));
+      expect(find.textContaining("I am the only one"), findsOneWidget);
     });
     /*testWidgets('Testing IconButtons', (tester) async {
       await tester.pumpWidget(createHomeScreen());

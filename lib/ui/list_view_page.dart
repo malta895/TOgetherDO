@@ -146,6 +146,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
     switch (aListItem.runtimeType) {
       case SimpleItem:
         return CheckboxListTile(
+          activeColor: Theme.of(context).accentColor,
           title: aListItem.isFulfilled()
               ? Row(
                   mainAxisSize: MainAxisSize.max,
@@ -196,6 +197,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
         );
       case MultiFulfillmentItem:
         return CheckboxListTile(
+          activeColor: Theme.of(context).accentColor,
           title: aListItem.isFulfilled()
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

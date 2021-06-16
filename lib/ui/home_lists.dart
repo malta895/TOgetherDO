@@ -66,6 +66,7 @@ class _ListHomePage extends State<ListHomePage> {
           width: 0.8,
         ))),
         child: ListTile(
+          key: Key("Item tile"),
           title: Text(
             aList.name,
             style: TextStyle(fontWeight: FontWeight.bold),

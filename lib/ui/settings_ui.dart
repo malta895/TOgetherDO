@@ -152,6 +152,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       style: TextStyle(fontSize: 16, color: Colors.grey)),
                   trailing: Consumer<ThemeChanger>(
                     builder: (context, notifier, child) => Switch(
+                        key: Key("theme setting"),
                         value: !notifier.darkThemeBool,
                         onChanged: (bool value) {
                           notifier.toggleTheme();

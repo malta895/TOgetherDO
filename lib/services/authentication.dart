@@ -1,8 +1,10 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-
 
 ///A wrapper of FirebaseAuth, that provides a better interface to the login ui
 ///It is used with a Provider, get it with Provider.of(context).read<ListAppAuthProvider>()
@@ -124,14 +126,16 @@ class ListAppAuthProvider {
 
       UserCredential userCredential =
           await firebaseAuth.signInWithCredential(credential);
+      print(userCredential);
       return null;
     } on FirebaseAuthException catch (e) {
-      print(e);
+      log(e.message ?? 'null error message');
       return _switchErrorCode(e.code);
     } on PlatformException catch (e) {
       // this happens when something is wrong in Firebase configuration, such as tokens
       // treated as an internal application error
       print(e.toString());
+      log(e.message.toString());
       return """
 This login method is not available at the moment. Please try another one.
 Sorry for the inconvenience""";

@@ -1,17 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_applications/services/authentication.dart';
-import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/friends.dart';
 import 'package:mobile_applications/ui/home_lists.dart';
-
 import 'package:mobile_applications/ui/login/login_screen.dart';
+import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/settings_page.dart';
 import 'package:mobile_applications/ui/settings_ui.dart';
-import 'package:provider/provider.dart';
 import 'package:mobile_applications/ui/theme.dart';
-
-import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 
 Future<void> main() async {
   // NOTE this stuff comes from login example, not sure if it is needed

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class tabs extends StatelessWidget {
+class Tabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(

@@ -13,37 +13,6 @@ class NewList extends StatelessWidget {
   }
 }
 
-class AddMember extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Column(
-          children: <Widget>[
-            Text(
-              "Add participant",
-              style: TextStyle(
-                color: Theme.of(context).textTheme.headline1!.color,
-                fontSize: 16.0,
-              ),
-            )
-          ],
-        ),
-        Column(
-          children: <Widget>[
-            IconButton(
-                // TODO: IconButton actually adds a member
-                icon: Icon(Icons.person_add,
-                    color: Theme.of(context).accentColor),
-                tooltip: 'Add a participant',
-                onPressed: () => {print("Member added")})
-          ],
-        ),
-      ],
-    );
-  }
-}
-
 class MyCustomForm extends StatefulWidget {
   @override
   _MyCustomFormState createState() => _MyCustomFormState();
@@ -72,6 +41,8 @@ class _MyCustomFormState extends State<MyCustomForm> {
 
   @override
   Widget build(BuildContext context) {
+    String? dropdownValue = 'Public list';
+    bool? checkBoxValue = false;
     // Build a Form widget using the _formKey created above.
     return Form(
       key: _formKey,
@@ -83,20 +54,19 @@ class _MyCustomFormState extends State<MyCustomForm> {
             Padding(
                 padding: EdgeInsets.only(top: 10.0),
                 child: TextFormField(
+                  cursorColor: Theme.of(context).textTheme.headline1!.color!,
                   decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(5.0),
+                      filled: true,
+                      fillColor: Colors.grey[200],
                       focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.zero,
                         borderSide: BorderSide(
                             color:
                                 Theme.of(context).textTheme.headline1!.color!,
                             width: 1.0),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color:
-                                Theme.of(context).textTheme.headline1!.color!,
-                            width: 1.0),
-                      ),
+                      border: InputBorder.none,
                       labelText: 'Enter the list title',
                       labelStyle: TextStyle(
                           color: Theme.of(context).textTheme.headline1!.color)),
@@ -107,11 +77,49 @@ class _MyCustomFormState extends State<MyCustomForm> {
                     return null;
                   },
                 )),
+            Padding(
+              padding: EdgeInsets.only(top: 15),
+              child: DropdownButtonFormField<String>(
+                value: dropdownValue,
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.headline1!.color,
+                  fontSize: 16.0,
+                ),
+                decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.zero,
+                      borderSide: BorderSide(
+                          color: Theme.of(context).textTheme.headline1!.color!,
+                          width: 1.0),
+                    ),
+                    contentPadding: EdgeInsets.all(5.0),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: InputBorder.none,
+                    labelStyle: TextStyle(
+                        color: Theme.of(context).textTheme.headline1!.color)),
+                icon: Icon(Icons.arrow_drop_down),
+                iconSize: 24,
+                elevation: 16,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    dropdownValue = newValue!;
+                  });
+                },
+                items: <String>['Public list', 'Private list']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ),
             DropdownMenu(),
             AddMember(),
             Padding(
               padding:
-                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 0),
+                  const EdgeInsets.symmetric(vertical: 15.0, horizontal: 0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   primary: Theme.of(context).accentColor,
@@ -137,6 +145,30 @@ class _MyCustomFormState extends State<MyCustomForm> {
   }
 }
 
+class AddMember extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: 15),
+      child: ListTile(
+          contentPadding: EdgeInsets.all(5.0),
+          title: Text(
+            "Add a participant",
+            style: TextStyle(
+                fontSize: 16,
+                color: Theme.of(context).textTheme.headline1!.color),
+          ),
+          tileColor: Colors.grey[200],
+          trailing: IconButton(
+              icon:
+                  Icon(Icons.person_add, color: Theme.of(context).accentColor),
+              onPressed: () {
+                print("Member added");
+              })),
+    );
+  }
+}
+
 class _DropdownMenuState extends State<DropdownMenu> {
   String? dropdownValue = 'Public list';
   bool? checkBoxValue = false;
@@ -146,49 +178,26 @@ class _DropdownMenuState extends State<DropdownMenu> {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          DropdownButton<String>(
-            value: dropdownValue,
-            icon: Icon(Icons.arrow_drop_down),
-            iconSize: 24,
-            elevation: 16,
-            style: TextStyle(
-              color: Theme.of(context).textTheme.headline1!.color,
-              fontSize: 16.0,
-            ),
-            underline: Container(
-              height: 2,
-              color: Theme.of(context).textTheme.headline1!.color,
-            ),
-            onChanged: (newValue) {
-              setState(() {
-                dropdownValue = newValue;
-              });
-            },
-            items: <String>['Public list', 'Private list']
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-          ),
-          Row(
-            children: [
-              Text("I am the only one who can add participants",
+          Padding(
+            padding: EdgeInsets.only(top: 15),
+            child: CheckboxListTile(
+                contentPadding: EdgeInsets.all(5.0),
+                title: Text(
+                  'I am the only one who can add participants',
                   style: TextStyle(
                     color: Theme.of(context).textTheme.headline1!.color,
                     fontSize: 16.0,
-                  )),
-              Checkbox(
-                  value: checkBoxValue,
-                  activeColor: Theme.of(context).accentColor,
-                  onChanged: (newValue) {
-                    setState(() {
-                      checkBoxValue = newValue;
-                    });
-                  })
-            ],
-          )
+                  ),
+                ),
+                value: checkBoxValue,
+                tileColor: Colors.grey[200],
+                activeColor: Theme.of(context).accentColor,
+                onChanged: (newValue) {
+                  setState(() {
+                    checkBoxValue = newValue;
+                  });
+                }),
+          ),
         ]);
   }
 }

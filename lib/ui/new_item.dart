@@ -57,14 +57,19 @@ class _MyCustomFormState extends State<MyCustomForm> {
                 padding: EdgeInsets.only(top: 10.0),
                 child: TextFormField(
                   controller: titleController,
+                  cursorColor: Theme.of(context).textTheme.headline1!.color!,
                   decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(5.0),
+                      filled: true,
+                      fillColor: Colors.grey[200],
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black, width: 1.0),
+                        borderRadius: BorderRadius.zero,
+                        borderSide: BorderSide(
+                            color:
+                                Theme.of(context).textTheme.headline1!.color!,
+                            width: 1.0),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black, width: 1.0),
-                      ),
+                      border: InputBorder.none,
                       labelText: 'Enter the item title',
                       labelStyle: TextStyle(
                           color: Theme.of(context).textTheme.headline1!.color)),
@@ -154,108 +159,121 @@ class _DropdownMenuState extends State<DropdownMenu> {
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: <
         Widget>[
-      DropdownButton<String>(
-        value: dropdownValue,
-        icon: Icon(Icons.arrow_drop_down),
-        iconSize: 24,
-        elevation: 16,
-        style: TextStyle(
-          color: Theme.of(context).textTheme.headline1!.color,
-          fontSize: 16.0,
+      Padding(
+        padding: EdgeInsets.only(top: 15),
+        child: DropdownButtonFormField<String>(
+          value: dropdownValue,
+          style: TextStyle(
+            color: Theme.of(context).textTheme.headline1!.color,
+            fontSize: 16.0,
+          ),
+          decoration: InputDecoration(
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.zero,
+                borderSide: BorderSide(
+                    color: Theme.of(context).textTheme.headline1!.color!,
+                    width: 1.0),
+              ),
+              contentPadding: EdgeInsets.all(5.0),
+              filled: true,
+              fillColor: Colors.grey[200],
+              border: InputBorder.none,
+              labelStyle: TextStyle(
+                  color: Theme.of(context).textTheme.headline1!.color)),
+          icon: Icon(Icons.arrow_drop_down),
+          iconSize: 24,
+          elevation: 16,
+          onChanged: (String? newValue) {
+            setState(() {
+              dropdownValue = newValue!;
+            });
+            hideMultipleSelection();
+          },
+          items: <String>[
+            'Simple item',
+            'Multiple instance item',
+            'Multiple people item'
+          ].map<DropdownMenuItem<String>>((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value),
+            );
+          }).toList(),
         ),
-        underline: Container(
-          height: 2,
-          color: Colors.black,
-        ),
-        onChanged: (String? newValue) {
-          setState(() {
-            dropdownValue = newValue!;
-          });
-          hideMultipleSelection();
-        },
-        items: <String>[
-          'Simple item',
-          'Multiple instance item',
-          'Multiple people item'
-        ].map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        }).toList(),
       ),
       Visibility(
           visible: visibleItem,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                  child: Text('Number of item: ',
-                      style: TextStyle(
-                        color: Theme.of(context).textTheme.headline1!.color,
-                        fontSize: 16.0,
-                      ))),
-              TextButton(
-                child: Icon(
-                  Icons.remove,
-                  color: Theme.of(context).textTheme.headline1!.color,
-                ),
-                // minWidth: 5.0,
-                onPressed: decrementCounter,
-              ),
-              Container(
-                  padding: const EdgeInsets.all(4.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                        color: Theme.of(context).textTheme.headline1!.color!),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text("$counter",
-                      style: TextStyle(
-                          color: Theme.of(context).textTheme.headline1!.color,
-                          fontSize: 20.0))),
-              TextButton(
-                child: Icon(Icons.add,
+          child: Padding(
+            padding: EdgeInsets.only(top: 15),
+            child: ListTile(
+              contentPadding: EdgeInsets.all(5.0),
+              title: Text(
+                "Number of item: ",
+                style: TextStyle(
+                    fontSize: 16,
                     color: Theme.of(context).textTheme.headline1!.color),
-                onPressed: incrementCounter,
-              )
-            ],
+              ),
+              tileColor: Colors.grey[200],
+              trailing: Wrap(
+                  spacing: 6,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: <Widget>[
+                    TextButton(
+                      child: Icon(
+                        Icons.remove,
+                        color: Theme.of(context).textTheme.headline1!.color,
+                      ),
+                      // minWidth: 5.0,
+                      onPressed: decrementCounter,
+                    ),
+                    Text("$counter",
+                        style: TextStyle(
+                            color: Theme.of(context).textTheme.headline1!.color,
+                            fontSize: 20.0)),
+                    TextButton(
+                      child: Icon(Icons.add,
+                          color: Theme.of(context).textTheme.headline1!.color),
+                      onPressed: incrementCounter,
+                    )
+                  ]),
+            ),
           )),
       Visibility(
           visible: visiblePeople,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                  child: Text('Number of people: ',
-                      style: TextStyle(
-                        color: Theme.of(context).textTheme.headline1!.color,
-                        fontSize: 16.0,
-                      ))),
-              TextButton(
-                child: Icon(
-                  Icons.remove,
-                  color: Theme.of(context).textTheme.headline1!.color,
-                ),
-                onPressed: decrementCounter,
-              ),
-              Container(
-                  padding: const EdgeInsets.all(4.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                        color: Theme.of(context).textTheme.headline1!.color!),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text("$counter",
-                      style: TextStyle(
-                          color: Theme.of(context).textTheme.headline1!.color,
-                          fontSize: 20.0))),
-              TextButton(
-                child: Icon(Icons.add,
+          child: Padding(
+            padding: EdgeInsets.only(top: 15),
+            child: ListTile(
+              contentPadding: EdgeInsets.all(5.0),
+              title: Text(
+                "Number of item: ",
+                style: TextStyle(
+                    fontSize: 16,
                     color: Theme.of(context).textTheme.headline1!.color),
-                onPressed: incrementCounter,
-              )
-            ],
+              ),
+              tileColor: Colors.grey[200],
+              trailing: Wrap(
+                  spacing: 6,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: <Widget>[
+                    TextButton(
+                      child: Icon(
+                        Icons.remove,
+                        color: Theme.of(context).textTheme.headline1!.color,
+                      ),
+                      // minWidth: 5.0,
+                      onPressed: decrementCounter,
+                    ),
+                    Text("$counter",
+                        style: TextStyle(
+                            color: Theme.of(context).textTheme.headline1!.color,
+                            fontSize: 20.0)),
+                    TextButton(
+                      child: Icon(Icons.add,
+                          color: Theme.of(context).textTheme.headline1!.color),
+                      onPressed: incrementCounter,
+                    )
+                  ]),
+            ),
           ))
     ]);
   }

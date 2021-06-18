@@ -28,9 +28,12 @@ dependencies:
 
   # used to choose the number of people of a list
   numberpicker: ^2.1.1
+
   cupertino_icons: ^1.0.0
   shared_preferences: '>2.0.0'
   settings_ui: ^1.0.0
+  permission_handler: ^8.1.1
+  app_settings: ^4.1.0
 
   # for changing the theme
   provider: ^5.0.0

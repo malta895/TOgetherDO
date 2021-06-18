@@ -3,6 +3,8 @@ import 'package:mobile_applications/services/shared_pref.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/theme.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:app_settings/app_settings.dart';
 
 import 'package:provider/provider.dart';
 
@@ -126,8 +128,16 @@ class SettingsScreen extends StatefulWidget {
 }*/
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  Future<PermissionStatus> provaNotifiche() async {
+    Permission.camera.request();
+    return Permission.notification.status;
+  }
+
   @override
   Widget build(BuildContext context) {
+    provaNotifiche().then((value) {
+      print(value);
+    });
     return Scaffold(
         appBar: AppBar(title: Text('Settings')),
         drawer: ListAppNavDrawer(SettingsScreen.routeName),
@@ -190,16 +200,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 width: 0.8,
               ))),
               child: ListTile(
-                  title: Text(
-                    "Allow Notifications",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: Theme.of(context).accentColor),
-                  ),
-                  subtitle: Text("Allow or disallow notifications for the app",
-                      style: TextStyle(fontSize: 16, color: Colors.grey)),
-                  trailing: Switch(value: true, onChanged: (bool value) {}))),
+                title: Text(
+                  "Manage Notifications",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Theme.of(context).accentColor),
+                ),
+                subtitle: Text("Allow or disallow notifications for the app",
+                    style: TextStyle(fontSize: 16, color: Colors.grey)),
+                onTap: () => {AppSettings.openNotificationSettings()},
+              )),
         ]));
   }
 }

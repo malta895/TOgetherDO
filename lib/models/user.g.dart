@@ -8,26 +8,23 @@ part of 'user.dart';
 
 ListAppUser _$ListAppUserFromJson(Map<String, dynamic> json) {
   return ListAppUser(
+    databaseId: json['id'] as String?,
     firstName: json['firstName'] as String,
     lastName: json['lastName'] as String,
     email: json['email'] as String,
-    username: json['username'] as String?,
+    username: json['username'],
     phoneNumber: json['phoneNumber'] as String?,
     profilePictureURL: json['profilePictureURL'] as String?,
-    friends: (json['friends'] as List<dynamic>?)
-            ?.map((e) => ListAppUser.fromJson(e as Map<String, dynamic>))
-            .toSet() ??
-        {},
   );
 }
 
 Map<String, dynamic> _$ListAppUserToJson(ListAppUser instance) =>
     <String, dynamic>{
+      'id': instance.databaseId,
       'firstName': instance.firstName,
       'lastName': instance.lastName,
       'email': instance.email,
       'username': instance.username,
       'phoneNumber': instance.phoneNumber,
       'profilePictureURL': instance.profilePictureURL,
-      'friends': instance.friends.toList(),
     };

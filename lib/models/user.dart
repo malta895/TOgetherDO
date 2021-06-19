@@ -7,29 +7,37 @@ part 'user.g.dart';
 @JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class ListAppUser {
   ///the name of the collection used as a table/collection name in the database
-  static const String COLLECTION_NAME = 'users';
+  static const String collectionName = 'users';
+
+  /// The id provided by the data source
+  @JsonKey(name: "id")
+  final String? databaseId;
 
   String firstName;
   String lastName;
   final String email;
 
-  ///The username. It is not mandatory as the email is the current authentication method
+  ///The username. By default is equal to the first part of the email, but can be changed
   String? username;
   String? phoneNumber;
   String? profilePictureURL;
 
-  @JsonKey(defaultValue: const {})
+  // @JsonKey(defaultValue: const {})
+  @JsonKey(ignore: true)
   final Set<ListAppUser> friends;
-  
-  ListAppUser(
-      {required this.firstName,
-      required this.lastName,
-      required this.email,
-      this.username,
-      this.phoneNumber,
-      this.profilePictureURL,
-      this.friends = const {},
-  });
+
+  ListAppUser({
+    this.databaseId,
+    this.firstName = '',
+    this.lastName = '',
+    required this.email,
+    username,
+    this.phoneNumber,
+    this.profilePictureURL,
+    this.friends = const {},
+  }) {
+    this.username ??= email.substring(0, email.indexOf('@'));
+  }
 
   String get fullName => firstName + ' ' + lastName;
   String get initials => firstName.substring(0, 1) + lastName.substring(0, 1);

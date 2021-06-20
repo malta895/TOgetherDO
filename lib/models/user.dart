@@ -36,7 +36,7 @@ class ListAppUser {
     this.phoneNumber,
     this.profilePictureURL,
     this.friends = const {},
-  })  : this.displayName = displayName ?? firstName + lastName,
+  })  : this.displayName = displayName ?? firstName + ' ' +  lastName,
         this.username = username ?? email.substring(0, email.indexOf('@'));
 
   String get fullName =>

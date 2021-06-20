@@ -95,8 +95,7 @@ class _ProfilePage extends State<ProfilePage> {
     final ListAppUser listAppUser =
         context.read<ListAppAuthProvider>().loggedInListAppUser;
 
-        log(listAppUser.toJson().toString());
-
+    log(listAppUser.toJson().toString());
 
     List<Tuple3<String, String, Function?>> _elements = [
       Tuple3('Username', listAppUser.username ?? '', _changeUserName),

@@ -39,7 +39,8 @@ class ListAppUser {
   })  : this.displayName = displayName ?? firstName + lastName,
         this.username = username ?? email.substring(0, email.indexOf('@'));
 
-  String get fullName => displayName.isNotEmpty ? displayName : firstName + ' ' + lastName;
+  String get fullName =>
+      displayName.isNotEmpty ? displayName : firstName + ' ' + lastName;
   String get initials => firstName.substring(0, 1) + lastName.substring(0, 1);
 
   factory ListAppUser.fromJson(Map<String, dynamic> json) =>

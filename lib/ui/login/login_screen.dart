@@ -15,10 +15,10 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
-      title: Constants.APP_NAME,
-      logo: Constants.APP_LOGO_PATH,
-      logoTag: Constants.LOGO_TAG,
-      titleTag: Constants.TITLE_TAG,
+      title: Constants.appName,
+      logo: Constants.appLogoPath,
+      logoTag: Constants.logoTag,
+      titleTag: Constants.titleTag,
       loginAfterSignUp: false,
       loginProviders: <LoginProvider>[
         LoginProvider(

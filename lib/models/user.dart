@@ -15,6 +15,7 @@ class ListAppUser {
 
   String firstName;
   String lastName;
+  String displayName;
   final String email;
 
   ///The username. By default is equal to the first part of the email, but can be changed
@@ -22,24 +23,23 @@ class ListAppUser {
   String? phoneNumber;
   String? profilePictureURL;
 
-  // @JsonKey(defaultValue: const {})
-  @JsonKey(ignore: true)
+  @JsonKey(defaultValue: const {})
   final Set<ListAppUser> friends;
 
   ListAppUser({
     this.databaseId,
     this.firstName = '',
     this.lastName = '',
+    String? displayName,
     required this.email,
-    username,
+    String? username,
     this.phoneNumber,
     this.profilePictureURL,
     this.friends = const {},
-  }) {
-    this.username ??= email.substring(0, email.indexOf('@'));
-  }
+  })  : this.displayName = displayName ?? firstName + lastName,
+        this.username = username ?? email.substring(0, email.indexOf('@'));
 
-  String get fullName => firstName + ' ' + lastName;
+  String get fullName => displayName.isNotEmpty ? displayName : firstName + ' ' + lastName;
   String get initials => firstName.substring(0, 1) + lastName.substring(0, 1);
 
   factory ListAppUser.fromJson(Map<String, dynamic> json) =>

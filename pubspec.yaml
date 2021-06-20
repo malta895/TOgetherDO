@@ -39,7 +39,7 @@ dependencies:
   provider: ^5.0.0
 
   # needed to show Toast popups
-  # fluttertoast: ^8.0.6
+  fluttertoast: ^8.0.7
 
   # Firebase stuff
   firebase_core: "^1.1.1"

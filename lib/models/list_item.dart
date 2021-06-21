@@ -11,6 +11,7 @@ part 'list_item.g.dart';
 
 ///Any type of item. the specific types will implement in different ways the methods
 abstract class BaseItem extends ChangeNotifier {
+  static const String collectionName = 'items';
   final String? databaseId;
   final String name;
   final String? description;
@@ -117,6 +118,7 @@ class MultiFulfillmentItem extends BaseItem {
 
   @override
   bool fulfill({required ListAppUser member, int quantityFulfilled = 1}) {
+    notifyListeners();
     return _fulfillers.add(member);
   }
 

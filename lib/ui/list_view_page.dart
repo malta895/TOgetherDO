@@ -5,6 +5,8 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:mobile_applications/ui/new_item.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:numberpicker/numberpicker.dart';
@@ -25,7 +27,7 @@ class ListViewRoute extends StatefulWidget {
           username: "lawfriends",
           firstName: "Lorenzo",
           lastName: "Amici",
-          email: "lawfriends@gmail.com"),
+          email: "lawfriends12@gmail.com"),
       ListAppUser(
           username: "malta.95",
           firstName: "Luca",
@@ -51,16 +53,14 @@ class ListViewRoute extends StatefulWidget {
       SimpleItem(
           name:
               "This is a very long item title to see how it fits in the screen"),
-      MultiFulfillmentItem(name: "Buy movie tickets", maxQuantity: 5),
+      MultiFulfillmentItem(name: "Take out old sofa", maxQuantity: 5),
       MultiFulfillmentMemberItem(
-          name: "Lord of the rings trilogy",
-          maxQuantity: 5,
-          quantityPerMember: 3),
+          name: "Buy movie tickets", maxQuantity: 5, quantityPerMember: 3),
     ]);
     aList.items.elementAt(1).fulfill(member: aList.members.elementAt(0));
     aList.items
         .elementAt(5)
-        .fulfill(member: aList.members.elementAt(0), quantityFulfilled: 3);
+        .fulfill(member: aList.members.elementAt(0), quantityFulfilled: 6);
     aList.items
         .elementAt(5)
         .fulfill(member: aList.members.elementAt(1), quantityFulfilled: 2);
@@ -147,71 +147,88 @@ class _ListViewRouteState extends State<ListViewRoute> {
         });
   }
 
+  Widget setupAlertDialogContainer(ListAppUser member) {
+    return Container(
+        decoration: BoxDecoration(
+            border: Border(
+                bottom: BorderSide(
+          color: Colors.grey,
+          width: 0.8,
+        ))),
+        child: ListTile(
+            leading: Icon(Icons.person, color: _assignedColors[member]),
+            title: Text(
+              member.firstName + ' ' + member.lastName,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, color: _assignedColors[member]),
+            )));
+  }
+
+  Widget _buildAlertDialogMembers(
+      int membersNum, Set<ListAppUser> itemMembers) {
+    return Container(
+      height: 300,
+      width: 300,
+      child: ListView.builder(
+        itemCount: membersNum,
+        itemBuilder: (context, i) {
+          return _buildMemberRow(context, itemMembers.elementAt(i));
+        },
+      ),
+    );
+  }
+
+  Widget _buildAlertDialogMembersAndQuantity(
+      int membersNum, Set<ListAppUser> itemMembers, List<int> quantities) {
+    return Container(
+      height: 300,
+      width: 300,
+      child: ListView.builder(
+        itemCount: membersNum,
+        itemBuilder: (context, i) {
+          return _buildMemberRowAndQuantity(
+              context, itemMembers.elementAt(i), quantities.elementAt(i));
+        },
+      ),
+    );
+  }
+
   Widget _buildRow(BuildContext context, BaseItem aListItem) {
     switch (aListItem.runtimeType) {
       case SimpleItem:
-        return CheckboxListTile(
-          activeColor: Theme.of(context).accentColor,
-          title: aListItem.isFulfilled()
-              ? Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      flex: 5,
-                      child: Text(
-                        aListItem.name,
-                        style: TextStyle(
-                            color: Colors.grey,
-                            decoration: TextDecoration.lineThrough),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.person,
-                            color:
-                                _assignedColors[aListItem.getFulfillers()[0]],
-                          ),
-                          Text(
-                            aListItem.getFulfillers()[0].firstName,
-                            textScaleFactor: 0.7,
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                )
-              : Text(aListItem.name),
-          value: aListItem.isFulfilled(),
-          selected: aListItem.isFulfilled(),
-          onChanged: (bool? value) {
-            // TODO make async, make not selectable until the server has responded
+        return Dismissible(
+          direction: DismissDirection.endToStart,
+          background: Container(
+            color: Colors.red,
+            child: Icon(Icons.delete),
+          ),
+          key: UniqueKey(),
+          onDismissed: (DismissDirection direction) {
             setState(() {
-              if (value == true) {
-                aListItem.fulfill(member: _member);
-              } else {
-                aListItem.unfulfill(_member);
-              }
+              _aList.items.removeWhere((element) => element == aListItem);
             });
           },
-        );
-      case MultiFulfillmentItem:
-        return CheckboxListTile(
-          activeColor: Theme.of(context).accentColor,
-          title: aListItem.isFulfilled()
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                      Expanded(flex: 5, child: Text(aListItem.name)),
+          child: CheckboxListTile(
+            activeColor: Theme.of(context).accentColor,
+            title: aListItem.isFulfilled()
+                ? Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        flex: 5,
+                        child: Text(
+                          aListItem.name,
+                          style: TextStyle(
+                              color: Colors.grey,
+                              decoration: TextDecoration.lineThrough),
+                        ),
+                      ),
                       Expanded(
                         flex: 2,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Icon(
                               Icons.person,
@@ -219,15 +236,108 @@ class _ListViewRouteState extends State<ListViewRoute> {
                                   _assignedColors[aListItem.getFulfillers()[0]],
                             ),
                             Text(
-                              "${aListItem.getFulfillers()[0].firstName} ${aListItem.quantityFulfilledBy(_member)}",
+                              aListItem.getFulfillers()[0].firstName,
                               textScaleFactor: 0.7,
                             )
                           ],
                         ),
-                      )
+                      ),
+                    ],
+                  )
+                : Text(aListItem.name),
+            value: aListItem.isFulfilled(),
+            selected: aListItem.isFulfilled(),
+            onChanged: (bool? value) {
+              // TODO make async, make not selectable until the server has responded
+              setState(() {
+                if (value == true) {
+                  aListItem.fulfill(member: _member);
+                } else {
+                  aListItem.unfulfill(_member);
+                }
+              });
+            },
+          ),
+        );
+      case MultiFulfillmentItem:
+        return CheckboxListTile(
+          activeColor: Theme.of(context).accentColor,
+          title: aListItem.quantityFulfilledBy(_member).isOdd
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                      Expanded(flex: 5, child: Text(aListItem.name)),
+                      Expanded(
+                          flex: 2,
+                          child:
+                              /* Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.person,
+                              color:
+                                  _assignedColors[aListItem.getFulfillers()[0]],
+                            ), */
+                              TextButton(
+                                  style: TextButton.styleFrom(
+                                    side: BorderSide(
+                                        color: Theme.of(context).accentColor,
+                                        width: 1),
+                                  ),
+                                  onPressed: () => showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text(aListItem.name),
+                                          content: _buildAlertDialogMembers(
+                                              aListItem.getFulfillers().length,
+                                              aListItem
+                                                  .getFulfillers()
+                                                  .toSet()),
+                                        );
+                                      }),
+                                  child: Text(
+                                    "${aListItem.getFulfillers().length}" +
+                                        " / " +
+                                        "${aListItem.maxQuantity}",
+                                    textScaleFactor: 1.2,
+                                  ))
+                          /*],
+                        ),*/
+                          )
                     ])
-              : Text(aListItem.name),
-          value: aListItem.isFulfilled(),
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                      Expanded(flex: 5, child: Text(aListItem.name)),
+                      Expanded(
+                          flex: 2,
+                          child: TextButton(
+                              style: TextButton.styleFrom(
+                                side: BorderSide(
+                                    color: Theme.of(context).accentColor,
+                                    width: 1),
+                              ),
+                              onPressed: () => showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text(aListItem.name),
+                                      content: _buildAlertDialogMembers(
+                                          aListItem.getFulfillers().length,
+                                          aListItem.getFulfillers().toSet()),
+                                    );
+                                  }),
+                              child: Text(
+                                "${aListItem.getFulfillers().length}" +
+                                    " / " +
+                                    "${aListItem.maxQuantity}",
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColor),
+                                textScaleFactor: 1.2,
+                              )))
+                    ]),
+          value: aListItem.quantityFulfilledBy(_member).isOdd,
           selected: aListItem.isFulfilled(),
           onChanged: (bool? value) {
             // TODO make async, make not selectable until the server has responded
@@ -242,8 +352,8 @@ class _ListViewRouteState extends State<ListViewRoute> {
         );
 
       case MultiFulfillmentMemberItem:
-        List<Widget> itemColumns = [];
-        for (ListAppUser member in aListItem.getFulfillers()) {
+        //List<Widget> itemColumns = [];
+        /*for (ListAppUser member in aListItem.getFulfillers()) {
           {
             itemColumns.add(Column(
               mainAxisSize: MainAxisSize.min,
@@ -258,27 +368,106 @@ class _ListViewRouteState extends State<ListViewRoute> {
                 )
               ],
             ));
-          }
-          return ListTile(
-            title: aListItem.getFulfillers().length > 0
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(flex: 5, child: Text(aListItem.name)),
-                      Expanded(
+          }*/
+        return ListTile(
+          trailing: Container(
+            width: 40,
+            child: IconButton(
+              padding: EdgeInsets.all(0),
+              icon:
+                  Icon(Icons.add_circle, color: Theme.of(context).accentColor),
+              onPressed: () => print("piu"),
+            ),
+          ),
+          title: aListItem.getFulfillers().length > 0
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      flex: 5,
+                      child: Text(aListItem.name,
+                          style: aListItem.isFulfilled()
+                              ? TextStyle(
+                                  color: Colors.grey,
+                                  decoration: TextDecoration.lineThrough)
+                              : TextStyle(
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .headline1!
+                                      .color)),
+                    ),
+                    Expanded(
                         flex: 2,
-                        child: Column(
+                        child:
+                            /*Column(
                             mainAxisSize: MainAxisSize.min,
-                            children: itemColumns),
-                      ),
-                    ],
-                  )
-                : Text(aListItem.name),
-            selected: aListItem.isFulfilled(),
-            onTap: () => _showNumberPicker(
-                context, aListItem, 0, aListItem.quantityFulfilledBy(_member)),
-          );
-        }
+                            children: itemColumns),*/
+                            TextButton(
+                                style: TextButton.styleFrom(
+                                  side: BorderSide(
+                                      color: Theme.of(context).accentColor,
+                                      width: 1),
+                                ),
+                                onPressed: () => showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                          title: Text(aListItem.name),
+                                          content:
+                                              _buildAlertDialogMembersAndQuantity(
+                                            aListItem.getFulfillers().length,
+                                            aListItem.getFulfillers().toSet(),
+                                            aListItem
+                                                .getFulfillers()
+                                                .map((member) => aListItem
+                                                    .quantityFulfilledBy(
+                                                        member))
+                                                .toList(),
+                                          ));
+                                    }),
+                                child: Text(
+                                  "${aListItem.getFulfillers().map((member) => aListItem.quantityFulfilledBy(member)).reduce((value, element) => value + element)}" +
+                                      " / " +
+                                      "${aListItem.maxQuantity}",
+                                  style: TextStyle(
+                                      color: Theme.of(context).primaryColor),
+                                  textScaleFactor: 1.2,
+                                ))),
+                  ],
+                )
+              : //Text(aListItem.name),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                  Expanded(flex: 5, child: Text(aListItem.name)),
+                  Expanded(
+                      flex: 2,
+                      child: TextButton(
+                          style: TextButton.styleFrom(
+                            side: BorderSide(
+                                color: Theme.of(context).accentColor, width: 1),
+                          ),
+                          onPressed: () => showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text(aListItem.name),
+                                  content: _buildAlertDialogMembers(
+                                      aListItem.getFulfillers().length,
+                                      aListItem.getFulfillers().toSet()),
+                                );
+                              }),
+                          child: Text(
+                            "${aListItem.getFulfillers().map((member) => aListItem.quantityFulfilledBy(member)).reduce((value, element) => value + element)}" +
+                                " / " +
+                                "${aListItem.maxQuantity}",
+                            style: TextStyle(
+                                color: Theme.of(context).primaryColor),
+                            textScaleFactor: 1.2,
+                          )))
+                ]),
+          selected: aListItem.isFulfilled(),
+          onTap: () => _showNumberPicker(
+              context, aListItem, 0, aListItem.quantityFulfilledBy(_member)),
+        );
     }
     //the code should never reach this point, but we need it for null check
     return ListTile(
@@ -303,8 +492,32 @@ class _ListViewRouteState extends State<ListViewRoute> {
             )));
   }
 
+  Widget _buildMemberRowAndQuantity(
+      BuildContext context, ListAppUser member, int quantity) {
+    return Container(
+        decoration: BoxDecoration(
+            border: Border(
+                bottom: BorderSide(
+          color: Colors.grey,
+          width: 0.8,
+        ))),
+        child: ListTile(
+            leading: Icon(Icons.person, color: _assignedColors[member]),
+            title: Text(
+              member.firstName + ' ' + member.lastName,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, color: _assignedColors[member]),
+            ),
+            trailing: Text(
+              quantity.toString(),
+              style: TextStyle(fontSize: 16),
+            )));
+  }
+
   @override
   Widget build(BuildContext context) {
+    /*SimpleItem itemFromDB = SimpleItem(name: collectionReference.data['name'])
+    _addListItem(collectionReference)*/
     return DefaultTabController(
         length: 2,
         initialIndex: 0,

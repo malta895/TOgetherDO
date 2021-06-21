@@ -128,7 +128,7 @@ class _ProfilePage extends State<ProfilePage> {
                 listAppUser.profilePictureURL == null
                     ? CircleAvatar(
                         backgroundImage:
-                            AssetImage('assets/sample_profile.png'),
+                            AssetImage('assets/sample-profile.png'),
                         radius: 70.0,
                       )
                     : CircleAvatar(

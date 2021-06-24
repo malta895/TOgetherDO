@@ -2,7 +2,9 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/services/authentication.dart';
+import 'package:mobile_applications/services/user_manager.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants.dart';
@@ -26,13 +28,63 @@ class LoginScreen extends StatelessWidget {
           callback: () async {
             return context.read<ListAppAuthProvider>().loginViaFacebook();
           },
+          providerNeedsSignUpCallback: () async {
+            return context
+                    .read<ListAppAuthProvider>()
+                    .loggedInListAppUser
+                    ?.isNew ??
+                true;
+          },
         ),
         LoginProvider(
-            icon: FontAwesomeIcons.google,
-            callback: () async {
-              return context.read<ListAppAuthProvider>().loginViaGoogle();
-            }),
+          icon: FontAwesomeIcons.google,
+          callback: () async {
+            return context.read<ListAppAuthProvider>().loginViaGoogle();
+          },
+          providerNeedsSignUpCallback: () async {
+            return context
+                    .read<ListAppAuthProvider>()
+                    .loggedInListAppUser
+                    ?.isNew ??
+                true;
+          },
+        ),
       ],
+      additionalSignupFields: [
+        UserFormField(
+            keyName: 'username',
+            displayName: 'Username',
+            icon: Icon(FontAwesomeIcons.userAlt),
+            defaultValue: context
+                    .read<ListAppAuthProvider>()
+                    .loggedInListAppUser
+                    ?.username ??
+                ''),
+        UserFormField(keyName: 'firstName', displayName: 'Name'),
+        UserFormField(keyName: 'lastName', displayName: 'Surname'),
+      ],
+      onAdditionalFieldsSubmit: (fields) async {
+        final username = fields['username'];
+        final firstName = fields['firstName'] ?? '';
+        final lastName = fields['lastName'] ?? '';
+
+        try {
+          final currentUser =
+              context.read<ListAppAuthProvider>().loggedInListAppUser;
+          if (currentUser != null) {
+            currentUser.firstName = firstName;
+            currentUser.lastName = lastName;
+            await ListAppUserManager.instance.validateUsername(username);
+            currentUser.username = username;
+            ListAppUserManager.instance.saveInstance(currentUser);
+          }
+
+          // we get here only if everything goes well
+          return null;
+        } on ListAppException catch (e) {
+          return e.message;
+        }
+      },
       // hideForgotPasswordButton: true,
       // hideSignUpButton: true,
       // messages: LoginMessages(

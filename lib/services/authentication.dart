@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -11,9 +12,7 @@ import 'package:mobile_applications/services/user_manager.dart';
 
 ///A wrapper of FirebaseAuth, that provides a better interface to the login ui
 ///It is used with a Provider, get it with Provider.of(context).read<ListAppAuthProvider>()
-class ListAppAuthProvider {
-  ListAppAuthProvider(this.firebaseAuth);
-
+class ListAppAuthProvider with ChangeNotifier {
   final FirebaseAuth firebaseAuth;
   ListAppUser? _loggedInListAppUser;
 
@@ -23,15 +22,30 @@ class ListAppAuthProvider {
   }
 
   /// returns the ListAppUser instance of the current logged in user
-  ListAppUser get loggedInListAppUser {
-    if (loggedInUser == null) {
-      _loggedInListAppUser = null;
-      throw ListAppException("No logged in user!");
-    }
-    return _loggedInListAppUser!;
+  ListAppUser? get loggedInListAppUser {
+    return _loggedInListAppUser;
   }
 
-  Stream<User?> get authState => firebaseAuth.idTokenChanges();
+  static int _initializationCounter = 0;
+
+  ListAppAuthProvider(this.firebaseAuth) {
+    // Subscribe to login/logout events
+    firebaseAuth.idTokenChanges().listen((User? user) {
+      if (user == null) {
+        _loggedInListAppUser = null;
+      } else {
+        _createListAppUser(user);
+      }
+      notifyListeners();
+    });
+
+    _initializationCounter++;
+    print('AuthProvider initialized $_initializationCounter times.');
+  }
+
+  Stream<User?> get authState {
+    return firebaseAuth.authStateChanges();
+  }
 
   Future<bool> isSomeoneLoggedIn() => authState.isEmpty;
 
@@ -41,26 +55,21 @@ class ListAppAuthProvider {
 
   ///sets the current list app user retrieving the data from database
   ///if not present, it also creates it
-  Future<void> _createListAppUser() async {
-    final currentUser = loggedInUser;
-    if (currentUser == null) {
-      throw ListAppException("No user is logged in");
-    }
-
+  Future<void> _createListAppUser(User firebaseUser) async {
     ListAppUser? listAppUser =
-        await ListAppUserManager.instance.getUserByUid(currentUser.uid);
+        await ListAppUserManager.instance.getUserByUid(firebaseUser.uid);
 
     if (listAppUser == null) {
       listAppUser = ListAppUser(
-        email: currentUser.email!,
-        databaseId: currentUser.uid,
-        displayName: currentUser.displayName,
-        phoneNumber: currentUser.phoneNumber,
-        profilePictureURL: currentUser.photoURL,
+        isNew: true,
+        email: firebaseUser.email!,
+        databaseId: firebaseUser.uid,
+        displayName: firebaseUser.displayName,
+        phoneNumber: firebaseUser.phoneNumber,
+        profilePictureURL: firebaseUser.photoURL,
       );
 
-      await ListAppUserManager.instance
-          .persistInstance(listAppUser, currentUser.uid);
+      await ListAppUserManager.instance.saveInstance(listAppUser);
     }
     _loggedInListAppUser = listAppUser;
   }
@@ -101,8 +110,6 @@ class ListAppAuthProvider {
           .createUserWithEmailAndPassword(email: email, password: password);
       log(userCredential.toString());
 
-      _createListAppUser();
-
       return null;
     } on FirebaseAuthException catch (e) {
       // see https://pub.dev/documentation/firebase_auth/latest/firebase_auth/FirebaseAuth/createUserWithEmailAndPassword.html
@@ -130,8 +137,6 @@ class ListAppAuthProvider {
 
       log(userCredential.toString());
       print(userCredential);
-
-      _createListAppUser();
 
       return null;
     } on FirebaseAuthException catch (e) {
@@ -176,8 +181,6 @@ class ListAppAuthProvider {
 
       log(userCredential.toString());
 
-      _createListAppUser();
-
       return null;
     } on FirebaseAuthException catch (e) {
       log(e.message ?? 'null error message');
@@ -209,8 +212,6 @@ Sorry for the inconvenience""";
       UserCredential userCredential =
           await firebaseAuth.signInWithCredential(facebookAuthCredential);
       log(userCredential.toString());
-
-      _createListAppUser();
     } on FirebaseAuthException catch (e) {
       return _switchErrorCode(e.code);
     }

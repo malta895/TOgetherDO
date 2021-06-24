@@ -39,7 +39,7 @@ class ListApp extends StatelessWidget {
         ChangeNotifierProvider<ListAppNavDrawerStateInfo>(
           create: (_) => ListAppNavDrawerStateInfo(),
         ),
-        Provider<ListAppAuthProvider>(
+        ChangeNotifierProvider(
             create: (_) => ListAppAuthProvider(FirebaseAuth.instance)),
         StreamProvider(
           create: (context) => context.read<ListAppAuthProvider>().authState,

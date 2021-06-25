@@ -33,9 +33,10 @@ class ListAppNavDrawer extends StatelessWidget {
   };
 
   Widget _buildUserDetailsInkWell(BuildContext context) {
-    final firebaseUser = context.read<ListAppAuthProvider>().loggedInUser!;
+    final firebaseUser =
+        context.read<ListAppAuthProvider>().loggedInListAppUser!;
     final Future<ListAppUser?> currentUser =
-        ListAppUserManager.instance.getUserByEmail(firebaseUser.email!);
+        ListAppUserManager.instance.getUserByEmail(firebaseUser.email);
 
     return FutureBuilder<ListAppUser?>(
         future: currentUser,
@@ -62,7 +63,8 @@ class ListAppNavDrawer extends StatelessWidget {
                       child: CircleAvatar(
                         backgroundImage: () {
                           //TODO add actual image from firestore
-                          final String? photoURL = firebaseUser.photoURL;
+                          final String? photoURL =
+                              firebaseUser.profilePictureURL;
 
                           if (photoURL != null) return NetworkImage(photoURL);
 

@@ -7,6 +7,7 @@ import 'package:mobile_applications/ui/list_view_page.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/new_list.dart';
 import 'package:mobile_applications/models/list.dart';
+import 'package:mobile_applications/ui/notifications.dart';
 
 class ListHomePage extends StatefulWidget {
   static final String routeName = "/home";
@@ -86,7 +87,16 @@ class _ListHomePage extends State<ListHomePage> {
         appBar: AppBar(
           title: Text(title),
           actions: [
-            Icon(Icons.search),
+            IconButton(
+              icon: Icon(Icons.notifications),
+              onPressed: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => NotificationPage()),
+                )
+              },
+              //onPressed: () => print("ciao"),
+            ),
           ],
         ),
         drawer: ListAppNavDrawer(ListHomePage.routeName),

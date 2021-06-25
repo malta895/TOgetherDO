@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/ui/friends.dart';
@@ -10,6 +11,10 @@ import 'package:mobile_applications/ui/settings_page.dart';
 import 'package:mobile_applications/ui/settings_ui.dart';
 import 'package:mobile_applications/ui/theme.dart';
 import 'package:provider/provider.dart';
+
+Future<void> _messageHandler(RemoteMessage message) async {
+  print('background message ${message.notification!.body}');
+}
 
 Future<void> main() async {
   // NOTE this stuff comes from login example, not sure if it is needed
@@ -24,6 +29,8 @@ Future<void> main() async {
   await Firebase.initializeApp();
 
   //SharedPreferences.setMockInitialValues({"darkTheme": true});
+
+  FirebaseMessaging.onBackgroundMessage(_messageHandler);
 
   runApp(ListApp());
 }

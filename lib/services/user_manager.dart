@@ -20,21 +20,13 @@ class ListAppUserManager {
               ListAppUser.fromJson(snapshots.data()!),
           toFirestore: (user, _) => user.toJson());
 
-  User _getCurrentUser() {
-    final User? currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) {
-      throw ListAppException("No user is currently logged in!");
-    }
-
-    return currentUser;
-  }
-
-  /// persists an instance of an user on firestore. If not given the uid is generated automatically
-  Future<void> persistInstance(ListAppUser user, [String? uid]) async {
-    if (uid == null) {
-      await _usersCollection.add(user);
+  /// saves an instance of an user on firestore. If not given the uid is generated automatically
+  Future<void> saveInstance(ListAppUser user) async {
+    if (user.databaseId == null) {
+      final addedInstance = await _usersCollection.add(user);
+      user.databaseId = addedInstance.id;
     } else {
-      await _usersCollection.doc(uid).set(user);
+      await _usersCollection.doc(user.databaseId).set(user);
     }
   }
 
@@ -58,28 +50,31 @@ class ListAppUserManager {
     return queryResult.size == 1;
   }
 
-  ///Updates the username on firestore. Returns `false` on failure
-  Future<bool> updateUsername(
-    String username,
-  ) async {
-    if (await usernameExists(username)) {
-      return false;
+  /// Checks if the username is not null or empty and if it is not a duplicate
+  /// return an according exception in the case
+  Future<void> validateUsername(String? username) async {
+    if (username == null || username.isEmpty) {
+      throw ListAppException('The username is empty');
     }
-
-    try {
-      await _usersCollection
-          .doc(_getCurrentUser().uid)
-          .update({'username': username});
-
-      //TODO set current ListAppUser
-      return true;
-    } on FirebaseException catch (e) {
-      print(e.message);
-      return false;
+    if (await usernameExists(username)) {
+      throw ListAppException('The username is already taken');
     }
   }
 
-  Future<ListAppUser> createNewListAppUser(ListAppUser user) async {
-    return user;
+  ///Updates the username on firestore. Returns `false` on failure
+  Future<void> updateUsername(String username, String? userId) async {
+    if (userId == null) throw ListAppException('No user is logged in.');
+
+    if (await usernameExists(username)) {
+      throw ListAppException('The username is already taken');
+    }
+
+    try {
+      await _usersCollection.doc(userId).update({'username': username});
+      //TODO update the username of the current list app user
+    } on FirebaseException catch (e) {
+      print(e.message);
+      throw ListAppException('An error occurred. Please try again later.');
+    }
   }
 }

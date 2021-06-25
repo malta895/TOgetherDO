@@ -8,7 +8,6 @@ part of 'user.dart';
 
 ListAppUser _$ListAppUserFromJson(Map<String, dynamic> json) {
   return ListAppUser(
-    databaseId: json['id'] as String?,
     firstName: json['firstName'] as String,
     lastName: json['lastName'] as String,
     displayName: json['displayName'] as String?,
@@ -25,7 +24,6 @@ ListAppUser _$ListAppUserFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$ListAppUserToJson(ListAppUser instance) =>
     <String, dynamic>{
-      'id': instance.databaseId,
       'firstName': instance.firstName,
       'lastName': instance.lastName,
       'displayName': instance.displayName,

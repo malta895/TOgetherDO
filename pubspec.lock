@@ -21,14 +21,14 @@ packages:
       name: another_flushbar
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.10.22"
+    version: "1.10.23"
   another_transformer_page_view:
     dependency: transitive
     description:
       name: another_transformer_page_view
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.1"
   app_settings:
     dependency: "direct main"
     description:
@@ -428,11 +428,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "96a5c5b378f809cbb1b6f7d98caa8ab8c7dfb8b8"
-      resolved-ref: "96a5c5b378f809cbb1b6f7d98caa8ab8c7dfb8b8"
+      ref: "711640c19f5fc7b9afe822176b3bd2db2c75cd34"
+      resolved-ref: "711640c19f5fc7b9afe822176b3bd2db2c75cd34"
       url: "https://github.com/malta895/flutter_login"
     source: git
-    version: "2.0.0-nullsafety.0"
+    version: "2.0.0"
   flutter_signin_button:
     dependency: "direct main"
     description:

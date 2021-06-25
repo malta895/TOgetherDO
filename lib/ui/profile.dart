@@ -1,10 +1,10 @@
 import 'dart:developer';
 import 'dart:ui';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/user_manager.dart';
@@ -62,14 +62,18 @@ class _ProfilePage extends State<ProfilePage> {
                     if (_newUsername.isEmpty) {
                       return;
                     }
-                    bool success = await ListAppUserManager.instance
-                        .updateUsername(_newUsername);
 
-                    if (success) {
+                    try {
+                      final currentUser =
+                          context.read<ListAppAuthProvider>().loggedInUser;
+
+                      await ListAppUserManager.instance
+                          .updateUsername(_newUsername, currentUser?.uid);
+
                       Navigator.pop(context);
-                    } else {
+                    } on ListAppException catch (e) {
                       await Fluttertoast.showToast(
-                          msg: "Username already taken.",
+                          msg: e.message,
                           toastLength: Toast.LENGTH_SHORT,
                           gravity: ToastGravity.CENTER,
                           timeInSecForIosWeb: 1,
@@ -89,11 +93,8 @@ class _ProfilePage extends State<ProfilePage> {
   //TODO implement password
 
   Widget _buildProfile(BuildContext context) {
-    //final _currentUser = context.read<ListAppAuthProvider>().loggedInUser;
-
-    // final firebaseUser = context.read<ListAppAuthProvider>().loggedInUser!;
-    final ListAppUser listAppUser =
-        context.read<ListAppAuthProvider>().loggedInListAppUser;
+    final listAppUser =
+        context.read<ListAppAuthProvider>().loggedInListAppUser!;
 
     log(listAppUser.toJson().toString());
 
@@ -139,6 +140,7 @@ class _ProfilePage extends State<ProfilePage> {
                     icon: const Icon(Icons.add_a_photo),
                     color: Colors.white,
                     onPressed: () {
+                      // TODO change propic
                       print("Photo pushed");
                     })
               ]),

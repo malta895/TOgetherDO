@@ -67,7 +67,7 @@ class ListApp extends StatelessWidget {
 class MaterialAppWithTheme extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final firebaseUser = context.watch<User?>();
+    final firebaseUser = context.read<ListAppAuthProvider>().loggedInUser;
 
     return ChangeNotifierProvider(
       create: (_) => ThemeChanger(),

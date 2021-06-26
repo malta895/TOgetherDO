@@ -10,15 +10,12 @@ class ListAppUser {
   static const String collectionName = 'users';
 
   /// The id provided by the data source
-  @JsonKey(ignore: true)
-  String? databaseId;
+  String databaseId;
 
   String firstName;
   String lastName;
   String displayName;
   final String email;
-
-  // final String lastFCMToken;
 
   ///The username. By default is equal to the first part of the email, but can be changed
   String? username;
@@ -26,18 +23,18 @@ class ListAppUser {
   String? profilePictureURL;
 
   @JsonKey(defaultValue: const {})
-  final Set<ListAppUser> friends;
+  Set<ListAppUser> friends;
 
   /// A new user that needs additional signup data
   @JsonKey(ignore: true)
   bool isNew;
 
   ListAppUser({
-    this.databaseId,
+    required this.databaseId,
+    required this.email,
     this.firstName = '',
     this.lastName = '',
     String? displayName,
-    required this.email,
     String? username,
     this.phoneNumber,
     this.profilePictureURL,

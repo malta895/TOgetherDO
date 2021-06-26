@@ -1,9 +1,11 @@
-class ListAppNotification {
+class ListAppNotification{
   String displayName;
   bool accepted;
 
-  ListAppNotification(
-    this.displayName,
-    this.accepted,
-  );
+  ListAppNotification({
+    required this.displayName,
+    required this.accepted,
+  });
+
+
 }

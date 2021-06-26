@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/models/user.dart';
 
 import 'package:mobile_applications/services/user_manager.dart';
@@ -48,6 +47,15 @@ class ListAppAuthProvider with ChangeNotifier {
 
     _initializationCounter++;
     print('AuthProvider initialized $_initializationCounter times.');
+
+    // Subscribe to user changes, e.g. username change
+    ListAppUserManager.instance.addListener(() async {
+      final uid = _loggedInListAppUser?.databaseId;
+      if (uid != null) {
+        _loggedInListAppUser =
+            await ListAppUserManager.instance.getUserByUid(uid);
+      }
+    });
   }
 
   Stream<User?> get authState {
@@ -75,8 +83,6 @@ class ListAppAuthProvider with ChangeNotifier {
         phoneNumber: firebaseUser.phoneNumber,
         profilePictureURL: firebaseUser.photoURL,
       );
-
-      print(listAppUser.toJson().toString());
 
       await ListAppUserManager.instance.saveInstance(listAppUser);
     }

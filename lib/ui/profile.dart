@@ -1,44 +1,56 @@
-import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mobile_applications/models/exception.dart';
+import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/notification_page.dart';
 import 'package:provider/provider.dart';
-import 'package:tuple/tuple.dart';
 
 class ProfilePage extends StatefulWidget {
   static final String routeName = "/profile";
 
   @override
-  _ProfilePage createState() => _ProfilePage();
+  _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _ProfilePage extends State<ProfilePage> {
+class _ProfilePageState extends State<ProfilePage> {
   final String title = 'My profile';
-  final int drawerSelectedDestination = 0;
 
-  TextEditingController _textFieldController = TextEditingController();
+  late ListAppUser _loggedInListAppUser;
+  late String _currentUsername;
+
+  @override
+  void initState() {
+    super.initState();
+    _loggedInListAppUser =
+        context.read<ListAppAuthProvider>().loggedInListAppUser!;
+
+    _currentUsername = _loggedInListAppUser.username ?? '';
+  }
 
   Future<void> _changeUserName(BuildContext context) async {
+    final textFieldController = TextEditingController(
+        text:
+            context.read<ListAppAuthProvider>().loggedInListAppUser?.username ??
+                '');
     return showDialog(
         context: context,
         builder: (context) {
           String _newUsername = '';
           // The stateful widget is necessary to keep updated the OK button enabled or disabled based on the current username value
-          return StatefulBuilder(builder: (context, setState) {
+          return StatefulBuilder(builder: (context, setDialogState) {
             return AlertDialog(
               title: Text('Enter a new username'),
               content: TextField(
-                controller: _textFieldController,
+                controller: textFieldController,
                 decoration: InputDecoration(hintText: "New name"),
                 onChanged: (value) {
-                  setState(() {
+                  setDialogState(() {
                     _newUsername = value;
                   });
                 },
@@ -70,6 +82,10 @@ class _ProfilePage extends State<ProfilePage> {
                       await ListAppUserManager.instance
                           .updateUsername(_newUsername, currentUser?.uid);
 
+                      setState(() {
+                        _currentUsername = _newUsername;
+                      });
+
                       Navigator.pop(context);
                     } on ListAppException catch (e) {
                       await Fluttertoast.showToast(
@@ -92,15 +108,6 @@ class _ProfilePage extends State<ProfilePage> {
   //TODO implement password
 
   Widget _buildProfile(BuildContext context) {
-    final listAppUser =
-        context.read<ListAppAuthProvider>().loggedInListAppUser!;
-
-    List<Tuple3<String, String, Function?>> _elements = [
-      Tuple3('Username', listAppUser.username ?? '', _changeUserName),
-      Tuple3('Email', listAppUser.email, null),
-      // Tuple2('Username', _listAppUser!.displayName)
-    ];
-
     return Container(
         child: Column(children: <Widget>[
       Container(
@@ -123,15 +130,15 @@ class _ProfilePage extends State<ProfilePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Stack(alignment: const Alignment(1.2, 1.2), children: [
-                listAppUser.profilePictureURL == null
+                _loggedInListAppUser.profilePictureURL == null
                     ? CircleAvatar(
                         backgroundImage:
                             AssetImage('assets/sample-profile.png'),
                         radius: 70.0,
                       )
                     : CircleAvatar(
-                        backgroundImage:
-                            NetworkImage(listAppUser.profilePictureURL!),
+                        backgroundImage: NetworkImage(
+                            _loggedInListAppUser.profilePictureURL!),
                         radius: 70.0),
                 IconButton(
                     icon: const Icon(Icons.add_a_photo),
@@ -145,7 +152,7 @@ class _ProfilePage extends State<ProfilePage> {
                 height: 30.0,
               ),
               Text(
-                listAppUser.fullName,
+                _loggedInListAppUser.fullName,
                 style: TextStyle(
                   fontSize: 24.0,
                   fontWeight: FontWeight.bold,
@@ -155,18 +162,41 @@ class _ProfilePage extends State<ProfilePage> {
             ],
           ))),
       Expanded(
-          child: ListView.builder(
-        itemCount: _elements.length,
-        itemBuilder: (context, i) {
-          return _buildRow(context, _elements[i].item1, _elements[i].item2,
-              _elements[i].item3);
-        },
+          child: ListView(
+        children: [_buildUsernameRow(context), _buildEmailRow(context)],
       ))
     ]));
   }
 
+  Widget _buildUsernameRow(BuildContext context) {
+    return _buildRow(
+        context: context,
+        title: 'Username',
+        text: Text(_currentUsername,
+            style: TextStyle(
+                fontSize: 16,
+                color: Theme.of(context).textTheme.headline1!.color)),
+        onModify: () {
+          _changeUserName(context);
+        });
+  }
+
+  Widget _buildEmailRow(BuildContext context) {
+    return _buildRow(
+      context: context,
+      title: 'Email',
+      text: Text(_loggedInListAppUser.email,
+          style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).textTheme.headline1!.color)),
+    );
+  }
+
   Widget _buildRow(
-      BuildContext context, String key, String value, Function? function) {
+      {required BuildContext context,
+      required String title,
+      required Text text,
+      Function()? onModify}) {
     return Container(
         decoration: BoxDecoration(
             border: Border(
@@ -176,22 +206,19 @@ class _ProfilePage extends State<ProfilePage> {
           width: 0.8,
         ))),
         child: ListTile(
-            title: Text(
-              key,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: Colors.pinkAccent[700]),
-            ),
-            subtitle: Text(value,
-                style: TextStyle(
-                    fontSize: 16,
-                    color: Theme.of(context).textTheme.headline1!.color)),
-            trailing: IconButton(
-                icon: const Icon(Icons.create),
-                onPressed: () {
-                  function?.call(context);
-                })));
+          title: Text(
+            title,
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Colors.pinkAccent[700]),
+          ),
+          subtitle: text,
+          trailing: IconButton(
+            icon: const Icon(Icons.create),
+            onPressed: onModify,
+          ),
+        ));
   }
 
   @override
@@ -209,7 +236,6 @@ class _ProfilePage extends State<ProfilePage> {
                     MaterialPageRoute(builder: (context) => NotificationPage()),
                   )
                 },
-                //onPressed: () => print("ciao"),
               ),
             ]),
         drawer: ListAppNavDrawer(ProfilePage.routeName),

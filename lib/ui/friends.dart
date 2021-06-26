@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
-import 'package:mobile_applications/ui/notifications.dart';
+import 'package:mobile_applications/ui/notification_page.dart';
 
 class FriendsPage extends StatefulWidget {
   static final String routeName = "/friends";
@@ -16,14 +16,14 @@ class _FriendsList extends State<FriendsPage> {
 
   //TODO fetch actual data from backend
   final ListAppUser _user = ListAppUser(
-    databaseId: "shdopjf",
+      databaseId: "shdopjf",
       firstName: "Luca",
       lastName: "Maltagliati",
       email: "luca.malta@mail.com",
       username: "malta",
       friends: {
         ListAppUser(
-          databaseId: 'sdifasp',
+            databaseId: 'sdifasp',
             firstName: "Lorenzo",
             lastName: "Amici",
             email: "lorenzo.amici@mail.com",

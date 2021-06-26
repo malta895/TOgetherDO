@@ -8,7 +8,7 @@ import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
-import 'package:mobile_applications/ui/notifications.dart';
+import 'package:mobile_applications/ui/notification_page.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 
@@ -88,7 +88,6 @@ class _ProfilePage extends State<ProfilePage> {
           });
         });
   }
-
 
   //TODO implement password
 

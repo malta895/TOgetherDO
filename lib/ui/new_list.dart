@@ -155,13 +155,16 @@ class _AddMember extends State<AddMember> {
             firstName: "Lorenzo",
             lastName: "Amici",
             email: "lorenzo.amici@mail.com",
-            username: "lorenzo.amici@mail.com"),
+            username: "lorenzo.amici@mail.com",
+            databaseId: ''),
         ListAppUser(
             firstName: "Mario",
             lastName: "Rossi",
             email: "mario.rossi@mail.com",
-            username: "mario.rossi@mail.com"),
-      });
+            username: "mario.rossi@mail.com",
+            databaseId: ''),
+      },
+      databaseId: '');
 
   int? selectedRadio = 0;
 

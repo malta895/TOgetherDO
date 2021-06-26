@@ -9,6 +9,7 @@ import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
+import 'package:mobile_applications/ui/notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 
@@ -200,7 +201,19 @@ class _ProfilePage extends State<ProfilePage> {
     return Scaffold(
         appBar: AppBar(
             // leading: Icon(Icons.menu), // not needed, automatically added by Drawer
-            title: Text(title)),
+            title: Text(title),
+            actions: [
+              IconButton(
+                icon: Icon(Icons.notifications),
+                onPressed: () => {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => NotificationPage()),
+                  )
+                },
+                //onPressed: () => print("ciao"),
+              ),
+            ]),
         drawer: ListAppNavDrawer(ProfilePage.routeName),
         body: _buildProfile(context));
   }

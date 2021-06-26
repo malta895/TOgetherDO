@@ -123,7 +123,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
   }
 
   void _showNumberPicker(BuildContext context, BaseItem aListItem, int minValue,
-      int initialValue) {
+      int maxValue, int initialValue) {
     showDialog<void>(
         context: context,
         builder: (BuildContext context) {
@@ -134,7 +134,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
               title: Text("How many times have you completed this item?"),
               content: NumberPicker(
                 minValue: minValue,
-                maxValue: 50,
+                maxValue: maxValue,
                 value: _currentValue,
                 onChanged: (value) => setState(() {
                   //TODO Maybe better to put the buttons
@@ -532,7 +532,12 @@ class _ListViewRouteState extends State<ListViewRoute> {
                   padding: EdgeInsets.all(0),
                   icon: Icon(Icons.add_circle,
                       color: Theme.of(context).accentColor),
-                  onPressed: () => print("piu"),
+                  onPressed: () => _showNumberPicker(
+                      context,
+                      aListItem,
+                      0,
+                      aListItem.quantityPerMember,
+                      aListItem.quantityFulfilledBy(_member)),
                 ),
               ),
               title: aListItem.getFulfillers().length > 0
@@ -631,7 +636,11 @@ class _ListViewRouteState extends State<ListViewRoute> {
                                   )))
                         ]),
               selected: aListItem.isFulfilled(),
-              onTap: () => _showNumberPicker(context, aListItem, 0,
+              onTap: () => _showNumberPicker(
+                  context,
+                  aListItem,
+                  0,
+                  aListItem.quantityPerMember,
                   aListItem.quantityFulfilledBy(_member)),
             ));
     }

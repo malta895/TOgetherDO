@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
+import 'package:mobile_applications/ui/notifications.dart';
 
 class FriendsPage extends StatefulWidget {
   static final String routeName = "/friends";
@@ -63,7 +64,16 @@ class _FriendsList extends State<FriendsPage> {
           // leading: Icon(Icons.menu), // not needed, automatically added by Drawer
           title: Text(title),
           actions: [
-            Icon(Icons.search),
+            IconButton(
+              icon: Icon(Icons.notifications),
+              onPressed: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => NotificationPage()),
+                )
+              },
+              //onPressed: () => print("ciao"),
+            ),
           ],
         ),
         drawer: ListAppNavDrawer(FriendsPage.routeName),

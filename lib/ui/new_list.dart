@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/authentication.dart';
+import 'package:provider/provider.dart';
 
 class NewList extends StatelessWidget {
   @override
@@ -25,24 +29,14 @@ class DropdownMenu extends StatefulWidget {
   _DropdownMenuState createState() => _DropdownMenuState();
 }
 
-/* class Counter extends StatefulWidget {
-  _CounterState createState() => _CounterState();
-} */
-
-// Define a corresponding State class.
-// This class holds data related to the form.
 class _MyCustomFormState extends State<MyCustomForm> {
-  // Create a global key that uniquely identifies the Form widget
-  // and allows validation of the form.
-  //
-  // Note: This is a `GlobalKey<FormState>`,
-  // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     String? dropdownValue = 'Public list';
     bool? checkBoxValue = false;
+
     // Build a Form widget using the _formKey created above.
     return Form(
       key: _formKey,
@@ -145,26 +139,159 @@ class _MyCustomFormState extends State<MyCustomForm> {
   }
 }
 
-class AddMember extends StatelessWidget {
+class AddMember extends StatefulWidget {
+  @override
+  _AddMember createState() => _AddMember();
+}
+
+class _AddMember extends State<AddMember> {
+  final ListAppUser _user = ListAppUser(
+      firstName: "Luca",
+      lastName: "Maltagliati",
+      email: "luca.malta@mail.com",
+      username: "malta",
+      friends: {
+        ListAppUser(
+            firstName: "Lorenzo",
+            lastName: "Amici",
+            email: "lorenzo.amici@mail.com",
+            username: "lorenzo.amici@mail.com"),
+        ListAppUser(
+            firstName: "Mario",
+            lastName: "Rossi",
+            email: "mario.rossi@mail.com",
+            username: "mario.rossi@mail.com"),
+      });
+
+  int? selectedRadio = 0;
+
+  /*Widget _buildAlertDialogMembers(
+      int membersNum, Set<ListAppUser> itemMembers) {
+    return Container(
+      height: 300,
+      width: 300,
+      child: ListView.builder(
+        itemCount: membersNum,
+        itemBuilder: (context, i) {
+          return _buildMemberRow(context, itemMembers.elementAt(i));
+        },
+      ),
+    );
+  }
+
+  Widget _buildMemberRow(BuildContext context, ListAppUser member) {
+    return Container(
+        decoration: BoxDecoration(
+            border: Border(
+                bottom: BorderSide(
+          color: Colors.grey,
+          width: 0.8,
+        ))),
+        child: CheckboxListTile(
+            value: selected,
+            onChanged: (bool? newValue) {
+              print("Added " + member.displayName + " " + newValue.toString());
+              setState(() {
+                selected = newValue!;
+              });
+            },
+            /*IconButton(
+                icon: Icon(Icons.person_add),
+                onPressed: () => print("Added" + member.displayName)),*/
+            title: Text(
+              member.firstName + ' ' + member.lastName,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            )));
+  }*/
+
   @override
   Widget build(BuildContext context) {
+    List<bool?> selectedFriendsValues =
+        List<bool?>.filled(_user.friends.length, false);
     return Padding(
       padding: EdgeInsets.only(top: 15),
       child: ListTile(
           contentPadding: EdgeInsets.all(5.0),
           title: Text(
-            "Add a participant",
+            "Add participants",
             style: TextStyle(
                 fontSize: 16,
                 color: Theme.of(context).textTheme.headline1!.color),
           ),
           tileColor: Colors.grey[200],
           trailing: IconButton(
-              icon:
-                  Icon(Icons.person_add, color: Theme.of(context).accentColor),
-              onPressed: () {
-                print("Member added");
-              })),
+            icon: Icon(Icons.person_add, color: Theme.of(context).accentColor),
+            onPressed: () => showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return StatefulBuilder(builder: (context, setState) {
+                    return AlertDialog(
+                        title: Text("Choose members to add"),
+                        content: StatefulBuilder(
+                          builder:
+                              (BuildContext context, StateSetter setState) {
+                            return Container(
+                              height: 300,
+                              width: 300,
+                              child: ListView.builder(
+                                itemCount: _user.friends.length,
+                                itemBuilder: (context, i) {
+                                  return Container(
+                                      decoration: BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                        color: Colors.grey,
+                                        width: 0.8,
+                                      ))),
+                                      child: CheckboxListTile(
+                                          value: selectedFriendsValues
+                                              .elementAt(i),
+                                          onChanged: (bool? newValue) {
+                                            setState(() {
+                                              selectedFriendsValues[i] =
+                                                  newValue!;
+                                            });
+                                          },
+                                          title: Text(
+                                            _user.friends
+                                                    .elementAt(i)
+                                                    .firstName +
+                                                ' ' +
+                                                _user.friends
+                                                    .elementAt(i)
+                                                    .lastName,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          )));
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                              style: TextButton.styleFrom(
+                                  primary: Theme.of(context).accentColor),
+                              onPressed: () => {
+                                    for (var i = 0;
+                                        i < _user.friends.length;
+                                        i++)
+                                      {
+                                        if (selectedFriendsValues[i] == true)
+                                          {
+                                            print("Added " +
+                                                _user.friends
+                                                    .elementAt(i)
+                                                    .displayName)
+                                          }
+                                      },
+                                    Navigator.of(context).pop(true)
+                                  },
+                              child: const Text("ADD")),
+                        ]);
+                  });
+                }),
+          )),
     );
   }
 }

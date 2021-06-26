@@ -184,7 +184,9 @@ class _ProfilePage extends State<ProfilePage> {
                   color: Colors.pinkAccent[700]),
             ),
             subtitle: Text(value,
-                style: TextStyle(fontSize: 16, color: Colors.grey[700])),
+                style: TextStyle(
+                    fontSize: 16,
+                    color: Theme.of(context).textTheme.headline1!.color)),
             trailing: IconButton(
                 icon: const Icon(Icons.create),
                 onPressed: () {

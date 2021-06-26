@@ -5,6 +5,7 @@ ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     primaryColor: Colors.cyan[900],
     accentColor: Colors.pinkAccent[400],
+    splashColor: Colors.grey[800],
     textTheme: TextTheme(
       headline1: TextStyle(
           fontSize: 72.0, fontWeight: FontWeight.bold, color: Colors.white),
@@ -16,6 +17,7 @@ ThemeData darkTheme = ThemeData(
 ThemeData lightTheme = ThemeData(
     primaryColor: Colors.cyan[700],
     accentColor: Colors.pinkAccent[700],
+    splashColor: Colors.grey[200],
     textTheme: TextTheme(
       headline1: TextStyle(
           fontSize: 72.0, fontWeight: FontWeight.bold, color: Colors.black),

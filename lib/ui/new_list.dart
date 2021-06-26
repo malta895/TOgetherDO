@@ -52,7 +52,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                   decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(5.0),
                       filled: true,
-                      fillColor: Colors.grey[200],
+                      fillColor: Theme.of(context).splashColor,
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.zero,
                         borderSide: BorderSide(
@@ -88,7 +88,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                     ),
                     contentPadding: EdgeInsets.all(5.0),
                     filled: true,
-                    fillColor: Colors.grey[200],
+                    fillColor: Theme.of(context).splashColor,
                     border: InputBorder.none,
                     labelStyle: TextStyle(
                         color: Theme.of(context).textTheme.headline1!.color)),
@@ -156,13 +156,17 @@ class _AddMember extends State<AddMember> {
             lastName: "Amici",
             email: "lorenzo.amici@mail.com",
             username: "lorenzo.amici@mail.com",
-            databaseId: ''),
+            databaseId: '',
+            profilePictureURL:
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVLqfekg_kitC_QJ5kgBUTh2tt5EIcxEnQDQ&usqp=CAU"),
         ListAppUser(
             firstName: "Mario",
             lastName: "Rossi",
             email: "mario.rossi@mail.com",
             username: "mario.rossi@mail.com",
-            databaseId: ''),
+            databaseId: '',
+            profilePictureURL:
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVLqfekg_kitC_QJ5kgBUTh2tt5EIcxEnQDQ&usqp=CAU"),
       },
       databaseId: '');
 
@@ -221,7 +225,7 @@ class _AddMember extends State<AddMember> {
                 fontSize: 16,
                 color: Theme.of(context).textTheme.headline1!.color),
           ),
-          tileColor: Colors.grey[200],
+          tileColor: Theme.of(context).splashColor,
           trailing: IconButton(
             icon: Icon(Icons.person_add, color: Theme.of(context).accentColor),
             onPressed: () => showDialog(
@@ -247,6 +251,14 @@ class _AddMember extends State<AddMember> {
                                         width: 0.8,
                                       ))),
                                       child: CheckboxListTile(
+                                          activeColor:
+                                              Theme.of(context).accentColor,
+                                          secondary: CircleAvatar(
+                                            backgroundImage: NetworkImage(_user
+                                                .friends
+                                                .elementAt(i)
+                                                .profilePictureURL!),
+                                          ),
                                           value: selectedFriendsValues
                                               .elementAt(i),
                                           onChanged: (bool? newValue) {
@@ -320,7 +332,7 @@ class _DropdownMenuState extends State<DropdownMenu> {
                   ),
                 ),
                 value: checkBoxValue,
-                tileColor: Colors.grey[200],
+                tileColor: Theme.of(context).splashColor,
                 activeColor: Theme.of(context).accentColor,
                 onChanged: (newValue) {
                   setState(() {

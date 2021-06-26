@@ -60,7 +60,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                   decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(5.0),
                       filled: true,
-                      fillColor: Colors.grey[200],
+                      fillColor: Theme.of(context).splashColor,
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.zero,
                         borderSide: BorderSide(
@@ -175,7 +175,7 @@ class _DropdownMenuState extends State<DropdownMenu> {
               ),
               contentPadding: EdgeInsets.all(5.0),
               filled: true,
-              fillColor: Colors.grey[200],
+              fillColor: Theme.of(context).splashColor,
               border: InputBorder.none,
               labelStyle: TextStyle(
                   color: Theme.of(context).textTheme.headline1!.color)),
@@ -212,7 +212,7 @@ class _DropdownMenuState extends State<DropdownMenu> {
                     fontSize: 16,
                     color: Theme.of(context).textTheme.headline1!.color),
               ),
-              tileColor: Colors.grey[200],
+              tileColor: Theme.of(context).splashColor,
               trailing: Wrap(
                   spacing: 6,
                   crossAxisAlignment: WrapCrossAlignment.center,
@@ -249,7 +249,7 @@ class _DropdownMenuState extends State<DropdownMenu> {
                     fontSize: 16,
                     color: Theme.of(context).textTheme.headline1!.color),
               ),
-              tileColor: Colors.grey[200],
+              tileColor: Theme.of(context).splashColor,
               trailing: Wrap(
                   spacing: 6,
                   crossAxisAlignment: WrapCrossAlignment.center,

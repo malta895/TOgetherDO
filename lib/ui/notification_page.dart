@@ -21,14 +21,17 @@ class _NotificationPage extends State<NotificationPage> {
       print(value);
     });
     FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+      final notification = event.notification;
+      if (notification == null) return;
+
       print("user added");
-      print(event.notification!.body);
+      print(notification.body);
       showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text(event.notification!.title!),
-              content: Text(event.notification!.body!),
+              title: Text(notification.title ?? ''),
+              content: Text(notification.body ?? ''),
               actions: [
                 TextButton(
                   child: Text("Ok"),
@@ -46,8 +49,8 @@ class _NotificationPage extends State<NotificationPage> {
   }
 
   final Set<ListAppNotification> notificationList = {
-    ListAppNotification("Lorenzo", false),
-    ListAppNotification("Luca", false),
+    ListAppNotification(displayName: "Lorenzo", accepted: false),
+    ListAppNotification(displayName: "Luca", accepted: false),
   };
 
   Widget _buildListItems(BuildContext context) {

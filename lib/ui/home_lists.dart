@@ -7,7 +7,7 @@ import 'package:mobile_applications/ui/list_view_page.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/new_list.dart';
 import 'package:mobile_applications/models/list.dart';
-import 'package:mobile_applications/ui/notifications.dart';
+import 'package:mobile_applications/ui/notification_page.dart';
 
 class ListHomePage extends StatefulWidget {
   static final String routeName = "/home";

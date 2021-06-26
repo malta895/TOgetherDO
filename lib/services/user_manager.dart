@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/models/user.dart';
 
-class ListAppUserManager {
+class ListAppUserManager with ChangeNotifier {
   static ListAppUserManager _instance =
       ListAppUserManager._privateConstructor();
 
@@ -22,12 +23,7 @@ class ListAppUserManager {
 
   /// saves an instance of an user on firestore. If not given the uid is generated automatically
   Future<void> saveInstance(ListAppUser user) async {
-    if (user.databaseId == null) {
-      final addedInstance = await _usersCollection.add(user);
-      user.databaseId = addedInstance.id;
-    } else {
-      await _usersCollection.doc(user.databaseId).set(user);
-    }
+    await _usersCollection.doc(user.databaseId).set(user);
   }
 
   Future<ListAppUser?> getUserByEmail(String email) async {
@@ -71,7 +67,7 @@ class ListAppUserManager {
 
     try {
       await _usersCollection.doc(userId).update({'username': username});
-      //TODO update the username of the current list app user
+      notifyListeners();
     } on FirebaseException catch (e) {
       print(e.message);
       throw ListAppException('An error occurred. Please try again later.');

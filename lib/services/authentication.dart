@@ -26,15 +26,22 @@ class ListAppAuthProvider with ChangeNotifier {
     return _loggedInListAppUser;
   }
 
+  Future<ListAppUser?> getLoggedInListAppUser() async {
+    final user = loggedInUser;
+    if (user == null) return null;
+    await _createListAppUser(user);
+    return _loggedInListAppUser;
+  }
+
   static int _initializationCounter = 0;
 
   ListAppAuthProvider(this.firebaseAuth) {
     // Subscribe to login/logout events
-    firebaseAuth.idTokenChanges().listen((User? user) {
+    firebaseAuth.idTokenChanges().listen((User? user) async {
       if (user == null) {
         _loggedInListAppUser = null;
       } else {
-        _createListAppUser(user);
+        await _createListAppUser(user);
       }
       notifyListeners();
     });
@@ -44,7 +51,7 @@ class ListAppAuthProvider with ChangeNotifier {
   }
 
   Stream<User?> get authState {
-    return firebaseAuth.authStateChanges();
+    return firebaseAuth.idTokenChanges();
   }
 
   Future<bool> isSomeoneLoggedIn() => authState.isEmpty;
@@ -68,6 +75,8 @@ class ListAppAuthProvider with ChangeNotifier {
         phoneNumber: firebaseUser.phoneNumber,
         profilePictureURL: firebaseUser.photoURL,
       );
+
+      print(listAppUser.toJson().toString());
 
       await ListAppUserManager.instance.saveInstance(listAppUser);
     }
@@ -178,8 +187,6 @@ class ListAppAuthProvider with ChangeNotifier {
 
       UserCredential userCredential =
           await firebaseAuth.signInWithCredential(credential);
-
-      log(userCredential.toString());
 
       return null;
     } on FirebaseAuthException catch (e) {

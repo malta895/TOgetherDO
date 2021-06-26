@@ -15,12 +15,14 @@ class _FriendsList extends State<FriendsPage> {
 
   //TODO fetch actual data from backend
   final ListAppUser _user = ListAppUser(
+    databaseId: "shdopjf",
       firstName: "Luca",
       lastName: "Maltagliati",
       email: "luca.malta@mail.com",
       username: "malta",
       friends: {
         ListAppUser(
+          databaseId: 'sdifasp',
             firstName: "Lorenzo",
             lastName: "Amici",
             email: "lorenzo.amici@mail.com",

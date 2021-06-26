@@ -29,11 +29,10 @@ class LoginScreen extends StatelessWidget {
             return context.read<ListAppAuthProvider>().loginViaFacebook();
           },
           providerNeedsSignUpCallback: () async {
-            return context
-                    .read<ListAppAuthProvider>()
-                    .loggedInListAppUser
-                    ?.isNew ??
-                true;
+            final listAppUser = await context
+                .read<ListAppAuthProvider>()
+                .getLoggedInListAppUser();
+            return listAppUser?.isNew ?? true;
           },
         ),
         LoginProvider(
@@ -42,11 +41,10 @@ class LoginScreen extends StatelessWidget {
             return context.read<ListAppAuthProvider>().loginViaGoogle();
           },
           providerNeedsSignUpCallback: () async {
-            return context
-                    .read<ListAppAuthProvider>()
-                    .loggedInListAppUser
-                    ?.isNew ??
-                true;
+            final listAppUser = await context
+                .read<ListAppAuthProvider>()
+                .getLoggedInListAppUser();
+            return listAppUser?.isNew ?? true;
           },
         ),
       ],
@@ -76,7 +74,7 @@ class LoginScreen extends StatelessWidget {
             currentUser.lastName = lastName;
             await ListAppUserManager.instance.validateUsername(username);
             currentUser.username = username;
-            ListAppUserManager.instance.saveInstance(currentUser);
+            await ListAppUserManager.instance.saveInstance(currentUser);
           }
 
           // we get here only if everything goes well
@@ -123,12 +121,13 @@ class LoginScreen extends StatelessWidget {
             .signupWithEmailAndPassword(loginData.name, loginData.password);
       },
       onSubmitAnimationCompleted: () {
-        print("Login successful");
+        for (int i = 0; i < 1000; i++) print("Login successful");
         Navigator.of(context).pushReplacement(FadePageRoute(
           builder: (context) => ListHomePage(),
         ));
       },
-      hideForgotPasswordButton: true,// TODO remove if password recover is implemented
+      hideForgotPasswordButton:
+          true, // TODO remove if password recover is implemented
       onRecoverPassword: (name) {
         print('Recover password info');
         print('Name: $name');

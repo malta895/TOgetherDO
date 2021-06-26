@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mobile_applications/models/exception.dart';
-import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
@@ -89,14 +88,12 @@ class _ProfilePage extends State<ProfilePage> {
         });
   }
 
-  //TODO fetch actual data from backend
+
   //TODO implement password
 
   Widget _buildProfile(BuildContext context) {
     final listAppUser =
         context.read<ListAppAuthProvider>().loggedInListAppUser!;
-
-    log(listAppUser.toJson().toString());
 
     List<Tuple3<String, String, Function?>> _elements = [
       Tuple3('Username', listAppUser.username ?? '', _changeUserName),

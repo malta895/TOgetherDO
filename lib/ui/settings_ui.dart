@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_applications/services/shared_pref.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/theme.dart';
 import 'package:permission_handler/permission_handler.dart';

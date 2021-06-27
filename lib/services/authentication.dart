@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -75,6 +76,9 @@ class ListAppAuthProvider with ChangeNotifier {
         await ListAppUserManager.instance.getUserByUid(firebaseUser.uid);
 
     if (listAppUser == null) {
+
+      final notificationToken = await FirebaseMessaging.instance.getToken();
+
       listAppUser = ListAppUser(
         isNew: true,
         email: firebaseUser.email!,
@@ -82,6 +86,7 @@ class ListAppAuthProvider with ChangeNotifier {
         displayName: firebaseUser.displayName,
         phoneNumber: firebaseUser.phoneNumber,
         profilePictureURL: firebaseUser.photoURL,
+        notificationTokens: notificationToken == null ? {} : {notificationToken},
       );
 
       await ListAppUserManager.instance.saveInstance(listAppUser);

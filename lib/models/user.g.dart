@@ -10,6 +10,10 @@ ListAppUser _$ListAppUserFromJson(Map<String, dynamic> json) {
   return ListAppUser(
     databaseId: json['databaseId'] as String,
     email: json['email'] as String,
+    notificationTokens: (json['notificationTokens'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toSet() ??
+        {},
     firstName: json['firstName'] as String,
     lastName: json['lastName'] as String,
     displayName: json['displayName'] as String?,
@@ -20,6 +24,7 @@ ListAppUser _$ListAppUserFromJson(Map<String, dynamic> json) {
             ?.map((e) => ListAppUser.fromJson(e as Map<String, dynamic>))
             .toSet() ??
         {},
+    isNew: json['isNew'] as bool,
   );
 }
 
@@ -34,4 +39,6 @@ Map<String, dynamic> _$ListAppUserToJson(ListAppUser instance) =>
       'phoneNumber': instance.phoneNumber,
       'profilePictureURL': instance.profilePictureURL,
       'friends': instance.friends.toList(),
+      'isNew': instance.isNew,
+      'notificationTokens': instance.notificationTokens.toList(),
     };

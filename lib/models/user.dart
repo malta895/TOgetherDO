@@ -26,12 +26,16 @@ class ListAppUser {
   Set<ListAppUser> friends;
 
   /// A new user that needs additional signup data
-  @JsonKey(ignore: true)
   bool isNew;
+
+  /// The FCM tokens of the devices used by the user
+  @JsonKey(defaultValue: const {})
+  Set<String> notificationTokens;
 
   ListAppUser({
     required this.databaseId,
     required this.email,
+    this.notificationTokens = const {},
     this.firstName = '',
     this.lastName = '',
     String? displayName,

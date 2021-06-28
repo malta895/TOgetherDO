@@ -4,7 +4,7 @@ import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/ui/friends.dart';
-import 'package:mobile_applications/ui/home_lists.dart';
+import 'package:mobile_applications/ui/lists_page.dart';
 import 'package:mobile_applications/ui/login/login_screen.dart';
 import 'package:mobile_applications/ui/profile.dart';
 import 'package:mobile_applications/ui/settings_ui.dart';
@@ -26,7 +26,7 @@ class ListAppNavDrawer extends StatelessWidget {
   ListAppNavDrawer(this._currentRouteName);
 
   final Map<String, int?> _destinationsRouteNamesAndIndexes = {
-    ListHomePage.routeName: 0,
+    ListsPage.routeName: 0,
     SettingsScreen.routeName: 1,
     FriendsPage.routeName: 2,
     ProfilePage.routeName: null,
@@ -151,7 +151,7 @@ class ListAppNavDrawer extends StatelessWidget {
             context: context,
             currentDrawerIndex: currentDrawerIndex,
             title: "My Lists",
-            destinationRouteName: ListHomePage.routeName,
+            destinationRouteName: ListsPage.routeName,
           ),
           _buildMenuItem(
             icon: Icon(Icons.settings),

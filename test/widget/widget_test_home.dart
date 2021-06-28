@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
-import 'package:mobile_applications/ui/home_lists.dart';
+import 'package:mobile_applications/ui/lists_page.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile_applications/ui/theme.dart';
 
@@ -23,7 +23,7 @@ Widget createHomeScreen() => MultiProvider(
           initialData: null,
         )
       ],
-      child: MaterialApp(home: ListHomePage()),
+      child: MaterialApp(home: ListsPage()),
     );
 
 void main() {

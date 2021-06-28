@@ -6,10 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/friends.dart';
-import 'package:mobile_applications/ui/home_lists.dart';
+import 'package:mobile_applications/ui/lists_page.dart';
 import 'package:mobile_applications/ui/login/login_screen.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
-import 'package:mobile_applications/ui/settings_page.dart';
 import 'package:mobile_applications/ui/settings_ui.dart';
 import 'package:mobile_applications/ui/theme.dart';
 import 'package:provider/provider.dart';
@@ -73,15 +72,14 @@ class _MaterialAppWithTheme extends StatelessWidget {
         builder: (context, snapshot) {
           return MaterialApp(
               initialRoute: snapshot.hasData
-                  ? ListHomePage.routeName
+                  ? ListsPage.routeName
                   : LoginScreen.routeName,
               theme: notifier.darkThemeBool ? lightTheme : darkTheme,
               routes: {
                 LoginScreen.routeName: (context) => LoginScreen(),
-                ListHomePage.routeName: (context) => ListHomePage(),
-                SettingsPage.routeName: (context) => SettingsPage(),
+                ListsPage.routeName: (context) => ListsPage(),
                 FriendsPage.routeName: (context) => FriendsPage(),
-                SettingsScreen.routeName: (context) => SettingsScreen()
+                SettingsScreen.routeName: (context) => SettingsScreen(),
               });
         },
       );

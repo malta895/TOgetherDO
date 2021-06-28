@@ -9,15 +9,15 @@ import 'package:mobile_applications/ui/new_list.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/ui/notification_page.dart';
 
-class ListHomePage extends StatefulWidget {
+class ListsPage extends StatefulWidget {
   static final String routeName = "/home";
   static final String humanReadableName = "My Lists";
 
   @override
-  _ListHomePage createState() => _ListHomePage();
+  _ListsPageState createState() => _ListsPageState();
 }
 
-class _ListHomePage extends State<ListHomePage> {
+class _ListsPageState extends State<ListsPage> {
   final String title = 'ListApp';
 
   //TODO fetch actual data from backend
@@ -99,7 +99,7 @@ class _ListHomePage extends State<ListHomePage> {
             ),
           ],
         ),
-        drawer: ListAppNavDrawer(ListHomePage.routeName),
+        drawer: ListAppNavDrawer(ListsPage.routeName),
         body: _buildListItems(context),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => {

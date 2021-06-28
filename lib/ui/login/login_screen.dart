@@ -8,7 +8,7 @@ import 'package:mobile_applications/services/user_manager.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants.dart';
-import '../home_lists.dart';
+import '../lists_page.dart';
 import 'custom_route.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -125,7 +125,7 @@ class LoginScreen extends StatelessWidget {
       onSubmitAnimationCompleted: () {
         for (int i = 0; i < 1000; i++) print("Login successful");
         Navigator.of(context).pushReplacement(FadePageRoute(
-          builder: (context) => ListHomePage(),
+          builder: (context) => ListsPage(),
         ));
       },
       hideForgotPasswordButton:

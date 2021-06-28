@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/services/authentication.dart';
-import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/ui/friends.dart';
 import 'package:mobile_applications/ui/lists_page.dart';
@@ -21,9 +20,24 @@ class ListAppNavDrawerStateInfo with ChangeNotifier {
   }
 }
 
-class ListAppNavDrawer extends StatelessWidget {
-  final String _currentRouteName;
-  ListAppNavDrawer(this._currentRouteName);
+class ListAppNavDrawer extends StatefulWidget {
+  final String currentRouteName;
+  ListAppNavDrawer(this.currentRouteName);
+
+  @override
+  _ListAppNavDrawerState createState() => _ListAppNavDrawerState();
+}
+
+class _ListAppNavDrawerState extends State<ListAppNavDrawer> {
+  Future<ListAppUser?>? _userFuture;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _userFuture =
+        Provider.of<ListAppAuthProvider>(context).getLoggedInListAppUser();
+  }
 
   final Map<String, int?> _destinationsRouteNamesAndIndexes = {
     ListsPage.routeName: 0,
@@ -34,62 +48,64 @@ class ListAppNavDrawer extends StatelessWidget {
 
   Widget _buildUserDetailsInkWell(BuildContext context) {
     return FutureBuilder<ListAppUser?>(
-        future: context.read<ListAppAuthProvider>().getLoggedInListAppUser(),
-        builder: (BuildContext context, AsyncSnapshot<ListAppUser?> snapshot) =>
-            InkWell(
-              onTap: () {
-                Provider.of<ListAppNavDrawerStateInfo>(context, listen: false)
-                        .currentDrawerIndex =
-                    _destinationsRouteNamesAndIndexes[ProfilePage.routeName];
+        future: _userFuture,
+        builder: (BuildContext context, AsyncSnapshot<ListAppUser?> snapshot) {
+          ListAppUser? listAppUser = snapshot.data;
 
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => ProfilePage()),
-                );
-              },
-              child: DrawerHeader(
-                margin: EdgeInsets.zero,
-                decoration: BoxDecoration(
-                    color: Theme.of(context).scaffoldBackgroundColor),
-                child: Stack(
-                  children: <Widget>[
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: CircleAvatar(
-                        backgroundImage: () {
-                          //TODO add actual image from firestore
-                          final String? photoURL =
-                              snapshot.data?.profilePictureURL;
+          return InkWell(
+            onTap: () {
+              Provider.of<ListAppNavDrawerStateInfo>(context, listen: false)
+                      .currentDrawerIndex =
+                  _destinationsRouteNamesAndIndexes[ProfilePage.routeName];
 
-                          if (photoURL != null) return NetworkImage(photoURL);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => ProfilePage()),
+              );
+            },
+            child: DrawerHeader(
+              margin: EdgeInsets.zero,
+              decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor),
+              child: Stack(
+                children: <Widget>[
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: CircleAvatar(
+                      backgroundImage: () {
+                        final String? photoURL =
+                            listAppUser?.profilePictureURL;
 
-                          return AssetImage("assets/sample-profile.png");
-                        }() as ImageProvider,
-                        radius: 40.0,
+                        if (photoURL != null) return NetworkImage(photoURL);
+
+                        return AssetImage("assets/sample-profile.png");
+                      }() as ImageProvider,
+                      radius: 40.0,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      listAppUser?.fullName ?? "",
+                      style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 20.0),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight + Alignment(0, .3),
+                    child: Text(
+                      listAppUser?.email ?? '',
+                      style: TextStyle(
+                        color: Colors.grey,
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        snapshot.data?.fullName ?? "",
-                        style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                            fontSize: 20.0),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight + Alignment(0, .3),
-                      child: Text(
-                        snapshot.data?.email ?? '',
-                        style: TextStyle(
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ));
+            ),
+          );
+        });
   }
 
   ListTile _buildMenuItem(
@@ -115,7 +131,7 @@ class ListAppNavDrawer extends StatelessWidget {
                   .currentDrawerIndex =
               _destinationsRouteNamesAndIndexes[destinationRouteName];
 
-          if (_currentRouteName == destinationRouteName) return;
+          if (widget.currentRouteName == destinationRouteName) return;
 
           if (pushReplacement) {
             Navigator.pushReplacementNamed(context, destinationRouteName);
@@ -129,7 +145,7 @@ class ListAppNavDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     int? currentDrawerIndex =
         Provider.of<ListAppNavDrawerStateInfo>(context).currentDrawerIndex ??
-            _destinationsRouteNamesAndIndexes[_currentRouteName];
+            _destinationsRouteNamesAndIndexes[widget.currentRouteName];
 
     return Drawer(
       child: ListView(

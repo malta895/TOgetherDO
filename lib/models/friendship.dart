@@ -6,27 +6,29 @@ part 'friendship.g.dart';
 
 /// It represents the friendship between 2 users
 @JsonSerializable()
-class Friendship {
-  static const String COLLECTION_NAME = 'friendships';
+class ListAppFriendship {
+  static const String collectionName = 'friendships';
 
   /// The user who sent the friend request
-  final ListAppUser userFrom;
+  final String userFrom;
 
   /// The user who received the friend request
-  final ListAppUser userTo;
+  final String userTo;
 
   /// The acceptance of the request. Two users are considered friends only if this is true
-  bool _requestAccepted = false;
+  bool requestAccepted = false;
 
-  bool get requestAccepted => _requestAccepted;
+  //bool get requestAccepted => _requestAccepted;
 
-  void acceptRequest() => _requestAccepted = true;
+  void acceptRequest() => requestAccepted = true;
 
-  Friendship({required this.userFrom, required this.userTo, requestAccepted})
-      : _requestAccepted = requestAccepted;
+  ListAppFriendship(
+      {required this.userFrom,
+      required this.userTo,
+      this.requestAccepted = false});
 
-  factory Friendship.fromJson(Map<String, dynamic> json) =>
-      _$FriendshipFromJson(json);
+  factory ListAppFriendship.fromJson(Map<String, dynamic> json) =>
+      _$ListAppFriendshipFromJson(json);
 
-  Map<String, dynamic> toJson() => _$FriendshipToJson(this);
+  Map<String, dynamic> toJson() => _$ListAppFriendshipToJson(this);
 }

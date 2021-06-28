@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mobile_applications/models/friendship.dart';
+import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/friendship_manager.dart';
+import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/notification_page.dart';
 
@@ -31,12 +35,36 @@ class _FriendsList extends State<FriendsPage> {
       });
 
   Widget _buildListItems(BuildContext context) {
-    return ListView.builder(
+    final Future<List<ListAppUser?>> friendsFrom = ListAppFriendshipManager
+        .instance
+        .getFriendsFromByUid("9LUBLCszUrU4mukuRWhHFS2iexL2");
+
+    final Future<List<ListAppFriendship>?> friendsTo = ListAppFriendshipManager
+        .instance
+        .getFriendsToByUid("9LUBLCszUrU4mukuRWhHFS2iexL2");
+
+    return FutureBuilder(
+        future: friendsFrom,
+        builder:
+            (BuildContext context, AsyncSnapshot<List<ListAppUser?>> snapshot) {
+          if (snapshot.hasData) {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, i) {
+                return _buildRow(context, snapshot.data![i]!);
+              },
+            );
+          } else {
+            return Container();
+          }
+        });
+
+    /*return ListView.builder(
       itemCount: _user.friends.length,
       itemBuilder: (context, i) {
-        return _buildRow(context, _user.friends.elementAt(i));
+        return _buildRow(context, friendsFrom.elementAt(i));
       },
-    );
+    );*/
   }
 
   Widget _buildRow(BuildContext context, ListAppUser friend) {

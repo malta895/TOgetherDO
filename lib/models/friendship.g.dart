@@ -6,15 +6,15 @@ part of 'friendship.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Friendship _$FriendshipFromJson(Map<String, dynamic> json) {
-  return Friendship(
-    userFrom: ListAppUser.fromJson(json['userFrom'] as Map<String, dynamic>),
-    userTo: ListAppUser.fromJson(json['userTo'] as Map<String, dynamic>),
-    requestAccepted: json['requestAccepted'],
+ListAppFriendship _$ListAppFriendshipFromJson(Map<String, dynamic> json) {
+  return ListAppFriendship(
+    userFrom: json['userFrom'] as String,
+    userTo: json['userTo'] as String,
+    requestAccepted: json['requestAccepted'] as bool,
   );
 }
 
-Map<String, dynamic> _$FriendshipToJson(Friendship instance) =>
+Map<String, dynamic> _$ListAppFriendshipToJson(ListAppFriendship instance) =>
     <String, dynamic>{
       'userFrom': instance.userFrom,
       'userTo': instance.userTo,

@@ -39,6 +39,7 @@ class ListAppAuthProvider with ChangeNotifier {
     // Subscribe to login/logout events
     firebaseAuth.idTokenChanges().listen((User? user) async {
       if (user == null) {
+        // TODO  remove notification token
         _loggedInListAppUser = null;
       } else {
         await _createListAppUser(user);

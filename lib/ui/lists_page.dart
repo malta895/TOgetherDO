@@ -2,12 +2,15 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mobile_applications/services/authentication.dart';
+import 'package:mobile_applications/services/list_manager.dart';
 
 import 'package:mobile_applications/ui/list_view_page.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/new_list.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/ui/notification_page.dart';
+import 'package:provider/provider.dart';
 
 class ListsPage extends StatefulWidget {
   static final String routeName = "/home";
@@ -20,39 +23,46 @@ class ListsPage extends StatefulWidget {
 class _ListsPageState extends State<ListsPage> {
   final String title = 'ListApp';
 
-  //TODO fetch actual data from backend
-  final List<ListAppList> _aLists = [
-    ListAppList(
-        name: "First list", description: "Description of the first list"),
-    ListAppList(
-        name: "Second list", description: "Description of the second list"),
-    ListAppList(name: "USA trip", description: "From NY to San Francisco"),
-    ListAppList(name: "Christmas presents", description: "Christmas 2020"),
-  ];
+  Future<List<ListAppList>>? _listsFuture;
 
-  /*@override
-  void initState() {
-    super.initState();
-    _loadSettings();
+  Future<List<ListAppList>>? _fetchLists() async {
+    final listAppUser =
+        await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
+
+    if (listAppUser != null) {
+      return ListAppListManager.instanceForUser(listAppUser).getLists();
+    }
+    return Future.value(null);
   }
 
-  _loadSettings() async {
-    SharedPreferences sharedPrefs =
-        await SharedPreferencesManager.getSharedPreferencesInstance();
-    setState(() {
-      myEmailController.text = (sharedPrefs.getString(SharedPreferencesManager.emailKey) ?? "");
-      _isNotification = (sharedPrefs.getBool(SharedPreferencesManager.notificationKey) ??false);
-      myTotalItemController.text = (sharedPrefs.getInt(SharedPreferencesManager.totalItems) ?? 0).toString();
-    });
-  }*/
+  @override
+  void initState() {
+    super.initState();
+
+    _listsFuture = _fetchLists();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _listsFuture = _fetchLists();
+  }
 
   Widget _buildListItems(BuildContext context) {
-    return ListView.builder(
-      itemCount: _aLists.length,
-      itemBuilder: (context, i) {
-        return _buildRow(context, _aLists[i]);
-      },
-    );
+    return FutureBuilder<List<ListAppList>>(
+        initialData: [],
+        future: _listsFuture,
+        builder: (context, AsyncSnapshot<List<ListAppList>> snapshot) {
+          final listAppList = snapshot.data ?? [];
+
+          return ListView.builder(
+            itemCount: listAppList.length,
+            itemBuilder: (context, i) {
+              return _buildRow(context, listAppList[i]);
+            },
+          );
+        });
   }
 
   Widget _buildRow(BuildContext context, ListAppList aList) {
@@ -95,18 +105,23 @@ class _ListsPageState extends State<ListsPage> {
                   MaterialPageRoute(builder: (context) => NotificationPage()),
                 )
               },
-              //onPressed: () => print("ciao"),
             ),
           ],
         ),
         drawer: ListAppNavDrawer(ListsPage.routeName),
         body: _buildListItems(context),
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => {
-            Navigator.push(
+          onPressed: () async {
+            // wait for the new list page to be popped,
+            //in order to be able to update the state with the new list afterwards
+            await Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => NewListPage()),
-            )
+            );
+
+            setState(() {
+              _listsFuture = _fetchLists();
+            });
           },
           icon: Icon(Icons.add),
           label: Text('NEW LIST'),

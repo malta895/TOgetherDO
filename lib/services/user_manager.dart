@@ -39,7 +39,7 @@ class ListAppUserManager with ChangeNotifier {
     return queryResult.data();
   }
 
-  ///Returns `true` if the given username is already present on database. Unauthenticated method, sice anyone can see if an username exists before choosing it
+  ///Returns `true` if the given username is already present on database. Unauthenticated method, since anyone can see if an username exists before choosing it
   Future<bool> usernameExists(String username) async {
     final queryResult =
         await _usersCollection.where('username', isEqualTo: username).get();

@@ -3,36 +3,49 @@ import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/user.dart';
 
 class ListAppListManager {
-  static ListAppListManager _instance =
-      ListAppListManager._privateConstructor();
+  final CollectionReference<ListAppList> _listCollectionRef;
+  final String userUid;
 
-  ListAppListManager._privateConstructor();
+  static final Map<String, ListAppListManager> _cachedInstances = {};
 
-  static ListAppListManager get instance => _instance;
+  ListAppListManager._privateConstructor(this.userUid)
+      : _listCollectionRef = FirebaseFirestore.instance
+            .collection(ListAppUser.collectionName)
+            .doc(userUid)
+            .collection(ListAppList.collectionName)
+            .withConverter<ListAppList>(
+                fromFirestore: (snapshots, _) =>
+                    ListAppList.fromJson(snapshots.data()!),
+                toFirestore: (list, _) => list.toJson());
+
+  static ListAppListManager instanceForUser(ListAppUser user) =>
+      instanceForUserUid(user.databaseId);
+  static ListAppListManager instanceForUserUid(String userUid) {
+    if (_cachedInstances.containsKey(userUid)) {
+      return _cachedInstances[userUid]!;
+    }
+
+    ListAppListManager newInstance =
+        ListAppListManager._privateConstructor(userUid);
+
+    _cachedInstances[userUid] = newInstance;
+
+    return newInstance;
+  }
 
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
-
-  final _listCollectionRef = FirebaseFirestore.instance
-      .collection(ListAppList.collectionName)
-      .withConverter<ListAppList>(
-          fromFirestore: (snapshots, _) =>
-              ListAppList.fromJson(snapshots.data()!),
-          toFirestore: (list, _) => list.toJson());
-
-  Future<ListAppList?> getListByNameAndUser(
-      ListAppUser user, String name) async {
-    final queryResult = await _listCollectionRef
-        .where('name', isEqualTo: name)
-        .where('users', arrayContains: user.databaseId)
-        .get();
-
-    return queryResult.docs.single.data();
-  }
 
   Future<void> saveInstance(ListAppList list) async {
     if (list.databaseId != null) {
       await _listCollectionRef.doc(list.databaseId).set(list);
+      return;
     }
     await _listCollectionRef.add(list);
+  }
+
+  Future<List<ListAppList>> getLists() async {
+    final queryResult = await _listCollectionRef.get();
+
+    return Future.wait(queryResult.docs.map((e) async => e.data()));
   }
 }

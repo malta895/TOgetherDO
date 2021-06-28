@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/list_manager.dart';
+import 'package:provider/provider.dart';
 
 class NewListPage extends StatelessWidget {
   @override
@@ -74,7 +76,7 @@ class _NewListFormState extends State<_NewListForm> {
         ),
         decoration: InputDecoration(
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.zero,
+              borderRadius: BorderRadius.all(Radius.circular(12.0)),
               borderSide: BorderSide(
                   color: Theme.of(context).textTheme.headline1!.color!,
                   width: 1.0),
@@ -131,7 +133,10 @@ class _NewListFormState extends State<_NewListForm> {
             final snackBar = ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text('Uploading data')));
 
-            ListAppListManager.instance.saveInstance(newList).then((_) {
+            final user = context.read<ListAppAuthProvider>().loggedInUser!;
+            ListAppListManager.instanceForUserUid(user.uid)
+                .saveInstance(newList)
+                .then((_) {
               snackBar.close();
               Navigator.of(context).pop(true);
               isUploading = false;
@@ -169,6 +174,8 @@ class _NewListFormState extends State<_NewListForm> {
   }
 }
 
+
+// TODO sistemare quando avremo gli amici dal db
 class _AddMemberDialog extends StatefulWidget {
   @override
   _AddMemberDialogState createState() => _AddMemberDialogState();
@@ -200,7 +207,7 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
       },
       databaseId: '');
 
-  int? selectedRadio = 0;
+  int? _selectedRadio = 0;
 
   // Widget _buildAlertDialogMembers(
   //     int membersNum, Set<ListAppUser> itemMembers) {
@@ -342,8 +349,7 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
 }
 
 class _NewListDropdownMenuState extends State<_NewListDropdownMenu> {
-  String? dropdownValue = 'Public list';
-  bool? checkBoxValue = false;
+  bool? _checkBoxValue = false;
 
   @override
   Widget build(BuildContext context) {
@@ -361,12 +367,12 @@ class _NewListDropdownMenuState extends State<_NewListDropdownMenu> {
                     fontSize: 16.0,
                   ),
                 ),
-                value: checkBoxValue,
+                value: _checkBoxValue,
                 tileColor: Theme.of(context).splashColor,
                 activeColor: Theme.of(context).accentColor,
                 onChanged: (newValue) {
                   setState(() {
-                    checkBoxValue = newValue;
+                    _checkBoxValue = newValue;
                   });
                 }),
           ),

@@ -76,7 +76,6 @@ class ListAppAuthProvider with ChangeNotifier {
         await ListAppUserManager.instance.getUserByUid(firebaseUser.uid);
 
     if (listAppUser == null) {
-
       final notificationToken = await FirebaseMessaging.instance.getToken();
 
       listAppUser = ListAppUser(
@@ -86,7 +85,8 @@ class ListAppAuthProvider with ChangeNotifier {
         displayName: firebaseUser.displayName,
         phoneNumber: firebaseUser.phoneNumber,
         profilePictureURL: firebaseUser.photoURL,
-        notificationTokens: notificationToken == null ? {} : {notificationToken},
+        notificationTokens:
+            notificationToken == null ? {} : {notificationToken},
       );
 
       await ListAppUserManager.instance.saveInstance(listAppUser);

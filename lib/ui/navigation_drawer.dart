@@ -33,13 +33,8 @@ class ListAppNavDrawer extends StatelessWidget {
   };
 
   Widget _buildUserDetailsInkWell(BuildContext context) {
-    final firebaseUser =
-        context.read<ListAppAuthProvider>().loggedInListAppUser!;
-    final Future<ListAppUser?> currentUser =
-        ListAppUserManager.instance.getUserByEmail(firebaseUser.email);
-
     return FutureBuilder<ListAppUser?>(
-        future: currentUser,
+        future: context.read<ListAppAuthProvider>().getLoggedInListAppUser(),
         builder: (BuildContext context, AsyncSnapshot<ListAppUser?> snapshot) =>
             InkWell(
               onTap: () {
@@ -64,7 +59,7 @@ class ListAppNavDrawer extends StatelessWidget {
                         backgroundImage: () {
                           //TODO add actual image from firestore
                           final String? photoURL =
-                              firebaseUser.profilePictureURL;
+                              snapshot.data?.profilePictureURL;
 
                           if (photoURL != null) return NetworkImage(photoURL);
 

@@ -4,7 +4,7 @@ import 'package:mobile_applications/models/user.dart';
 
 void main() {
   var userTest = ListAppUser(
-    databaseId: "123abdd",
+      databaseId: "123abdd",
       email: "prova@test.com",
       firstName: "testFirstName",
       lastName: "testLastName");
@@ -17,7 +17,7 @@ void main() {
     });
 
     test('The item should be unfulfilled', () {
-      simpleTestItem.unfulfill(userTest);
+      simpleTestItem.unfulfill(member: userTest);
       expect(simpleTestItem.fulfiller, null);
     });
   });
@@ -31,7 +31,7 @@ void main() {
     });
 
     test('The item should be unfulfilled', () {
-      multiFulfillmentTestItem.unfulfill(userTest);
+      multiFulfillmentTestItem.unfulfill(member: userTest);
       expect(
           multiFulfillmentTestItem.getFulfillers().contains(userTest), false);
     });
@@ -46,7 +46,7 @@ void main() {
     });
 
     test('The item should be unfulfilled', () {
-      multiMemberTestItem.unfulfill(userTest);
+      multiMemberTestItem.unfulfill(member: userTest);
       expect(multiMemberTestItem.getFulfillers().contains(userTest), false);
     });
   });

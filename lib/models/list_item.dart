@@ -32,7 +32,7 @@ abstract class BaseItem extends ChangeNotifier {
   //fulfill, aka complete, this list item, with a quantity. returns false if the item was fulfilled already
   bool fulfill({required ListAppUser member, int quantityFulfilled = 0});
 
-  bool unfulfill(ListAppUser member);
+  bool unfulfill({required ListAppUser member, int quantityUnfulfilled = 0});
 
   List<ListAppUser> getFulfillers();
 }
@@ -71,7 +71,7 @@ class SimpleItem extends BaseItem {
   }
 
   @override
-  bool unfulfill(ListAppUser member) {
+  bool unfulfill({required ListAppUser member, int quantityUnfulfilled = 1}) {
     //do not allow the unfulfillment of other members
     if (member == _fulfiller) {
       _fulfiller = null;
@@ -138,7 +138,7 @@ class MultiFulfillmentItem extends BaseItem {
   }
 
   @override
-  bool unfulfill(ListAppUser member) {
+  bool unfulfill({required ListAppUser member, int quantityUnfulfilled = 1}) {
     return _fulfillers.remove(member);
   }
 
@@ -170,7 +170,9 @@ class MultiFulfillmentMemberItem extends BaseItem {
   @override
   bool fulfill({required ListAppUser member, int quantityFulfilled = 1}) {
     // TODO control all constraints of this item and list
-    _fulfillers[member] = quantityFulfilled;
+    _fulfillers[member] == null
+        ? _fulfillers[member] = quantityFulfilled
+        : _fulfillers[member] = _fulfillers[member]! + quantityFulfilled;
     return quantityFulfilled > 0;
   }
 
@@ -194,7 +196,10 @@ class MultiFulfillmentMemberItem extends BaseItem {
   }
 
   @override
-  bool unfulfill(ListAppUser member) {
+  bool unfulfill({required ListAppUser member, int quantityUnfulfilled = 1}) {
+    _fulfillers[member]! + quantityUnfulfilled <= 0
+        ? _fulfillers.remove(member)
+        : _fulfillers[member] = _fulfillers[member]! + quantityUnfulfilled;
     return _fulfillers.remove(member) != null;
   }
 

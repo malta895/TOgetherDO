@@ -1,9 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/user_manager.dart';
+
+//users/lGmqaAgJZqVIdqXt3GmQFNC9E3D3
+//users/9LUBLCszUrU4mukuRWhHFS2iexL2
 
 class NotificationPage extends StatefulWidget {
   static final String routeName = "/settings";
@@ -13,42 +18,48 @@ class NotificationPage extends StatefulWidget {
 class _NotificationPage extends State<NotificationPage> {
   final String title = 'Notifications';
 
-  final ListAppUser sender = ListAppUser(
+  /*final ListAppUser sender = ListAppUser(
       firstName: "Lorenzo",
       lastName: "Amici",
       email: "lorenzo.amici@mail.com",
       username: "lorenzo.amici@mail.com",
       databaseId: '',
       profilePictureURL:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVLqfekg_kitC_QJ5kgBUTh2tt5EIcxEnQDQ&usqp=CAU");
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVLqfekg_kitC_QJ5kgBUTh2tt5EIcxEnQDQ&usqp=CAU");*/
 
-  final ListAppUser receiver = ListAppUser(
+  /*final ListAppUser receiver = ListAppUser(
       firstName: "Mario",
       lastName: "Rossi",
       email: "lorenzo.amici@mail.com",
       username: "lorenzo.amici@mail.com",
       databaseId: '',
       profilePictureURL:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVLqfekg_kitC_QJ5kgBUTh2tt5EIcxEnQDQ&usqp=CAU");
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVLqfekg_kitC_QJ5kgBUTh2tt5EIcxEnQDQ&usqp=CAU");*/
 
   final ListAppList list = ListAppList(name: "Birthday");
+
+  final Set<ListAppNotification> notificationList = {};
+
+  void addItemToList(ListAppUser sender, ListAppUser receiver, bool accepted) {
+    setState(() {
+      notificationList.add(FriendshipNotification(
+          sender: sender, receiver: receiver, accepted: accepted));
+    });
+  }
 
   late FirebaseMessaging messaging;
   @override
   void initState() {
     super.initState();
-    print("hello");
     messaging = FirebaseMessaging.instance;
     messaging.getToken().then((value) {
       print(value);
     });
-    FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage event) async {
       final notification = event.notification;
+      final data = event.data;
       if (notification == null) return;
-
-      print("user added");
-      print(notification.body);
-      showDialog(
+      /*showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
@@ -63,7 +74,19 @@ class _NotificationPage extends State<NotificationPage> {
                 )
               ],
             );
-          });
+          });*/
+      /*FriendshipNotification newNotification = FriendshipNotification(
+          sender: ListAppUser(
+              databaseId: sender.get("databaseId"), email: sender.get("email")),
+          receiver: ListAppUser(
+              databaseId: receiver.get("databaseId"),
+              email: receiver.get("email")),
+          accepted: false);*/
+      ListAppUserManager.instance.getUserByUid(data['sender']).then(
+          (senderUser) => ListAppUserManager.instance
+              .getUserByUid(data['receiver'])
+              .then((receiverUser) =>
+                  addItemToList(senderUser!, receiverUser!, false)));
     });
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       print('Message clicked!');
@@ -184,15 +207,6 @@ class _NotificationPage extends State<NotificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    // ThemeChanger _themeChanger = Provider.of<ThemeChanger>(context);
-    final Set<ListAppNotification> notificationList = {
-      ListInviteNotification(
-          sender: sender, receiver: receiver, accepted: false, list: list),
-      ListInviteNotification(
-          sender: sender, receiver: receiver, accepted: false, list: list),
-      FriendshipNotification(
-          sender: sender, receiver: receiver, accepted: false)
-    };
     return Scaffold(
         appBar: AppBar(
           title: Text(title),

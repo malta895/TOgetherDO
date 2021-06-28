@@ -28,7 +28,7 @@ jobs:
     - run: flutter pub get
     
     # Statically analyze the Dart code for any errors.
-    - run: flutter analyze --no-fatal-warnings --no-fatal-infos
+    - run: flutter analyze --no-fatal-infos
     
     # Run widget tests for our flutter project.
     - run: flutter test -r expanded

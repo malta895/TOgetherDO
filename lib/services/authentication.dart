@@ -196,8 +196,7 @@ class ListAppAuthProvider with ChangeNotifier {
       final credential = GoogleAuthProvider.credential(
           accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
 
-      UserCredential userCredential =
-          await firebaseAuth.signInWithCredential(credential);
+      await firebaseAuth.signInWithCredential(credential);
 
       return null;
     } on FirebaseAuthException catch (e) {

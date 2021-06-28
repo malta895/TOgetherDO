@@ -44,7 +44,7 @@ abstract class BaseItem {
     switch (json['listType'] as String) {
       case 'SimpleItem':
         return SimpleItem.fromJson(json);
-      case 'MultifulfillmentItem':
+      case 'MultiFulfillmentItem':
         return MultiFulfillmentItem.fromJson(json);
       case 'MultiFulfillmentMemberItem':
         return MultiFulfillmentMemberItem.fromJson(json);
@@ -58,7 +58,7 @@ abstract class BaseItem {
     switch (this.itemType) {
       case 'SimpleItem':
         return (this as SimpleItem).toJson();
-      case 'MultifulfillmentItem':
+      case 'MultiFulfillmentItem':
         return (this as MultiFulfillmentItem).toJson();
       case 'MultiFulfillmentMemberItem':
         return (this as MultiFulfillmentMemberItem).toJson();

@@ -12,7 +12,7 @@ Map<String, dynamic> _$BaseItemToJson(BaseItem instance) => <String, dynamic>{
       'description': instance.description,
       'maxQuantity': instance.maxQuantity,
       'quantityPerMember': instance.quantityPerMember,
-      'listType': instance.itemType,
+      'itemType': instance.itemType,
     };
 
 SimpleItem _$SimpleItemFromJson(Map<String, dynamic> json) {

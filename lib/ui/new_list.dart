@@ -104,6 +104,8 @@ class _NewListFormState extends State<_NewListForm> {
   }
 
   Widget _buildSubmitButton() {
+    bool isUploading = false;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 0),
       child: ElevatedButton(
@@ -111,6 +113,10 @@ class _NewListFormState extends State<_NewListForm> {
           primary: Theme.of(context).accentColor,
         ),
         onPressed: () {
+          // exit when is uploading to avoid duplicates
+          if (isUploading) return;
+          isUploading = true;
+
           // Validate returns true if the form is valid, or false
           // otherwise.
           if (_formKey.currentState?.validate() == true) {
@@ -128,9 +134,11 @@ class _NewListFormState extends State<_NewListForm> {
             ListAppListManager.instance.saveInstance(newList).then((_) {
               snackBar.close();
               Navigator.of(context).pop(true);
+              isUploading = false;
             }, onError: (_) {
               ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Error while creating list')));
+              isUploading = false;
             });
           }
         },

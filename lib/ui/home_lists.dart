@@ -105,7 +105,7 @@ class _ListHomePage extends State<ListHomePage> {
           onPressed: () => {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => NewList()),
+              MaterialPageRoute(builder: (context) => NewListPage()),
             )
           },
           icon: Icon(Icons.add),

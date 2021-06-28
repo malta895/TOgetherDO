@@ -8,6 +8,26 @@ import 'user.dart';
 
 part 'list.g.dart';
 
+/// The list type
+enum ListType {
+  /// Anyone can see the completed items and who completed them
+  public,
+
+  /// The list is 'hidden' to the creator, only the other participants can see who completed what
+  private
+}
+
+extension ParseToString on ListType {
+  String toReadableString() {
+    switch (this) {
+      case ListType.public:
+        return 'Public list';
+      case ListType.private:
+        return 'Private list';
+    }
+  }
+}
+
 /// The list. Can be of various inherited types
 @JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class ListAppList {
@@ -18,13 +38,23 @@ class ListAppList {
   final String name;
   final String? description;
 
+  final ListType listType;
+
   //Set and not List because Sets have unique elements
-  late Set<ListAppUser> members;
+  @JsonKey(defaultValue: const {})
+  Set<ListAppUser> members;
 
-  @JsonKey(ignore: true)
-  late Set<BaseItem> items;
+  @JsonKey(defaultValue: const {})
+  Set<BaseItem> items;
 
-  ListAppList({this.databaseId, required this.name, this.description});
+  ListAppList(
+      {required this.name,
+      this.databaseId,
+      this.listType = ListType
+          .public, // NOTE maybe better to make it required and remove the default value
+      this.description,
+      this.items = const {},
+      this.members = const {}});
 
   factory ListAppList.fromJson(Map<String, dynamic> json) =>
       _$ListAppListFromJson(json);
@@ -33,12 +63,13 @@ class ListAppList {
 }
 
 class ListAppFulfillment {
-  // the user who completed the list item
+  /// the user who completed the list item
   final ListAppUser member;
 
-  // The quantity completed by the user. At least can be 1
+  /// The quantity completed by the user. At least can be 1
   final int quantityCompleted;
-  // if the list item has a price, this contains the amount countributed by the user
+
+  /// if the list item has a price, this contains the amount countributed by the user
   final double priceContribution;
 
   ListAppFulfillment(

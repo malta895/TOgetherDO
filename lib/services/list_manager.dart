@@ -12,29 +12,27 @@ class ListAppListManager {
 
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
 
-  final _usersCollection = FirebaseFirestore.instance
+  final _listCollectionRef = FirebaseFirestore.instance
       .collection(ListAppList.collectionName)
       .withConverter<ListAppList>(
           fromFirestore: (snapshots, _) =>
               ListAppList.fromJson(snapshots.data()!),
-          toFirestore: (user, _) => user.toJson());
-
-  // QUESTION: questo che c'entra qui?
-  Future<ListAppList?> getUserByEmail(String email) async {
-    final queryResult =
-        await _usersCollection.where('email', isEqualTo: email).get();
-
-    return queryResult.docs.single.data();
-  }
+          toFirestore: (list, _) => list.toJson());
 
   Future<ListAppList?> getListByNameAndUser(
       ListAppUser user, String name) async {
-    // TODO verify it works
-    final queryResult = await _usersCollection
+    final queryResult = await _listCollectionRef
         .where('name', isEqualTo: name)
         .where('users', arrayContains: user.databaseId)
         .get();
 
     return queryResult.docs.single.data();
+  }
+
+  Future<void> saveInstance(ListAppList list) async {
+    if (list.databaseId != null) {
+      await _listCollectionRef.doc(list.databaseId).set(list);
+    }
+    await _listCollectionRef.add(list);
   }
 }

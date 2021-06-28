@@ -2,7 +2,6 @@
 import 'dart:collection';
 import 'dart:core';
 
-import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'user.dart';
@@ -10,7 +9,8 @@ import 'user.dart';
 part 'list_item.g.dart';
 
 ///Any type of item. the specific types will implement in different ways the methods
-abstract class BaseItem extends ChangeNotifier {
+@JsonSerializable(createFactory: false)
+abstract class BaseItem {
   static const String collectionName = 'items';
   final String? databaseId;
   final String name;
@@ -18,12 +18,16 @@ abstract class BaseItem extends ChangeNotifier {
   final int maxQuantity;
   final int quantityPerMember;
 
-  BaseItem(
-      {this.databaseId,
-      required this.name,
-      this.description,
-      required this.maxQuantity,
-      required this.quantityPerMember});
+  final String itemType;
+
+  BaseItem({
+    this.databaseId,
+    required this.name,
+    this.description,
+    required this.maxQuantity,
+    required this.quantityPerMember,
+    required this.itemType,
+  });
 
   int quantityFulfilledBy(ListAppUser member);
 
@@ -35,6 +39,34 @@ abstract class BaseItem extends ChangeNotifier {
   bool unfulfill(ListAppUser member);
 
   List<ListAppUser> getFulfillers();
+
+  factory BaseItem.fromJson(Map<String, dynamic> json) {
+    switch (json['listType'] as String) {
+      case 'SimpleItem':
+        return SimpleItem.fromJson(json);
+      case 'MultifulfillmentItem':
+        return MultiFulfillmentItem.fromJson(json);
+      case 'MultiFulfillmentMemberItem':
+        return MultiFulfillmentMemberItem.fromJson(json);
+
+      default:
+        throw StateError("Item type not recognized");
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    switch (this.itemType) {
+      case 'SimpleItem':
+        return (this as SimpleItem).toJson();
+      case 'MultifulfillmentItem':
+        return (this as MultiFulfillmentItem).toJson();
+      case 'MultiFulfillmentMemberItem':
+        return (this as MultiFulfillmentMemberItem).toJson();
+
+      default:
+        throw StateError("Item type not recognized");
+    }
+  }
 }
 
 ///This item can have just one fulfiller
@@ -44,6 +76,7 @@ class SimpleItem extends BaseItem {
 
   SimpleItem({String? databaseId, required String name, String? description})
       : super(
+            itemType: 'SimpleItem',
             databaseId: databaseId,
             name: name,
             description: description,
@@ -63,7 +96,6 @@ class SimpleItem extends BaseItem {
   bool fulfill({required ListAppUser member, int quantityFulfilled = 0}) {
     if (_fulfiller == null) {
       _fulfiller = member;
-      notifyListeners();
       return true;
     }
 
@@ -75,7 +107,6 @@ class SimpleItem extends BaseItem {
     //do not allow the unfulfillment of other members
     if (member == _fulfiller) {
       _fulfiller = null;
-      notifyListeners();
       return true;
     }
     return false;
@@ -110,6 +141,7 @@ class MultiFulfillmentItem extends BaseItem {
       String? description,
       required int maxQuantity})
       : super(
+            itemType: 'MultiFulfillmentItem',
             databaseId: databaseId,
             name: name,
             description: description,
@@ -118,7 +150,6 @@ class MultiFulfillmentItem extends BaseItem {
 
   @override
   bool fulfill({required ListAppUser member, int quantityFulfilled = 1}) {
-    notifyListeners();
     return _fulfillers.add(member);
   }
 
@@ -161,6 +192,7 @@ class MultiFulfillmentMemberItem extends BaseItem {
       required int maxQuantity,
       required int quantityPerMember})
       : super(
+            itemType: 'MultiFulfillmentMemberItem',
             databaseId: databaseId,
             name: name,
             description: description,

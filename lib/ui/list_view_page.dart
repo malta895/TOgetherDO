@@ -24,13 +24,13 @@ class ListViewRoute extends StatefulWidget {
     //TODO fetch from backend instead
     aList.members.addAll([
       ListAppUser(
-        databaseId: "siaodkjasd",
+          databaseId: "siaodkjasd",
           username: "lawfriends",
           firstName: "Lorenzo",
           lastName: "Amici",
           email: "lawfriends12@gmail.com"),
       ListAppUser(
-        databaseId: "asdjhfka",
+          databaseId: "asdjhfka",
           username: "malta.95",
           firstName: "Luca",
           lastName: "Maltagliati",

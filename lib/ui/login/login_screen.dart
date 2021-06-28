@@ -74,6 +74,8 @@ class LoginScreen extends StatelessWidget {
             currentUser.lastName = lastName;
             await ListAppUserManager.instance.validateUsername(username);
             currentUser.username = username;
+
+            currentUser.isNew = false;
             await ListAppUserManager.instance.saveInstance(currentUser);
           }
 

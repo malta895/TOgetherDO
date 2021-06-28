@@ -4,7 +4,7 @@ import 'package:mobile_applications/models/user.dart';
 
 void main() {
   var userTest = ListAppUser(
-    databaseId: "123abdd",
+      databaseId: "123abdd",
       email: "prova@test.com",
       firstName: "testFirstName",
       lastName: "testLastName");

@@ -7,7 +7,6 @@ import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/friends.dart';
 import 'package:mobile_applications/ui/home_lists.dart';
-import 'package:mobile_applications/ui/login/custom_route.dart';
 import 'package:mobile_applications/ui/login/login_screen.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/settings_page.dart';
@@ -51,11 +50,6 @@ class _MultiProviderApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
             create: (_) => ListAppAuthProvider(FirebaseAuth.instance)),
-        StreamProvider(
-          create: (context) => context.read<ListAppAuthProvider>().authState,
-          //initially no user is logged in
-          initialData: null,
-        ),
         ChangeNotifierProvider(create: (_) => ListAppUserManager.instance),
       ],
       child: _MaterialAppWithTheme(),
@@ -71,7 +65,6 @@ class _MultiProviderApp extends StatelessWidget {
 class _MaterialAppWithTheme extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
     return Consumer<ThemeChanger>(
         builder: (context, ThemeChanger notifier, child) {
       return StreamBuilder<User?>(

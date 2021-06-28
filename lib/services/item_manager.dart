@@ -1,39 +1,32 @@
-/* import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobile_applications/models/list.dart';
-import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/models/list_item.dart';
 
+/// The item manager. This is not a singleton as a new instance is created for each subcollection
 class ListAppItemManager {
-  static ListAppItemManager _instance =
-      ListAppItemManager._privateConstructor();
+  final _itemCollectionRef;
 
-  ListAppItemManager._privateConstructor();
-
-  static ListAppItemManager get instance => _instance;
+  ListAppItemManager.fromListUid(String listUid)
+      : _itemCollectionRef = FirebaseFirestore.instance
+            .collection(ListAppList.collectionName)
+            .doc(listUid)
+            .collection(BaseItem.collectionName)
+            .withConverter<BaseItem>(
+                fromFirestore: (snapshots, _) =>
+                    BaseItem.fromJson(snapshots.data()!),
+                toFirestore: (instance, _) => instance.toJson());
 
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
 
-  final _itemCollection = FirebaseFirestore.instance
-      .collection(ListAppList.collectionName)
-      .withConverter<ListAppList>(
-          fromFirestore: (snapshots, _) =>
-              ListAppList.fromJson(snapshots.data()!),
-          toFirestore: (user, _) => user.toJson());
+  Future<BaseItem?> getItemByUid(String uid) async {
+    final queryResult = await _itemCollectionRef.doc(uid).get();
+    return queryResult.data();
+  }
 
-  /*Future<ListAppList?> getUserByEmail(String email) async {
-    final queryResult =
-        await _itemCollection.where('email', isEqualTo: email).get();
-
-    return queryResult.docs.single.data();
-  }*/
-
-  Future<ListAppItem?> getItemByList(ListAppList list) async {
-    // TODO verify it works
-    final queryResult = await _itemCollection
-        .where('name', isEqualTo: name)
-        .where('users', arrayContains: user.databaseId)
-        .get();
-
-    return queryResult.docs.single.data();
+  Future<void> saveInstance(BaseItem item) async {
+    if (item.databaseId != null) {
+      await _itemCollectionRef.doc(item.databaseId).set(item);
+    }
+    await _itemCollectionRef.doc().set(item);
   }
 }
- */

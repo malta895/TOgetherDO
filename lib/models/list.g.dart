@@ -16,6 +16,7 @@ ListAppList _$ListAppListFromJson(Map<String, dynamic> json) {
         ? null
         : DateTime.parse(json['expiryDate'] as String),
     databaseId: json['databaseId'] as String?,
+    creatorUsername: json['creatorUsername'] as String?,
     listType: _$enumDecode(_$ListTypeEnumMap, json['listType']),
     description: json['description'] as String?,
     items: (json['items'] as List<dynamic>?)
@@ -39,6 +40,7 @@ Map<String, dynamic> _$ListAppListToJson(ListAppList instance) =>
       'listType': _$ListTypeEnumMap[instance.listType],
       'members': instance.members.toList(),
       'items': instance.items.toList(),
+      'creatorUsername': instance.creatorUsername,
     };
 
 K _$enumDecode<K, V>(

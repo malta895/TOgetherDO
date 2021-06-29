@@ -38,6 +38,9 @@ class ListAppList {
   final String name;
   final String? description;
 
+  final DateTime createdAt;
+  final DateTime? expiryDate;
+
   final ListType listType;
 
   //Set and not List because Sets have unique elements
@@ -49,12 +52,15 @@ class ListAppList {
 
   ListAppList(
       {required this.name,
+      DateTime? createdAt,
+      this.expiryDate,
       this.databaseId,
       this.listType = ListType
           .public, // NOTE maybe better to make it required and remove the default value
       this.description,
       this.items = const {},
-      this.members = const {}});
+      this.members = const {}})
+      : this.createdAt = createdAt ?? DateTime.now().toUtc();
 
   factory ListAppList.fromJson(Map<String, dynamic> json) =>
       _$ListAppListFromJson(json);

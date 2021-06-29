@@ -66,6 +66,7 @@ dependencies:
   firebase_storage: ^8.1.0
   flutter_signin_button: ^2.0.0
   equatable: ^2.0.3
+  shimmer: ^2.0.0
 
   
 dev_dependencies:

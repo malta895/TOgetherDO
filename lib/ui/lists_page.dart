@@ -11,6 +11,7 @@ import 'package:mobile_applications/ui/new_list.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/ui/notification_page.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ListsPage extends StatefulWidget {
   static final String routeName = "/home";
@@ -35,14 +36,13 @@ class _ListsPageState extends State<ListsPage> {
     return Future.value(null);
   }
 
-  Future<void> _deleteList(ListAppList list) async {
+  Future<void> _deleteOrAbandonList(ListAppList list) async {
     final listAppUser =
         await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
 
-    if (listAppUser != null) {
-      ListAppListManager.instanceForUser(listAppUser).deleteList(list);
-    }
-    return;
+    if (listAppUser != null && list.creatorUsername == listAppUser.username) {
+      await ListAppListManager.instanceForUser(listAppUser).deleteList(list);
+    } else {}
   }
 
   @override
@@ -66,11 +66,83 @@ class _ListsPageState extends State<ListsPage> {
         builder: (context, AsyncSnapshot<List<ListAppList>> snapshot) {
           final listAppList = snapshot.data ?? [];
 
-          return ListView.builder(
-            itemCount: listAppList.length,
-            itemBuilder: (context, i) {
-              return _buildRow(context, listAppList[i]);
+          late Widget listsTable;
+
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              listsTable = SizedBox(
+                child: Shimmer.fromColors(
+                  baseColor: Colors.white,
+                  highlightColor: Colors.black,
+                  child: ListView.builder(
+                    itemBuilder: (_, __) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            width: 48.0,
+                            height: 48.0,
+                            color: Colors.white,
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Container(
+                                  width: double.infinity,
+                                  height: 8.0,
+                                  color: Colors.white,
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 2.0),
+                                ),
+                                Container(
+                                  width: double.infinity,
+                                  height: 8.0,
+                                  color: Colors.white,
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 2.0),
+                                ),
+                                Container(
+                                  width: 40.0,
+                                  height: 8.0,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    itemCount: 10,
+                  ),
+                ),
+              );
+              break;
+            case ConnectionState.done:
+              listsTable = ListView.builder(
+                itemCount: listAppList.length,
+                itemBuilder: (context, i) {
+                  return _buildRow(context, listAppList[i]);
+                },
+              );
+          }
+
+          //The refresh indicator is shown when we swipe from the upper side of the screen
+          return RefreshIndicator(
+            onRefresh: () async {
+              setState(() {
+                _listsFuture = _fetchLists();
+              });
             },
+            child: listsTable,
           );
         });
   }
@@ -79,21 +151,24 @@ class _ListsPageState extends State<ListsPage> {
     final currentListAppUser =
         context.read<ListAppAuthProvider>().loggedInListAppUser!;
 
-    final creatorUsernameOrMe =
-        listAppList.creatorUsername == currentListAppUser.username
-            ? 'Me'
-            : currentListAppUser.username;
+    final bool userOwnsList =
+        listAppList.creatorUsername == currentListAppUser.username;
+
     return Dismissible(
       confirmDismiss: (DismissDirection direction) async {
         return await showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text("Are you sure you wish to delete the " +
-                  "\"${listAppList.name}\"" +
-                  " list?"),
-              content: Text(
-                  "If you push DELETE, you will abandon this list and it won't show on your homepage"),
+              title: Text(
+                  "Are you sure you wish to ${userOwnsList ? 'delete' : 'leave'} the " +
+                      listAppList.name +
+                      " list?"),
+              content: userOwnsList
+                  ? Text(
+                      "You and all the other participants will not see this list anymore")
+                  : Text(
+                      "If you push DELETE, you will abandon this list and it won't show on your homepage"),
               actions: <Widget>[
                 TextButton(
                     style: TextButton.styleFrom(primary: Colors.red),
@@ -128,9 +203,9 @@ class _ListsPageState extends State<ListsPage> {
             alignment: Alignment.centerLeft,
           )),
       key: UniqueKey(),
-      onDismissed: (DismissDirection direction) {
+      onDismissed: (DismissDirection direction) async {
+        await _deleteOrAbandonList(listAppList);
         setState(() {
-          _deleteList(listAppList);
           _listsFuture = _fetchLists();
         });
       },
@@ -149,8 +224,10 @@ class _ListsPageState extends State<ListsPage> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             isThreeLine: true,
-            subtitle: Text(
-                "$creatorUsernameOrMe\n${listAppList.length} element${listAppList.length == 1 ? '' : 's'}"),
+            subtitle: Text((userOwnsList
+                    ? 'Me'
+                    : listAppList.creatorUsername!) +
+                "\n${listAppList.length} element${listAppList.length == 1 ? '' : 's'}"),
             onTap: () {
               Navigator.push(
                 context,

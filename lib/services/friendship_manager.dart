@@ -75,4 +75,11 @@ class ListAppFriendshipManager with ChangeNotifier {
 
     return friendsToList;
   }
+
+  Future<ListAppFriendship?> getFriendshipById(String id) async {
+    print("getFriendshipById");
+    final queryResult = await _friendshipsCollection.doc(id).get();
+
+    return queryResult.data();
+  }
 }

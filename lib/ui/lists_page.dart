@@ -26,7 +26,6 @@ class _ListsPageState extends State<ListsPage> {
   Future<List<ListAppList>>? _listsFuture;
 
   Future<List<ListAppList>>? _fetchLists() async {
-    print("fetch");
     final listAppUser =
         await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
 
@@ -37,7 +36,6 @@ class _ListsPageState extends State<ListsPage> {
   }
 
   Future<void> _deleteList(ListAppList list) async {
-    print("delete");
     final listAppUser =
         await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
 

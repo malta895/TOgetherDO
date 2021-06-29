@@ -34,13 +34,21 @@ class _NewListFormState extends State<_NewListForm> {
   final _formKey = GlobalKey<FormState>();
 
   ListType _listTypeValue = ListType.public;
-  TextEditingController _listTitleController = TextEditingController();
   TextEditingController _listDescriptionController = TextEditingController();
+  late TextEditingController _listTitleController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _listTitleController = TextEditingController();
+  }
 
   Widget _buildListTitleField() {
     return Padding(
         padding: EdgeInsets.only(top: 10.0),
         child: TextFormField(
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           controller: _listTitleController,
           cursorColor: Theme.of(context).textTheme.headline1!.color!,
           decoration: InputDecoration(
@@ -59,7 +67,7 @@ class _NewListFormState extends State<_NewListForm> {
                   color: Theme.of(context).textTheme.headline1!.color)),
           validator: (value) {
             if (value?.isEmpty == true) {
-              return 'Please enter some text';
+              return 'The title is required';
             }
             return null;
           },
@@ -151,14 +159,17 @@ class _NewListFormState extends State<_NewListForm> {
           if (isUploading) return;
           isUploading = true;
 
+          final currentUser =
+              context.read<ListAppAuthProvider>().loggedInListAppUser;
+
           // Validate returns true if the form is valid, or false
           // otherwise.
           if (_formKey.currentState?.validate() == true) {
             final newList = ListAppList(
-              name: _listTitleController.text,
-              description: _listDescriptionController.text,
-              listType: _listTypeValue,
-            );
+                name: _listTitleController.text,
+                description: _listDescriptionController.text,
+                listType: _listTypeValue,
+                creatorUsername: currentUser?.username);
 
             // If the form is valid, display a Snackbar.
             // NOTE se abbiamo tempo sarebbe carino mettere l'animazione che c'é

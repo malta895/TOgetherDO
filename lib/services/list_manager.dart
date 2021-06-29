@@ -6,6 +6,15 @@ class ListAppListManager {
   final CollectionReference<ListAppList> _listCollectionRef;
   final String userUid;
 
+  static Query<ListAppList> getCollectionGroup() {
+    return FirebaseFirestore.instance
+        .collectionGroup(ListAppList.collectionName)
+        .withConverter<ListAppList>(
+            fromFirestore: (snapshots, _) =>
+                ListAppList.fromJson(snapshots.data()!),
+            toFirestore: (list, _) => list.toJson());
+  }
+
   static final Map<String, ListAppListManager> _cachedInstances = {};
 
   ListAppListManager._privateConstructor(this.userUid)
@@ -46,7 +55,11 @@ class ListAppListManager {
   Future<List<ListAppList>> getLists() async {
     final queryResult = await _listCollectionRef.get();
 
-    return Future.wait(queryResult.docs.map((e) async => e.data()));
+    return Future.wait(queryResult.docs.map((e) async {
+      final list = e.data();
+      list.databaseId = e.id;
+      return list;
+    }));
   }
 
   Future<void> deleteList(ListAppList list) async {

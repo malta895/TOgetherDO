@@ -77,7 +77,14 @@ class _ListsPageState extends State<ListsPage> {
         });
   }
 
-  Widget _buildRow(BuildContext context, ListAppList aList) {
+  Widget _buildRow(BuildContext context, ListAppList listAppList) {
+    final currentListAppUser =
+        context.read<ListAppAuthProvider>().loggedInListAppUser!;
+
+    final creatorUsernameOrMe =
+        listAppList.creatorUsername == currentListAppUser.username
+            ? 'Me'
+            : currentListAppUser.username;
     return Dismissible(
       confirmDismiss: (DismissDirection direction) async {
         return await showDialog(
@@ -85,7 +92,7 @@ class _ListsPageState extends State<ListsPage> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text("Are you sure you wish to delete the " +
-                  "\"${aList.name}\"" +
+                  "\"${listAppList.name}\"" +
                   " list?"),
               content: Text(
                   "If you push DELETE, you will abandon this list and it won't show on your homepage"),
@@ -125,7 +132,7 @@ class _ListsPageState extends State<ListsPage> {
       key: UniqueKey(),
       onDismissed: (DismissDirection direction) {
         setState(() {
-          _deleteList(aList);
+          _deleteList(listAppList);
           _listsFuture = _fetchLists();
         });
       },
@@ -140,15 +147,18 @@ class _ListsPageState extends State<ListsPage> {
           child: ListTile(
             key: Key("Item tile"),
             title: Text(
-              aList.name,
+              listAppList.name,
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            subtitle: Text(aList.description ?? ''),
+            isThreeLine: true,
+            subtitle: Text(
+                "$creatorUsernameOrMe\n${listAppList.length} element${listAppList.length == 1 ? '' : 's'}"),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (BuildContext context) => ListViewRoute(aList)),
+                    builder: (BuildContext context) =>
+                        ListViewRoute(listAppList)),
               );
             },
           )),

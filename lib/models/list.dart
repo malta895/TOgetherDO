@@ -34,9 +34,12 @@ class ListAppList {
   static const String collectionName = 'lists';
 
   /// the id provided by the data source
-  final String? databaseId;
+  String? databaseId;
   final String name;
   final String? description;
+
+  final DateTime createdAt;
+  final DateTime? expiryDate;
 
   final ListType listType;
 
@@ -47,14 +50,22 @@ class ListAppList {
   @JsonKey(defaultValue: const {})
   Set<BaseItem> items;
 
+  int get length => items.length;
+
+  String? creatorUsername;
+
   ListAppList(
       {required this.name,
+      DateTime? createdAt,
+      this.expiryDate,
       this.databaseId,
+      this.creatorUsername,
       this.listType = ListType
           .public, // NOTE maybe better to make it required and remove the default value
       this.description,
       this.items = const {},
-      this.members = const {}});
+      this.members = const {}})
+      : this.createdAt = createdAt ?? DateTime.now().toUtc();
 
   factory ListAppList.fromJson(Map<String, dynamic> json) =>
       _$ListAppListFromJson(json);

@@ -9,7 +9,7 @@ const admin = require('firebase-admin');
   });*/
 
 // Sends a notifications to all users when a new message is posted.
-exports.sendNotifications = functions.region('europe-west1').firestore.document('friendships/{requestId}').onCreate(
+exports.sendNotifications = functions.region('europe-west6').firestore.document('friendships/{requestId}').onCreate(
     async (snapshot) => {
         console.log(snapshot.data().userFrom);
         console.log(snapshot.data().userTo);
@@ -71,13 +71,13 @@ function cleanupTokens(response, tokens) {
     return Promise.all(tokensDelete);
 }
 
-/*exports.sendNotificationHTTPS = functions.region('europe-west1').https.onRequest(async (req, res) => {
+/*exports.sendNotificationHTTPS = functions.region('europe-west6').https.onRequest(async (req, res) => {
     const msg = req.query.text;
     const user = await admin.firestore().collection('users').doc('9LUBLCszUrU4mukuRWhHFS2iexL2').get();
     res.json({ result: `Inspecting user with name ${user.displayName}` });
 })*/
 
-/*exports.addMessage = functions.region('europe-west1').https.onRequest(async (req, res) => {
+/*exports.addMessage = functions.region('europe-west6').https.onRequest(async (req, res) => {
     // Grab the text parameter.
     const original = req.query.text;
     const allTokens = await admin.firestore().collection('users').doc("9LUBLCszUrU4mukuRWhHFS2iexL2").get();
@@ -113,7 +113,7 @@ function cleanupTokens(response, tokens) {
 /* // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
-// exports.helloWorld = functions.region('europe-west1').https.onRequest((request, response) => {
+// exports.helloWorld = functions.region('europe-west6').https.onRequest((request, response) => {
 //   functions.logger.info("Hello logs!", {structuredData: true});
 //   response.send("Hello from Firebase!");
 // });
@@ -124,7 +124,7 @@ admin.initializeApp();
 
 // Take the text parameter passed to this HTTP endpoint and insert it into
 // Firestore under the path /messages/:documentId/original
-exports.addMessage = functions.region('europe-west1').https.onRequest(async (req, res) => {
+exports.addMessage = functions.region('europe-west6').https.onRequest(async (req, res) => {
     // Grab the text parameter.
     const original = req.query.text;
     // Push the new message into Firestore using the Firebase Admin SDK.
@@ -135,7 +135,7 @@ exports.addMessage = functions.region('europe-west1').https.onRequest(async (req
 
 // Listens for new messages added to /messages/:documentId/original and creates an
 // uppercase version of the message to /messages/:documentId/uppercase
-exports.makeUppercase = functions.region('europe-west1').firestore.document('/messages/{documentId}')
+exports.makeUppercase = functions.region('europe-west6').firestore.document('/messages/{documentId}')
     .onCreate((snap, context) => {
         // Grab the current value of what was written to Firestore.
         const original = snap.data().original;

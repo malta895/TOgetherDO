@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/list_manager.dart';
@@ -45,11 +46,17 @@ class _ListsPageState extends State<ListsPage> {
     } else {}
   }
 
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      new GlobalKey<RefreshIndicatorState>();
+
   @override
   void initState() {
     super.initState();
 
     _listsFuture = _fetchLists();
+    SchedulerBinding.instance?.addPostFrameCallback((_) {
+      _refreshIndicatorKey.currentState?.show();
+    });
   }
 
   @override
@@ -72,59 +79,7 @@ class _ListsPageState extends State<ListsPage> {
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
-              listsTable = SizedBox(
-                child: Shimmer.fromColors(
-                  baseColor: Colors.white,
-                  highlightColor: Colors.black,
-                  child: ListView.builder(
-                    itemBuilder: (_, __) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Container(
-                            width: 48.0,
-                            height: 48.0,
-                            color: Colors.white,
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Container(
-                                  width: double.infinity,
-                                  height: 8.0,
-                                  color: Colors.white,
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 2.0),
-                                ),
-                                Container(
-                                  width: double.infinity,
-                                  height: 8.0,
-                                  color: Colors.white,
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 2.0),
-                                ),
-                                Container(
-                                  width: 40.0,
-                                  height: 8.0,
-                                  color: Colors.white,
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    itemCount: 10,
-                  ),
-                ),
-              );
+            listsTable = Container();
               break;
             case ConnectionState.done:
               listsTable = ListView.builder(
@@ -137,6 +92,7 @@ class _ListsPageState extends State<ListsPage> {
 
           //The refresh indicator is shown when we swipe from the upper side of the screen
           return RefreshIndicator(
+            key: _refreshIndicatorKey,
             onRefresh: () async {
               setState(() {
                 _listsFuture = _fetchLists();

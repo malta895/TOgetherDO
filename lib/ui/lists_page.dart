@@ -65,7 +65,15 @@ class _ListsPageState extends State<ListsPage> {
         });
   }
 
-  Widget _buildRow(BuildContext context, ListAppList aList) {
+  Widget _buildRow(BuildContext context, ListAppList listAppList) {
+    final currentListAppUser =
+        context.read<ListAppAuthProvider>().loggedInListAppUser!;
+
+    final creatorUsernameOrMe =
+        listAppList.creatorUsername == currentListAppUser.username
+            ? 'Me'
+            : currentListAppUser.username;
+
     return Container(
         decoration: BoxDecoration(
             border: Border(
@@ -77,15 +85,18 @@ class _ListsPageState extends State<ListsPage> {
         child: ListTile(
           key: Key("Item tile"),
           title: Text(
-            aList.name,
+            listAppList.name,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: Text(aList.description ?? ''),
+          isThreeLine: true,
+          subtitle: Text(
+              "$creatorUsernameOrMe\n${listAppList.length} element${listAppList.length == 1 ? '' : 's'}"),
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (BuildContext context) => ListViewRoute(aList)),
+                  builder: (BuildContext context) =>
+                      ListViewRoute(listAppList)),
             );
           },
         ));

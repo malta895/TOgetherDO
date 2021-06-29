@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_applications/models/exception.dart';
+import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/list_manager.dart';
 
 class ListAppUserManager with ChangeNotifier {
   static ListAppUserManager _instance =
@@ -29,6 +31,13 @@ class ListAppUserManager with ChangeNotifier {
   Future<ListAppUser?> getUserByEmail(String email) async {
     final queryResult =
         await _usersCollection.where('email', isEqualTo: email).get();
+
+    return queryResult.docs.single.data();
+  }
+
+  Future<ListAppUser?> getUserByUsername(String username) async {
+    final queryResult =
+        await _usersCollection.where('username', isEqualTo: username).get();
 
     return queryResult.docs.single.data();
   }
@@ -72,5 +81,23 @@ class ListAppUserManager with ChangeNotifier {
       print(e.message);
       throw ListAppException('An error occurred. Please try again later.');
     }
+  }
+
+  ///Gets the lists in wich the given user is in
+  Future<List<ListAppList>> getLists(ListAppUser user) async {
+    final queryResult = await ListAppListManager.getCollectionGroup()
+        .where('participantsUsernames', arrayContains: user.username)
+        .get();
+
+    final participantLists = queryResult.docs.map((e) {
+      final list = e.data();
+      list.databaseId = e.id;
+      return list;
+    });
+
+    final ownedLists =
+        await ListAppListManager.instanceForUser(user).getLists();
+
+    return participantLists.followedBy(ownedLists).toList();
   }
 }

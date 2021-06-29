@@ -127,12 +127,15 @@ class _NewListFormState extends State<_NewListForm> {
           if (isUploading) return;
           isUploading = true;
 
+          final currentUser = context.read<ListAppAuthProvider>().loggedInListAppUser;
+
           // Validate returns true if the form is valid, or false
           // otherwise.
           if (_formKey.currentState?.validate() == true) {
             final newList = ListAppList(
               name: _listTitleController.text,
               listType: _listTypeValue,
+              creatorUsername: currentUser?.username
             );
 
             // If the form is valid, display a Snackbar.

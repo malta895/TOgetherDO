@@ -34,7 +34,7 @@ class ListAppList {
   static const String collectionName = 'lists';
 
   /// the id provided by the data source
-  final String? databaseId;
+  String? databaseId;
   final String name;
   final String? description;
 
@@ -50,11 +50,16 @@ class ListAppList {
   @JsonKey(defaultValue: const {})
   Set<BaseItem> items;
 
+  int get length => items.length;
+
+  String? creatorUsername;
+
   ListAppList(
       {required this.name,
       DateTime? createdAt,
       this.expiryDate,
       this.databaseId,
+      this.creatorUsername,
       this.listType = ListType
           .public, // NOTE maybe better to make it required and remove the default value
       this.description,

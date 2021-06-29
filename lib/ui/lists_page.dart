@@ -26,6 +26,7 @@ class _ListsPageState extends State<ListsPage> {
   Future<List<ListAppList>>? _listsFuture;
 
   Future<List<ListAppList>>? _fetchLists() async {
+    print("fetch");
     final listAppUser =
         await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
 
@@ -33,6 +34,17 @@ class _ListsPageState extends State<ListsPage> {
       return ListAppListManager.instanceForUser(listAppUser).getLists();
     }
     return Future.value(null);
+  }
+
+  Future<void> _deleteList(ListAppList list) async {
+    print("delete");
+    final listAppUser =
+        await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
+
+    if (listAppUser != null) {
+      ListAppListManager.instanceForUser(listAppUser).deleteList(list);
+    }
+    return;
   }
 
   @override
@@ -66,29 +78,81 @@ class _ListsPageState extends State<ListsPage> {
   }
 
   Widget _buildRow(BuildContext context, ListAppList aList) {
-    return Container(
-        decoration: BoxDecoration(
-            border: Border(
-                bottom: BorderSide(
-          //                   <--- left side
-          color: Colors.grey,
-          width: 0.8,
-        ))),
-        child: ListTile(
-          key: Key("Item tile"),
-          title: Text(
-            aList.name,
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          subtitle: Text(aList.description ?? ''),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) => ListViewRoute(aList)),
+    return Dismissible(
+      confirmDismiss: (DismissDirection direction) async {
+        return await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Are you sure you wish to delete the " +
+                  "\"${aList.name}\"" +
+                  " list?"),
+              content: Text(
+                  "If you push DELETE, you will abandon this list and it won't show on your homepage"),
+              actions: <Widget>[
+                TextButton(
+                    style: TextButton.styleFrom(primary: Colors.red),
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: const Text("DELETE")),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text("CANCEL"),
+                ),
+              ],
             );
           },
-        ));
+        );
+      },
+      dismissThresholds: {DismissDirection.endToStart: 0.3},
+      direction: DismissDirection.endToStart,
+      background: Container(
+          color: Colors.red,
+          child: Align(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+              ],
+            ),
+            alignment: Alignment.centerLeft,
+          )),
+      key: UniqueKey(),
+      onDismissed: (DismissDirection direction) {
+        setState(() {
+          _deleteList(aList);
+          _listsFuture = _fetchLists();
+        });
+      },
+      child: Container(
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+            //                   <--- left side
+            color: Colors.grey,
+            width: 0.8,
+          ))),
+          child: ListTile(
+            key: Key("Item tile"),
+            title: Text(
+              aList.name,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text(aList.description ?? ''),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => ListViewRoute(aList)),
+              );
+            },
+          )),
+    );
   }
 
   @override

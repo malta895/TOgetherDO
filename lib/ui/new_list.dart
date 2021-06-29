@@ -35,6 +35,7 @@ class _NewListFormState extends State<_NewListForm> {
 
   ListType _listTypeValue = ListType.public;
   TextEditingController _listTitleController = TextEditingController();
+  TextEditingController _listDescriptionController = TextEditingController();
 
   Widget _buildListTitleField() {
     return Padding(
@@ -62,6 +63,37 @@ class _NewListFormState extends State<_NewListForm> {
             }
             return null;
           },
+        ));
+  }
+
+  Widget _buildListDescriptionField() {
+    return Padding(
+        padding: EdgeInsets.only(top: 10.0),
+        child: TextFormField(
+          keyboardType: TextInputType.multiline,
+          maxLines: null,
+          controller: _listDescriptionController,
+          cursorColor: Theme.of(context).textTheme.headline1!.color!,
+          decoration: InputDecoration(
+              contentPadding: EdgeInsets.all(5.0),
+              filled: true,
+              fillColor: Theme.of(context).splashColor,
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                borderSide: BorderSide(
+                    color: Theme.of(context).textTheme.headline1!.color!,
+                    width: 1.0),
+              ),
+              border: InputBorder.none,
+              labelText: 'Enter a description for the list',
+              labelStyle: TextStyle(
+                  color: Theme.of(context).textTheme.headline1!.color)),
+          /*validator: (value) {
+            if (value?.isEmpty == true) {
+              return 'Please enter some text';
+            }
+            return null;
+          },*/
         ));
   }
 
@@ -124,6 +156,7 @@ class _NewListFormState extends State<_NewListForm> {
           if (_formKey.currentState?.validate() == true) {
             final newList = ListAppList(
               name: _listTitleController.text,
+              description: _listDescriptionController.text,
               listType: _listTypeValue,
             );
 
@@ -163,6 +196,7 @@ class _NewListFormState extends State<_NewListForm> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             _buildListTitleField(),
+            _buildListDescriptionField(),
             _buildListTypeSelector(),
             _NewListDropdownMenu(),
             _AddMemberDialog(),
@@ -173,7 +207,6 @@ class _NewListFormState extends State<_NewListForm> {
     );
   }
 }
-
 
 // TODO sistemare quando avremo gli amici dal db
 class _AddMemberDialog extends StatefulWidget {

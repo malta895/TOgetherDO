@@ -1,11 +1,13 @@
 import 'package:mobile_applications/models/list_item.dart';
 import 'dart:math' as math;
 import 'dart:collection';
+import 'package:provider/provider.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mobile_applications/services/authentication.dart';
 
 import 'package:mobile_applications/ui/new_item.dart';
 import 'package:mobile_applications/models/list.dart';
@@ -54,7 +56,7 @@ class ListViewRoute extends StatefulWidget {
           lastName: "Maltagliati",
           email: "malta95@gmail.com"),
     ]);
-    currentMember = aList.members.elementAt(1);
+    currentMember = aList.members.elementAt(0);
 
     aList.items = Set<BaseItem>();
     /* aList.items.addAll([
@@ -95,6 +97,15 @@ class ListViewRoute extends StatefulWidget {
 class _ListViewRouteState extends State<ListViewRoute> {
   final ListAppUser _member;
   final ListAppList _aList;
+
+  late ListAppUser _loggedInListAppUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _loggedInListAppUser =
+        context.read<ListAppAuthProvider>().loggedInListAppUser!;
+  }
 
   final HashMap<ListAppUser, Color> _assignedColors =
       HashMap<ListAppUser, Color>();
@@ -182,9 +193,6 @@ class _ListViewRouteState extends State<ListViewRoute> {
                       style: TextButton.styleFrom(
                           primary: Theme.of(context).primaryColor),
                       onPressed: () => {
-                            print(aListItem.quantityFulfilledBy(_member)),
-                            print(aListItem.getFulfillers()),
-                            print(_difference),
                             setState(() {
                               if (_added == 1) {
                                 aListItem.fulfill(
@@ -362,9 +370,10 @@ class _ListViewRouteState extends State<ListViewRoute> {
               // TODO make async, make not selectable until the server has responded
               setState(() {
                 if (value == true) {
-                  aListItem.fulfill(member: _member);
+                  aListItem.fulfill(member: _loggedInListAppUser);
                 } else {
-                  aListItem.unfulfill(member: _member, quantityUnfulfilled: 1);
+                  aListItem.unfulfill(
+                      member: _loggedInListAppUser, quantityUnfulfilled: 1);
                 }
               });
             },
@@ -502,16 +511,16 @@ class _ListViewRouteState extends State<ListViewRoute> {
                                     textScaleFactor: 1.2,
                                   )))
                         ]),
-              value: aListItem.quantityFulfilledBy(_member).isOdd,
+              value: aListItem.quantityFulfilledBy(_loggedInListAppUser).isOdd,
               selected: aListItem.isFulfilled(),
               onChanged: (bool? value) {
                 // TODO make async, make not selectable until the server has responded
                 setState(() {
                   if (value == true) {
-                    aListItem.fulfill(member: _member);
+                    aListItem.fulfill(member: _loggedInListAppUser);
                   } else {
                     aListItem.unfulfill(
-                        member: _member, quantityUnfulfilled: 1);
+                        member: _loggedInListAppUser, quantityUnfulfilled: 1);
                   }
                 });
               },
@@ -661,10 +670,10 @@ class _ListViewRouteState extends State<ListViewRoute> {
                       showDialog<void>(
                           context: context,
                           builder: (BuildContext context) {
-                            int _currentValue =
-                                aListItem.quantityFulfilledBy(_member);
-                            int _previousValue =
-                                aListItem.quantityFulfilledBy(_member);
+                            int _currentValue = aListItem
+                                .quantityFulfilledBy(_loggedInListAppUser);
+                            int _previousValue = aListItem
+                                .quantityFulfilledBy(_loggedInListAppUser);
                             int _added = 0;
                             int _difference = 0;
                             return StatefulBuilder(
@@ -706,18 +715,20 @@ class _ListViewRouteState extends State<ListViewRoute> {
                                               print("quantity prima setstate"),
                                               print(
                                                   aListItem.quantityFulfilledBy(
-                                                      _member)),
+                                                      _loggedInListAppUser)),
                                               print(aListItem.getFulfillers()),
                                               print(_difference),
                                               setState(() {
                                                 if (_added == 1) {
                                                   aListItem.fulfill(
-                                                      member: _member,
+                                                      member:
+                                                          _loggedInListAppUser,
                                                       quantityFulfilled:
                                                           _difference);
                                                 } else {
                                                   aListItem.unfulfill(
-                                                      member: _member,
+                                                      member:
+                                                          _loggedInListAppUser,
                                                       quantityUnfulfilled:
                                                           _difference);
                                                 }
@@ -725,7 +736,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
                                               print("quantity dopo setstate"),
                                               print(
                                                   aListItem.quantityFulfilledBy(
-                                                      _member)),
+                                                      _loggedInListAppUser)),
                                               /*_added == 1
                                 ? {
                                     setState(() => aListItem.fulfill(
@@ -794,12 +805,12 @@ class _ListViewRouteState extends State<ListViewRoute> {
 
   Widget _buildMultifulfillmentMemberItemButton(
       BuildContext context, BaseItem aListItem) {
-    int totalFulfilled = aListItem
+    /*int totalFulfilled = aListItem
         .getFulfillers()
         .map((member) => aListItem.quantityFulfilledBy(member))
         .reduce((value, element) => value + element);
     print("questo è totalFulfilled");
-    print(totalFulfilled);
+    print(totalFulfilled);*/
     return TextButton(
         style: TextButton.styleFrom(
           side: BorderSide(color: Theme.of(context).accentColor, width: 1),
@@ -820,11 +831,10 @@ class _ListViewRouteState extends State<ListViewRoute> {
             }),
         child: Text(
           aListItem.getFulfillers().length == 0
-              ? "0"
+              ? "0" + " / " + "${aListItem.maxQuantity}"
               : "${aListItem.getFulfillers().map((member) => aListItem.quantityFulfilledBy(member)).reduce((value, element) => value + element)}" +
                   " / " +
-                  "${aListItem.maxQuantity}" +
-                  "${aListItem.quantityFulfilledBy(_member)}",
+                  "${aListItem.maxQuantity}",
           style: TextStyle(color: Theme.of(context).primaryColor),
           textScaleFactor: 1.2,
         ));

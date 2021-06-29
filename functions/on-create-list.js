@@ -12,7 +12,7 @@ exports.setCreatedAt = functions.region('europe-west1').firestore.document('user
             .doc(userId)
             .collection('lists')
             .doc(listId)
-            .set({ createdAt: new Date().toISOString() }, { merge: true })
+            .set({ createdAt: new Date().toISOString(), databaseId: listId.toString() }, { merge: true })
             .then(() => {
                 console.log("Created list " + listId + " by user " + userId);
             })

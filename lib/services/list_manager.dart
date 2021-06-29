@@ -48,4 +48,13 @@ class ListAppListManager {
 
     return Future.wait(queryResult.docs.map((e) async => e.data()));
   }
+
+  Future<void> deleteList(ListAppList list) async {
+    if (list.databaseId != null) {
+      await _listCollectionRef.doc(list.databaseId).delete();
+      return;
+    }
+    print("ID == null");
+    return;
+  }
 }

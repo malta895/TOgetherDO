@@ -12,7 +12,6 @@ import 'package:mobile_applications/ui/new_list.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/ui/notification_page.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 class ListsPage extends StatefulWidget {
   static final String routeName = "/home";
@@ -79,7 +78,7 @@ class _ListsPageState extends State<ListsPage> {
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
-            listsTable = Container();
+              listsTable = Container();
               break;
             case ConnectionState.done:
               listsTable = ListView.builder(

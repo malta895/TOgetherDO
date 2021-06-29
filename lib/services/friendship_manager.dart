@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/models/friendship.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/user_manager.dart';

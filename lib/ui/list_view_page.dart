@@ -1,17 +1,14 @@
-import 'package:mobile_applications/models/list_item.dart';
-import 'dart:math' as math;
 import 'dart:collection';
-import 'package:provider/provider.dart';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:mobile_applications/services/authentication.dart';
-
-import 'package:mobile_applications/ui/new_item.dart';
 import 'package:mobile_applications/models/list.dart';
+import 'package:mobile_applications/models/list_item.dart';
+import 'package:mobile_applications/services/authentication.dart';
+import 'package:mobile_applications/ui/new_item.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:provider/provider.dart';
 
 import '../models/user.dart';
 

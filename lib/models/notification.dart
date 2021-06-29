@@ -1,8 +1,4 @@
-import 'package:json_annotation/json_annotation.dart';
-import 'package:mobile_applications/models/user.dart';
-import 'package:mobile_applications/models/list.dart';
 import 'dart:core';
-import 'dart:collection';
 
 import 'package:json_annotation/json_annotation.dart';
 

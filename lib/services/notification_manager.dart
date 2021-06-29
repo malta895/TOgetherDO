@@ -1,12 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile_applications/models/exception.dart';
-import 'package:json_annotation/json_annotation.dart';
-import 'package:mobile_applications/models/friendship.dart';
 import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/models/user.dart';
-import 'package:mobile_applications/services/friendship_manager.dart';
 
 class ListAppNotificationManager with ChangeNotifier {
   static ListAppNotificationManager _instance =

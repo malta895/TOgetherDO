@@ -73,8 +73,7 @@ class _ListAppNavDrawerState extends State<ListAppNavDrawer> {
                     alignment: Alignment.centerLeft,
                     child: CircleAvatar(
                       backgroundImage: () {
-                        final String? photoURL =
-                            listAppUser?.profilePictureURL;
+                        final String? photoURL = listAppUser?.profilePictureURL;
 
                         if (photoURL != null) return NetworkImage(photoURL);
 

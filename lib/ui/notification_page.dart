@@ -1,15 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/models/friendship.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/notification.dart';
-import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/friendship_manager.dart';
 import 'package:mobile_applications/services/notification_manager.dart';
-import 'package:mobile_applications/services/user_manager.dart';
 import 'package:provider/provider.dart';
 
 //users/lGmqaAgJZqVIdqXt3GmQFNC9E3D3

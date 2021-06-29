@@ -1,7 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import 'user.dart';
-
 part 'friendship.g.dart';
 
 /// It represents the friendship between 2 users

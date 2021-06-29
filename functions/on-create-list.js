@@ -3,14 +3,16 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
 
-exports.onListCreated = functions.firestore.document('lists/{listId}').onCreate(
-    async (snapshot, context) => {
-        const listId = snapshot.id;
-        const userId = context.auth.uid;
+exports.setCreatedAt = functions.region('europe-west1').firestore.document('users/{userId}/lists/{listId}').onCreate(
+    async (_, context) => {
+        const userId = context.params.userId;
+        const listId = context.params.listId;
 
-        return admin.firestore().collection('lists')
+        return admin.firestore().collection('users')
+            .doc(userId)
+            .collection('lists')
             .doc(listId)
-            .set({ userCreator: userId }, { merge: true })
+            .set({ createdAt: admin.firestore.Timestamp.fromDate(new Date()) }, { merge: true })
             .then(() => {
                 console.log("Created list " + listId + " by user " + userId);
             })

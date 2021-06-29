@@ -34,12 +34,20 @@ class _NewListFormState extends State<_NewListForm> {
   final _formKey = GlobalKey<FormState>();
 
   ListType _listTypeValue = ListType.public;
-  TextEditingController _listTitleController = TextEditingController();
+  late TextEditingController _listTitleController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _listTitleController = TextEditingController();
+  }
 
   Widget _buildListTitleField() {
     return Padding(
         padding: EdgeInsets.only(top: 10.0),
         child: TextFormField(
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           controller: _listTitleController,
           cursorColor: Theme.of(context).textTheme.headline1!.color!,
           decoration: InputDecoration(
@@ -58,7 +66,7 @@ class _NewListFormState extends State<_NewListForm> {
                   color: Theme.of(context).textTheme.headline1!.color)),
           validator: (value) {
             if (value?.isEmpty == true) {
-              return 'Please enter some text';
+              return 'The title is required';
             }
             return null;
           },
@@ -173,7 +181,6 @@ class _NewListFormState extends State<_NewListForm> {
     );
   }
 }
-
 
 // TODO sistemare quando avremo gli amici dal db
 class _AddMemberDialog extends StatefulWidget {

@@ -241,7 +241,10 @@ class _NotificationPage extends State<NotificationPage> {
                             style: TextButton.styleFrom(
                               side: BorderSide(color: Colors.green, width: 1),
                             ),
-                            onPressed: () => print("YES"),
+                            onPressed: () async {
+                              await ListAppNotificationManager.instance
+                                  .acceptNotification(notification.databaseId!);
+                            },
                             child: Icon(
                               Icons.done,
                               color: Colors.green,
@@ -253,7 +256,10 @@ class _NotificationPage extends State<NotificationPage> {
                             style: TextButton.styleFrom(
                               side: BorderSide(color: Colors.red, width: 1),
                             ),
-                            onPressed: () => print("NO"),
+                            onPressed: () async {
+                              await ListAppNotificationManager.instance
+                                  .rejectNotification(notification.databaseId!);
+                            },
                             child: Icon(
                               Icons.close,
                               color: Colors.red,

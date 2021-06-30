@@ -51,6 +51,20 @@ class ListAppNotificationManager with ChangeNotifier {
     }));
   }
 
+  Future<bool> acceptNotification(String id) async {
+    final queryResult =
+        await _notificationsCollection.doc(id).update({"accepted": true});
+
+    return true;
+  }
+
+  Future<bool> rejectNotification(String id) async {
+    final queryResult =
+        await _notificationsCollection.doc(id).update({"accepted": false});
+
+    return true;
+  }
+
   /*Future<List<ListAppFriendship?>> getNotificationsByUid(String uid) async {
     final queryResult =
         await _notificationsCollection.where('userId', isEqualTo: uid).get();

@@ -107,16 +107,25 @@ class _ListsPageState extends State<ListsPage>
     }
   }
 
+  final _animatedListKey = GlobalKey<AnimatedListState>();
+
   Widget _buildAnimated(BuildContext context) {
     return AnimatedBuilder(
         animation: _listsShowAnimationController,
         builder: (context, _) {
           return FadeScaleTransition(
             animation: _listsShowAnimationController,
-            child: ListView.builder(
-              itemCount: _listAppLists.length,
-              itemBuilder: (context, i) {
-                return _buildRow(context, _listAppLists[i]);
+            child: AnimatedList(
+              key: _animatedListKey,
+              initialItemCount: _listAppLists.length,
+              itemBuilder: (context, i, animation) {
+                return SlideTransition(
+                  position: animation.drive(
+                      Tween<Offset>(begin: Offset(1, 0), end: Offset(0, 0))
+                          .chain(CurveTween(curve: Curves.ease))),
+                  child: _buildRow(context, _listAppLists[i])
+                );
+                // return _buildRow(context, _listAppLists[i]);
               },
             ),
           );
@@ -297,9 +306,9 @@ class _ListsPageState extends State<ListsPage>
             );
 
             if (newList != null) {
-              // TODO animation when the list is added,
               setState(() {
-                _listAppLists.add(newList);
+                _listAppLists.insert(0, newList);
+                _animatedListKey.currentState?.insertItem(0, duration: Duration(milliseconds: 700));
               });
             }
           },

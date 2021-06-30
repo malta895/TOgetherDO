@@ -1,11 +1,13 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/models/friendship.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/friendship_manager.dart';
+import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/services/notification_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -32,6 +34,10 @@ class _NotificationPage extends State<NotificationPage> {
     }
     return Future.value(null);
   }
+
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      new GlobalKey<RefreshIndicatorState>();
+  bool _isManuallyRefreshing = false;
 
   /*final ListAppUser sender = ListAppUser(
       firstName: "Lorenzo",
@@ -68,13 +74,15 @@ class _NotificationPage extends State<NotificationPage> {
     super.initState();
 
     _notificationsFuture = _fetchNotifications();
-    messaging = FirebaseMessaging.instance;
+    SchedulerBinding.instance?.addPostFrameCallback((_) {
+      if (!_isManuallyRefreshing) _refreshIndicatorKey.currentState?.show();
+    });
+    /*messaging = FirebaseMessaging.instance;
     messaging.getToken().then((value) {
       print(value);
     });
     FirebaseMessaging.onMessage.listen((RemoteMessage event) async {
       final notification = event.notification;
-      final data = event.data;
       if (notification == null) return;
       //COMMENTO PER PROVARE IL RETRIEVE DI FRIENDSHIP
       /*ListAppUserManager.instance.getUserByUid(data['sender']).then(
@@ -85,33 +93,54 @@ class _NotificationPage extends State<NotificationPage> {
     });
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       print('Message clicked!');
-    });
+    });*/
   }
 
   Widget _buildListItems(
       BuildContext context, Set<ListAppNotification> notificationList) {
     return FutureBuilder<List<ListAppNotification>>(
-        initialData: [],
-        future: _notificationsFuture,
-        builder: (context, AsyncSnapshot<List<ListAppNotification>> snapshot) {
-          final notificationList = snapshot.data ?? [];
+      initialData: [],
+      future: _notificationsFuture,
+      builder: (context, AsyncSnapshot<List<ListAppNotification>> snapshot) {
+        final notificationList = snapshot.data ?? [];
 
-          //print(snapshot.data!.first.databaseId);
+        late Widget notificationsTable;
 
-          return ListView.builder(
-            itemCount: notificationList.length,
-            itemBuilder: (context, i) {
-              switch (notificationList[i].runtimeType) {
-                case FriendshipNotification:
-                  return _buildFriendshipRow(context, notificationList[i]);
-              }
+        switch (snapshot.connectionState) {
+          case ConnectionState.none:
+          case ConnectionState.waiting:
+          case ConnectionState.active:
+            notificationsTable = Container();
+            break;
+          case ConnectionState.done:
+            notificationsTable = ListView.builder(
+                itemCount: notificationList.length,
+                itemBuilder: (context, i) {
+                  switch (notificationList[i].runtimeType) {
+                    case FriendshipNotification:
+                      return _buildFriendshipRow(context, notificationList[i]);
 
-              return Container();
+                    case ListInviteNotification:
+                      return _buildInvitationRow(context, notificationList[i]);
+                  }
+                  return Container();
+                });
+        }
+        return RefreshIndicator(
+          key: _refreshIndicatorKey,
+          onRefresh: () async {
+            _isManuallyRefreshing = true;
+            setState(() {
+              _notificationsFuture = _fetchNotifications();
+            });
+            _isManuallyRefreshing = false;
+          },
+          child: notificationsTable,
+        );
 
-              //return _buildRow(context, notificationList[i]);
-            },
-          );
-        });
+        //return _buildRow(context, notificationList[i]);
+      },
+    );
   }
 
   Widget _buildFriendshipRow(
@@ -120,8 +149,6 @@ class _NotificationPage extends State<NotificationPage> {
       future: ListAppFriendshipManager.instance
           .getFriendshipById(notification.objectId!),
       builder: (context, AsyncSnapshot<ListAppFriendship?> snapshot) {
-        print("USERFROM");
-        print(snapshot.data!.userFrom);
         return Container(
             decoration: BoxDecoration(
                 border: Border(
@@ -131,13 +158,13 @@ class _NotificationPage extends State<NotificationPage> {
             ))),
             child: ListTile(
               //COMMENTO PER PROVARE IL RETRIEVE DI FRIENDSHIP
-              /*leading: CircleAvatar(
+              leading: CircleAvatar(
                   backgroundImage:
-                      NetworkImage(notification.sender.profilePictureURL!)),*/
+                      NetworkImage(notification.sender!.profilePictureURL!)),
               title: Text(
                 //COMMENTO PER PROVARE IL RETRIEVE DI FRIENDSHIP
-                //notification.sender.displayName +
-                " sent you a friendship request",
+                notification.sender!.displayName +
+                    " sent you a friendship request",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Text("You can accept or decline the request"),
@@ -172,8 +199,75 @@ class _NotificationPage extends State<NotificationPage> {
     );
   }
 
+  Widget _buildInvitationRow(
+      BuildContext context, ListAppNotification notification) {
+    return FutureBuilder<ListAppList?>(
+        future: ListAppListManager.instanceForUserUid(notification.listOwner!)
+            .getListById(notification.objectId!),
+        builder: (context, AsyncSnapshot<ListAppList?> snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              /*return Center(
+                child: Text("Loading"),
+              );*/
+              break;
+            case ConnectionState.done:
+              return Container(
+                  decoration: BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(
+                    color: Colors.grey,
+                    width: 0.8,
+                  ))),
+                  child: ListTile(
+                    leading: Icon(
+                      Icons.list,
+                      size: 30,
+                    ),
+                    title: Text(
+                      notification.sender!.displayName +
+                          " added you to the list \"" +
+                          snapshot.data!.name +
+                          "\"",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text("You can accept or decline the invitation"),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextButton(
+                            style: TextButton.styleFrom(
+                              side: BorderSide(color: Colors.green, width: 1),
+                            ),
+                            onPressed: () => print("YES"),
+                            child: Icon(
+                              Icons.done,
+                              color: Colors.green,
+                            )),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        TextButton(
+                            style: TextButton.styleFrom(
+                              side: BorderSide(color: Colors.red, width: 1),
+                            ),
+                            onPressed: () => print("NO"),
+                            child: Icon(
+                              Icons.close,
+                              color: Colors.red,
+                            ))
+                      ],
+                    ),
+                  ));
+          }
+          return Container();
+        });
+  }
+
 //COMMENTO PER PROVARE IL RETRIEVE DI FRIENDSHIP
-  /*Widget _buildRow(BuildContext context, ListAppNotification notification) {
+/*Widget _buildRow(BuildContext context, ListAppNotification notification) {
     final currentListAppUser =
         context.read<ListAppAuthProvider>().loggedInListAppUser!;
 

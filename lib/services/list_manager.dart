@@ -62,6 +62,12 @@ class ListAppListManager {
     }));
   }
 
+  Future<ListAppList?> getListById(String id) async {
+    final queryresult = await _listCollectionRef.doc(id).get();
+
+    return queryresult.data();
+  }
+
   Future<void> deleteList(ListAppList list) async {
     if (list.databaseId != null) {
       await _listCollectionRef.doc(list.databaseId).delete();

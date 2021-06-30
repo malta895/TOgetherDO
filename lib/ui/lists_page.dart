@@ -150,14 +150,14 @@ class _ListsPageState extends State<ListsPage> {
           color: Colors.red,
           child: Align(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
+                SizedBox(
+                  width: 20,
+                ),
                 Icon(
                   Icons.delete,
                   color: Colors.white,
-                ),
-                SizedBox(
-                  width: 20,
                 ),
               ],
             ),

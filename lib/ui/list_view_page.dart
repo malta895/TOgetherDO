@@ -292,13 +292,16 @@ class _ListViewRouteState extends State<ListViewRoute> {
             );
           },
           dismissThresholds: {DismissDirection.endToStart: 0.3},
-          direction: DismissDirection.endToStart,
+          direction: DismissDirection.startToEnd,
           background: Container(
               color: Colors.red,
               child: Align(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
+                    SizedBox(
+                      width: 20,
+                    ),
                     Icon(
                       Icons.delete,
                       color: Colors.white,
@@ -311,9 +314,6 @@ class _ListViewRouteState extends State<ListViewRoute> {
                       ),
                       textAlign: TextAlign.left,
                     ),*/
-                    SizedBox(
-                      width: 20,
-                    ),
                   ],
                 ),
                 alignment: Alignment.centerLeft,
@@ -399,13 +399,17 @@ class _ListViewRouteState extends State<ListViewRoute> {
                 },
               );
             },
-            direction: DismissDirection.endToStart,
+            dismissThresholds: {DismissDirection.endToStart: 0.3},
+            direction: DismissDirection.startToEnd,
             background: Container(
                 color: Colors.red,
                 child: Align(
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
+                      SizedBox(
+                        width: 20,
+                      ),
                       Icon(
                         Icons.delete,
                         color: Colors.white,
@@ -418,9 +422,6 @@ class _ListViewRouteState extends State<ListViewRoute> {
                         ),
                         textAlign: TextAlign.left,
                       ),*/
-                      SizedBox(
-                        width: 20,
-                      ),
                     ],
                   ),
                   alignment: Alignment.centerLeft,
@@ -546,13 +547,17 @@ class _ListViewRouteState extends State<ListViewRoute> {
                 },
               );
             },
-            direction: DismissDirection.endToStart,
+            dismissThresholds: {DismissDirection.endToStart: 0.3},
+            direction: DismissDirection.startToEnd,
             background: Container(
                 color: Colors.red,
                 child: Align(
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
+                      SizedBox(
+                        width: 20,
+                      ),
                       Icon(
                         Icons.delete,
                         color: Colors.white,
@@ -565,9 +570,6 @@ class _ListViewRouteState extends State<ListViewRoute> {
                         ),
                         textAlign: TextAlign.left,
                       ),*/
-                      SizedBox(
-                        width: 20,
-                      ),
                     ],
                   ),
                   alignment: Alignment.centerLeft,

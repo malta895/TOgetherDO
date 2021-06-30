@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/user_manager.dart';
 
 class ListAppNotificationManager with ChangeNotifier {
   static ListAppNotificationManager _instance =
@@ -40,13 +41,12 @@ class ListAppNotificationManager with ChangeNotifier {
     final queryResult =
         await _notificationsCollection.where('userId', isEqualTo: uid).get();
 
-    print("FUORI getNotificatoinsByUid");
-
     return Future.wait(queryResult.docs.map((e) async {
+      final sender =
+          await ListAppUserManager.instance.getUserByUid(e.data().userFrom);
       final list = e.data();
-      print("getNotificatoinsByUid");
-      print(list.databaseId);
       list.databaseId = e.id;
+      list.sender = sender;
       return list;
     }));
   }

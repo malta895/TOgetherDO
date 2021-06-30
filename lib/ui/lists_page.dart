@@ -61,7 +61,8 @@ class _ListsPageState extends State<ListsPage>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    _listsFuture = _fetchLists();
+    // refresh when we get back from other pages
+    _refreshPage();
   }
 
   bool get _isAnimationRunningForwardsOrComplete {
@@ -288,7 +289,7 @@ class _ListsPageState extends State<ListsPage>
               context,
               MaterialPageRoute(builder: (context) => NewListPage()),
             );
-            await _refreshPage();
+
           },
           icon: Icon(Icons.add),
           label: Text('NEW LIST'),

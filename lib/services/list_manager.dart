@@ -7,7 +7,6 @@ class ListAppListManager {
   final String userUid;
 
   static Query<ListAppList> getCollectionGroup() {
-
     //indexed on members
     return FirebaseFirestore.instance
         .collectionGroup(ListAppList.collectionName)

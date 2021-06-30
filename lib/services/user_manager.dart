@@ -84,8 +84,6 @@ class ListAppUserManager with ChangeNotifier {
     }
   }
 
-
-
   ///Gets the lists in wich the given user is in
   Future<List<ListAppList>> getLists(ListAppUser listAppUser) async {
     try {
@@ -93,23 +91,25 @@ class ListAppUserManager with ChangeNotifier {
           .where('members', arrayContains: listAppUser.databaseId)
           .get();
 
-      final participantLists = await Future.wait(queryResult.docs.map((e) async {
+      final participantLists =
+          await Future.wait(queryResult.docs.map((e) async {
         final list = e.data();
         list.databaseId = e.id;
 
         // replace the users id with the usernames
         final usernames = await Future.wait(list.members.map((e) async {
-          if(e == null) return null;
+          if (e == null) return null;
           final user = await getUserByUid(e);
           return user?.username;
         }));
 
         list.members = usernames.toSet();
 
-        if(list.creatorUid == null){
+        if (list.creatorUid == null) {
           print("The list ${list.databaseId} has null creatorUid!");
         }
-        list.creator = await ListAppUserManager.instance.getUserByUid(list.creatorUid!);
+        list.creator =
+            await ListAppUserManager.instance.getUserByUid(list.creatorUid!);
 
         return list;
       }));

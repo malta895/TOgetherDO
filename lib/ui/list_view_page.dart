@@ -77,9 +77,8 @@ class ListViewRoute extends StatefulWidget {
           name: "Buy movie tickets", maxQuantity: 5, quantityPerMember: 3),
     ]);
     aList.items.elementAt(1).fulfill(member: aList.membersAsUsers.elementAt(0));
-    aList.items
-        .elementAt(5)
-        .fulfill(member: aList.membersAsUsers.elementAt(1), quantityFulfilled: 2);
+    aList.items.elementAt(5).fulfill(
+        member: aList.membersAsUsers.elementAt(1), quantityFulfilled: 2);
     aList.items.elementAt(4).fulfill(member: aList.membersAsUsers.elementAt(0));
     aList.items.elementAt(4).fulfill(member: aList.membersAsUsers.elementAt(1));
     aList.items.elementAt(4).fulfill(member: aList.membersAsUsers.elementAt(2));

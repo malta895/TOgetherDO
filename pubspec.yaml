@@ -67,6 +67,7 @@ dependencies:
   flutter_signin_button: ^2.0.0
   equatable: ^2.0.3
   intl: ^0.17.0
+  animations: ^2.0.0
 
   
 dev_dependencies:

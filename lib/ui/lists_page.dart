@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
@@ -23,19 +24,68 @@ class ListsPage extends StatefulWidget {
   _ListsPageState createState() => _ListsPageState();
 }
 
-class _ListsPageState extends State<ListsPage> {
+class _ListsPageState extends State<ListsPage>
+    with SingleTickerProviderStateMixin {
   final String title = 'ListApp';
+
+  late AnimationController _animationController;
 
   Future<List<ListAppList>>? _listsFuture;
 
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      new GlobalKey<RefreshIndicatorState>();
+  bool _isManuallyRefreshing = false;
+
+  @override
+  void initState() {
+    _animationController = AnimationController(
+        vsync: this, value: 0.0, duration: const Duration(milliseconds: 150))
+      ..addStatusListener((AnimationStatus status) {
+        setState(() {});
+      });
+    super.initState();
+
+    _listsFuture = _fetchLists();
+    SchedulerBinding.instance?.addPostFrameCallback((_) {
+      if (!_isManuallyRefreshing) _refreshIndicatorKey.currentState?.show();
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _animationController.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _listsFuture = _fetchLists();
+  }
+
+  bool get _isAnimationRunningForwardsOrComplete {
+    switch (_animationController.status) {
+      case AnimationStatus.forward:
+      case AnimationStatus.completed:
+        return true;
+      case AnimationStatus.reverse:
+      case AnimationStatus.dismissed:
+        return false;
+    }
+  }
+
   Future<List<ListAppList>>? _fetchLists() async {
+    _animationController.reverse();
     final listAppUser =
         await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
 
     if (listAppUser != null) {
       // return ListAppListManager.instanceForUser(listAppUser).getLists();
-      return ListAppUserManager.instance.getLists(listAppUser);
+      final lists = await ListAppUserManager.instance.getLists(listAppUser);
+      return lists;
     }
+
     return Future.value(null);
   }
 
@@ -48,25 +98,32 @@ class _ListsPageState extends State<ListsPage> {
     } else {}
   }
 
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      new GlobalKey<RefreshIndicatorState>();
-  bool _isManuallyRefreshing = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _listsFuture = _fetchLists();
-    SchedulerBinding.instance?.addPostFrameCallback((_) {
-      if (!_isManuallyRefreshing) _refreshIndicatorKey.currentState?.show();
-    });
+  Widget _buildAnimated(BuildContext context, List<ListAppList> listAppLists) {
+    return AnimatedBuilder(
+        animation: _animationController,
+        builder: (context, _) {
+          return FadeScaleTransition(
+            animation: _animationController,
+            child: ListView.builder(
+              itemCount: listAppLists.length,
+              itemBuilder: (context, i) {
+                return _buildRow(context, listAppLists[i]);
+              },
+            ),
+          );
+        });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    _listsFuture = _fetchLists();
+  Future<void> _refreshPage() async {
+    if (_isAnimationRunningForwardsOrComplete)
+      await _animationController.reverse();
+    _isManuallyRefreshing = true;
+    final _newListsFuture = _fetchLists()
+      ?..then((value) => _animationController.forward());
+    setState(() {
+      _listsFuture = _newListsFuture;
+    });
+    _isManuallyRefreshing = false;
   }
 
   Widget _buildListItems(BuildContext context) {
@@ -74,7 +131,7 @@ class _ListsPageState extends State<ListsPage> {
         initialData: [],
         future: _listsFuture,
         builder: (context, AsyncSnapshot<List<ListAppList>> snapshot) {
-          final listAppList = snapshot.data ?? [];
+          final listAppLists = snapshot.data ?? [];
 
           late Widget listsTable;
 
@@ -85,24 +142,13 @@ class _ListsPageState extends State<ListsPage> {
               listsTable = Container();
               break;
             case ConnectionState.done:
-              listsTable = ListView.builder(
-                itemCount: listAppList.length,
-                itemBuilder: (context, i) {
-                  return _buildRow(context, listAppList[i]);
-                },
-              );
+              listsTable = _buildAnimated(context, listAppLists);
           }
 
           //The refresh indicator is shown when we swipe from the upper side of the screen
           return RefreshIndicator(
             key: _refreshIndicatorKey,
-            onRefresh: () async {
-              _isManuallyRefreshing = true;
-              setState(() {
-                _listsFuture = _fetchLists();
-              });
-              _isManuallyRefreshing = false;
-            },
+            onRefresh: _refreshPage,
             child: listsTable,
           );
         });
@@ -242,10 +288,7 @@ class _ListsPageState extends State<ListsPage> {
               context,
               MaterialPageRoute(builder: (context) => NewListPage()),
             );
-
-            setState(() {
-              _listsFuture = _fetchLists();
-            });
+            await _refreshPage();
           },
           icon: Icon(Icons.add),
           label: Text('NEW LIST'),

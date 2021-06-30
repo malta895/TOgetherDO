@@ -82,7 +82,6 @@ class ListAppList {
       _$ListAppListFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListAppListToJson(this);
-
 }
 
 class ListAppFulfillment {

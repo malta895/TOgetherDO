@@ -7,6 +7,8 @@ class ListAppListManager {
   final String userUid;
 
   static Query<ListAppList> getCollectionGroup() {
+
+    //indexed on members
     return FirebaseFirestore.instance
         .collectionGroup(ListAppList.collectionName)
         .withConverter<ListAppList>(
@@ -71,9 +73,9 @@ class ListAppListManager {
   Future<void> deleteList(ListAppList list) async {
     if (list.databaseId != null) {
       await _listCollectionRef.doc(list.databaseId).delete();
+
       return;
     }
-    print("ID == null");
     return;
   }
 }

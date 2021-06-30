@@ -18,10 +18,10 @@ class ListViewRoute extends StatefulWidget {
   late ListAppUser currentMember;
 
   ListViewRoute(this.aList) {
-    aList.members = Set<ListAppUser>();
+    aList.membersAsUsers = Set<ListAppUser>();
 
     //TODO fetch from backend instead
-    aList.members.addAll([
+    aList.membersAsUsers.addAll([
       ListAppUser(
           databaseId: "siaodkjasd",
           username: "lawfriends",
@@ -53,7 +53,7 @@ class ListViewRoute extends StatefulWidget {
           lastName: "Maltagliati",
           email: "malta95@gmail.com"),
     ]);
-    currentMember = aList.members.elementAt(0);
+    currentMember = aList.membersAsUsers.elementAt(0);
 
     aList.items = Set<BaseItem>();
     /* aList.items.addAll([
@@ -76,14 +76,14 @@ class ListViewRoute extends StatefulWidget {
       MultiFulfillmentMemberItem(
           name: "Buy movie tickets", maxQuantity: 5, quantityPerMember: 3),
     ]);
-    aList.items.elementAt(1).fulfill(member: aList.members.elementAt(0));
+    aList.items.elementAt(1).fulfill(member: aList.membersAsUsers.elementAt(0));
     aList.items
         .elementAt(5)
-        .fulfill(member: aList.members.elementAt(1), quantityFulfilled: 2);
-    aList.items.elementAt(4).fulfill(member: aList.members.elementAt(0));
-    aList.items.elementAt(4).fulfill(member: aList.members.elementAt(1));
-    aList.items.elementAt(4).fulfill(member: aList.members.elementAt(2));
-    aList.items.elementAt(4).fulfill(member: aList.members.elementAt(3));
+        .fulfill(member: aList.membersAsUsers.elementAt(1), quantityFulfilled: 2);
+    aList.items.elementAt(4).fulfill(member: aList.membersAsUsers.elementAt(0));
+    aList.items.elementAt(4).fulfill(member: aList.membersAsUsers.elementAt(1));
+    aList.items.elementAt(4).fulfill(member: aList.membersAsUsers.elementAt(2));
+    aList.items.elementAt(4).fulfill(member: aList.membersAsUsers.elementAt(3));
   }
 
   @override
@@ -108,7 +108,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
       HashMap<ListAppUser, Color>();
 
   _ListViewRouteState(this._member, this._aList) {
-    var it = _aList.members.iterator;
+    var it = _aList.membersAsUsers.iterator;
     int index = 0;
     while (index <= Colors.primaries.length && it.moveNext()) {
       _assignedColors[it.current] = Colors.primaries[index];
@@ -138,9 +138,9 @@ class _ListViewRouteState extends State<ListViewRoute> {
 
   Widget _buildListMembers() {
     return ListView.builder(
-      itemCount: _aList.members.length,
+      itemCount: _aList.membersAsUsers.length,
       itemBuilder: (context, i) {
-        return _buildMemberRow(context, _aList.members.elementAt(i));
+        return _buildMemberRow(context, _aList.membersAsUsers.elementAt(i));
       },
     );
   }

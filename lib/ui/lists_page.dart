@@ -99,8 +99,14 @@ class _ListsPageState extends State<ListsPage>
     if (listAppUser != null && list.creatorUid == listAppUser.databaseId) {
       await ListAppListManager.instanceForUser(listAppUser).deleteList(list);
       setState(() {
-        _listAppLists
-            .removeWhere((element) => element.databaseId == list.databaseId);
+        final removeItem = _listAppLists
+            .indexWhere((element) => element.databaseId == list.databaseId);
+
+        _animatedListKey.currentState?.removeItem(removeItem, (_, __) {
+          return Container();
+        });
+
+        _listAppLists.removeAt(removeItem);
       });
     } else {
       // TODO Implement abandon list
@@ -120,11 +126,10 @@ class _ListsPageState extends State<ListsPage>
               initialItemCount: _listAppLists.length,
               itemBuilder: (context, i, animation) {
                 return SlideTransition(
-                  position: animation.drive(
-                      Tween<Offset>(begin: Offset(1, 0), end: Offset(0, 0))
-                          .chain(CurveTween(curve: Curves.ease))),
-                  child: _buildRow(context, _listAppLists[i])
-                );
+                    position: animation.drive(
+                        Tween<Offset>(begin: Offset(1, 0), end: Offset(0, 0))
+                            .chain(CurveTween(curve: Curves.ease))),
+                    child: _buildRow(context, _listAppLists[i]));
                 // return _buildRow(context, _listAppLists[i]);
               },
             ),
@@ -308,7 +313,8 @@ class _ListsPageState extends State<ListsPage>
             if (newList != null) {
               setState(() {
                 _listAppLists.insert(0, newList);
-                _animatedListKey.currentState?.insertItem(0, duration: Duration(milliseconds: 700));
+                _animatedListKey.currentState
+                    ?.insertItem(0, duration: Duration(milliseconds: 700));
               });
             }
           },

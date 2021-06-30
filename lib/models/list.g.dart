@@ -19,10 +19,6 @@ ListAppList _$ListAppListFromJson(Map<String, dynamic> json) {
             ?.map((e) => BaseItem.fromJson(e as Map<String, dynamic>))
             .toSet() ??
         {},
-    members: (json['members'] as List<dynamic>?)
-            ?.map((e) => ListAppUser.fromJson(e as Map<String, dynamic>))
-            .toSet() ??
-        {},
   );
 }
 
@@ -34,7 +30,6 @@ Map<String, dynamic> _$ListAppListToJson(ListAppList instance) =>
       'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
       'expiryDate': ModelUtils.nullableDateTimeToJson(instance.expiryDate),
       'listType': _$ListTypeEnumMap[instance.listType],
-      'members': instance.members.toList(),
       'items': instance.items.toList(),
       'creatorUsername': instance.creatorUsername,
     };

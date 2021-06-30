@@ -50,7 +50,8 @@ class ListAppList {
   final ListType listType;
 
   //Set and not List because Sets have unique elements
-  @JsonKey(defaultValue: const {})
+  // @JsonKey(defaultValue: const {})
+  @JsonKey(ignore: true)
   Set<ListAppUser> members;
 
   @JsonKey(defaultValue: const {})

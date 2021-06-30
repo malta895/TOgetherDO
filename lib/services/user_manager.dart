@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/user.dart';
@@ -76,6 +77,7 @@ class ListAppUserManager with ChangeNotifier {
 
     try {
       await _usersCollection.doc(userId).update({'username': username});
+      // TODO update also anywhere else the username is used
       notifyListeners();
     } on FirebaseException catch (e) {
       print(e.message);
@@ -84,20 +86,28 @@ class ListAppUserManager with ChangeNotifier {
   }
 
   ///Gets the lists in wich the given user is in
-  Future<List<ListAppList>> getLists(ListAppUser user) async {
-    final queryResult = await ListAppListManager.getCollectionGroup()
-        .where('participantsUsernames', arrayContains: user.username)
-        .get();
+  Future<List<ListAppList>> getLists(ListAppUser listAppUser) async {
+    try {
+      final queryResult = await ListAppListManager.getCollectionGroup()
+          .where('members', arrayContains: listAppUser.username)
+          .get();
 
-    final participantLists = queryResult.docs.map((e) {
-      final list = e.data();
-      list.databaseId = e.id;
-      return list;
-    });
+      final participantLists = queryResult.docs.map((e) {
+        final list = e.data();
+        list.databaseId = e.id;
+        return list;
+      });
 
-    final ownedLists =
-        await ListAppListManager.instanceForUser(user).getLists();
+      final ownedLists =
+          await ListAppListManager.instanceForUser(listAppUser).getLists();
 
-    return participantLists.followedBy(ownedLists).toList();
+      return participantLists.followedBy(ownedLists).toList();
+    } on FirebaseException catch (e) {
+      print(e.toString());
+      throw ListAppException(e.message.toString());
+    } on CheckedFromJsonException catch (e) {
+      print(e);
+      throw ListAppException(e.message.toString());
+    }
   }
 }

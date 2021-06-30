@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/list_manager.dart';
+import 'package:mobile_applications/services/user_manager.dart';
 
 import 'package:mobile_applications/ui/list_view_page.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
@@ -32,7 +33,8 @@ class _ListsPageState extends State<ListsPage> {
         await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
 
     if (listAppUser != null) {
-      return ListAppListManager.instanceForUser(listAppUser).getLists();
+      // return ListAppListManager.instanceForUser(listAppUser).getLists();
+      return ListAppUserManager.instance.getLists(listAppUser);
     }
     return Future.value(null);
   }
@@ -178,14 +180,20 @@ class _ListsPageState extends State<ListsPage> {
           ))),
           child: ListTile(
             key: Key("Item tile"),
-            leading: Icon(Icons.list_alt_sharp, color: Colors.white, size: 20,),
+            leading: Icon(
+              Icons.list_alt_sharp,
+              color: Colors.white,
+              size: 20,
+            ),
             trailing: Column(
               children: [
-                Icon(Icons.date_range, size: 20,),
-                Text(DateFormat('MMM dd')
-                      .format(listAppList.createdAt)),
-                Text(DateFormat('hh:mm')
-                    .format(listAppList.createdAt)),
+                Icon(
+                  Icons.date_range,
+                  size: 20,
+                ),
+                // see https://pub.dev/documentation/intl/latest/intl/DateFormat-class.html
+                Text(DateFormat('MMM dd').format(listAppList.createdAt)),
+                Text(DateFormat('hh:mm').format(listAppList.createdAt)),
               ],
             ),
             title: Text(

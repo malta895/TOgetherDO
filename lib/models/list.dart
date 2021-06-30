@@ -49,35 +49,40 @@ class ListAppList {
 
   final ListType listType;
 
-  //Set and not List because Sets have unique elements
-  // @JsonKey(defaultValue: const {})
   @JsonKey(ignore: true)
-  Set<ListAppUser> members;
+  Set<ListAppUser> membersAsUsers;
+
+  @JsonKey(defaultValue: const {})
+  Set<String?> members = const {};
 
   @JsonKey(defaultValue: const {})
   Set<BaseItem> items;
 
   int get length => items.length;
 
-  String? creatorUsername;
+  String? creatorUid;
+
+  @JsonKey(ignore: true)
+  ListAppUser? creator;
 
   ListAppList(
       {required this.name,
       DateTime? createdAt,
       this.expiryDate,
       this.databaseId,
-      this.creatorUsername,
+      this.creatorUid,
       this.listType = ListType
           .public, // NOTE maybe better to make it required and remove the default value
       this.description,
       this.items = const {},
-      this.members = const {}})
+      this.membersAsUsers = const {}})
       : this.createdAt = createdAt ?? DateTime.now().toUtc();
 
   factory ListAppList.fromJson(Map<String, dynamic> json) =>
       _$ListAppListFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListAppListToJson(this);
+
 }
 
 class ListAppFulfillment {

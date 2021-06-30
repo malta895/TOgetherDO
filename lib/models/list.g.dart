@@ -12,14 +12,16 @@ ListAppList _$ListAppListFromJson(Map<String, dynamic> json) {
     createdAt: ModelUtils.dateTimeFromJson(json['createdAt'] as int),
     expiryDate: ModelUtils.nullableDateTimeFromJson(json['expiryDate'] as int?),
     databaseId: json['databaseId'] as String?,
-    creatorUsername: json['creatorUsername'] as String?,
+    creatorUid: json['creatorUid'] as String?,
     listType: _$enumDecode(_$ListTypeEnumMap, json['listType']),
     description: json['description'] as String?,
     items: (json['items'] as List<dynamic>?)
             ?.map((e) => BaseItem.fromJson(e as Map<String, dynamic>))
             .toSet() ??
         {},
-  );
+  )..members =
+      (json['members'] as List<dynamic>?)?.map((e) => e as String?).toSet() ??
+          {};
 }
 
 Map<String, dynamic> _$ListAppListToJson(ListAppList instance) =>
@@ -30,8 +32,9 @@ Map<String, dynamic> _$ListAppListToJson(ListAppList instance) =>
       'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
       'expiryDate': ModelUtils.nullableDateTimeToJson(instance.expiryDate),
       'listType': _$ListTypeEnumMap[instance.listType],
+      'members': instance.members.toList(),
       'items': instance.items.toList(),
-      'creatorUsername': instance.creatorUsername,
+      'creatorUid': instance.creatorUid,
     };
 
 K _$enumDecode<K, V>(

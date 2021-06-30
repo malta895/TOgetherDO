@@ -77,7 +77,6 @@ class ListAppUserManager with ChangeNotifier {
 
     try {
       await _usersCollection.doc(userId).update({'username': username});
-      // TODO update also anywhere else the username is used
       notifyListeners();
     } on FirebaseException catch (e) {
       print(e.message);
@@ -85,18 +84,35 @@ class ListAppUserManager with ChangeNotifier {
     }
   }
 
+
+
   ///Gets the lists in wich the given user is in
   Future<List<ListAppList>> getLists(ListAppUser listAppUser) async {
     try {
       final queryResult = await ListAppListManager.getCollectionGroup()
-          .where('members', arrayContains: listAppUser.username)
+          .where('members', arrayContains: listAppUser.databaseId)
           .get();
 
-      final participantLists = queryResult.docs.map((e) {
+      final participantLists = await Future.wait(queryResult.docs.map((e) async {
         final list = e.data();
         list.databaseId = e.id;
+
+        // replace the users id with the usernames
+        final usernames = await Future.wait(list.members.map((e) async {
+          if(e == null) return null;
+          final user = await getUserByUid(e);
+          return user?.username;
+        }));
+
+        list.members = usernames.toSet();
+
+        if(list.creatorUid == null){
+          print("The list ${list.databaseId} has null creatorUid!");
+        }
+        list.creator = await ListAppUserManager.instance.getUserByUid(list.creatorUid!);
+
         return list;
-      });
+      }));
 
       final ownedLists =
           await ListAppListManager.instanceForUser(listAppUser).getLists();

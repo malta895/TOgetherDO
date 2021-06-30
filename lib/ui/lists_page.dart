@@ -43,7 +43,7 @@ class _ListsPageState extends State<ListsPage> {
     final listAppUser =
         await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
 
-    if (listAppUser != null && list.creatorUsername == listAppUser.username) {
+    if (listAppUser != null && list.creatorUid == listAppUser.username) {
       await ListAppListManager.instanceForUser(listAppUser).deleteList(list);
     } else {}
   }
@@ -113,7 +113,7 @@ class _ListsPageState extends State<ListsPage> {
         context.read<ListAppAuthProvider>().loggedInListAppUser!;
 
     final bool userOwnsList =
-        listAppList.creatorUsername == currentListAppUser.username;
+        listAppList.creatorUid == currentListAppUser.databaseId;
 
     return Dismissible(
       confirmDismiss: (DismissDirection direction) async {
@@ -157,7 +157,6 @@ class _ListsPageState extends State<ListsPage> {
                 ),
                 Icon(
                   Icons.delete,
-                  color: Colors.white,
                 ),
               ],
             ),
@@ -181,9 +180,8 @@ class _ListsPageState extends State<ListsPage> {
           child: ListTile(
             key: Key("Item tile"),
             leading: Icon(
-              Icons.list_alt_sharp,
-              color: Colors.white,
-              size: 20,
+              Icons.list,
+              size: 40,
             ),
             trailing: Column(
               children: [
@@ -193,7 +191,7 @@ class _ListsPageState extends State<ListsPage> {
                 ),
                 // see https://pub.dev/documentation/intl/latest/intl/DateFormat-class.html
                 Text(DateFormat('MMM dd').format(listAppList.createdAt)),
-                Text(DateFormat('hh:mm').format(listAppList.createdAt)),
+                Text(DateFormat.jm().format(listAppList.createdAt)),
               ],
             ),
             title: Text(
@@ -203,7 +201,7 @@ class _ListsPageState extends State<ListsPage> {
             isThreeLine: true,
             subtitle: Text((userOwnsList
                     ? 'Me'
-                    : listAppList.creatorUsername!) +
+                    : listAppList.creator?.username ?? 'unknown') +
                 "\n${listAppList.length} element${listAppList.length == 1 ? '' : 's'}"),
             onTap: () {
               Navigator.push(

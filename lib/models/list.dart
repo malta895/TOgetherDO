@@ -3,6 +3,7 @@ import 'dart:core';
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/list_item.dart';
+import 'package:mobile_applications/models/utils.dart';
 
 import 'user.dart';
 
@@ -38,7 +39,12 @@ class ListAppList {
   final String name;
   final String? description;
 
+  @JsonKey(
+      fromJson: ModelUtils.dateTimeFromJson, toJson: ModelUtils.dateTimeToJson)
   final DateTime createdAt;
+  @JsonKey(
+      fromJson: ModelUtils.nullableDateTimeFromJson,
+      toJson: ModelUtils.nullableDateTimeToJson)
   final DateTime? expiryDate;
 
   final ListType listType;

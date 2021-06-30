@@ -12,7 +12,7 @@ exports.setCreatedAt = functions.region('europe-west6').firestore.document('user
             .doc(userId)
             .collection('lists')
             .doc(listId)
-            .set({ createdAt: new Date().toISOString(), databaseId: listId.toString() }, { merge: true })
+            .set({ databaseId: listId.toString() }, { merge: true }) //TODO convert this to timestamp and add it: `createdAt: new Date().toISOString(),`
             .then(() => {
                 console.log("Added date to list " + listId);
             })

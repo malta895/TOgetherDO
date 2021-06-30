@@ -38,7 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
         text:
             context.read<ListAppAuthProvider>().loggedInListAppUser?.username ??
                 '');
-    return showDialog(
+    return await showDialog(
         context: context,
         builder: (context) {
           String _newUsername = '';

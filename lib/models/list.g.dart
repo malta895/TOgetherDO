@@ -9,12 +9,8 @@ part of 'list.dart';
 ListAppList _$ListAppListFromJson(Map<String, dynamic> json) {
   return ListAppList(
     name: json['name'] as String,
-    createdAt: json['createdAt'] == null
-        ? null
-        : DateTime.parse(json['createdAt'] as String),
-    expiryDate: json['expiryDate'] == null
-        ? null
-        : DateTime.parse(json['expiryDate'] as String),
+    createdAt: ModelUtils.dateTimeFromJson(json['createdAt'] as int),
+    expiryDate: ModelUtils.nullableDateTimeFromJson(json['expiryDate'] as int?),
     databaseId: json['databaseId'] as String?,
     creatorUsername: json['creatorUsername'] as String?,
     listType: _$enumDecode(_$ListTypeEnumMap, json['listType']),
@@ -35,8 +31,8 @@ Map<String, dynamic> _$ListAppListToJson(ListAppList instance) =>
       'databaseId': instance.databaseId,
       'name': instance.name,
       'description': instance.description,
-      'createdAt': instance.createdAt.toIso8601String(),
-      'expiryDate': instance.expiryDate?.toIso8601String(),
+      'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
+      'expiryDate': ModelUtils.nullableDateTimeToJson(instance.expiryDate),
       'listType': _$ListTypeEnumMap[instance.listType],
       'members': instance.members.toList(),
       'items': instance.items.toList(),

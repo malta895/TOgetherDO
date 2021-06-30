@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/list_manager.dart';
 
@@ -47,6 +48,7 @@ class _ListsPageState extends State<ListsPage> {
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       new GlobalKey<RefreshIndicatorState>();
+  bool _isManuallyRefreshing = false;
 
   @override
   void initState() {
@@ -54,7 +56,7 @@ class _ListsPageState extends State<ListsPage> {
 
     _listsFuture = _fetchLists();
     SchedulerBinding.instance?.addPostFrameCallback((_) {
-      _refreshIndicatorKey.currentState?.show();
+      if (!_isManuallyRefreshing) _refreshIndicatorKey.currentState?.show();
     });
   }
 
@@ -93,9 +95,11 @@ class _ListsPageState extends State<ListsPage> {
           return RefreshIndicator(
             key: _refreshIndicatorKey,
             onRefresh: () async {
+              _isManuallyRefreshing = true;
               setState(() {
                 _listsFuture = _fetchLists();
               });
+              _isManuallyRefreshing = false;
             },
             child: listsTable,
           );
@@ -174,6 +178,16 @@ class _ListsPageState extends State<ListsPage> {
           ))),
           child: ListTile(
             key: Key("Item tile"),
+            leading: Icon(Icons.list_alt_sharp, color: Colors.white, size: 20,),
+            trailing: Column(
+              children: [
+                Icon(Icons.date_range, size: 20,),
+                Text(DateFormat('MMM dd')
+                      .format(listAppList.createdAt)),
+                Text(DateFormat('hh:mm')
+                    .format(listAppList.createdAt)),
+              ],
+            ),
             title: Text(
               listAppList.name,
               style: TextStyle(fontWeight: FontWeight.bold),

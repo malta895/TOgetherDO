@@ -142,8 +142,8 @@ class _ListsPageState extends State<ListsPage> {
           },
         );
       },
-      dismissThresholds: {DismissDirection.endToStart: 0.3},
-      direction: DismissDirection.endToStart,
+      dismissThresholds: {DismissDirection.startToEnd: 0.3},
+      direction: DismissDirection.startToEnd,
       background: Container(
           color: Colors.red,
           child: Align(

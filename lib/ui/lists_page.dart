@@ -28,9 +28,11 @@ class _ListsPageState extends State<ListsPage>
     with SingleTickerProviderStateMixin {
   final String title = 'ListApp';
 
-  late AnimationController _animationController;
+  late AnimationController _listsShowAnimationController;
 
   Future<List<ListAppList>>? _listsFuture;
+
+  List<ListAppList> _listAppLists = [];
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       new GlobalKey<RefreshIndicatorState>();
@@ -38,8 +40,8 @@ class _ListsPageState extends State<ListsPage>
 
   @override
   void initState() {
-    _animationController = AnimationController(
-        vsync: this, value: 0.0, duration: const Duration(milliseconds: 150))
+    _listsShowAnimationController = AnimationController(
+        vsync: this, value: 0.0, duration: const Duration(milliseconds: 400))
       ..addStatusListener((AnimationStatus status) {
         setState(() {});
       });
@@ -54,7 +56,7 @@ class _ListsPageState extends State<ListsPage>
   @override
   void dispose() {
     super.dispose();
-    _animationController.dispose();
+    _listsShowAnimationController.dispose();
   }
 
   @override
@@ -62,11 +64,11 @@ class _ListsPageState extends State<ListsPage>
     super.didChangeDependencies();
 
     // refresh when we get back from other pages
-    _refreshPage();
+    // _refreshPage();
   }
 
   bool get _isAnimationRunningForwardsOrComplete {
-    switch (_animationController.status) {
+    switch (_listsShowAnimationController.status) {
       case AnimationStatus.forward:
       case AnimationStatus.completed:
         return true;
@@ -77,7 +79,7 @@ class _ListsPageState extends State<ListsPage>
   }
 
   Future<List<ListAppList>>? _fetchLists() async {
-    _animationController.reverse();
+    _listsShowAnimationController.reverse();
     final listAppUser =
         await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
 
@@ -94,21 +96,27 @@ class _ListsPageState extends State<ListsPage>
     final listAppUser =
         await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
 
-    if (listAppUser != null && list.creatorUid == listAppUser.username) {
+    if (listAppUser != null && list.creatorUid == listAppUser.databaseId) {
       await ListAppListManager.instanceForUser(listAppUser).deleteList(list);
-    } else {}
+      setState(() {
+        _listAppLists
+            .removeWhere((element) => element.databaseId == list.databaseId);
+      });
+    } else {
+      // TODO Implement abandon list
+    }
   }
 
-  Widget _buildAnimated(BuildContext context, List<ListAppList> listAppLists) {
+  Widget _buildAnimated(BuildContext context) {
     return AnimatedBuilder(
-        animation: _animationController,
+        animation: _listsShowAnimationController,
         builder: (context, _) {
           return FadeScaleTransition(
-            animation: _animationController,
+            animation: _listsShowAnimationController,
             child: ListView.builder(
-              itemCount: listAppLists.length,
+              itemCount: _listAppLists.length,
               itemBuilder: (context, i) {
-                return _buildRow(context, listAppLists[i]);
+                return _buildRow(context, _listAppLists[i]);
               },
             ),
           );
@@ -117,10 +125,10 @@ class _ListsPageState extends State<ListsPage>
 
   Future<void> _refreshPage() async {
     if (_isAnimationRunningForwardsOrComplete)
-      await _animationController.reverse();
+      await _listsShowAnimationController.reverse();
     _isManuallyRefreshing = true;
     final _newListsFuture = _fetchLists()
-      ?..then((value) => _animationController.forward());
+      ?..then((value) => _listsShowAnimationController.forward());
     setState(() {
       _listsFuture = _newListsFuture;
     });
@@ -143,7 +151,8 @@ class _ListsPageState extends State<ListsPage>
               listsTable = Container();
               break;
             case ConnectionState.done:
-              listsTable = _buildAnimated(context, listAppLists);
+              _listAppLists = listAppLists;
+              listsTable = _buildAnimated(context);
           }
 
           //The refresh indicator is shown when we swipe from the upper side of the screen
@@ -159,7 +168,7 @@ class _ListsPageState extends State<ListsPage>
     final currentListAppUser =
         context.read<ListAppAuthProvider>().loggedInListAppUser!;
 
-    final bool userOwnsList =
+    final bool doesUserOwnList =
         listAppList.creatorUid == currentListAppUser.databaseId;
 
     return Dismissible(
@@ -169,19 +178,19 @@ class _ListsPageState extends State<ListsPage>
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text(
-                  "Are you sure you wish to ${userOwnsList ? 'delete' : 'leave'} the " +
+                  "Are you sure you wish to ${doesUserOwnList ? 'delete' : 'leave'} the " +
                       listAppList.name +
                       " list?"),
-              content: userOwnsList
+              content: doesUserOwnList
                   ? Text(
                       "You and all the other participants will not see this list anymore")
                   : Text(
-                      "If you push DELETE, you will abandon this list and it won't show on your homepage"),
+                      "If you push LEAVE, you will abandon this list and you won't be able to join it unless someone invites you again"),
               actions: <Widget>[
                 TextButton(
                     style: TextButton.styleFrom(primary: Colors.red),
                     onPressed: () => Navigator.of(context).pop(true),
-                    child: const Text("DELETE")),
+                    child: Text(doesUserOwnList ? 'DELETE' : 'LEAVE')),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
                   child: const Text("CANCEL"),
@@ -212,9 +221,6 @@ class _ListsPageState extends State<ListsPage>
       key: UniqueKey(),
       onDismissed: (DismissDirection direction) async {
         await _deleteOrAbandonList(listAppList);
-        setState(() {
-          _listsFuture = _fetchLists();
-        });
       },
       child: Container(
           decoration: BoxDecoration(
@@ -246,7 +252,7 @@ class _ListsPageState extends State<ListsPage>
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             isThreeLine: true,
-            subtitle: Text((userOwnsList
+            subtitle: Text((doesUserOwnList
                     ? 'Me'
                     : listAppList.creator?.username ?? 'unknown') +
                 "\n${listAppList.length} element${listAppList.length == 1 ? '' : 's'}"),
@@ -285,11 +291,17 @@ class _ListsPageState extends State<ListsPage>
           onPressed: () async {
             // wait for the new list page to be popped,
             //in order to be able to update the state with the new list afterwards
-            await Navigator.push(
+            final ListAppList? newList = await Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => NewListPage()),
             );
 
+            if (newList != null) {
+              // TODO animation when the list is added,
+              setState(() {
+                _listAppLists.add(newList);
+              });
+            }
           },
           icon: Icon(Icons.add),
           label: Text('NEW LIST'),

@@ -182,7 +182,7 @@ class _NewListFormState extends State<_NewListForm> {
                 .saveInstance(newList)
                 .then((_) {
               snackBar.close();
-              Navigator.of(context).pop(true);
+              Navigator.of(context).pop<ListAppList?>(newList);
               isUploading = false;
             }, onError: (_) {
               ScaffoldMessenger.of(context).showSnackBar(

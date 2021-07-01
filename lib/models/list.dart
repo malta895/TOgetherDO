@@ -76,7 +76,7 @@ class ListAppList {
       this.description,
       this.items = const {},
       this.membersAsUsers = const {}})
-      : this.createdAt = createdAt ?? DateTime.now().toUtc();
+      : this.createdAt = createdAt ?? DateTime.now();
 
   factory ListAppList.fromJson(Map<String, dynamic> json) =>
       _$ListAppListFromJson(json);

@@ -5,14 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
-
 import 'package:mobile_applications/ui/list_view_page.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/new_list.dart';
-import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/ui/notification_page.dart';
 import 'package:provider/provider.dart';
 
@@ -85,7 +84,8 @@ class _ListsPageState extends State<ListsPage>
 
     if (listAppUser != null) {
       // return ListAppListManager.instanceForUser(listAppUser).getLists();
-      final lists = await ListAppUserManager.instance.getLists(listAppUser);
+      final lists = await ListAppUserManager.instance
+          .getLists(listAppUser, orderBy: 'createdAt');
       return lists;
     }
 
@@ -103,6 +103,8 @@ class _ListsPageState extends State<ListsPage>
             .indexWhere((element) => element.databaseId == list.databaseId);
 
         _animatedListKey.currentState?.removeItem(removeItem, (_, __) {
+          // I don't want any animation other than the one of the dismissible
+          // returning an empty container seems to work
           return Container();
         });
 

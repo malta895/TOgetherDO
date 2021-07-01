@@ -85,7 +85,8 @@ class ListAppUserManager with ChangeNotifier {
   }
 
   ///Gets the lists in wich the given user is in
-  Future<List<ListAppList>> getLists(ListAppUser listAppUser) async {
+  Future<List<ListAppList>> getLists(ListAppUser listAppUser,
+      {String? orderBy}) async {
     try {
       final queryResult = await ListAppListManager.getCollectionGroup()
           .where('members', arrayContains: listAppUser.databaseId)
@@ -93,31 +94,41 @@ class ListAppUserManager with ChangeNotifier {
 
       final participantLists =
           await Future.wait(queryResult.docs.map((e) async {
-        final list = e.data();
-        list.databaseId = e.id;
+        final listAppList = e.data();
+        listAppList.databaseId = e.id;
 
         // replace the users id with the usernames
-        final usernames = await Future.wait(list.members.map((e) async {
+        final usernames = await Future.wait(listAppList.members.map((e) async {
           if (e == null) return null;
           final user = await getUserByUid(e);
           return user?.username;
         }));
 
-        list.members = usernames.toSet();
+        listAppList.members = usernames.toSet();
 
-        if (list.creatorUid == null) {
-          print("The list ${list.databaseId} has null creatorUid!");
+        if (listAppList.creatorUid == null) {
+          print("The list ${listAppList.databaseId} has null creatorUid!");
         }
-        list.creator =
-            await ListAppUserManager.instance.getUserByUid(list.creatorUid!);
+        listAppList.creator = await ListAppUserManager.instance
+            .getUserByUid(listAppList.creatorUid!);
 
-        return list;
+        return listAppList;
       }));
 
-      final ownedLists =
-          await ListAppListManager.instanceForUser(listAppUser).getLists();
+      final ownedLists = await ListAppListManager.instanceForUser(listAppUser)
+          .getLists(orderBy: orderBy);
 
-      return participantLists.followedBy(ownedLists).toList();
+      final listAppLists = participantLists.followedBy(ownedLists).toList();
+
+      switch (orderBy) {
+        case 'createdAt':
+          listAppLists.sort((a, b) {
+            return b.createdAt.compareTo(a.createdAt);
+          });
+          break;
+      }
+
+      return listAppLists;
     } on FirebaseException catch (e) {
       print(e.toString());
       throw ListAppException(e.message.toString());

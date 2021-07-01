@@ -53,10 +53,20 @@ class ListAppListManager {
     await _listCollectionRef.add(list);
   }
 
-  Future<List<ListAppList>> getLists() async {
+  Future<List<ListAppList>> getLists({String? orderBy}) async {
     final queryResult = await _listCollectionRef.get();
 
-    return Future.wait(queryResult.docs.map((e) async {
+    var docs = queryResult.docs;
+
+    switch (orderBy) {
+      case 'createdAt':
+        docs.sort((a, b) {
+          return b.data().createdAt.compareTo(a.data().createdAt);
+        });
+        break;
+    }
+
+    return Future.wait(docs.map((e) async {
       final list = e.data();
       list.databaseId = e.id;
       return list;

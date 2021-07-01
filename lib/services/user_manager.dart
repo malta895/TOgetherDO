@@ -88,7 +88,7 @@ class ListAppUserManager with ChangeNotifier {
   Future<List<ListAppList>> getLists(ListAppUser listAppUser,
       {String? orderBy}) async {
     try {
-      final queryResult = await ListAppListManager.getCollectionGroup()
+      final queryResult = await ListAppListManager.getCollectionGroupConverted()
           .where('members', arrayContains: listAppUser.databaseId)
           .get();
 

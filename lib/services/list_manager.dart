@@ -4,24 +4,32 @@ import 'package:mobile_applications/models/user.dart';
 
 class ListAppListManager {
   final CollectionReference<ListAppList> _listCollectionRef;
-  final String userUid;
+  static Query? _collectionGroup;
+  static Query<ListAppList>? _collectionGroupConverted;
+  final String _userUid;
 
-  static Query<ListAppList> getCollectionGroup() {
-    //indexed on members
-    return FirebaseFirestore.instance
+  static Query getCollectionGroup() {
+    _collectionGroup ??=
+        FirebaseFirestore.instance.collectionGroup(ListAppList.collectionName);
+    return _collectionGroup!;
+  }
+
+  static Query<ListAppList> getCollectionGroupConverted() {
+    _collectionGroupConverted ??= FirebaseFirestore.instance
         .collectionGroup(ListAppList.collectionName)
         .withConverter<ListAppList>(
             fromFirestore: (snapshots, _) =>
                 ListAppList.fromJson(snapshots.data()!),
             toFirestore: (list, _) => list.toJson());
+    return _collectionGroupConverted!;
   }
 
   static final Map<String, ListAppListManager> _cachedInstances = {};
 
-  ListAppListManager._privateConstructor(this.userUid)
+  ListAppListManager._privateConstructor(this._userUid)
       : _listCollectionRef = FirebaseFirestore.instance
             .collection(ListAppUser.collectionName)
-            .doc(userUid)
+            .doc(_userUid)
             .collection(ListAppList.collectionName)
             .withConverter<ListAppList>(
                 fromFirestore: (snapshots, _) =>
@@ -82,9 +90,25 @@ class ListAppListManager {
   Future<void> deleteList(ListAppList list) async {
     if (list.databaseId != null) {
       await _listCollectionRef.doc(list.databaseId).delete();
-
-      return;
     }
-    return;
+  }
+
+  Future<bool> leaveList(String ownerUid, ListAppList list) async {
+    final listCollectionRef = FirebaseFirestore.instance
+        .collection(ListAppUser.collectionName)
+        .doc(ownerUid)
+        .collection(ListAppList.collectionName);
+
+    final queryResultDocRef = listCollectionRef.doc(list.databaseId);
+
+    final queryResult = await queryResultDocRef.get();
+
+    var membersUids = queryResult.get('members');
+
+    if (membersUids.remove(_userUid)) {
+      queryResultDocRef.update({'members': membersUids});
+      return true;
+    }
+    return false;
   }
 }

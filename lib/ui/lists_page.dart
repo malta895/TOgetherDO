@@ -31,6 +31,7 @@ class _ListsPageState extends State<ListsPage>
 
   Future<List<ListAppList>>? _listsFuture;
 
+  // the current shown lists, needed as state for the AnimatedList to work properly
   List<ListAppList> _listAppLists = [];
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
@@ -58,14 +59,6 @@ class _ListsPageState extends State<ListsPage>
     _listsShowAnimationController.dispose();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    // refresh when we get back from other pages
-    // _refreshPage();
-  }
-
   bool get _isAnimationRunningForwardsOrComplete {
     switch (_listsShowAnimationController.status) {
       case AnimationStatus.forward:
@@ -83,7 +76,6 @@ class _ListsPageState extends State<ListsPage>
         await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
 
     if (listAppUser != null) {
-      // return ListAppListManager.instanceForUser(listAppUser).getLists();
       final lists = await ListAppUserManager.instance
           .getLists(listAppUser, orderBy: 'createdAt');
       return lists;
@@ -96,25 +88,27 @@ class _ListsPageState extends State<ListsPage>
     final listAppUser =
         await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
 
-    if (listAppUser != null && list.creatorUid == listAppUser.databaseId) {
+    if (listAppUser == null) return;
+
+    if (list.creatorUid == listAppUser.databaseId) {
       await ListAppListManager.instanceForUser(listAppUser).deleteList(list);
       setState(() {
-        final removeItem = _listAppLists
+        final removeIndex = _listAppLists
             .indexWhere((element) => element.databaseId == list.databaseId);
 
-        _animatedListKey.currentState?.removeItem(removeItem, (_, __) {
-          // I don't want any animation other than the one of the dismissible
-          // returning an empty container seems to work
-          return Container();
-        });
+        // returning an empty container avoids unnecessary animations
+        _animatedListKey.currentState
+            ?.removeItem(removeIndex, (_, __) => Container());
 
-        _listAppLists.removeAt(removeItem);
+        _listAppLists.removeAt(removeIndex);
       });
     } else {
-      // TODO Implement abandon list
+      await ListAppListManager.instanceForUser(listAppUser)
+          .leaveList(list.creatorUid ?? '', list);
     }
   }
 
+  // needed for the new list animation
   final _animatedListKey = GlobalKey<AnimatedListState>();
 
   Widget _buildAnimated(BuildContext context) {
@@ -132,7 +126,6 @@ class _ListsPageState extends State<ListsPage>
                         Tween<Offset>(begin: Offset(1, 0), end: Offset(0, 0))
                             .chain(CurveTween(curve: Curves.ease))),
                     child: _buildRow(context, _listAppLists[i]));
-                // return _buildRow(context, _listAppLists[i]);
               },
             ),
           );

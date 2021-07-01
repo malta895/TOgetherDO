@@ -146,57 +146,122 @@ class _NotificationPage extends State<NotificationPage> {
   Widget _buildFriendshipRow(
       BuildContext context, ListAppNotification notification) {
     return FutureBuilder<ListAppFriendship?>(
-      future: ListAppFriendshipManager.instance
-          .getFriendshipById(notification.objectId!),
-      builder: (context, AsyncSnapshot<ListAppFriendship?> snapshot) {
-        return Container(
-            decoration: BoxDecoration(
-                border: Border(
-                    bottom: BorderSide(
-              color: Colors.grey,
-              width: 0.8,
-            ))),
-            child: ListTile(
-              //COMMENTO PER PROVARE IL RETRIEVE DI FRIENDSHIP
-              leading: CircleAvatar(
-                  backgroundImage:
-                      NetworkImage(notification.sender!.profilePictureURL!)),
-              title: Text(
-                //COMMENTO PER PROVARE IL RETRIEVE DI FRIENDSHIP
-                notification.sender!.displayName +
-                    " sent you a friendship request",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text("You can accept or decline the request"),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextButton(
-                      style: TextButton.styleFrom(
-                        side: BorderSide(color: Colors.green, width: 1),
-                      ),
-                      onPressed: () => print("YES"),
-                      child: Icon(
-                        Icons.done,
-                        color: Colors.green,
-                      )),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  TextButton(
-                      style: TextButton.styleFrom(
-                        side: BorderSide(color: Colors.red, width: 1),
-                      ),
-                      onPressed: () => print("NO"),
-                      child: Icon(
-                        Icons.close,
-                        color: Colors.red,
-                      ))
-                ],
-              ),
-            ));
-      },
-    );
+        future: ListAppFriendshipManager.instance
+            .getFriendshipById(notification.objectId!),
+        builder: (context, AsyncSnapshot<ListAppFriendship?> snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              /*return Center(
+                child: Text("Loading"),
+              );*/
+              break;
+            case ConnectionState.done:
+              switch (notification.status) {
+                case NotificationStatus.undefined:
+                  return Container(
+                      decoration: BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(
+                        color: Colors.grey,
+                        width: 0.8,
+                      ))),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                            backgroundImage: NetworkImage(
+                                notification.sender!.profilePictureURL!)),
+                        title: Text(
+                          notification.sender!.displayName +
+                              " sent you a friendship request",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text("You can accept or decline the request"),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextButton(
+                                style: TextButton.styleFrom(
+                                  side:
+                                      BorderSide(color: Colors.green, width: 1),
+                                ),
+                                onPressed: () async {
+                                  await ListAppNotificationManager.instance
+                                      .acceptNotification(
+                                          notification.databaseId!);
+                                  setState(() {
+                                    _notificationsFuture =
+                                        _fetchNotifications();
+                                  });
+                                },
+                                child: Icon(
+                                  Icons.done,
+                                  color: Colors.green,
+                                )),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            TextButton(
+                                style: TextButton.styleFrom(
+                                  side: BorderSide(color: Colors.red, width: 1),
+                                ),
+                                onPressed: () async {
+                                  await ListAppNotificationManager.instance
+                                      .rejectNotification(
+                                          notification.databaseId!);
+                                  setState(() {
+                                    _notificationsFuture =
+                                        _fetchNotifications();
+                                  });
+                                },
+                                child: Icon(
+                                  Icons.close,
+                                  color: Colors.red,
+                                ))
+                          ],
+                        ),
+                      ));
+                case NotificationStatus.accepted:
+                  return Container(
+                      decoration: BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(
+                        color: Colors.grey,
+                        width: 0.8,
+                      ))),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                            backgroundImage: NetworkImage(
+                                notification.sender!.profilePictureURL!)),
+                        title: Text(
+                          "You and " +
+                              notification.sender!.displayName +
+                              " are now friends!",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ));
+                case NotificationStatus.rejected:
+                  return Container(
+                      decoration: BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(
+                        color: Colors.grey,
+                        width: 0.8,
+                      ))),
+                      child: ListTile(
+                          leading: CircleAvatar(
+                              backgroundImage: NetworkImage(
+                                  notification.sender!.profilePictureURL!)),
+                          title: Text(
+                            "You rejected " +
+                                notification.sender!.displayName +
+                                "'s friendship request",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          )));
+              }
+          }
+          return Container();
+        });
   }
 
   Widget _buildInvitationRow(
@@ -214,59 +279,123 @@ class _NotificationPage extends State<NotificationPage> {
               );*/
               break;
             case ConnectionState.done:
-              return Container(
-                  decoration: BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(
-                    color: Colors.grey,
-                    width: 0.8,
-                  ))),
-                  child: ListTile(
-                    leading: Icon(
-                      Icons.list,
-                      size: 30,
-                    ),
-                    title: Text(
-                      notification.sender!.displayName +
-                          " added you to the list \"" +
-                          snapshot.data!.name +
-                          "\"",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text("You can accept or decline the invitation"),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TextButton(
-                            style: TextButton.styleFrom(
-                              side: BorderSide(color: Colors.green, width: 1),
-                            ),
-                            onPressed: () async {
-                              await ListAppNotificationManager.instance
-                                  .acceptNotification(notification.databaseId!);
-                            },
-                            child: Icon(
-                              Icons.done,
-                              color: Colors.green,
-                            )),
-                        SizedBox(
-                          width: 10,
+              switch (notification.status) {
+                case NotificationStatus.undefined:
+                  return Container(
+                      decoration: BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(
+                        color: Colors.grey,
+                        width: 0.8,
+                      ))),
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.list,
+                          size: 30,
                         ),
-                        TextButton(
-                            style: TextButton.styleFrom(
-                              side: BorderSide(color: Colors.red, width: 1),
+                        title: Text(
+                          notification.sender!.displayName +
+                              " added you to the list \"" +
+                              snapshot.data!.name +
+                              "\"",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle:
+                            Text("You can accept or decline the invitation"),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextButton(
+                                style: TextButton.styleFrom(
+                                  side:
+                                      BorderSide(color: Colors.green, width: 1),
+                                ),
+                                onPressed: () async {
+                                  await ListAppNotificationManager.instance
+                                      .acceptNotification(
+                                          notification.databaseId!);
+                                  setState(() {
+                                    _notificationsFuture =
+                                        _fetchNotifications();
+                                  });
+                                },
+                                child: Icon(
+                                  Icons.done,
+                                  color: Colors.green,
+                                )),
+                            SizedBox(
+                              width: 10,
                             ),
-                            onPressed: () async {
-                              await ListAppNotificationManager.instance
-                                  .rejectNotification(notification.databaseId!);
-                            },
-                            child: Icon(
-                              Icons.close,
-                              color: Colors.red,
-                            ))
-                      ],
-                    ),
-                  ));
+                            TextButton(
+                                style: TextButton.styleFrom(
+                                  side: BorderSide(color: Colors.red, width: 1),
+                                ),
+                                onPressed: () async {
+                                  await ListAppNotificationManager.instance
+                                      .rejectNotification(
+                                          notification.databaseId!);
+                                  setState(() {
+                                    _notificationsFuture =
+                                        _fetchNotifications();
+                                  });
+                                },
+                                child: Icon(
+                                  Icons.close,
+                                  color: Colors.red,
+                                ))
+                          ],
+                        ),
+                      ));
+
+                case NotificationStatus.accepted:
+                  return Container(
+                      decoration: BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(
+                        color: Colors.grey,
+                        width: 0.8,
+                      ))),
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.list,
+                          size: 30,
+                        ),
+                        title: Text(
+                          "You are now in the \"" +
+                              snapshot.data!.name +
+                              " list \"",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle:
+                            Text("Click on this tile to explore the list!"),
+                        //TODO make the onTap redirect to the list page
+                        onTap: () => print("Redirect to the list page"),
+                      ));
+
+                case NotificationStatus.rejected:
+                  return Container(
+                      decoration: BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(
+                        color: Colors.grey,
+                        width: 0.8,
+                      ))),
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.list,
+                          size: 30,
+                        ),
+                        title: Text(
+                          "You have rejected the invitation to the \"" +
+                              snapshot.data!.name +
+                              " list \"",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle:
+                            Text("You can accept or decline the invitation"),
+                        trailing: Text("Rejected!"),
+                      ));
+              }
           }
           return Container();
         });

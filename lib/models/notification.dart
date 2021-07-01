@@ -5,6 +5,22 @@ import 'package:mobile_applications/models/user.dart';
 
 part 'notification.g.dart';
 
+/// The notification status
+enum NotificationStatus { undefined, accepted, rejected }
+
+extension ParseToString on NotificationStatus {
+  String toReadableString() {
+    switch (this) {
+      case NotificationStatus.undefined:
+        return 'undefined';
+      case NotificationStatus.accepted:
+        return 'accepted';
+      case NotificationStatus.rejected:
+        return 'rejected';
+    }
+  }
+}
+
 @JsonSerializable(createFactory: false)
 abstract class ListAppNotification {
   static const String collectionName = 'notifications';
@@ -14,9 +30,10 @@ abstract class ListAppNotification {
   String? listOwner;
   final String userId;
   final String userFrom;
-  final bool accepted;
 
   final String notificationType;
+
+  final NotificationStatus status;
 
   @JsonKey(ignore: true)
   ListAppUser? sender;
@@ -27,7 +44,7 @@ abstract class ListAppNotification {
       this.listOwner,
       required this.userId,
       required this.userFrom,
-      required this.accepted,
+      required this.status,
       required this.notificationType});
 
   factory ListAppNotification.fromJson(Map<String, dynamic> json) {
@@ -59,14 +76,14 @@ class ListInviteNotification extends ListAppNotification {
   ListInviteNotification(
       {required userId,
       required userFrom,
-      required bool accepted,
+      required NotificationStatus status,
       required listOwner})
       : super(
             notificationType: 'listInvite',
             userId: userId,
             listOwner: listOwner,
             userFrom: userFrom,
-            accepted: accepted);
+            status: status);
 
   factory ListInviteNotification.fromJson(Map<String, dynamic> json) =>
       _$ListInviteNotificationFromJson(json);
@@ -77,12 +94,12 @@ class ListInviteNotification extends ListAppNotification {
 @JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class FriendshipNotification extends ListAppNotification {
   FriendshipNotification(
-      {required userId, required userFrom, required bool accepted})
+      {required userId, required userFrom, required NotificationStatus status})
       : super(
             notificationType: 'friendship',
             userId: userId,
             userFrom: userFrom,
-            accepted: accepted);
+            status: status);
 
   factory FriendshipNotification.fromJson(Map<String, dynamic> json) =>
       _$FriendshipNotificationFromJson(json);

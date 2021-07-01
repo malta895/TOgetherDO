@@ -52,15 +52,13 @@ class ListAppNotificationManager with ChangeNotifier {
   }
 
   Future<bool> acceptNotification(String id) async {
-    final queryResult =
-        await _notificationsCollection.doc(id).update({"accepted": true});
+    await _notificationsCollection.doc(id).update({"status": "accepted"});
 
     return true;
   }
 
   Future<bool> rejectNotification(String id) async {
-    final queryResult =
-        await _notificationsCollection.doc(id).update({"accepted": false});
+    await _notificationsCollection.doc(id).update({"status": "rejected"});
 
     return true;
   }

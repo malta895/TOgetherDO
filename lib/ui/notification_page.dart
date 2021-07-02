@@ -29,7 +29,7 @@ class _NotificationPage extends State<NotificationPage> {
         await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
 
     if (listAppUser != null) {
-      return ListAppNotificationManager.instanceForUser(listAppUser)
+      return ListAppNotificationManager.instance
           .getNotificationsByUid(listAppUser.databaseId);
     }
     return Future.value(null);

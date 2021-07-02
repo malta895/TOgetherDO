@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
@@ -158,8 +159,8 @@ class _ListViewRouteState extends State<ListViewRoute> {
   }
 
   Widget _buildItemRow(BuildContext context, BaseItem aListItem) {
-    switch (aListItem.runtimeType) {
-      case SimpleItem:
+    switch (aListItem.itemType) {
+      case ItemType.simple:
         return Dismissible(
           confirmDismiss: (DismissDirection direction) async {
             return await showDialog(
@@ -259,7 +260,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
             },
           ),
         );
-      case MultiFulfillmentItem:
+      case ItemType.multiFulfillment:
         return Dismissible(
             confirmDismiss: (DismissDirection direction) async {
               return await showDialog(
@@ -401,7 +402,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
               },
             ));
 
-      case MultiFulfillmentMemberItem:
+      case ItemType.multiFulfillmentMember:
         return Dismissible(
             confirmDismiss: (DismissDirection direction) async {
               return await showDialog(
@@ -486,10 +487,6 @@ class _ListViewRouteState extends State<ListViewRoute> {
               ),
             ));
     }
-    //the code should never reach this point, but we need it for null check
-    return ListTile(
-      title: Text("Empty element"),
-    );
   }
 
   Future<void> _showNumberPickerDialog(

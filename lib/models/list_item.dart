@@ -8,8 +8,10 @@ import 'user.dart';
 
 part 'list_item.g.dart';
 
+enum ItemType { simple, multiFulfillment, multiFulfillmentMember }
+
 ///Any type of item. the specific types will implement in different ways the methods
-@JsonSerializable(createFactory: false)
+@JsonSerializable(createFactory: false, createToJson: false)
 abstract class BaseItem {
   static const String collectionName = 'items';
   final String? databaseId;
@@ -18,7 +20,7 @@ abstract class BaseItem {
   final int maxQuantity;
   final int quantityPerMember;
 
-  final String itemType;
+  final ItemType itemType;
 
   BaseItem({
     this.databaseId,
@@ -41,7 +43,7 @@ abstract class BaseItem {
   List<ListAppUser> getFulfillers();
 
   factory BaseItem.fromJson(Map<String, dynamic> json) {
-    switch (json['listType'] as String) {
+    switch (json['itemType'] as String) {
       case 'SimpleItem':
         return SimpleItem.fromJson(json);
       case 'MultiFulfillmentItem':
@@ -56,11 +58,11 @@ abstract class BaseItem {
 
   Map<String, dynamic> toJson() {
     switch (this.itemType) {
-      case 'SimpleItem':
+      case ItemType.simple:
         return (this as SimpleItem).toJson();
-      case 'MultiFulfillmentItem':
+      case ItemType.multiFulfillment:
         return (this as MultiFulfillmentItem).toJson();
-      case 'MultiFulfillmentMemberItem':
+      case ItemType.multiFulfillmentMember:
         return (this as MultiFulfillmentMemberItem).toJson();
 
       default:
@@ -76,7 +78,7 @@ class SimpleItem extends BaseItem {
 
   SimpleItem({String? databaseId, required String name, String? description})
       : super(
-            itemType: 'SimpleItem',
+            itemType: ItemType.simple,
             databaseId: databaseId,
             name: name,
             description: description,
@@ -141,7 +143,7 @@ class MultiFulfillmentItem extends BaseItem {
       String? description,
       required int maxQuantity})
       : super(
-            itemType: 'MultiFulfillmentItem',
+            itemType: ItemType.multiFulfillment,
             databaseId: databaseId,
             name: name,
             description: description,
@@ -192,7 +194,7 @@ class MultiFulfillmentMemberItem extends BaseItem {
       required int maxQuantity,
       required int quantityPerMember})
       : super(
-            itemType: 'MultiFulfillmentMemberItem',
+            itemType: ItemType.multiFulfillmentMember,
             databaseId: databaseId,
             name: name,
             description: description,

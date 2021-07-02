@@ -251,47 +251,6 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
       },
       databaseId: '');
 
-  int? _selectedRadio = 0;
-
-  // Widget _buildAlertDialogMembers(
-  //     int membersNum, Set<ListAppUser> itemMembers) {
-  //   return Container(
-  //     height: 300,
-  //     width: 300,
-  //     child: ListView.builder(
-  //       itemCount: membersNum,
-  //       itemBuilder: (context, i) {
-  //         return _buildMemberRow(context, itemMembers.elementAt(i));
-  //       },
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildMemberRow(BuildContext context, ListAppUser member) {
-  //   return Container(
-  //       decoration: BoxDecoration(
-  //           border: Border(
-  //               bottom: BorderSide(
-  //         color: Colors.grey,
-  //         width: 0.8,
-  //       ))),
-  //       child: CheckboxListTile(
-  //           value: selected,
-  //           onChanged: (bool? newValue) {
-  //             print("Added " + member.displayName + " " + newValue.toString());
-  //             setState(() {
-  //               selected = newValue!;
-  //             });
-  //           },
-  //           IconButton(
-  //               icon: Icon(Icons.person_add),
-  //               onPressed: () => print("Added" + member.displayName)),
-  //           title: Text(
-  //             member.firstName + ' ' + member.lastName,
-  //             style: TextStyle(fontWeight: FontWeight.bold),
-  //           )));
-  // }l
-
   @override
   Widget build(BuildContext context) {
     List<bool?> selectedFriendsValues =

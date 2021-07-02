@@ -1,8 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:mobile_applications/ui/notification_page.dart';
-import 'package:overlay_support/overlay_support.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_applications/services/authentication.dart';
@@ -15,12 +13,8 @@ import 'package:mobile_applications/ui/settings_ui.dart';
 import 'package:mobile_applications/ui/theme.dart';
 import 'package:provider/provider.dart';
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp();
-
-  print("Handling a background message: ${message.messageId}");
+Future<void> _messageHandler(RemoteMessage message) async {
+  print('background message ${message.notification!.body}');
 }
 
 Future<void> main() async {
@@ -33,7 +27,11 @@ Future<void> main() async {
   // )
   WidgetsFlutterBinding.ensureInitialized();
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  await Firebase.initializeApp();
+
+  //SharedPreferences.setMockInitialValues({"darkTheme": true});
+
+  FirebaseMessaging.onBackgroundMessage(_messageHandler);
 
   runApp(_MultiProviderApp());
 }

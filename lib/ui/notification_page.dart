@@ -271,7 +271,7 @@ class _NotificationPage extends State<NotificationPage> {
   Widget _buildInvitationRow(
       BuildContext context, ListInviteNotification notification) {
     final notificationFuture =
-        ListAppListManager.instanceForUserUid(notification.listOwner!)
+        ListAppListManager.instanceForUserUid(notification.listOwner)
             .getListById(notification.listId);
     return FutureBuilder<ListAppList?>(
         future: notificationFuture,

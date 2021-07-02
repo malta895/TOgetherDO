@@ -10,7 +10,6 @@ Map<String, dynamic> _$ListAppNotificationToJson(
         ListAppNotification instance) =>
     <String, dynamic>{
       'databaseId': instance.databaseId,
-      'listOwner': instance.listOwner,
       'userId': instance.userId,
       'userFrom': instance.userFrom,
       'notificationType': instance.notificationType,
@@ -29,20 +28,21 @@ ListInviteNotification _$ListInviteNotificationFromJson(
     userId: json['userId'],
     userFrom: json['userFrom'],
     status: _$enumDecode(_$NotificationStatusEnumMap, json['status']),
-    listOwner: json['listOwner'],
+    listOwner: json['listOwner'] as String,
     listId: json['listId'] as String,
-  )..databaseId = json['databaseId'] as String?;
+    databaseId: json['databaseId'],
+  );
 }
 
 Map<String, dynamic> _$ListInviteNotificationToJson(
         ListInviteNotification instance) =>
     <String, dynamic>{
       'databaseId': instance.databaseId,
-      'listOwner': instance.listOwner,
       'userId': instance.userId,
       'userFrom': instance.userFrom,
       'status': _$NotificationStatusEnumMap[instance.status],
       'listId': instance.listId,
+      'listOwner': instance.listOwner,
     };
 
 K _$enumDecode<K, V>(
@@ -78,16 +78,14 @@ FriendshipNotification _$FriendshipNotificationFromJson(
     userFrom: json['userFrom'],
     status: _$enumDecode(_$NotificationStatusEnumMap, json['status']),
     friendshipId: json['friendshipId'] as String,
-  )
-    ..databaseId = json['databaseId'] as String?
-    ..listOwner = json['listOwner'] as String?;
+    databaseId: json['databaseId'],
+  );
 }
 
 Map<String, dynamic> _$FriendshipNotificationToJson(
         FriendshipNotification instance) =>
     <String, dynamic>{
       'databaseId': instance.databaseId,
-      'listOwner': instance.listOwner,
       'userId': instance.userId,
       'userFrom': instance.userFrom,
       'status': _$NotificationStatusEnumMap[instance.status],

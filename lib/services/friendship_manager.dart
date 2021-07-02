@@ -92,7 +92,7 @@ class ListAppFriendshipManager with ChangeNotifier {
 
         await _friendshipsCollection.add(newFriendship);
       }
-    } on StateError catch (e) {
+    } on StateError catch (_) {
       return false;
     }
 
@@ -129,7 +129,7 @@ class ListAppFriendshipManager with ChangeNotifier {
 
         await _friendshipsCollection.add(newFriendship);
       }
-    } on TypeError catch (e) {
+    } on TypeError catch (_) {
       return false;
     }
 

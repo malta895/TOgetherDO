@@ -26,7 +26,6 @@ abstract class ListAppNotification {
   static const String collectionName = 'notifications';
 
   String? databaseId;
-  String? listOwner;
   final String userId;
   final String userFrom;
 
@@ -39,7 +38,6 @@ abstract class ListAppNotification {
 
   ListAppNotification(
       {this.databaseId,
-      this.listOwner,
       required this.userId,
       required this.userFrom,
       required this.status,
@@ -72,17 +70,19 @@ abstract class ListAppNotification {
 @JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class ListInviteNotification extends ListAppNotification {
   String listId;
+  String listOwner;
 
   ListInviteNotification({
     required userId,
     required userFrom,
     required NotificationStatus status,
-    required listOwner,
+    required this.listOwner,
     required this.listId,
+    databaseId,
   }) : super(
+            databaseId: databaseId,
             notificationType: 'listInvite',
             userId: userId,
-            listOwner: listOwner,
             userFrom: userFrom,
             status: status);
 
@@ -90,7 +90,7 @@ class ListInviteNotification extends ListAppNotification {
       _$ListInviteNotificationFromJson(json);
 
   Map<String, dynamic> toJson() => _$ListInviteNotificationToJson(this)
-    ..addAll({'notificationType': 'listInvite'});
+    ..addAll({'notificationType': this.notificationType});
 }
 
 @JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
@@ -102,7 +102,9 @@ class FriendshipNotification extends ListAppNotification {
     required userFrom,
     required NotificationStatus status,
     required this.friendshipId,
+    databaseId,
   }) : super(
+            databaseId: databaseId,
             notificationType: 'friendship',
             userId: userId,
             userFrom: userFrom,
@@ -112,5 +114,5 @@ class FriendshipNotification extends ListAppNotification {
       _$FriendshipNotificationFromJson(json);
 
   Map<String, dynamic> toJson() => _$FriendshipNotificationToJson(this)
-    ..addAll({'notificationType': 'friendship'});
+    ..addAll({'notificationType': this.notificationType});
 }

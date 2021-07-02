@@ -143,6 +143,7 @@ void main() {
       status: NotificationStatus.undefined,
       listOwner: '123',
       listId: '5',
+      databaseId: '123',
     );
     final listInviteNotificationToJson = listInviteNotification.toJson();
     group('Test list invite notification', () {
@@ -152,6 +153,13 @@ void main() {
 
       test('list invite type consinstency', () {
         expect(listInviteNotificationToJson['userId'], '123');
+      });
+
+      test('list invite type consinstency', () {
+        expect(listInviteNotificationToJson['databaseId'], '123');
+      });
+      test('list invite type consinstency', () {
+        expect(listInviteNotificationToJson['listOwner'], '123');
       });
 
       final ListAppNotification listInviteNotificationFromJson =
@@ -186,6 +194,7 @@ void main() {
       test('list invite type consinstency after json', () {
         expect(friendshipNotificationFromJson is FriendshipNotification, true);
       });
+
       test('list invite has correct id', () {
         expect(
             (friendshipNotificationFromJson as FriendshipNotification)

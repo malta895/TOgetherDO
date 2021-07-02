@@ -1,4 +1,3 @@
-// This model represents a list of our application
 import 'dart:core';
 
 import 'package:json_annotation/json_annotation.dart';
@@ -29,7 +28,7 @@ extension ParseToString on ListType {
   }
 }
 
-/// The list. Can be of various inherited types
+/// The app list
 @JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class ListAppList {
   static const String collectionName = 'lists';

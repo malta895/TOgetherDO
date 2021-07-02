@@ -116,12 +116,14 @@ class _ListsPageState extends State<ListsPage>
         animation: _listsShowAnimationController,
         builder: (context, _) {
           return FadeScaleTransition(
+            // this animation is the fade-in/out when the entire list is loading
             animation: _listsShowAnimationController,
             child: AnimatedList(
               key: _animatedListKey,
               initialItemCount: _listAppLists.length,
               itemBuilder: (context, i, animation) {
                 return SlideTransition(
+                    // The slide happens when a new list is added
                     position: animation.drive(
                         Tween<Offset>(begin: Offset(1, 0), end: Offset(0, 0))
                             .chain(CurveTween(curve: Curves.ease))),

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/user_manager.dart';
 
 class ListAppListManager {
   final CollectionReference<ListAppList> _listCollectionRef;
@@ -77,6 +78,11 @@ class ListAppListManager {
     return Future.wait(docs.map((e) async {
       final list = e.data();
       list.databaseId = e.id;
+      final creatorUid = list.creatorUid;
+      if (creatorUid != null) {
+        list.creator =
+            await ListAppUserManager.instance.getUserByUid(creatorUid);
+      }
       return list;
     }));
   }
@@ -94,16 +100,16 @@ class ListAppListManager {
   }
 
   Future<bool> leaveList(String ownerUid, ListAppList list) async {
-    final listCollectionRef = FirebaseFirestore.instance
+    final ownerListCollectionRef = FirebaseFirestore.instance
         .collection(ListAppUser.collectionName)
         .doc(ownerUid)
         .collection(ListAppList.collectionName);
 
-    final queryResultDocRef = listCollectionRef.doc(list.databaseId);
+    final queryResultDocRef = ownerListCollectionRef.doc(list.databaseId);
 
     final queryResult = await queryResultDocRef.get();
 
-    var membersUids = queryResult.get('members');
+    final membersUids = queryResult.get('members');
 
     if (membersUids.remove(_userUid)) {
       queryResultDocRef.update({'members': membersUids});

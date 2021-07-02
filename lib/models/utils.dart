@@ -1,5 +1,3 @@
-import 'package:mobile_applications/models/user.dart';
-
 class ModelUtils {
   static DateTime dateTimeFromJson(int intTimestamp) =>
       DateTime.fromMillisecondsSinceEpoch(intTimestamp);

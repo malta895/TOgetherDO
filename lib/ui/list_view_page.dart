@@ -86,65 +86,64 @@ class ListViewRoute extends StatefulWidget {
   }
 
   @override
-  _ListViewRouteState createState() => _ListViewRouteState(aList);
+  _ListViewRouteState createState() => _ListViewRouteState();
 }
 
 class _ListViewRouteState extends State<ListViewRoute> {
-  final ListAppList _aList;
-
   late ListAppUser _loggedInListAppUser;
+  late final HashMap<ListAppUser, Color> _assignedColors =
+      HashMap<ListAppUser, Color>();
 
   @override
   void initState() {
     super.initState();
+
+    if (widget.aList.membersAsUsers.isNotEmpty) {
+      var it = widget.aList.membersAsUsers.iterator;
+      int index = 0;
+      while (index <= Colors.primaries.length && it.moveNext()) {
+        _assignedColors[it.current] = Colors.primaries[index];
+        ++index;
+      }
+      index = 0;
+      while (index <= Colors.accents.length && it.moveNext()) {
+        _assignedColors[it.current] = Colors.accents[index];
+        ++index;
+      }
+      // if at this point we still have members just take random colors
+      while (it.moveNext()) {
+        _assignedColors[it.current] =
+            Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
+                .withOpacity(1.0);
+      }
+    }
+
     _loggedInListAppUser =
         context.read<ListAppAuthProvider>().loggedInListAppUser!;
   }
 
-  final HashMap<ListAppUser, Color> _assignedColors =
-      HashMap<ListAppUser, Color>();
-
-  _ListViewRouteState(this._aList) {
-    var it = _aList.membersAsUsers.iterator;
-    int index = 0;
-    while (index <= Colors.primaries.length && it.moveNext()) {
-      _assignedColors[it.current] = Colors.primaries[index];
-      ++index;
-    }
-    index = 0;
-    while (index <= Colors.accents.length && it.moveNext()) {
-      _assignedColors[it.current] = Colors.accents[index];
-      ++index;
-    }
-    // if at this point we still have members just take random colors
-    while (it.moveNext()) {
-      _assignedColors[it.current] =
-          Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
-              .withOpacity(1.0);
-    }
-  }
-
   Widget _buildListItems() {
     return ListView.builder(
-      itemCount: _aList.items.length,
+      itemCount: widget.aList.items.length,
       itemBuilder: (context, i) {
-        return _buildItemRow(context, _aList.items.elementAt(i));
+        return _buildItemRow(context, widget.aList.items.elementAt(i));
       },
     );
   }
 
   Widget _buildListMembers() {
     return ListView.builder(
-      itemCount: _aList.membersAsUsers.length,
+      itemCount: widget.aList.membersAsUsers.length,
       itemBuilder: (context, i) {
-        return _buildMemberRow(context, _aList.membersAsUsers.elementAt(i));
+        return _buildMemberRow(
+            context, widget.aList.membersAsUsers.elementAt(i));
       },
     );
   }
 
   _addListItem(BaseItem item) {
     setState(() {
-      _aList.items.add(item);
+      widget.aList.items.add(item);
     });
   }
 
@@ -224,7 +223,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
           key: UniqueKey(),
           onDismissed: (DismissDirection direction) {
             setState(() {
-              _aList.items.removeWhere((element) => element == aListItem);
+              widget.aList.items.removeWhere((element) => element == aListItem);
             });
           },
           child: CheckboxListTile(
@@ -324,7 +323,8 @@ class _ListViewRouteState extends State<ListViewRoute> {
             key: UniqueKey(),
             onDismissed: (DismissDirection direction) {
               setState(() {
-                _aList.items.removeWhere((element) => element == aListItem);
+                widget.aList.items
+                    .removeWhere((element) => element == aListItem);
               });
             },
             child: CheckboxListTile(
@@ -465,7 +465,8 @@ class _ListViewRouteState extends State<ListViewRoute> {
             key: UniqueKey(),
             onDismissed: (DismissDirection direction) {
               setState(() {
-                _aList.items.removeWhere((element) => element == aListItem);
+                widget.aList.items
+                    .removeWhere((element) => element == aListItem);
               });
             },
             child: ListTile(

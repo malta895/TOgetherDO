@@ -6,6 +6,22 @@ part of 'list_item.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+Map<String, dynamic> _$BaseItemToJson(BaseItem instance) => <String, dynamic>{
+      'hasListeners': instance.hasListeners,
+      'databaseId': instance.databaseId,
+      'name': instance.name,
+      'description': instance.description,
+      'maxQuantity': instance.maxQuantity,
+      'quantityPerMember': instance.quantityPerMember,
+      'itemType': _$ItemTypeEnumMap[instance.itemType],
+    };
+
+const _$ItemTypeEnumMap = {
+  ItemType.simple: 'simple',
+  ItemType.multiFulfillment: 'multiFulfillment',
+  ItemType.multiFulfillmentMember: 'multiFulfillmentMember',
+};
+
 SimpleItem _$SimpleItemFromJson(Map<String, dynamic> json) {
   return SimpleItem(
     databaseId: json['databaseId'] as String?,

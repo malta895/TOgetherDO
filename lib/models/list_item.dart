@@ -2,6 +2,7 @@
 import 'dart:collection';
 import 'dart:core';
 
+import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'user.dart';
@@ -11,8 +12,8 @@ part 'list_item.g.dart';
 enum ItemType { simple, multiFulfillment, multiFulfillmentMember }
 
 ///Any type of item. the specific types will implement in different ways the methods
-@JsonSerializable(createFactory: false, createToJson: false)
-abstract class BaseItem {
+@JsonSerializable(createFactory: false)
+abstract class BaseItem with ChangeNotifier {
   static const String collectionName = 'items';
   final String? databaseId;
   final String name;
@@ -60,6 +61,7 @@ abstract class BaseItem {
     switch (this.itemType) {
       case ItemType.simple:
         return (this as SimpleItem).toJson();
+
       case ItemType.multiFulfillment:
         return (this as MultiFulfillmentItem).toJson();
       case ItemType.multiFulfillmentMember:
@@ -129,7 +131,12 @@ class SimpleItem extends BaseItem {
   factory SimpleItem.fromJson(Map<String, dynamic> json) =>
       _$SimpleItemFromJson(json);
 
-  Map<String, dynamic> toJson() => _$SimpleItemToJson(this);
+  Map<String, dynamic> toJson() => _$SimpleItemToJson(this)
+    ..addAll({
+      "itemType": this.itemType,
+      "quantityPerMember": this.quantityPerMember,
+      "maxQuantity": this.maxQuantity
+    });
 }
 
 //List item with multiple fulfillments, members can fulfill once
@@ -178,7 +185,11 @@ class MultiFulfillmentItem extends BaseItem {
   factory MultiFulfillmentItem.fromJson(Map<String, dynamic> json) =>
       _$MultiFulfillmentItemFromJson(json);
 
-  Map<String, dynamic> toJson() => _$MultiFulfillmentItemToJson(this);
+  Map<String, dynamic> toJson() => _$MultiFulfillmentItemToJson(this)
+    ..addAll({
+      "itemType": this.itemType,
+      "quantityPerMember": this.quantityPerMember,
+    });
 }
 
 ///List item with multiple fulfillments, members can fulfill more times
@@ -240,5 +251,8 @@ class MultiFulfillmentMemberItem extends BaseItem {
   factory MultiFulfillmentMemberItem.fromJson(Map<String, dynamic> json) =>
       _$MultiFulfillmentMemberItemFromJson(json);
 
-  Map<String, dynamic> toJson() => _$MultiFulfillmentMemberItemToJson(this);
+  Map<String, dynamic> toJson() => _$MultiFulfillmentMemberItemToJson(this)
+    ..addAll({
+      "itemType": this.itemType,
+    });
 }

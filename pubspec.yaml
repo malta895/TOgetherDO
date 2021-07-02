@@ -49,6 +49,9 @@ dependencies:
   firebase_messaging: ^10.0.2
   cloud_functions: "^1.1.2"
 
+  
+  overlay_support: ^1.2.1
+
   # Login stuff
   # Let's use the most recent version from github, since there are features that we need
   flutter_login:

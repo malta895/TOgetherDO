@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:animations/animations.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';

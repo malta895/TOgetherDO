@@ -75,9 +75,64 @@ class ListAppFriendshipManager with ChangeNotifier {
   }
 
   Future<ListAppFriendship?> getFriendshipById(String id) async {
-    print("getFriendshipById");
     final queryResult = await _friendshipsCollection.doc(id).get();
 
     return queryResult.data();
+  }
+
+  Future<bool> addFriendByEmail(String email, String userFrom) async {
+    try {
+      ListAppUser? userTo =
+          await ListAppUserManager.instance.getUserByEmail(email);
+      if (userTo != null) {
+        final newFriendship = ListAppFriendship(
+            userFrom: userFrom,
+            userTo: userTo.databaseId,
+            requestAccepted: false);
+
+        await _friendshipsCollection.add(newFriendship);
+      }
+    } on StateError catch (e) {
+      return false;
+    }
+
+    return true;
+
+    /*await ListAppUserManager.instance
+        .getUserByEmail(email)
+        .then((userTo) async {
+      if (userTo != null) {
+        final newFriendship = ListAppFriendship(
+            userFrom: userFrom,
+            userTo: userTo.databaseId,
+            requestAccepted: false);
+
+        await _friendshipsCollection.add(newFriendship);
+        return true;
+      }
+    }).catchError((onError) {
+      print(onError);
+    });
+
+    return false;*/
+  }
+
+  Future<bool> addFriendByUsername(String username, String userFrom) async {
+    try {
+      ListAppUser? userTo =
+          await ListAppUserManager.instance.getUserByUsername(username);
+      if (userTo != null) {
+        final newFriendship = ListAppFriendship(
+            userFrom: userFrom,
+            userTo: userTo.databaseId,
+            requestAccepted: false);
+
+        await _friendshipsCollection.add(newFriendship);
+      }
+    } on TypeError catch (e) {
+      return false;
+    }
+
+    return true;
   }
 }

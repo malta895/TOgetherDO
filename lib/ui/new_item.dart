@@ -62,7 +62,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                       filled: true,
                       fillColor: Theme.of(context).splashColor,
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.zero,
+                        borderRadius: BorderRadius.all(Radius.circular(12.0)),
                         borderSide: BorderSide(
                             color:
                                 Theme.of(context).textTheme.headline1!.color!,
@@ -168,7 +168,7 @@ class _DropdownMenuState extends State<DropdownMenu> {
           ),
           decoration: InputDecoration(
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.zero,
+                borderRadius: BorderRadius.all(Radius.circular(12.0)),
                 borderSide: BorderSide(
                     color: Theme.of(context).textTheme.headline1!.color!,
                     width: 1.0),

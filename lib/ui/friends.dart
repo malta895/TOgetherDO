@@ -4,6 +4,7 @@ import 'package:mobile_applications/models/friendship.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/friendship_manager.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
+import 'package:mobile_applications/ui/new_friends.dart';
 import 'package:mobile_applications/ui/notification_page.dart';
 
 class FriendsPage extends StatefulWidget {
@@ -108,11 +109,10 @@ class _FriendsList extends State<FriendsPage> {
         body: _buildListItems(context),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => {
-            // TODO create and redirect to add friend page
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => AddFriend()),
-            // )
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => NewFriendPage()),
+            )
           },
           icon: Icon(Icons.add),
           label: Text('ADD FRIEND'),

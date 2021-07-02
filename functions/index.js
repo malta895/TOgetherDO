@@ -5,4 +5,6 @@ admin.initializeApp();
 
 exports.onCreateList = require('./on-create-list');
 
-exports.notifications = require('./notifications');
+exports.onCreateFriendship = require('./on-create-friendship');
+
+exports.onCreateNotification = require('./on-create-notification');

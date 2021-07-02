@@ -2,30 +2,30 @@ const functions = require('firebase-functions');
 // Import and initialize the Firebase Admin SDK.
 const admin = require('firebase-admin');
 
-
-/*exports.sendNotifications2 = functions.firestore.document('users/{userId}').onCreate(
-  async (snapshot) => {
-  console.log(snapshot.data().displayName);
-  });*/
-
 // Sends a notifications to all users when a new message is posted.
-exports.sendNotifications = functions.region('europe-west6').firestore.document('friendships/{requestId}').onCreate(
-    async (snapshot) => {
-        console.log(snapshot.data().userFrom);
-        console.log(snapshot.data().userTo);
+exports.sendNotifications = functions.region('europe-west6').firestore.document('notifications/{notificationId}').onCreate(
+    async (snapshot, context) => {
+        admin.firestore().collection('notifications').doc(context.params.notificationId).set({ databaseId: context.params.notificationId.toString() }, { merge: true }).then(() => {
+            console.log("Added databaseId to notification " + context.params.notificationId);
+        })
+            .catch((error) => {
+                console.error("Error while creating databaseId for notification " + context.params.notificationId + ":", error);
+                return null;
+            });
+
         // Notification details.
         const sender = await admin.firestore().collection('users').doc(snapshot.data().userFrom).get();
-        const receiver = await admin.firestore().collection('users').doc(snapshot.data().userTo).get();
+        const receiver = await admin.firestore().collection('users').doc(snapshot.data().userId).get();
         const message = {
             'notification': {
                 'title': `${sender.data().displayName} sent you a friendship request!`,
-                'body': `Accept it ${receiver.data().firstName}!`,
-                //icon: '/assets/logo.png',
-                //click_action: `https://${process.env.GCLOUD_PROJECT}.firebaseapp.com`,
+                'body': `Accept or decline it, ${receiver.data().firstName}!`,
+                'icon': `${sender.data().profilePictureURL}`,
+                'click_action': `FLUTTER_NOTIFICATION_CLICK`,
             },
             'data': {
                 'sender': snapshot.data().userFrom,
-                'receiver': snapshot.data().userTo
+                'receiver': snapshot.data().userId
             }
         };
 

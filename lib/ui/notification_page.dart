@@ -11,8 +11,8 @@ import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/services/notification_manager.dart';
 import 'package:provider/provider.dart';
 
-//users/lGmqaAgJZqVIdqXt3GmQFNC9E3D3
-//users/9LUBLCszUrU4mukuRWhHFS2iexL2
+//LUCA lGmqaAgJZqVIdqXt3GmQFNC9E3D3
+//LORENZO 9LUBLCszUrU4mukuRWhHFS2iexL2
 
 class NotificationPage extends StatefulWidget {
   static final String routeName = "/settings";
@@ -77,21 +77,20 @@ class _NotificationPage extends State<NotificationPage> {
     SchedulerBinding.instance?.addPostFrameCallback((_) {
       if (!_isManuallyRefreshing) _refreshIndicatorKey.currentState?.show();
     });
-    /*messaging = FirebaseMessaging.instance;
-    messaging.getToken().then((value) {
-      print(value);
-    });
-    FirebaseMessaging.onMessage.listen((RemoteMessage event) async {
+    messaging = FirebaseMessaging.instance;
+    messaging.getToken().then((value) => print(value));
+    /*FirebaseMessaging.onMessage.listen((RemoteMessage event) async {
       final notification = event.notification;
       if (notification == null) return;
+      //print("notifica ricevuta" + notification.body!);
       //COMMENTO PER PROVARE IL RETRIEVE DI FRIENDSHIP
       /*ListAppUserManager.instance.getUserByUid(data['sender']).then(
           (senderUser) => ListAppUserManager.instance
               .getUserByUid(data['receiver'])
               .then((receiverUser) =>
                   addItemToList(senderUser!, receiverUser!, false)));*/
-    });
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+    });*/
+    /*FirebaseMessaging.onMessageOpenedApp.listen((message) {
       print('Message clicked!');
     });*/
   }
@@ -386,14 +385,11 @@ class _NotificationPage extends State<NotificationPage> {
                           size: 30,
                         ),
                         title: Text(
-                          "You have rejected the invitation to the \"" +
+                          "You rejected the invitation to the \"" +
                               snapshot.data!.name +
-                              " list \"",
+                              "\" list",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        subtitle:
-                            Text("You can accept or decline the invitation"),
-                        trailing: Text("Rejected!"),
                       ));
               }
           }

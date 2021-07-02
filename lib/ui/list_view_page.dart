@@ -122,25 +122,6 @@ class _ListViewRouteState extends State<ListViewRoute> {
         context.read<ListAppAuthProvider>().loggedInListAppUser!;
   }
 
-  Widget _buildListItems() {
-    return ListView.builder(
-      itemCount: widget.aList.items.length,
-      itemBuilder: (context, i) {
-        return _buildItemRow(context, widget.aList.items.elementAt(i));
-      },
-    );
-  }
-
-  Widget _buildListMembers() {
-    return ListView.builder(
-      itemCount: widget.aList.membersAsUsers.length,
-      itemBuilder: (context, i) {
-        return _buildMemberRow(
-            context, widget.aList.membersAsUsers.elementAt(i));
-      },
-    );
-  }
-
   _addListItem(BaseItem item) {
     setState(() {
       widget.aList.items.add(item);
@@ -707,8 +688,23 @@ class _ListViewRouteState extends State<ListViewRoute> {
         Expanded(
           child: TabBarView(
             children: [
-              _buildListItems(),
-              _buildListMembers(),
+              // list of items
+              ListView.builder(
+                itemCount: widget.aList.items.length,
+                itemBuilder: (context, i) {
+                  return _buildItemRow(
+                      context, widget.aList.items.elementAt(i));
+                },
+              ),
+
+              // list of members
+              ListView.builder(
+                itemCount: widget.aList.membersAsUsers.length,
+                itemBuilder: (context, i) {
+                  return _buildMemberRow(
+                      context, widget.aList.membersAsUsers.elementAt(i));
+                },
+              ),
             ],
           ),
         ),

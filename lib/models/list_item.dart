@@ -2,15 +2,18 @@
 import 'dart:collection';
 import 'dart:core';
 
+import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'user.dart';
 
 part 'list_item.g.dart';
 
+enum ItemType { simple, multiFulfillment, multiFulfillmentMember }
+
 ///Any type of item. the specific types will implement in different ways the methods
 @JsonSerializable(createFactory: false)
-abstract class BaseItem {
+abstract class BaseItem with ChangeNotifier {
   static const String collectionName = 'items';
   final String? databaseId;
   final String name;
@@ -18,7 +21,7 @@ abstract class BaseItem {
   final int maxQuantity;
   final int quantityPerMember;
 
-  final String itemType;
+  final ItemType itemType;
 
   BaseItem({
     this.databaseId,
@@ -41,7 +44,7 @@ abstract class BaseItem {
   List<ListAppUser> getFulfillers();
 
   factory BaseItem.fromJson(Map<String, dynamic> json) {
-    switch (json['listType'] as String) {
+    switch (json['itemType'] as String) {
       case 'SimpleItem':
         return SimpleItem.fromJson(json);
       case 'MultiFulfillmentItem':
@@ -56,11 +59,12 @@ abstract class BaseItem {
 
   Map<String, dynamic> toJson() {
     switch (this.itemType) {
-      case 'SimpleItem':
+      case ItemType.simple:
         return (this as SimpleItem).toJson();
-      case 'MultiFulfillmentItem':
+
+      case ItemType.multiFulfillment:
         return (this as MultiFulfillmentItem).toJson();
-      case 'MultiFulfillmentMemberItem':
+      case ItemType.multiFulfillmentMember:
         return (this as MultiFulfillmentMemberItem).toJson();
 
       default:
@@ -76,7 +80,7 @@ class SimpleItem extends BaseItem {
 
   SimpleItem({String? databaseId, required String name, String? description})
       : super(
-            itemType: 'SimpleItem',
+            itemType: ItemType.simple,
             databaseId: databaseId,
             name: name,
             description: description,
@@ -127,7 +131,12 @@ class SimpleItem extends BaseItem {
   factory SimpleItem.fromJson(Map<String, dynamic> json) =>
       _$SimpleItemFromJson(json);
 
-  Map<String, dynamic> toJson() => _$SimpleItemToJson(this);
+  Map<String, dynamic> toJson() => _$SimpleItemToJson(this)
+    ..addAll({
+      "itemType": this.itemType,
+      "quantityPerMember": this.quantityPerMember,
+      "maxQuantity": this.maxQuantity
+    });
 }
 
 //List item with multiple fulfillments, members can fulfill once
@@ -141,7 +150,7 @@ class MultiFulfillmentItem extends BaseItem {
       String? description,
       required int maxQuantity})
       : super(
-            itemType: 'MultiFulfillmentItem',
+            itemType: ItemType.multiFulfillment,
             databaseId: databaseId,
             name: name,
             description: description,
@@ -176,7 +185,11 @@ class MultiFulfillmentItem extends BaseItem {
   factory MultiFulfillmentItem.fromJson(Map<String, dynamic> json) =>
       _$MultiFulfillmentItemFromJson(json);
 
-  Map<String, dynamic> toJson() => _$MultiFulfillmentItemToJson(this);
+  Map<String, dynamic> toJson() => _$MultiFulfillmentItemToJson(this)
+    ..addAll({
+      "itemType": this.itemType,
+      "quantityPerMember": this.quantityPerMember,
+    });
 }
 
 ///List item with multiple fulfillments, members can fulfill more times
@@ -192,7 +205,7 @@ class MultiFulfillmentMemberItem extends BaseItem {
       required int maxQuantity,
       required int quantityPerMember})
       : super(
-            itemType: 'MultiFulfillmentMemberItem',
+            itemType: ItemType.multiFulfillmentMember,
             databaseId: databaseId,
             name: name,
             description: description,
@@ -238,5 +251,8 @@ class MultiFulfillmentMemberItem extends BaseItem {
   factory MultiFulfillmentMemberItem.fromJson(Map<String, dynamic> json) =>
       _$MultiFulfillmentMemberItemFromJson(json);
 
-  Map<String, dynamic> toJson() => _$MultiFulfillmentMemberItemToJson(this);
+  Map<String, dynamic> toJson() => _$MultiFulfillmentMemberItemToJson(this)
+    ..addAll({
+      "itemType": this.itemType,
+    });
 }

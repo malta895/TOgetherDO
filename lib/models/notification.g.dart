@@ -10,8 +10,6 @@ Map<String, dynamic> _$ListAppNotificationToJson(
         ListAppNotification instance) =>
     <String, dynamic>{
       'databaseId': instance.databaseId,
-      'objectId': instance.objectId,
-      'listOwner': instance.listOwner,
       'userId': instance.userId,
       'userFrom': instance.userFrom,
       'notificationType': instance.notificationType,
@@ -30,21 +28,21 @@ ListInviteNotification _$ListInviteNotificationFromJson(
     userId: json['userId'],
     userFrom: json['userFrom'],
     status: _$enumDecode(_$NotificationStatusEnumMap, json['status']),
-    listOwner: json['listOwner'],
-  )
-    ..databaseId = json['databaseId'] as String?
-    ..objectId = json['objectId'] as String?;
+    listOwner: json['listOwner'] as String,
+    listId: json['listId'] as String,
+    databaseId: json['databaseId'],
+  );
 }
 
 Map<String, dynamic> _$ListInviteNotificationToJson(
         ListInviteNotification instance) =>
     <String, dynamic>{
       'databaseId': instance.databaseId,
-      'objectId': instance.objectId,
-      'listOwner': instance.listOwner,
       'userId': instance.userId,
       'userFrom': instance.userFrom,
       'status': _$NotificationStatusEnumMap[instance.status],
+      'listId': instance.listId,
+      'listOwner': instance.listOwner,
     };
 
 K _$enumDecode<K, V>(
@@ -79,19 +77,17 @@ FriendshipNotification _$FriendshipNotificationFromJson(
     userId: json['userId'],
     userFrom: json['userFrom'],
     status: _$enumDecode(_$NotificationStatusEnumMap, json['status']),
-  )
-    ..databaseId = json['databaseId'] as String?
-    ..objectId = json['objectId'] as String?
-    ..listOwner = json['listOwner'] as String?;
+    friendshipId: json['friendshipId'] as String,
+    databaseId: json['databaseId'],
+  );
 }
 
 Map<String, dynamic> _$FriendshipNotificationToJson(
         FriendshipNotification instance) =>
     <String, dynamic>{
       'databaseId': instance.databaseId,
-      'objectId': instance.objectId,
-      'listOwner': instance.listOwner,
       'userId': instance.userId,
       'userFrom': instance.userFrom,
       'status': _$NotificationStatusEnumMap[instance.status],
+      'friendshipId': instance.friendshipId,
     };

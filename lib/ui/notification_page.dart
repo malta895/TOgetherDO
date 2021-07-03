@@ -29,7 +29,7 @@ class _NotificationPage extends State<NotificationPage> {
         await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
 
     if (listAppUser != null) {
-      return ListAppNotificationManager.instanceForUser(listAppUser)
+      return ListAppNotificationManager.instance
           .getNotificationsByUid(listAppUser.databaseId);
     }
     return Future.value(null);
@@ -74,6 +74,7 @@ class _NotificationPage extends State<NotificationPage> {
     super.initState();
 
     _notificationsFuture = _fetchNotifications();
+
     SchedulerBinding.instance?.addPostFrameCallback((_) {
       if (!_isManuallyRefreshing) _refreshIndicatorKey.currentState?.show();
     });
@@ -117,10 +118,12 @@ class _NotificationPage extends State<NotificationPage> {
                 itemBuilder: (context, i) {
                   switch (notificationList[i].runtimeType) {
                     case FriendshipNotification:
-                      return _buildFriendshipRow(context, notificationList[i]);
+                      return _buildFriendshipRow(context,
+                          notificationList[i] as FriendshipNotification);
 
                     case ListInviteNotification:
-                      return _buildInvitationRow(context, notificationList[i]);
+                      return _buildInvitationRow(context,
+                          notificationList[i] as ListInviteNotification);
                   }
                   return Container();
                 });
@@ -143,10 +146,12 @@ class _NotificationPage extends State<NotificationPage> {
   }
 
   Widget _buildFriendshipRow(
-      BuildContext context, ListAppNotification notification) {
+      BuildContext context, FriendshipNotification notification) {
+    final _friendshipFuture = ListAppFriendshipManager.instance
+        .getFriendshipById(notification.friendshipId);
+
     return FutureBuilder<ListAppFriendship?>(
-        future: ListAppFriendshipManager.instance
-            .getFriendshipById(notification.objectId!),
+        future: _friendshipFuture,
         builder: (context, AsyncSnapshot<ListAppFriendship?> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
@@ -264,10 +269,12 @@ class _NotificationPage extends State<NotificationPage> {
   }
 
   Widget _buildInvitationRow(
-      BuildContext context, ListAppNotification notification) {
+      BuildContext context, ListInviteNotification notification) {
+    final notificationFuture =
+        ListAppListManager.instanceForUserUid(notification.listOwner)
+            .getListById(notification.listId);
     return FutureBuilder<ListAppList?>(
-        future: ListAppListManager.instanceForUserUid(notification.listOwner!)
-            .getListById(notification.objectId!),
+        future: notificationFuture,
         builder: (context, AsyncSnapshot<ListAppList?> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:

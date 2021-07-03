@@ -26,8 +26,6 @@ abstract class ListAppNotification {
   static const String collectionName = 'notifications';
 
   String? databaseId;
-  String? objectId;
-  String? listOwner;
   final String userId;
   final String userFrom;
 
@@ -40,8 +38,6 @@ abstract class ListAppNotification {
 
   ListAppNotification(
       {this.databaseId,
-      this.objectId,
-      this.listOwner,
       required this.userId,
       required this.userFrom,
       required this.status,
@@ -73,29 +69,42 @@ abstract class ListAppNotification {
 
 @JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class ListInviteNotification extends ListAppNotification {
-  ListInviteNotification(
-      {required userId,
-      required userFrom,
-      required NotificationStatus status,
-      required listOwner})
-      : super(
+  String listId;
+  String listOwner;
+
+  ListInviteNotification({
+    required userId,
+    required userFrom,
+    required NotificationStatus status,
+    required this.listOwner,
+    required this.listId,
+    databaseId,
+  }) : super(
+            databaseId: databaseId,
             notificationType: 'listInvite',
             userId: userId,
-            listOwner: listOwner,
             userFrom: userFrom,
             status: status);
 
   factory ListInviteNotification.fromJson(Map<String, dynamic> json) =>
       _$ListInviteNotificationFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ListInviteNotificationToJson(this);
+  Map<String, dynamic> toJson() => _$ListInviteNotificationToJson(this)
+    ..addAll({'notificationType': this.notificationType});
 }
 
 @JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class FriendshipNotification extends ListAppNotification {
-  FriendshipNotification(
-      {required userId, required userFrom, required NotificationStatus status})
-      : super(
+  String friendshipId;
+
+  FriendshipNotification({
+    required userId,
+    required userFrom,
+    required NotificationStatus status,
+    required this.friendshipId,
+    databaseId,
+  }) : super(
+            databaseId: databaseId,
             notificationType: 'friendship',
             userId: userId,
             userFrom: userFrom,
@@ -104,5 +113,6 @@ class FriendshipNotification extends ListAppNotification {
   factory FriendshipNotification.fromJson(Map<String, dynamic> json) =>
       _$FriendshipNotificationFromJson(json);
 
-  Map<String, dynamic> toJson() => _$FriendshipNotificationToJson(this);
+  Map<String, dynamic> toJson() => _$FriendshipNotificationToJson(this)
+    ..addAll({'notificationType': this.notificationType});
 }

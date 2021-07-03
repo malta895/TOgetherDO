@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_applications/models/notification.dart';
-import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 
 class ListAppNotificationManager with ChangeNotifier {
@@ -14,8 +13,6 @@ class ListAppNotificationManager with ChangeNotifier {
 
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
 
-  static final Map<String, ListAppNotificationManager> _cachedInstances = {};
-
   final _notificationsCollection = FirebaseFirestore.instance
       .collection(ListAppNotification.collectionName)
       .withConverter<ListAppNotification>(
@@ -23,31 +20,18 @@ class ListAppNotificationManager with ChangeNotifier {
               ListAppNotification.fromJson(snapshots.data()!),
           toFirestore: (notification, _) => notification.toJson());
 
-  static ListAppNotificationManager instanceForUser(ListAppUser user) =>
-      instanceForUserUid(user.databaseId);
-  static ListAppNotificationManager instanceForUserUid(String userUid) {
-    if (_cachedInstances.containsKey(userUid)) {
-      return _cachedInstances[userUid]!;
-    }
-    ListAppNotificationManager newInstance =
-        ListAppNotificationManager._privateConstructor();
-
-    _cachedInstances[userUid] = newInstance;
-
-    return newInstance;
-  }
-
   Future<List<ListAppNotification>> getNotificationsByUid(String uid) async {
     final queryResult =
         await _notificationsCollection.where('userId', isEqualTo: uid).get();
 
     return Future.wait(queryResult.docs.map((e) async {
+      final notification = e.data();
       final sender =
-          await ListAppUserManager.instance.getUserByUid(e.data().userFrom);
-      final list = e.data();
-      list.databaseId = e.id;
-      list.sender = sender;
-      return list;
+          await ListAppUserManager.instance.getUserByUid(notification.userFrom);
+
+      notification.databaseId = e.id;
+      notification.sender = sender;
+      return notification;
     }));
   }
 

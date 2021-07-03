@@ -7,11 +7,15 @@ part of 'friendship.dart';
 // **************************************************************************
 
 ListAppFriendship _$ListAppFriendshipFromJson(Map<String, dynamic> json) {
-  return ListAppFriendship(
-    userFrom: json['userFrom'] as String,
-    userTo: json['userTo'] as String,
-    requestAccepted: json['requestAccepted'] as bool,
-  );
+  return $checkedNew('ListAppFriendship', json, () {
+    final val = ListAppFriendship(
+      userFrom: $checkedConvert(json, 'userFrom', (v) => v as String),
+      userTo: $checkedConvert(json, 'userTo', (v) => v as String),
+      requestAccepted:
+          $checkedConvert(json, 'requestAccepted', (v) => v as bool),
+    );
+    return val;
+  });
 }
 
 Map<String, dynamic> _$ListAppFriendshipToJson(ListAppFriendship instance) =>

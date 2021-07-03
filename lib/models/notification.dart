@@ -21,7 +21,7 @@ extension ParseToString on NotificationStatus {
   }
 }
 
-@JsonSerializable(createFactory: false)
+@JsonSerializable(checked: true, createFactory: false)
 abstract class ListAppNotification {
   static const String collectionName = 'notifications';
 
@@ -70,7 +70,9 @@ abstract class ListAppNotification {
   }
 }
 
-@JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
+@JsonSerializable(
+  checked: true,
+) // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class ListInviteNotification extends ListAppNotification {
   String listId;
   String listOwner;
@@ -98,7 +100,9 @@ class ListInviteNotification extends ListAppNotification {
     ..addAll({'notificationType': this.notificationType});
 }
 
-@JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
+@JsonSerializable(
+  checked: true,
+) // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class FriendshipNotification extends ListAppNotification {
   String friendshipId;
 

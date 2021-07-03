@@ -23,11 +23,14 @@ const _$ItemTypeEnumMap = {
 };
 
 SimpleItem _$SimpleItemFromJson(Map<String, dynamic> json) {
-  return SimpleItem(
-    databaseId: json['databaseId'] as String?,
-    name: json['name'] as String,
-    description: json['description'] as String?,
-  );
+  return $checkedNew('SimpleItem', json, () {
+    final val = SimpleItem(
+      databaseId: $checkedConvert(json, 'databaseId', (v) => v as String?),
+      name: $checkedConvert(json, 'name', (v) => v as String),
+      description: $checkedConvert(json, 'description', (v) => v as String?),
+    );
+    return val;
+  });
 }
 
 Map<String, dynamic> _$SimpleItemToJson(SimpleItem instance) =>
@@ -38,12 +41,15 @@ Map<String, dynamic> _$SimpleItemToJson(SimpleItem instance) =>
     };
 
 MultiFulfillmentItem _$MultiFulfillmentItemFromJson(Map<String, dynamic> json) {
-  return MultiFulfillmentItem(
-    databaseId: json['databaseId'] as String?,
-    name: json['name'] as String,
-    description: json['description'] as String?,
-    maxQuantity: json['maxQuantity'] as int,
-  );
+  return $checkedNew('MultiFulfillmentItem', json, () {
+    final val = MultiFulfillmentItem(
+      databaseId: $checkedConvert(json, 'databaseId', (v) => v as String?),
+      name: $checkedConvert(json, 'name', (v) => v as String),
+      description: $checkedConvert(json, 'description', (v) => v as String?),
+      maxQuantity: $checkedConvert(json, 'maxQuantity', (v) => v as int),
+    );
+    return val;
+  });
 }
 
 Map<String, dynamic> _$MultiFulfillmentItemToJson(
@@ -57,13 +63,17 @@ Map<String, dynamic> _$MultiFulfillmentItemToJson(
 
 MultiFulfillmentMemberItem _$MultiFulfillmentMemberItemFromJson(
     Map<String, dynamic> json) {
-  return MultiFulfillmentMemberItem(
-    databaseId: json['databaseId'] as String?,
-    name: json['name'] as String,
-    description: json['description'] as String?,
-    maxQuantity: json['maxQuantity'] as int,
-    quantityPerMember: json['quantityPerMember'] as int,
-  );
+  return $checkedNew('MultiFulfillmentMemberItem', json, () {
+    final val = MultiFulfillmentMemberItem(
+      databaseId: $checkedConvert(json, 'databaseId', (v) => v as String?),
+      name: $checkedConvert(json, 'name', (v) => v as String),
+      description: $checkedConvert(json, 'description', (v) => v as String?),
+      maxQuantity: $checkedConvert(json, 'maxQuantity', (v) => v as int),
+      quantityPerMember:
+          $checkedConvert(json, 'quantityPerMember', (v) => v as int),
+    );
+    return val;
+  });
 }
 
 Map<String, dynamic> _$MultiFulfillmentMemberItemToJson(

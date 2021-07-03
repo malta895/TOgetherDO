@@ -3,7 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'friendship.g.dart';
 
 /// It represents the friendship between 2 users
-@JsonSerializable()
+@JsonSerializable(checked: true)
 class ListAppFriendship {
   static const String collectionName = 'friendships';
 

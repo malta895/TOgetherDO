@@ -7,21 +7,33 @@ part of 'list.dart';
 // **************************************************************************
 
 ListAppList _$ListAppListFromJson(Map<String, dynamic> json) {
-  return ListAppList(
-    name: json['name'] as String,
-    createdAt: ModelUtils.dateTimeFromJson(json['createdAt'] as int),
-    expiryDate: ModelUtils.nullableDateTimeFromJson(json['expiryDate'] as int?),
-    databaseId: json['databaseId'] as String?,
-    creatorUid: json['creatorUid'] as String?,
-    listType: _$enumDecode(_$ListTypeEnumMap, json['listType']),
-    description: json['description'] as String?,
-    items: (json['items'] as List<dynamic>?)
-            ?.map((e) => BaseItem.fromJson(e as Map<String, dynamic>))
-            .toSet() ??
-        {},
-  )..members =
-      (json['members'] as List<dynamic>?)?.map((e) => e as String?).toSet() ??
-          {};
+  return $checkedNew('ListAppList', json, () {
+    final val = ListAppList(
+      name: $checkedConvert(json, 'name', (v) => v as String),
+      createdAt: $checkedConvert(
+          json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
+      expiryDate: $checkedConvert(json, 'expiryDate',
+          (v) => ModelUtils.nullableDateTimeFromJson(v as int?)),
+      databaseId: $checkedConvert(json, 'databaseId', (v) => v as String?),
+      creatorUid: $checkedConvert(json, 'creatorUid', (v) => v as String?),
+      listType: $checkedConvert(
+          json, 'listType', (v) => _$enumDecode(_$ListTypeEnumMap, v)),
+      description: $checkedConvert(json, 'description', (v) => v as String?),
+      items: $checkedConvert(
+              json,
+              'items',
+              (v) => (v as List<dynamic>?)
+                  ?.map((e) => BaseItem.fromJson(e as Map<String, dynamic>))
+                  .toSet()) ??
+          {},
+    );
+    $checkedConvert(
+        json,
+        'members',
+        (v) => val.members =
+            (v as List<dynamic>?)?.map((e) => e as String?).toSet() ?? {});
+    return val;
+  });
 }
 
 Map<String, dynamic> _$ListAppListToJson(ListAppList instance) =>

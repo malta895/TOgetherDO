@@ -28,8 +28,9 @@ extension ParseToString on ListType {
   }
 }
 
+// see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 /// The app list
-@JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
+@JsonSerializable(checked: true)
 class ListAppList {
   static const String collectionName = 'lists';
 

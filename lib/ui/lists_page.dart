@@ -14,6 +14,7 @@ import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/list_view_page.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/new_list.dart';
+import 'package:mobile_applications/ui/notification_badge.dart';
 import 'package:mobile_applications/ui/notification_page.dart';
 import 'package:provider/provider.dart';
 
@@ -40,6 +41,8 @@ class _ListsPageState extends State<ListsPage>
       new GlobalKey<RefreshIndicatorState>();
   bool _isManuallyRefreshing = false;
 
+  int newNotifications = 0;
+
   @override
   void initState() {
     _listsShowAnimationController = AnimationController(
@@ -50,13 +53,6 @@ class _ListsPageState extends State<ListsPage>
     super.initState();
 
     _listsFuture = _fetchLists();
-    _fetchNotifications().then((value) {
-      value.map((e) {
-        newNotifications++;
-      });
-    });
-    print("NEW NOT");
-    print(newNotifications);
     SchedulerBinding.instance?.addPostFrameCallback((_) {
       if (!_isManuallyRefreshing) _refreshIndicatorKey.currentState?.show();
     });
@@ -153,21 +149,6 @@ class _ListsPageState extends State<ListsPage>
       _listsFuture = _newListsFuture;
     });
     _isManuallyRefreshing = false;
-  }
-
-  late Future<List<ListAppNotification>> _notificationsFuture;
-
-  int newNotifications = 0;
-
-  Future<List<ListAppNotification>> _fetchNotifications() async {
-    final listAppUser =
-        await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
-
-    if (listAppUser != null) {
-      return ListAppNotificationManager.instanceForUser(listAppUser)
-          .getNotificationsByUid(listAppUser.databaseId);
-    }
-    return Future.value(null);
   }
 
   Widget _buildListItems(BuildContext context) {
@@ -308,17 +289,7 @@ class _ListsPageState extends State<ListsPage>
     return Scaffold(
         appBar: AppBar(
           title: Text(title),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.notifications),
-              onPressed: () => {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => NotificationPage()),
-                )
-              },
-            ),
-          ],
+          actions: [NotificationBadge()],
         ),
         drawer: ListAppNavDrawer(ListsPage.routeName),
         body: _buildListItems(context),

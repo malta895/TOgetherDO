@@ -22,3 +22,27 @@ exports.setCreatedAt = functions.region('europe-west6').firestore.document('user
             });
     }
 );
+
+exports.createNotification = functions.region('europe-west6').firestore.document('users/{userId}/lists/{listId}').onCreate(
+    async (snapshot, context) => {
+        const sender = await admin.firestore().collection('users').doc(context.params.userId).get();
+        console.log("Sender" + sender.data().displayName);
+        const receivers = snapshot.data().members;
+        console.log("snapshot.data" + snapshot.data());
+        console.log("first element of receivers" + receivers[0]);
+        receivers.forEach(element => {
+            newNotification = {
+                userFrom: sender.data().databaseId,
+                listOwner: context.params.userId,
+                userId: element,
+                notificationType: 'listInvite',
+                status: 'undefined',
+                listId: context.params.listId,
+                databaseId: ''
+            };
+
+            admin.firestore().collection('notifications').add(newNotification).then((ok) => console.log(ok)).catch((e) => console.log(e));
+        }
+        );
+    }
+);

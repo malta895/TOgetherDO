@@ -20,12 +20,25 @@ class ListAppNotificationManager with ChangeNotifier {
               ListAppNotification.fromJson(snapshots.data()!),
           toFirestore: (notification, _) => notification.toJson());
 
-  Future<List<ListAppNotification>> getNotificationsByUid(String uid) async {
+  Future<List<ListAppNotification>> getNotificationsByUid(
+      String uid, String? orderBy) async {
     final queryResult =
         await _notificationsCollection.where('userId', isEqualTo: uid).get();
 
-    return Future.wait(queryResult.docs.map((e) async {
+    var docs = queryResult.docs;
+
+    switch (orderBy) {
+      case 'createdAt':
+        docs.sort((a, b) {
+          return b.data().createdAt!.compareTo(a.data().createdAt as int);
+        });
+        break;
+    }
+
+    return Future.wait(docs.map((e) async {
       final notification = e.data();
+      print("STATUS");
+      print(notification.status);
       final sender =
           await ListAppUserManager.instance.getUserByUid(notification.userFrom);
 
@@ -45,6 +58,27 @@ class ListAppNotificationManager with ChangeNotifier {
     await _notificationsCollection.doc(id).update({"status": "rejected"});
 
     return true;
+  }
+
+  Future<int> getUnansweredNotifications(String uid, String orderBy) async {
+    var cont = 0;
+    print("Inizio getunanswered");
+    var notificationList = await getNotificationsByUid(uid, orderBy);
+
+    for (var item in notificationList) {
+      if (item.status == NotificationStatus.undefined) {
+        cont++;
+      }
+    }
+
+    /*notificationList.map((e) {
+      if (e.status == NotificationStatus.undefined) {
+        print("una undefined trovata");
+        cont++;
+      }
+    });*/
+
+    return cont;
   }
 
   /*Future<List<ListAppFriendship?>> getNotificationsByUid(String uid) async {

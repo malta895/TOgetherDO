@@ -12,6 +12,7 @@ Map<String, dynamic> _$ListAppNotificationToJson(
       'databaseId': instance.databaseId,
       'userId': instance.userId,
       'userFrom': instance.userFrom,
+      'createdAt': instance.createdAt,
       'notificationType': instance.notificationType,
       'status': _$NotificationStatusEnumMap[instance.status],
     };
@@ -31,6 +32,7 @@ ListInviteNotification _$ListInviteNotificationFromJson(
     listOwner: json['listOwner'] as String,
     listId: json['listId'] as String,
     databaseId: json['databaseId'],
+    createdAt: json['createdAt'],
   );
 }
 
@@ -40,6 +42,7 @@ Map<String, dynamic> _$ListInviteNotificationToJson(
       'databaseId': instance.databaseId,
       'userId': instance.userId,
       'userFrom': instance.userFrom,
+      'createdAt': instance.createdAt,
       'status': _$NotificationStatusEnumMap[instance.status],
       'listId': instance.listId,
       'listOwner': instance.listOwner,
@@ -79,6 +82,7 @@ FriendshipNotification _$FriendshipNotificationFromJson(
     status: _$enumDecode(_$NotificationStatusEnumMap, json['status']),
     friendshipId: json['friendshipId'] as String,
     databaseId: json['databaseId'],
+    createdAt: json['createdAt'],
   );
 }
 
@@ -88,6 +92,7 @@ Map<String, dynamic> _$FriendshipNotificationToJson(
       'databaseId': instance.databaseId,
       'userId': instance.userId,
       'userFrom': instance.userFrom,
+      'createdAt': instance.createdAt,
       'status': _$NotificationStatusEnumMap[instance.status],
       'friendshipId': instance.friendshipId,
     };

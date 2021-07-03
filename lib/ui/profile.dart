@@ -8,6 +8,7 @@ import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
+import 'package:mobile_applications/ui/notification_badge.dart';
 import 'package:mobile_applications/ui/notification_page.dart';
 import 'package:provider/provider.dart';
 
@@ -227,17 +228,7 @@ class _ProfilePageState extends State<ProfilePage> {
         appBar: AppBar(
             // leading: Icon(Icons.menu), // not needed, automatically added by Drawer
             title: Text(title),
-            actions: [
-              IconButton(
-                icon: Icon(Icons.notifications),
-                onPressed: () => {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => NotificationPage()),
-                  )
-                },
-              ),
-            ]),
+            actions: [NotificationBadge()]),
         drawer: ListAppNavDrawer(ProfilePage.routeName),
         body: _buildProfile(context));
   }

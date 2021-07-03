@@ -29,6 +29,8 @@ abstract class ListAppNotification {
   final String userId;
   final String userFrom;
 
+  int? createdAt;
+
   final String notificationType;
 
   final NotificationStatus status;
@@ -39,6 +41,7 @@ abstract class ListAppNotification {
   ListAppNotification(
       {this.databaseId,
       required this.userId,
+      this.createdAt,
       required this.userFrom,
       required this.status,
       required this.notificationType});
@@ -72,15 +75,17 @@ class ListInviteNotification extends ListAppNotification {
   String listId;
   String listOwner;
 
-  ListInviteNotification({
-    required userId,
-    required userFrom,
-    required NotificationStatus status,
-    required this.listOwner,
-    required this.listId,
-    databaseId,
-  }) : super(
+  ListInviteNotification(
+      {required userId,
+      required userFrom,
+      required NotificationStatus status,
+      required this.listOwner,
+      required this.listId,
+      databaseId,
+      createdAt})
+      : super(
             databaseId: databaseId,
+            createdAt: createdAt,
             notificationType: 'listInvite',
             userId: userId,
             userFrom: userFrom,
@@ -97,14 +102,16 @@ class ListInviteNotification extends ListAppNotification {
 class FriendshipNotification extends ListAppNotification {
   String friendshipId;
 
-  FriendshipNotification({
-    required userId,
-    required userFrom,
-    required NotificationStatus status,
-    required this.friendshipId,
-    databaseId,
-  }) : super(
+  FriendshipNotification(
+      {required userId,
+      required userFrom,
+      required NotificationStatus status,
+      required this.friendshipId,
+      databaseId,
+      createdAt})
+      : super(
             databaseId: databaseId,
+            createdAt: createdAt,
             notificationType: 'friendship',
             userId: userId,
             userFrom: userFrom,

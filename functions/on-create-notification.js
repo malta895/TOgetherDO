@@ -2,6 +2,23 @@ const functions = require('firebase-functions');
 // Import and initialize the Firebase Admin SDK.
 const admin = require('firebase-admin');
 
+exports.setCreatedAt = functions.region('europe-west6').firestore.document('notifications/{notificationId}').onCreate(
+    async (_, context) => {
+        const notificationId = context.params.notificationId;
+
+        return admin.firestore().collection('notifications')
+            .doc(notificationId)
+            .set({ createdAt: Date.now() }, { merge: true }) //TODO convert this to timestamp and add it: `createdAt: new Date().toISOString(),`
+            .then(() => {
+                console.log("Added date to notification " + notificationId);
+            })
+            .catch((error) => {
+                console.error("Error while creating notification " + notificationId + ":", error);
+                return null;
+            });
+    }
+);
+
 // Sends a notifications to all users when a new message is posted.
 exports.sendNotifications = functions.region('europe-west6').firestore.document('notifications/{notificationId}').onCreate(
     async (snapshot, context) => {
@@ -16,20 +33,35 @@ exports.sendNotifications = functions.region('europe-west6').firestore.document(
         // Notification details.
         const sender = await admin.firestore().collection('users').doc(snapshot.data().userFrom).get();
         const receiver = await admin.firestore().collection('users').doc(snapshot.data().userId).get();
-        const message = {
-            'notification': {
-                'title': `${sender.data().displayName} sent you a friendship request!`,
-                'body': `Accept or decline it, ${receiver.data().firstName}!`,
-                'icon': `${sender.data().profilePictureURL}`,
-            },
-            'data': {
-                'sender': snapshot.data().userFrom,
-                'receiver': snapshot.data().userId,
-                'click_action': `FLUTTER_NOTIFICATION_CLICK`,
-            }
-        };
+        if (snapshot.data().notificationType == "friendship") {
+            const message = {
+                'notification': {
+                    'title': `${sender.data().displayName} sent you a friendship request!`,
+                    'body': `Accept or decline it, ${receiver.data().firstName}!`,
+                    'icon': `${sender.data().profilePictureURL}`,
+                },
+                'data': {
+                    'sender': snapshot.data().userFrom,
+                    'receiver': snapshot.data().userId,
+                    'click_action': `FLUTTER_NOTIFICATION_CLICK`,
+                }
+            };
+        } else if (snapshot.data().notificationType == "listInvite") {
+            const message = {
+                'notification': {
+                    'title': `${sender.data().displayName} added you to a list!`,
+                    'body': `Accept or decline the invitation, ${receiver.data().firstName}!`,
+                    'icon': `${sender.data().profilePictureURL}`,
+                },
+                'data': {
+                    'sender': snapshot.data().userFrom,
+                    'receiver': snapshot.data().userId,
+                    'click_action': `FLUTTER_NOTIFICATION_CLICK`,
+                }
+            };
+        }
 
-        const token = receiver.data().notificationTokens[0];
+        const tokens = receiver.data().notificationTokens;
 
         // Get the list of device tokens.
         /*const allTokens = await admin.firestore().collection('users').doc('9LUBLCszUrU4mukuRWhHFS2iexL2').get();
@@ -49,7 +81,9 @@ exports.sendNotifications = functions.region('europe-west6').firestore.document(
         /*const response = await admin.messaging().sendToDevice(allTokens.notificationTokens[0], message);*/
         //token = allTokens.data().notificationTokens[0];
         //const response2 = await admin.messaging().sendToDevice("ey9cH1ogTqymzMzyaN_oMa:APA91bExTyp3U7YXUImjZQkrroD8OzIGji_cq40FwCNbEvpFeKVU_WHUAf5do2TJrY9sMnQLv0JohuSgHhm8Bn4-eCmY-LXO1GrtZxe6WGD-5-S3_vXkq86uFR71vK3WFKc3D5RCs73T", message);
-        const response2 = await admin.messaging().sendToDevice(token, message);
+        tokens.forEach(async (token) => {
+            const response2 = await admin.messaging().sendToDevice(token, message);
+        });
         //await cleanupTokens(response, allTokens.notificationTokens[0]);
     });
 // Cleans up the tokens that are no longer valid.

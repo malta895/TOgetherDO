@@ -12,8 +12,10 @@ import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/settings_ui.dart';
 import 'package:mobile_applications/ui/theme.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 
 Future<void> _messageHandler(RemoteMessage message) async {
+  FlutterAppBadger.updateBadgeCount(1);
   print('background message ${message.notification!.body}');
 }
 
@@ -71,6 +73,7 @@ class _MaterialAppWithTheme extends StatelessWidget {
         stream: context.read<ListAppAuthProvider>().authState,
         builder: (context, snapshot) {
           return MaterialApp(
+              debugShowCheckedModeBanner: false,
               initialRoute: snapshot.hasData
                   ? ListsPage.routeName
                   : LoginScreen.routeName,

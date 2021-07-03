@@ -5,6 +5,7 @@ import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/friendship_manager.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/new_friends.dart';
+import 'package:mobile_applications/ui/notification_badge.dart';
 import 'package:mobile_applications/ui/notification_page.dart';
 
 class FriendsPage extends StatefulWidget {
@@ -92,18 +93,7 @@ class _FriendsList extends State<FriendsPage> {
         appBar: AppBar(
           // leading: Icon(Icons.menu), // not needed, automatically added by Drawer
           title: Text(title),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.notifications),
-              onPressed: () => {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => NotificationPage()),
-                )
-              },
-              //onPressed: () => print("ciao"),
-            ),
-          ],
+          actions: [NotificationBadge()],
         ),
         drawer: ListAppNavDrawer(FriendsPage.routeName),
         body: _buildListItems(context),

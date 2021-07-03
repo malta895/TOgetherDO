@@ -272,7 +272,7 @@ class _ListsPageState extends State<ListsPage>
                 context,
                 MaterialPageRoute(
                     builder: (BuildContext context) =>
-                        ListViewRoute(listAppList)),
+                        ListViewPage(listAppList)),
               );
             },
           )),

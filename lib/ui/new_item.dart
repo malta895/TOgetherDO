@@ -2,28 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/models/list_item.dart';
 
-class NewListItem extends StatelessWidget {
+class NewItemPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('New item'),
       ),
-      body: MyCustomForm(),
+      body: _NewItemForm(),
     );
   }
 }
 
-class MyCustomForm extends StatefulWidget {
+class _NewItemForm extends StatefulWidget {
   @override
-  _MyCustomFormState createState() => _MyCustomFormState();
-}
-
-class DropdownMenu extends StatefulWidget {
-  DropdownMenu({Key? key}) : super(key: key);
-
-  @override
-  _DropdownMenuState createState() => _DropdownMenuState();
+  _NewItemFormState createState() => _NewItemFormState();
 }
 
 /* class Counter extends StatefulWidget {
@@ -32,7 +25,7 @@ class DropdownMenu extends StatefulWidget {
 
 // Define a corresponding State class.
 // This class holds data related to the form.
-class _MyCustomFormState extends State<MyCustomForm> {
+class _NewItemFormState extends State<_NewItemForm> {
   // Create a global key that uniquely identifies the Form widget
   // and allows validation of the form.
   //
@@ -79,7 +72,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                     return null;
                   },
                 )),
-            DropdownMenu(),
+            _ItemTypeDropdownMenu(),
             // Counter(),
             Padding(
               padding:
@@ -88,15 +81,16 @@ class _MyCustomFormState extends State<MyCustomForm> {
                 style: ElevatedButton.styleFrom(
                   primary: Colors.pinkAccent[700],
                 ),
-                onPressed: () {
-                  // TODO: change this to add the item to the list
-
+                onPressed: () async {
                   // Validate returns true if the form is valid, or false
                   // otherwise.
                   if (_formKey.currentState?.validate() == true) {
                     final BaseItem newItem =
                         SimpleItem(name: titleController.text);
-                    Navigator.pop(
+
+                    // TODO: add the item to the list on the backend
+
+                    Navigator.pop<BaseItem>(
                       context,
                       newItem,
                     );
@@ -112,10 +106,17 @@ class _MyCustomFormState extends State<MyCustomForm> {
   }
 }
 
-class _DropdownMenuState extends State<DropdownMenu> {
+class _ItemTypeDropdownMenu extends StatefulWidget {
+  _ItemTypeDropdownMenu({Key? key}) : super(key: key);
+
+  @override
+  _ItemTypeDropdownMenuState createState() => _ItemTypeDropdownMenuState();
+}
+
+class _ItemTypeDropdownMenuState extends State<_ItemTypeDropdownMenu> {
   String dropdownValue = 'Simple item';
 
-  void hideMultipleSelection() {
+  void _hideMultipleSelection() {
     setState(() {
       if (dropdownValue == 'Simple item') {
         visibleItem = false;
@@ -136,19 +137,19 @@ class _DropdownMenuState extends State<DropdownMenu> {
   bool visiblePeople = false;
   int counter = 0;
 
-  void decrementCounter() {
+  void _decrementCounter() {
     setState(() {
       if (counter > 0) counter--;
     });
   }
 
-  void incrementCounter() {
+  void _incrementCounter() {
     setState(() {
       counter++;
     });
   }
 
-  void setCounter(double val) {
+  void _setCounter(double val) {
     setState(() {
       counter = val.toInt();
     });
@@ -186,7 +187,7 @@ class _DropdownMenuState extends State<DropdownMenu> {
             setState(() {
               dropdownValue = newValue!;
             });
-            hideMultipleSelection();
+            _hideMultipleSelection();
           },
           items: <String>[
             'Simple item',
@@ -207,7 +208,7 @@ class _DropdownMenuState extends State<DropdownMenu> {
             child: ListTile(
               contentPadding: EdgeInsets.all(5.0),
               title: Text(
-                "Number of item: ",
+                "Number of items: ",
                 style: TextStyle(
                     fontSize: 16,
                     color: Theme.of(context).textTheme.headline1!.color),
@@ -223,7 +224,7 @@ class _DropdownMenuState extends State<DropdownMenu> {
                         color: Theme.of(context).textTheme.headline1!.color,
                       ),
                       // minWidth: 5.0,
-                      onPressed: decrementCounter,
+                      onPressed: _decrementCounter,
                     ),
                     Text("$counter",
                         style: TextStyle(
@@ -232,7 +233,7 @@ class _DropdownMenuState extends State<DropdownMenu> {
                     TextButton(
                       child: Icon(Icons.add,
                           color: Theme.of(context).textTheme.headline1!.color),
-                      onPressed: incrementCounter,
+                      onPressed: _incrementCounter,
                     )
                   ]),
             ),
@@ -244,7 +245,7 @@ class _DropdownMenuState extends State<DropdownMenu> {
             child: ListTile(
               contentPadding: EdgeInsets.all(5.0),
               title: Text(
-                "Number of item: ",
+                "Number of items: ",
                 style: TextStyle(
                     fontSize: 16,
                     color: Theme.of(context).textTheme.headline1!.color),
@@ -260,7 +261,7 @@ class _DropdownMenuState extends State<DropdownMenu> {
                         color: Theme.of(context).textTheme.headline1!.color,
                       ),
                       // minWidth: 5.0,
-                      onPressed: decrementCounter,
+                      onPressed: _decrementCounter,
                     ),
                     Text("$counter",
                         style: TextStyle(
@@ -269,7 +270,7 @@ class _DropdownMenuState extends State<DropdownMenu> {
                     TextButton(
                       child: Icon(Icons.add,
                           color: Theme.of(context).textTheme.headline1!.color),
-                      onPressed: incrementCounter,
+                      onPressed: _incrementCounter,
                     )
                   ]),
             ),
@@ -277,61 +278,3 @@ class _DropdownMenuState extends State<DropdownMenu> {
     ]);
   }
 }
-
-/* class _CounterState extends State<Counter> {
-  int counter = 0;
-
-  void decrementCounter() {
-    setState(() {
-      if (counter > 0) counter--;
-    });
-  }
-
-  void incrementCounter() {
-    setState(() {
-      counter++;
-    });
-  }
-
-  void setCounter(double val) {
-    setState(() {
-      counter = val.toInt();
-    });
-  }
-
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Container(
-            child: Text('Number of item/people: ',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16.0,
-                ))),
-        FlatButton(
-          child: Icon(
-            Icons.remove,
-            color: Colors.black,
-          ),
-          minWidth: 5.0,
-          onPressed: decrementCounter,
-        ),
-        Container(
-            padding: const EdgeInsets.all(4.0),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Text("$counter",
-                style: TextStyle(color: Colors.black, fontSize: 20.0))),
-        FlatButton(
-          child: Icon(Icons.add, color: Colors.black),
-          minWidth: 5.0,
-          onPressed: incrementCounter,
-        )
-      ],
-    );
-  }
-}
- */

@@ -699,7 +699,7 @@ class _ListViewPageState extends State<ListViewPage> {
               _buildItemsListView(context),
 
               // list of members
-              _buildMembersList(context),
+              _buildMembersListView(context),
             ],
           ),
         ),
@@ -718,36 +718,41 @@ class _ListViewPageState extends State<ListViewPage> {
     }
   }
 
-  Widget _buildMembersList(BuildContext context) {
+  Widget _buildMembersListView(BuildContext context) {
     // put the add element at first, then followed by the list members
-    final listViewChildren = <Widget>[
-      ListTile(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.person_add_rounded,
-              color: Theme.of(context).disabledColor,
-            ),
-            Padding(padding: EdgeInsets.all(4)),
-            Text(
-              'Add new member...',
-              style: TextStyle(
+    return Column(
+      children: [
+        ListTile(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.person_add_rounded,
                 color: Theme.of(context).disabledColor,
               ),
-            ),
-          ],
+              Padding(padding: EdgeInsets.all(5)),
+              Text(
+                'Add new member...',
+                style: TextStyle(
+                  color: Theme.of(context).disabledColor,
+                ),
+              ),
+            ],
+          ),
+          onTap: () async {
+            await _showAddMemberRoute(context);
+          },
         ),
-        onTap: () async {
-          await _showAddMemberRoute(context);
-        },
-      ),
-    ]
-        .followedBy(widget.listAppList.membersAsUsers
-            .map((e) => _buildMemberRow(context, e)))
-        .toList();
-    return ListView(
-      children: listViewChildren,
+        Expanded(
+          child: ListView.builder(
+            itemCount: widget.listAppList.membersAsUsers.length,
+            itemBuilder: (context, i) {
+              return _buildMemberRow(
+                  context, widget.listAppList.membersAsUsers.elementAt(i));
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -763,34 +768,39 @@ class _ListViewPageState extends State<ListViewPage> {
 
   Widget _buildItemsListView(BuildContext context) {
     // put the add element at first, then followed by the list items
-    final listViewChildren = <Widget>[
-      ListTile(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.add_circle_outline,
-              color: Theme.of(context).disabledColor,
-            ),
-            Padding(padding: EdgeInsets.all(4)),
-            Text(
-              'Add new element...',
-              style: TextStyle(
+    return Column(
+      children: [
+        ListTile(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.add_circle_outline,
                 color: Theme.of(context).disabledColor,
               ),
-            ),
-          ],
+              Padding(padding: EdgeInsets.all(5)),
+              Text(
+                'Add new element...',
+                style: TextStyle(
+                  color: Theme.of(context).disabledColor,
+                ),
+              ),
+            ],
+          ),
+          onTap: () async {
+            await _showNewItemRoute(context);
+          },
         ),
-        onTap: () async {
-          await _showNewItemRoute(context);
-        },
-      ),
-    ]
-        .followedBy(
-            widget.listAppList.items.map((e) => _buildItemRow(context, e)))
-        .toList();
-    return ListView(
-      children: listViewChildren,
+        Expanded(
+          child: ListView.builder(
+            itemCount: widget.listAppList.items.length,
+            itemBuilder: (context, i) {
+              return _buildItemRow(
+                  context, widget.listAppList.items.elementAt(i));
+            },
+          ),
+        ),
+      ],
     );
   }
 

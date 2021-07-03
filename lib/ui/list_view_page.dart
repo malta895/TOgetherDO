@@ -16,14 +16,21 @@ import 'package:provider/provider.dart';
 
 import '../models/user.dart';
 
-class ListViewRoute extends StatefulWidget {
-  final ListAppList aList;
+class ListViewPage extends StatefulWidget {
+  final ListAppList listAppList;
 
-  ListViewRoute(this.aList) {
-    aList.membersAsUsers = Set<ListAppUser>();
+  ListViewPage(this.listAppList) {
+    _createMockItems();
+  }
+
+  void _createMockItems() {
+    if (listAppList.membersAsUsers != null &&
+        listAppList.membersAsUsers.isNotEmpty) return;
+
+    listAppList.membersAsUsers = Set<ListAppUser>();
 
     //TODO fetch from backend instead
-    aList.membersAsUsers.addAll([
+    listAppList.membersAsUsers.addAll([
       ListAppUser(
           databaseId: "siaodkjasd",
           username: "lawfriends",
@@ -56,7 +63,7 @@ class ListViewRoute extends StatefulWidget {
           email: "malta95@gmail.com"),
     ]);
 
-    aList.items = Set<BaseItem>();
+    listAppList.items = Set<BaseItem>();
     /* aList.items.addAll([
       SimpleItem(1, "Simple element - undone", "A simple undone element"),
       SimpleItem(2, "Simple element - done", "A simple done element"),
@@ -66,7 +73,7 @@ class ListViewRoute extends StatefulWidget {
       MultiFulfillmentMemberItem(5, "Lord of the rings trilogy",
           "the complete lord of the rings trilogy", 5, 3),
     ]); */
-    aList.items.addAll([
+    listAppList.items.addAll([
       SimpleItem(name: "Simple element - undone"),
       SimpleItem(name: "Simple element - done"),
       SimpleItem(name: "Buy groceries"),
@@ -77,20 +84,30 @@ class ListViewRoute extends StatefulWidget {
       MultiFulfillmentMemberItem(
           name: "Buy movie tickets", maxQuantity: 5, quantityPerMember: 3),
     ]);
-    aList.items.elementAt(1).fulfill(member: aList.membersAsUsers.elementAt(0));
-    aList.items.elementAt(5).fulfill(
-        member: aList.membersAsUsers.elementAt(1), quantityFulfilled: 2);
-    aList.items.elementAt(4).fulfill(member: aList.membersAsUsers.elementAt(0));
-    aList.items.elementAt(4).fulfill(member: aList.membersAsUsers.elementAt(1));
-    aList.items.elementAt(4).fulfill(member: aList.membersAsUsers.elementAt(2));
-    aList.items.elementAt(4).fulfill(member: aList.membersAsUsers.elementAt(3));
+    listAppList.items
+        .elementAt(1)
+        .fulfill(member: listAppList.membersAsUsers.elementAt(0));
+    listAppList.items.elementAt(5).fulfill(
+        member: listAppList.membersAsUsers.elementAt(1), quantityFulfilled: 2);
+    listAppList.items
+        .elementAt(4)
+        .fulfill(member: listAppList.membersAsUsers.elementAt(0));
+    listAppList.items
+        .elementAt(4)
+        .fulfill(member: listAppList.membersAsUsers.elementAt(1));
+    listAppList.items
+        .elementAt(4)
+        .fulfill(member: listAppList.membersAsUsers.elementAt(2));
+    listAppList.items
+        .elementAt(4)
+        .fulfill(member: listAppList.membersAsUsers.elementAt(3));
   }
 
   @override
-  _ListViewRouteState createState() => _ListViewRouteState();
+  _ListViewPageState createState() => _ListViewPageState();
 }
 
-class _ListViewRouteState extends State<ListViewRoute> {
+class _ListViewPageState extends State<ListViewPage> {
   late ListAppUser _loggedInListAppUser;
   late final HashMap<ListAppUser, Color> _assignedColors =
       HashMap<ListAppUser, Color>();
@@ -99,8 +116,8 @@ class _ListViewRouteState extends State<ListViewRoute> {
   void initState() {
     super.initState();
 
-    if (widget.aList.membersAsUsers.isNotEmpty) {
-      var it = widget.aList.membersAsUsers.iterator;
+    if (widget.listAppList.membersAsUsers.isNotEmpty) {
+      var it = widget.listAppList.membersAsUsers.iterator;
       int index = 0;
       while (index <= Colors.primaries.length && it.moveNext()) {
         _assignedColors[it.current] = Colors.primaries[index];
@@ -125,7 +142,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
 
   _addListItem(BaseItem item) {
     setState(() {
-      widget.aList.items.add(item);
+      widget.listAppList.items.add(item);
     });
   }
 
@@ -205,7 +222,8 @@ class _ListViewRouteState extends State<ListViewRoute> {
           key: UniqueKey(),
           onDismissed: (DismissDirection direction) {
             setState(() {
-              widget.aList.items.removeWhere((element) => element == aListItem);
+              widget.listAppList.items
+                  .removeWhere((element) => element == aListItem);
             });
           },
           child: CheckboxListTile(
@@ -305,7 +323,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
             key: UniqueKey(),
             onDismissed: (DismissDirection direction) {
               setState(() {
-                widget.aList.items
+                widget.listAppList.items
                     .removeWhere((element) => element == aListItem);
               });
             },
@@ -447,7 +465,7 @@ class _ListViewRouteState extends State<ListViewRoute> {
             key: UniqueKey(),
             onDismissed: (DismissDirection direction) {
               setState(() {
-                widget.aList.items
+                widget.listAppList.items
                     .removeWhere((element) => element == aListItem);
               });
             },
@@ -625,14 +643,6 @@ class _ListViewRouteState extends State<ListViewRoute> {
       child: Scaffold(
         appBar: AppBar(),
         body: _buildScaffoldBody(context),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            _navigateAndDisplaySelection(context);
-          },
-          backgroundColor: Colors.red,
-          icon: Icon(Icons.library_add_outlined),
-          label: Text('NEW ITEM'),
-        ),
       ),
     );
   }
@@ -686,26 +696,101 @@ class _ListViewRouteState extends State<ListViewRoute> {
           child: TabBarView(
             children: [
               // list of items
-              ListView.builder(
-                itemCount: widget.aList.items.length,
-                itemBuilder: (context, i) {
-                  return _buildItemRow(
-                      context, widget.aList.items.elementAt(i));
-                },
-              ),
+              _buildItemsListView(context),
 
               // list of members
-              ListView.builder(
-                itemCount: widget.aList.membersAsUsers.length,
-                itemBuilder: (context, i) {
-                  return _buildMemberRow(
-                      context, widget.aList.membersAsUsers.elementAt(i));
-                },
-              ),
+              _buildMembersList(context),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  Future<void> _showAddMemberRoute(BuildContext context) async {
+    // TODO Implement add member to list logic
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => NewItemPage()),
+    );
+    if (result != null) {
+      _addListItem(result);
+    }
+  }
+
+  Widget _buildMembersList(BuildContext context) {
+    // put the add element at first, then followed by the list members
+    final listViewChildren = <Widget>[
+      ListTile(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.person_add_rounded,
+              color: Theme.of(context).disabledColor,
+            ),
+            Padding(padding: EdgeInsets.all(4)),
+            Text(
+              'Add new member...',
+              style: TextStyle(
+                color: Theme.of(context).disabledColor,
+              ),
+            ),
+          ],
+        ),
+        onTap: () async {
+          await _showAddMemberRoute(context);
+        },
+      ),
+    ]
+        .followedBy(widget.listAppList.membersAsUsers
+            .map((e) => _buildMemberRow(context, e)))
+        .toList();
+    return ListView(
+      children: listViewChildren,
+    );
+  }
+
+  Future<void> _showNewItemRoute(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => NewItemPage()),
+    );
+    if (result != null) {
+      _addListItem(result);
+    }
+  }
+
+  Widget _buildItemsListView(BuildContext context) {
+    // put the add element at first, then followed by the list items
+    final listViewChildren = <Widget>[
+      ListTile(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.add_circle_outline,
+              color: Theme.of(context).disabledColor,
+            ),
+            Padding(padding: EdgeInsets.all(4)),
+            Text(
+              'Add new element...',
+              style: TextStyle(
+                color: Theme.of(context).disabledColor,
+              ),
+            ),
+          ],
+        ),
+        onTap: () async {
+          await _showNewItemRoute(context);
+        },
+      ),
+    ]
+        .followedBy(
+            widget.listAppList.items.map((e) => _buildItemRow(context, e)))
+        .toList();
+    return ListView(
+      children: listViewChildren,
     );
   }
 
@@ -724,54 +809,39 @@ class _ListViewRouteState extends State<ListViewRoute> {
         direction: Axis.horizontal,
         children: [
           Expanded(
-            child: _buildListDetailsText(context),
+            child: Column(
+              children: [
+                ListTile(
+                  dense: true,
+                  horizontalTitleGap: 0.5,
+                  leading: Icon(Icons.list),
+                  title: Text(widget.listAppList.name,
+                      style: TextStyle(fontSize: 20)),
+                  subtitle: Text(widget.listAppList.description ?? ''),
+                ),
+                ListTile(
+                  dense: true,
+                  horizontalTitleGap: 0.5,
+                  leading: Icon(Icons.date_range),
+                  title: Text(DateFormat('MMM dd')
+                      .format(widget.listAppList.createdAt)),
+                  subtitle: Text(
+                      DateFormat.jm().format(widget.listAppList.createdAt)),
+                ),
+                ListTile(
+                  dense: true,
+                  horizontalTitleGap: 0.5,
+                  leading: Icon(Icons.person_pin_rounded),
+                  title: Text(
+                      widget.listAppList.creator?.displayName ?? 'John Smith'),
+                  subtitle:
+                      Text(widget.listAppList.creator?.username ?? 'john21'),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
-  }
-
-  Widget _buildListDetailsText(context) {
-    String listDescription = widget.aList.description ?? '';
-    return Column(
-      children: [
-        ListTile(
-          dense: true,
-          horizontalTitleGap: 0.5,
-          leading: Icon(Icons.list),
-          title: Text(widget.aList.name, style: TextStyle(fontSize: 20)),
-          subtitle: Text(
-            // TODO remove and leave list description only
-            listDescription.isNotEmpty
-                ? listDescription
-                : 'Sample list description blah blah',
-          ),
-        ),
-        ListTile(
-          dense: true,
-          horizontalTitleGap: 0.5,
-          leading: Icon(Icons.date_range),
-          title: Text(DateFormat('MMM dd').format(widget.aList.createdAt)),
-          subtitle: Text(DateFormat.jm().format(widget.aList.createdAt)),
-        ),
-        ListTile(
-          dense: true,
-          horizontalTitleGap: 0.5,
-          leading: Icon(Icons.person_pin_rounded),
-          title: Text(widget.aList.creator?.displayName ?? 'John Smith'),
-          subtitle: Text(widget.aList.creator?.username ?? 'john21'),
-        ),
-      ],
-    );
-  }
-
-  void _navigateAndDisplaySelection(BuildContext context) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => NewListItem()),
-    );
-    if (result != null) {
-      _addListItem(result);
-    }
   }
 }

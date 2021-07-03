@@ -7,8 +7,10 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_applications/models/list.dart';
+import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/list_manager.dart';
+import 'package:mobile_applications/services/notification_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/list_view_page.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
@@ -49,6 +51,13 @@ class _ListsPageState extends State<ListsPage>
     super.initState();
 
     _listsFuture = _fetchLists();
+    _fetchNotifications().then((value) {
+      value.map((e) {
+        newNotifications++;
+      });
+    });
+    print("NEW NOT");
+    print(newNotifications);
     SchedulerBinding.instance?.addPostFrameCallback((_) {
       if (!_isManuallyRefreshing) _refreshIndicatorKey.currentState?.show();
     });
@@ -145,6 +154,21 @@ class _ListsPageState extends State<ListsPage>
       _listsFuture = _newListsFuture;
     });
     _isManuallyRefreshing = false;
+  }
+
+  late Future<List<ListAppNotification>> _notificationsFuture;
+
+  int newNotifications = 0;
+
+  Future<List<ListAppNotification>> _fetchNotifications() async {
+    final listAppUser =
+        await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
+
+    if (listAppUser != null) {
+      return ListAppNotificationManager.instanceForUser(listAppUser)
+          .getNotificationsByUid(listAppUser.databaseId);
+    }
+    return Future.value(null);
   }
 
   Widget _buildListItems(BuildContext context) {

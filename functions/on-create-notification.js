@@ -21,11 +21,11 @@ exports.sendNotifications = functions.region('europe-west6').firestore.document(
                 'title': `${sender.data().displayName} sent you a friendship request!`,
                 'body': `Accept or decline it, ${receiver.data().firstName}!`,
                 'icon': `${sender.data().profilePictureURL}`,
-                'click_action': `FLUTTER_NOTIFICATION_CLICK`,
             },
             'data': {
                 'sender': snapshot.data().userFrom,
-                'receiver': snapshot.data().userId
+                'receiver': snapshot.data().userId,
+                'click_action': `FLUTTER_NOTIFICATION_CLICK`,
             }
         };
 

@@ -19,7 +19,17 @@ import '../models/user.dart';
 class ListViewPage extends StatefulWidget {
   final ListAppList listAppList;
 
-  ListViewPage(this.listAppList) {
+  /// If `true`, the button to add new members will be shown
+  final bool canAddNewMembers;
+
+  /// If `true`, the button to add new list items will be shown
+  final bool canAddNewItems;
+
+  ListViewPage(
+    this.listAppList, {
+    required this.canAddNewMembers,
+    this.canAddNewItems = true,
+  }) {
     _createMockItems();
   }
 
@@ -720,6 +730,17 @@ class _ListViewPageState extends State<ListViewPage> {
 
   Widget _buildMembersListView(BuildContext context) {
     // put the add element at first, then followed by the list members
+    final membersListView = ListView.builder(
+      itemCount: widget.listAppList.membersAsUsers.length,
+      itemBuilder: (context, i) {
+        return _buildMemberRow(
+            context, widget.listAppList.membersAsUsers.elementAt(i));
+      },
+    );
+
+    // if the user is not allowed to add new members just show them the list
+    if (!widget.canAddNewMembers) return membersListView;
+
     return Column(
       children: [
         ListTile(
@@ -744,13 +765,7 @@ class _ListViewPageState extends State<ListViewPage> {
           },
         ),
         Expanded(
-          child: ListView.builder(
-            itemCount: widget.listAppList.membersAsUsers.length,
-            itemBuilder: (context, i) {
-              return _buildMemberRow(
-                  context, widget.listAppList.membersAsUsers.elementAt(i));
-            },
-          ),
+          child: membersListView,
         ),
       ],
     );
@@ -768,6 +783,16 @@ class _ListViewPageState extends State<ListViewPage> {
 
   Widget _buildItemsListView(BuildContext context) {
     // put the add element at first, then followed by the list items
+    final itemsListView = ListView.builder(
+      itemCount: widget.listAppList.items.length,
+      itemBuilder: (context, i) {
+        return _buildItemRow(context, widget.listAppList.items.elementAt(i));
+      },
+    );
+
+    // if the user is not allowed to add items just show them the list
+    if (!widget.canAddNewItems) return itemsListView;
+
     return Column(
       children: [
         ListTile(
@@ -780,7 +805,7 @@ class _ListViewPageState extends State<ListViewPage> {
               ),
               Padding(padding: EdgeInsets.all(5)),
               Text(
-                'Add new element...',
+                'Add new list item...',
                 style: TextStyle(
                   color: Theme.of(context).disabledColor,
                 ),
@@ -792,13 +817,7 @@ class _ListViewPageState extends State<ListViewPage> {
           },
         ),
         Expanded(
-          child: ListView.builder(
-            itemCount: widget.listAppList.items.length,
-            itemBuilder: (context, i) {
-              return _buildItemRow(
-                  context, widget.listAppList.items.elementAt(i));
-            },
-          ),
+          child: itemsListView,
         ),
       ],
     );
@@ -827,7 +846,9 @@ class _ListViewPageState extends State<ListViewPage> {
                   leading: Icon(Icons.list),
                   title: Text(widget.listAppList.name,
                       style: TextStyle(fontSize: 20)),
-                  subtitle: Text(widget.listAppList.description ?? ''),
+                  subtitle: widget.listAppList.description != null
+                      ? Text(widget.listAppList.description!)
+                      : null,
                 ),
                 ListTile(
                   dense: true,

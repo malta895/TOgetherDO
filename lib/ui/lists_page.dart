@@ -276,8 +276,10 @@ class _ListsPageState extends State<ListsPage>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        ListViewPage(listAppList)),
+                    builder: (BuildContext context) => ListViewPage(
+                          listAppList,
+                          canAddNewMembers: doesUserOwnList,
+                        )),
               );
             },
           )),

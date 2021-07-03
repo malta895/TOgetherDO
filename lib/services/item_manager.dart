@@ -9,6 +9,8 @@ class ListAppItemManager {
   final String listUid;
   final String userUid;
 
+  final FirebaseFirestore _firestoreInstance = FirebaseFirestore.instance;
+
   //cache the instances to avoid creating new ones every time we operate on the same list
   static final Map<String, ListAppItemManager> _cachedInstances = {};
 
@@ -36,8 +38,6 @@ class ListAppItemManager {
 
     return newInstance;
   }
-
-  final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
 
   Future<BaseItem?> getItemByUid(String uid) async {
     final queryResult = await _itemCollectionRef.doc(uid).get();

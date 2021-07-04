@@ -28,7 +28,7 @@ extension ParseToString on ItemType {
 @JsonSerializable(checked: true, createFactory: false)
 abstract class BaseItem with ChangeNotifier {
   static const String collectionName = 'items';
-  final String? databaseId;
+  String? databaseId;
   final String name;
   final String? description;
   final int maxQuantity;
@@ -58,11 +58,11 @@ abstract class BaseItem with ChangeNotifier {
 
   factory BaseItem.fromJson(Map<String, dynamic> json) {
     switch (json['itemType'] as String) {
-      case 'SimpleItem':
+      case 'simple':
         return SimpleItem.fromJson(json);
-      case 'MultiFulfillmentItem':
+      case 'multiFulfillment':
         return MultiFulfillmentItem.fromJson(json);
-      case 'MultiFulfillmentMemberItem':
+      case 'multiFulfillmentMember':
         return MultiFulfillmentMemberItem.fromJson(json);
 
       default:

@@ -11,6 +11,19 @@ part 'list_item.g.dart';
 
 enum ItemType { simple, multiFulfillment, multiFulfillmentMember }
 
+extension ParseToString on ItemType {
+  String toReadableString() {
+    switch (this) {
+      case ItemType.simple:
+        return 'Simple item';
+      case ItemType.multiFulfillment:
+        return 'Multiple instance item';
+      case ItemType.multiFulfillmentMember:
+        return 'Multiple People item';
+    }
+  }
+}
+
 ///Any type of item. the specific types will implement in different ways the methods
 @JsonSerializable(checked: true, createFactory: false)
 abstract class BaseItem with ChangeNotifier {
@@ -61,7 +74,6 @@ abstract class BaseItem with ChangeNotifier {
     switch (this.itemType) {
       case ItemType.simple:
         return (this as SimpleItem).toJson();
-
       case ItemType.multiFulfillment:
         return (this as MultiFulfillmentItem).toJson();
       case ItemType.multiFulfillmentMember:
@@ -135,7 +147,7 @@ class SimpleItem extends BaseItem {
 
   Map<String, dynamic> toJson() => _$SimpleItemToJson(this)
     ..addAll({
-      "itemType": this.itemType,
+      'itemType': _$ItemTypeEnumMap[this.itemType],
       "quantityPerMember": this.quantityPerMember,
       "maxQuantity": this.maxQuantity
     });
@@ -191,6 +203,7 @@ class MultiFulfillmentItem extends BaseItem {
 
   Map<String, dynamic> toJson() => _$MultiFulfillmentItemToJson(this)
     ..addAll({
+      'itemType': _$ItemTypeEnumMap[this.itemType],
       "itemType": this.itemType,
       "quantityPerMember": this.quantityPerMember,
     });
@@ -259,6 +272,6 @@ class MultiFulfillmentMemberItem extends BaseItem {
 
   Map<String, dynamic> toJson() => _$MultiFulfillmentMemberItemToJson(this)
     ..addAll({
-      "itemType": this.itemType,
+      'itemType': _$ItemTypeEnumMap[this.itemType],
     });
 }

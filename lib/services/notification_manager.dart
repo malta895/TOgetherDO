@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 
@@ -50,35 +51,38 @@ class ListAppNotificationManager with ChangeNotifier {
 
   Future<bool> acceptNotification(String id) async {
     await _notificationsCollection.doc(id).update({"status": "accepted"});
-
     return true;
   }
 
   Future<bool> rejectNotification(String id) async {
     await _notificationsCollection.doc(id).update({"status": "rejected"});
-
     return true;
   }
 
   Future<int> getUnansweredNotifications(String uid, String orderBy) async {
-    var cont = 0;
-    print("Inizio getunanswered");
-    var notificationList = await getNotificationsByUid(uid, orderBy);
+    try {
+      var cont = 0;
+      print("Inizio getunanswered");
+      var notificationList = await getNotificationsByUid(uid, orderBy);
 
-    for (var item in notificationList) {
-      if (item.status == NotificationStatus.undefined) {
-        cont++;
+      for (var item in notificationList) {
+        if (item.status == NotificationStatus.undefined) {
+          cont++;
+        }
       }
-    }
 
-    /*notificationList.map((e) {
+      /*notificationList.map((e) {
       if (e.status == NotificationStatus.undefined) {
         print("una undefined trovata");
         cont++;
       }
     });*/
 
-    return cont;
+      return cont;
+    } on CheckedFromJsonException catch (e) {
+      print(e.message);
+      return 0;
+    }
   }
 
   /*Future<List<ListAppFriendship?>> getNotificationsByUid(String uid) async {

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/list_item.dart';
 import 'package:mobile_applications/models/user.dart';
@@ -40,8 +41,13 @@ class ListAppItemManager {
   }
 
   Future<BaseItem?> getItemByUid(String uid) async {
-    final queryResult = await _itemCollectionRef.doc(uid).get();
-    return queryResult.data();
+    try {
+      final queryResult = await _itemCollectionRef.doc(uid).get();
+      return queryResult.data();
+    } on CheckedFromJsonException catch (e) {
+      print(e);
+      return null;
+    }
   }
 
   Future<void> saveInstance(BaseItem item) async {

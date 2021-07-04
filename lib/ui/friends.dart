@@ -39,19 +39,20 @@ class _FriendsList extends State<FriendsPage> {
         .instance
         .getFriendsFromByUid("9LUBLCszUrU4mukuRWhHFS2iexL2");
 
-    final Future<List<ListAppFriendship>?> friendsTo = ListAppFriendshipManager
+    final Future<List<ListAppUser?>> friendsTo = ListAppFriendshipManager
         .instance
         .getFriendsToByUid("9LUBLCszUrU4mukuRWhHFS2iexL2");
 
     return FutureBuilder(
-        future: friendsFrom,
-        builder:
-            (BuildContext context, AsyncSnapshot<List<ListAppUser?>> snapshot) {
+        future: Future.wait([friendsFrom, friendsTo]),
+        builder: (BuildContext context,
+            AsyncSnapshot<List<List<ListAppUser?>>> snapshot) {
           if (snapshot.hasData) {
+            final allFriends = snapshot.data![0] + snapshot.data![1];
             return ListView.builder(
-              itemCount: snapshot.data!.length,
+              itemCount: snapshot.data![0].length + snapshot.data![1].length,
               itemBuilder: (context, i) {
-                return _buildRow(context, snapshot.data![i]!);
+                return _buildRow(context, allFriends[i]!);
               },
             );
           } else {

@@ -75,7 +75,9 @@ class ListAppList {
       this.description,
       this.items = const {},
       this.membersAsUsers = const {}})
-      : this.createdAt = createdAt ?? DateTime.now();
+      : this.createdAt = createdAt ?? DateTime.now() {
+    members = membersAsUsers.map((e) => e.databaseId).toSet();
+  }
 
   factory ListAppList.fromJson(Map<String, dynamic> json) =>
       _$ListAppListFromJson(json);

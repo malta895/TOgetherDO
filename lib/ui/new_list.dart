@@ -3,7 +3,9 @@ import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
+import 'package:mobile_applications/services/friendship_manager.dart';
 import 'package:mobile_applications/services/list_manager.dart';
+import 'package:mobile_applications/services/user_manager.dart';
 import 'package:provider/provider.dart';
 
 class NewListPage extends StatelessWidget {
@@ -43,6 +45,8 @@ class _NewListFormState extends State<_NewListForm> {
 
     _listTitleController = TextEditingController();
   }
+
+  late Set<ListAppUser> members = {};
 
   Widget _buildListTitleField() {
     return Padding(
@@ -169,7 +173,8 @@ class _NewListFormState extends State<_NewListForm> {
                 name: _listTitleController.text,
                 description: _listDescriptionController.text,
                 listType: _listTypeValue,
-                creatorUid: currentUser!.databaseId);
+                creatorUid: currentUser!.databaseId,
+                membersAsUsers: members);
 
             // If the form is valid, display a Snackbar.
             // NOTE se abbiamo tempo sarebbe carino mettere l'animazione che c'é
@@ -210,7 +215,9 @@ class _NewListFormState extends State<_NewListForm> {
             _buildListDescriptionField(),
             _buildListTypeSelector(),
             _NewListDropdownMenu(),
-            _AddMemberDialog(),
+            _AddMemberDialog(
+              members: members,
+            ),
             _buildSubmitButton()
           ],
         ),
@@ -221,133 +228,138 @@ class _NewListFormState extends State<_NewListForm> {
 
 // TODO sistemare quando avremo gli amici dal db
 class _AddMemberDialog extends StatefulWidget {
+  final Set<ListAppUser?> members;
+  const _AddMemberDialog({Key? key, required this.members}) : super(key: key);
   @override
   _AddMemberDialogState createState() => _AddMemberDialogState();
 }
 
 class _AddMemberDialogState extends State<_AddMemberDialog> {
-  final ListAppUser _user = ListAppUser(
-      firstName: "Luca",
-      lastName: "Maltagliati",
-      email: "luca.malta@mail.com",
-      username: "malta",
-      friends: {
-        ListAppUser(
-            firstName: "Lorenzo",
-            lastName: "Amici",
-            email: "lorenzo.amici@mail.com",
-            username: "lorenzo.amici@mail.com",
-            databaseId: '',
-            profilePictureURL:
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVLqfekg_kitC_QJ5kgBUTh2tt5EIcxEnQDQ&usqp=CAU"),
-        ListAppUser(
-            firstName: "Mario",
-            lastName: "Rossi",
-            email: "mario.rossi@mail.com",
-            username: "mario.rossi@mail.com",
-            databaseId: '',
-            profilePictureURL:
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVLqfekg_kitC_QJ5kgBUTh2tt5EIcxEnQDQ&usqp=CAU"),
-      },
-      databaseId: '');
+  late List<bool?> selectedFriendsValues;
 
   @override
   Widget build(BuildContext context) {
-    List<bool?> selectedFriendsValues =
-        List<bool?>.filled(_user.friends.length, false);
+    final currentUser = context.read<ListAppAuthProvider>().loggedInListAppUser;
+
+    final Future<List<ListAppUser?>> friendsFrom = ListAppFriendshipManager
+        .instance
+        .getFriendsFromByUid(currentUser!.databaseId);
+
+    final Future<List<ListAppUser?>> friendsTo = ListAppFriendshipManager
+        .instance
+        .getFriendsToByUid(currentUser.databaseId);
+
     return Padding(
-      padding: EdgeInsets.only(top: 15),
-      child: ListTile(
-          contentPadding: EdgeInsets.all(5.0),
-          title: Text(
-            "Add participants",
-            style: TextStyle(
-                fontSize: 16,
-                color: Theme.of(context).textTheme.headline1!.color),
-          ),
-          tileColor: Theme.of(context).splashColor,
-          trailing: IconButton(
-            icon: Icon(Icons.person_add, color: Theme.of(context).accentColor),
-            onPressed: () => showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return StatefulBuilder(builder: (context, setState) {
-                    return AlertDialog(
-                        title: Text("Choose members to add"),
-                        content: StatefulBuilder(
-                          builder:
-                              (BuildContext context, StateSetter setState) {
-                            return Container(
-                              height: 300,
-                              width: 300,
-                              child: ListView.builder(
-                                itemCount: _user.friends.length,
-                                itemBuilder: (context, i) {
-                                  return Container(
-                                      decoration: BoxDecoration(
-                                          border: Border(
-                                              bottom: BorderSide(
-                                        color: Colors.grey,
-                                        width: 0.8,
-                                      ))),
-                                      child: CheckboxListTile(
-                                          activeColor:
-                                              Theme.of(context).accentColor,
-                                          secondary: CircleAvatar(
-                                            backgroundImage: NetworkImage(_user
-                                                .friends
-                                                .elementAt(i)
-                                                .profilePictureURL!),
-                                          ),
-                                          value: selectedFriendsValues
-                                              .elementAt(i),
-                                          onChanged: (bool? newValue) {
-                                            setState(() {
-                                              selectedFriendsValues[i] =
-                                                  newValue!;
-                                            });
-                                          },
-                                          title: Text(
-                                            _user.friends
-                                                    .elementAt(i)
-                                                    .firstName +
-                                                ' ' +
-                                                _user.friends
-                                                    .elementAt(i)
-                                                    .lastName,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          )));
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                              style: TextButton.styleFrom(
-                                  primary: Theme.of(context).accentColor),
-                              onPressed: () => {
-                                    for (var i = 0;
-                                        i < _user.friends.length;
-                                        i++)
-                                      {
-                                        if (selectedFriendsValues[i] == true)
-                                          {
-                                            print("Added " +
-                                                _user.friends
-                                                    .elementAt(i)
-                                                    .displayName)
-                                          }
-                                      },
-                                    Navigator.of(context).pop(true)
-                                  },
-                              child: const Text("ADD")),
-                        ]);
-                  });
-                }),
-          )),
-    );
+        padding: EdgeInsets.only(top: 15),
+        child: ListTile(
+            contentPadding: EdgeInsets.all(5.0),
+            title: Text(
+              "Add participants",
+              style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).textTheme.headline1!.color),
+            ),
+            tileColor: Theme.of(context).splashColor,
+            trailing: IconButton(
+                icon: Icon(Icons.person_add,
+                    color: Theme.of(context).accentColor),
+                onPressed: () => showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return StatefulBuilder(builder: (context, setState) {
+                        return FutureBuilder(
+                            future: Future.wait([friendsFrom, friendsTo]),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<List<List<ListAppUser?>>>
+                                    snapshot) {
+                              if (snapshot.hasData) {
+                                final allFriends =
+                                    snapshot.data![0] + snapshot.data![1];
+
+                                selectedFriendsValues = List<bool?>.filled(
+                                    allFriends.length, false);
+                                print(selectedFriendsValues);
+                                return AlertDialog(
+                                    title: Text("Choose members to add"),
+                                    content: StatefulBuilder(builder:
+                                        (BuildContext context,
+                                            StateSetter setState) {
+                                      return Container(
+                                          height: 300,
+                                          width: 300,
+                                          child: ListView.builder(
+                                            itemCount: allFriends.length,
+                                            itemBuilder: (context, i) {
+                                              return Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          bottom: BorderSide(
+                                                    color: Colors.grey,
+                                                    width: 0.8,
+                                                  ))),
+                                                  child: CheckboxListTile(
+                                                      activeColor:
+                                                          Theme.of(context)
+                                                              .accentColor,
+                                                      secondary: CircleAvatar(
+                                                        backgroundImage:
+                                                            NetworkImage(allFriends
+                                                                .elementAt(i)!
+                                                                .profilePictureURL!),
+                                                      ),
+                                                      value:
+                                                          selectedFriendsValues
+                                                              .elementAt(i),
+                                                      onChanged:
+                                                          (bool? newValue) {
+                                                        setState(() {
+                                                          selectedFriendsValues[
+                                                              i] = newValue;
+                                                        });
+                                                      },
+                                                      title: Text(
+                                                        allFriends
+                                                                .elementAt(i)!
+                                                                .firstName +
+                                                            ' ' +
+                                                            allFriends
+                                                                .elementAt(i)!
+                                                                .lastName,
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      )));
+                                            },
+                                          ));
+                                    }),
+                                    actions: <Widget>[
+                                      TextButton(
+                                          style: TextButton.styleFrom(
+                                              primary: Theme.of(context)
+                                                  .accentColor),
+                                          onPressed: () => {
+                                                for (var i = 0;
+                                                    i < allFriends.length;
+                                                    i++)
+                                                  {
+                                                    if (selectedFriendsValues[
+                                                            i] ==
+                                                        true)
+                                                      {
+                                                        widget.members
+                                                            .add(allFriends[i])
+                                                      }
+                                                  },
+                                                Navigator.of(context).pop(true)
+                                              },
+                                          child: const Text("ADD")),
+                                    ]);
+                              }
+                              return Container();
+                            });
+                      });
+                    }))));
   }
 }
 

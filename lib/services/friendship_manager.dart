@@ -31,47 +31,18 @@ class ListAppFriendshipManager with ChangeNotifier {
       return await ListAppUserManager.instance
           .getUserByUid((element.data().userTo));
     }));
-
-    /*final List<ListAppUser> friendsFromList = [];
-
-    /* queryResultFrom.docs.map((e) async {
-      await ListAppUserManager.instance
-          .getUserByUid((e.data().userTo))
-          .then((value) {
-        friendsFromList.add(value!);
-      });
-    }); */
-    queryResultFrom.docs.forEach((element) async {
-      final value = await ListAppUserManager.instance
-          .getUserByUid((element.data().userTo));
-
-      print("USER");
-      print(value!.displayName);
-      print("USER");
-
-      friendsFromList.add(value!);
-    });
-
-    queryResultFrom.docs.map((e) async {
-      final value =
-          await ListAppUserManager.instance.getUserByUid((e.data().userTo));
-
-      friendsFromList.add(value!);
-    });
-*/
-    //return friendsFromList;
   }
 
-  Future<List<ListAppFriendship>?> getFriendsToByUid(String uid) async {
+  Future<List<ListAppUser?>> getFriendsToByUid(String uid) async {
     final queryResultTo = await _friendshipsCollection
         .where('userTo', isEqualTo: uid)
-        .where('accepted', isEqualTo: true)
+        .where('requestAccepted', isEqualTo: true)
         .get();
-    final List<ListAppFriendship> friendsToList = [];
 
-    queryResultTo.docs.map((e) => friendsToList.add(e.data()));
-
-    return friendsToList;
+    return Future.wait(queryResultTo.docs.map((element) async {
+      return await ListAppUserManager.instance
+          .getUserByUid((element.data().userFrom));
+    }));
   }
 
   Future<ListAppFriendship?> getFriendshipById(String id) async {

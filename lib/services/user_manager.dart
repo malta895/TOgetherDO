@@ -20,8 +20,9 @@ class ListAppUserManager with ChangeNotifier {
   final _usersCollection = FirebaseFirestore.instance
       .collection(ListAppUser.collectionName)
       .withConverter<ListAppUser>(
-          fromFirestore: (snapshots, _) =>
-              ListAppUser.fromJson(snapshots.data()!),
+          fromFirestore: (snapshots, _) {
+            return ListAppUser.fromJson(snapshots.data()!);
+          },
           toFirestore: (user, _) => user.toJson());
 
   /// saves an instance of an user on firestore. If not given the uid is generated automatically
@@ -30,30 +31,50 @@ class ListAppUserManager with ChangeNotifier {
   }
 
   Future<ListAppUser?> getUserByEmail(String email) async {
-    final queryResult =
-        await _usersCollection.where('email', isEqualTo: email).get();
+    try {
+      final queryResult =
+          await _usersCollection.where('email', isEqualTo: email).get();
 
-    return queryResult.docs.single.data();
+      return queryResult.docs.single.data();
+    } on CheckedFromJsonException catch (e) {
+      print(e.message);
+      return null;
+    }
   }
 
   Future<ListAppUser?> getUserByUsername(String username) async {
-    final queryResult =
-        await _usersCollection.where('username', isEqualTo: username).get();
+    try {
+      final queryResult =
+          await _usersCollection.where('username', isEqualTo: username).get();
 
-    return queryResult.docs.single.data();
+      return queryResult.docs.single.data();
+    } on CheckedFromJsonException catch (e) {
+      print(e.message);
+      return null;
+    }
   }
 
   Future<ListAppUser?> getUserByUid(String uid) async {
-    final queryResult = await _usersCollection.doc(uid).get();
+    try {
+      final queryResult = await _usersCollection.doc(uid).get();
 
-    return queryResult.data();
+      return queryResult.data();
+    } on CheckedFromJsonException catch (e) {
+      print(e.message);
+      return null;
+    }
   }
 
   ///Returns `true` if the given username is already present on database. Unauthenticated method, since anyone can see if an username exists before choosing it
   Future<bool> usernameExists(String username) async {
-    final queryResult =
-        await _usersCollection.where('username', isEqualTo: username).get();
-    return queryResult.size == 1;
+    try {
+      final queryResult =
+          await _usersCollection.where('username', isEqualTo: username).get();
+      return queryResult.size == 1;
+    } on CheckedFromJsonException catch (e) {
+      print(e.message);
+      return true; // even if the model could not be retrieved, the username exists
+    }
   }
 
   /// Checks if the username is not null or empty and if it is not a duplicate
@@ -79,6 +100,9 @@ class ListAppUserManager with ChangeNotifier {
       await _usersCollection.doc(userId).update({'username': username});
       notifyListeners();
     } on FirebaseException catch (e) {
+      print(e.message);
+      throw ListAppException('An error occurred. Please try again later.');
+    } on CheckedFromJsonException catch (e) {
       print(e.message);
       throw ListAppException('An error occurred. Please try again later.');
     }
@@ -131,9 +155,6 @@ class ListAppUserManager with ChangeNotifier {
       return listAppLists;
     } on FirebaseException catch (e) {
       print(e.toString());
-      throw ListAppException(e.message.toString());
-    } on CheckedFromJsonException catch (e) {
-      print(e);
       throw ListAppException(e.message.toString());
     }
   }

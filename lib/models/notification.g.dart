@@ -25,15 +25,19 @@ const _$NotificationStatusEnumMap = {
 
 ListInviteNotification _$ListInviteNotificationFromJson(
     Map<String, dynamic> json) {
-  return ListInviteNotification(
-    userId: json['userId'],
-    userFrom: json['userFrom'],
-    status: _$enumDecode(_$NotificationStatusEnumMap, json['status']),
-    listOwner: json['listOwner'] as String,
-    listId: json['listId'] as String,
-    databaseId: json['databaseId'],
-    createdAt: json['createdAt'],
-  );
+  return $checkedNew('ListInviteNotification', json, () {
+    final val = ListInviteNotification(
+      userId: $checkedConvert(json, 'userId', (v) => v),
+      userFrom: $checkedConvert(json, 'userFrom', (v) => v),
+      status: $checkedConvert(
+          json, 'status', (v) => _$enumDecode(_$NotificationStatusEnumMap, v)),
+      listOwner: $checkedConvert(json, 'listOwner', (v) => v as String),
+      listId: $checkedConvert(json, 'listId', (v) => v as String),
+      databaseId: $checkedConvert(json, 'databaseId', (v) => v),
+      createdAt: $checkedConvert(json, 'createdAt', (v) => v),
+    );
+    return val;
+  });
 }
 
 Map<String, dynamic> _$ListInviteNotificationToJson(
@@ -76,14 +80,18 @@ K _$enumDecode<K, V>(
 
 FriendshipNotification _$FriendshipNotificationFromJson(
     Map<String, dynamic> json) {
-  return FriendshipNotification(
-    userId: json['userId'],
-    userFrom: json['userFrom'],
-    status: _$enumDecode(_$NotificationStatusEnumMap, json['status']),
-    friendshipId: json['friendshipId'] as String,
-    databaseId: json['databaseId'],
-    createdAt: json['createdAt'],
-  );
+  return $checkedNew('FriendshipNotification', json, () {
+    final val = FriendshipNotification(
+      userId: $checkedConvert(json, 'userId', (v) => v),
+      userFrom: $checkedConvert(json, 'userFrom', (v) => v),
+      status: $checkedConvert(
+          json, 'status', (v) => _$enumDecode(_$NotificationStatusEnumMap, v)),
+      friendshipId: $checkedConvert(json, 'friendshipId', (v) => v as String),
+      databaseId: $checkedConvert(json, 'databaseId', (v) => v),
+      createdAt: $checkedConvert(json, 'createdAt', (v) => v),
+    );
+    return val;
+  });
 }
 
 Map<String, dynamic> _$FriendshipNotificationToJson(

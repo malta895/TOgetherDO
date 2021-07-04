@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/user_manager.dart';
@@ -67,24 +68,37 @@ class ListAppListManager {
 
     var docs = queryResult.docs;
 
+    final listsInjectedWithData = docs.map((e) async {
+      try {
+        final list = e.data();
+        list.databaseId = e.id;
+        final creatorUid = list.creatorUid;
+        if (creatorUid != null) {
+          list.creator =
+              await ListAppUserManager.instance.getUserByUid(creatorUid);
+        }
+        return list;
+      } on CheckedFromJsonException catch (e) {
+        print(e.message);
+        // if the list could not be retrieved just put a value that will be removed later
+        return ListAppList(name: 'null');
+      }
+    });
+
+    var awaitedLists = await Future.wait(listsInjectedWithData);
+
+    // remove bad lists
+    awaitedLists.removeWhere((element) => element.databaseId == null);
+
     switch (orderBy) {
       case 'createdAt':
-        docs.sort((a, b) {
-          return b.data().createdAt.compareTo(a.data().createdAt);
+        awaitedLists.sort((a, b) {
+          return b.createdAt.compareTo(a.createdAt);
         });
         break;
     }
 
-    return Future.wait(docs.map((e) async {
-      final list = e.data();
-      list.databaseId = e.id;
-      final creatorUid = list.creatorUid;
-      if (creatorUid != null) {
-        list.creator =
-            await ListAppUserManager.instance.getUserByUid(creatorUid);
-      }
-      return list;
-    }));
+    return awaitedLists.toList();
   }
 
   Future<ListAppList?> getListById(String id) async {
@@ -100,21 +114,25 @@ class ListAppListManager {
   }
 
   Future<bool> leaveList(String ownerUid, ListAppList list) async {
-    final ownerListCollectionRef = FirebaseFirestore.instance
-        .collection(ListAppUser.collectionName)
-        .doc(ownerUid)
-        .collection(ListAppList.collectionName);
+    try {
+      final ownerListCollectionRef = FirebaseFirestore.instance
+          .collection(ListAppUser.collectionName)
+          .doc(ownerUid)
+          .collection(ListAppList.collectionName);
 
-    final queryResultDocRef = ownerListCollectionRef.doc(list.databaseId);
+      final queryResultDocRef = ownerListCollectionRef.doc(list.databaseId);
 
-    final queryResult = await queryResultDocRef.get();
+      final queryResult = await queryResultDocRef.get();
 
-    final membersUids = queryResult.get('members');
+      final membersUids = queryResult.get('members');
 
-    if (membersUids.remove(_userUid)) {
-      queryResultDocRef.update({'members': membersUids});
-      return true;
+      if (membersUids.remove(_userUid)) {
+        queryResultDocRef.update({'members': membersUids});
+        return true;
+      }
+      return false;
+    } on CheckedFromJsonException catch (e) {
+      return false;
     }
-    return false;
   }
 }

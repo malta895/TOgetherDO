@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/list_item.dart';
 import 'package:mobile_applications/models/user.dart';
@@ -8,6 +9,8 @@ class ListAppItemManager {
   final _itemCollectionRef;
   final String listUid;
   final String userUid;
+
+  final FirebaseFirestore _firestoreInstance = FirebaseFirestore.instance;
 
   //cache the instances to avoid creating new ones every time we operate on the same list
   static final Map<String, ListAppItemManager> _cachedInstances = {};
@@ -37,11 +40,14 @@ class ListAppItemManager {
     return newInstance;
   }
 
-  final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
-
   Future<BaseItem?> getItemByUid(String uid) async {
-    final queryResult = await _itemCollectionRef.doc(uid).get();
-    return queryResult.data();
+    try {
+      final queryResult = await _itemCollectionRef.doc(uid).get();
+      return queryResult.data();
+    } on CheckedFromJsonException catch (e) {
+      print(e);
+      return null;
+    }
   }
 
   Future<void> saveInstance(BaseItem item) async {

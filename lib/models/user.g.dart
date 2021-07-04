@@ -7,25 +7,31 @@ part of 'user.dart';
 // **************************************************************************
 
 ListAppUser _$ListAppUserFromJson(Map<String, dynamic> json) {
-  return ListAppUser(
-    databaseId: json['databaseId'] as String,
-    email: json['email'] as String,
-    notificationTokens: (json['notificationTokens'] as List<dynamic>?)
-            ?.map((e) => e as String)
-            .toSet() ??
-        {},
-    firstName: json['firstName'] as String,
-    lastName: json['lastName'] as String,
-    displayName: json['displayName'] as String?,
-    username: json['username'] as String?,
-    phoneNumber: json['phoneNumber'] as String?,
-    profilePictureURL: json['profilePictureURL'] as String?,
-    friends: (json['friends'] as List<dynamic>?)
-            ?.map((e) => ListAppUser.fromJson(e as Map<String, dynamic>))
-            .toSet() ??
-        {},
-    isNew: json['isNew'] as bool,
-  );
+  return $checkedNew('ListAppUser', json, () {
+    final val = ListAppUser(
+      databaseId: $checkedConvert(json, 'databaseId', (v) => v as String),
+      email: $checkedConvert(json, 'email', (v) => v as String),
+      notificationTokens: $checkedConvert(json, 'notificationTokens',
+              (v) => (v as List<dynamic>?)?.map((e) => e as String).toSet()) ??
+          {},
+      firstName: $checkedConvert(json, 'firstName', (v) => v as String),
+      lastName: $checkedConvert(json, 'lastName', (v) => v as String),
+      displayName: $checkedConvert(json, 'displayName', (v) => v as String?),
+      username: $checkedConvert(json, 'username', (v) => v as String?),
+      phoneNumber: $checkedConvert(json, 'phoneNumber', (v) => v as String?),
+      profilePictureURL:
+          $checkedConvert(json, 'profilePictureURL', (v) => v as String?),
+      friends: $checkedConvert(
+              json,
+              'friends',
+              (v) => (v as List<dynamic>?)
+                  ?.map((e) => ListAppUser.fromJson(e as Map<String, dynamic>))
+                  .toSet()) ??
+          {},
+      isNew: $checkedConvert(json, 'isNew', (v) => v as bool),
+    );
+    return val;
+  });
 }
 
 Map<String, dynamic> _$ListAppUserToJson(ListAppUser instance) =>

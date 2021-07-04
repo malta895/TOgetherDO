@@ -12,7 +12,7 @@ part 'list_item.g.dart';
 enum ItemType { simple, multiFulfillment, multiFulfillmentMember }
 
 ///Any type of item. the specific types will implement in different ways the methods
-@JsonSerializable(createFactory: false)
+@JsonSerializable(checked: true, createFactory: false)
 abstract class BaseItem with ChangeNotifier {
   static const String collectionName = 'items';
   final String? databaseId;
@@ -74,7 +74,9 @@ abstract class BaseItem with ChangeNotifier {
 }
 
 ///This item can have just one fulfiller
-@JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
+@JsonSerializable(
+  checked: true,
+) // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class SimpleItem extends BaseItem {
   ListAppUser? _fulfiller;
 
@@ -140,7 +142,9 @@ class SimpleItem extends BaseItem {
 }
 
 //List item with multiple fulfillments, members can fulfill once
-@JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
+@JsonSerializable(
+  checked: true,
+) // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class MultiFulfillmentItem extends BaseItem {
   Set<ListAppUser> _fulfillers = Set<ListAppUser>();
 
@@ -193,7 +197,9 @@ class MultiFulfillmentItem extends BaseItem {
 }
 
 ///List item with multiple fulfillments, members can fulfill more times
-@JsonSerializable() // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
+@JsonSerializable(
+  checked: true,
+) // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class MultiFulfillmentMemberItem extends BaseItem {
   //map each member with a number representing how many times they have fulfilled
   Map<ListAppUser, int> _fulfillers = Map<ListAppUser, int>();

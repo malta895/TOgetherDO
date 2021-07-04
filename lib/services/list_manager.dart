@@ -107,6 +107,12 @@ class ListAppListManager {
     return queryresult.data();
   }
 
+  Future<bool?> addMemberToList(String lid, String uid) async {
+    final queryResult = await _listCollectionRef.doc(lid).update({
+      "members": FieldValue.arrayUnion([uid])
+    });
+  }
+
   Future<void> deleteList(ListAppList list) async {
     if (list.databaseId != null) {
       await _listCollectionRef.doc(list.databaseId).delete();

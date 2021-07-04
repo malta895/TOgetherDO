@@ -10,6 +10,8 @@ import 'package:intl/intl.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/list_item.dart';
 import 'package:mobile_applications/services/authentication.dart';
+import 'package:mobile_applications/services/friendship_manager.dart';
+import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/ui/new_item.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
@@ -743,26 +745,8 @@ class _ListViewPageState extends State<ListViewPage> {
 
     return Column(
       children: [
-        ListTile(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.person_add_rounded,
-                color: Theme.of(context).disabledColor,
-              ),
-              Padding(padding: EdgeInsets.all(5)),
-              Text(
-                'Add new member...',
-                style: TextStyle(
-                  color: Theme.of(context).disabledColor,
-                ),
-              ),
-            ],
-          ),
-          onTap: () async {
-            await _showAddMemberRoute(context);
-          },
+        _AddMemberDialog(
+          list: widget.listAppList,
         ),
         Expanded(
           child: membersListView,
@@ -874,5 +858,133 @@ class _ListViewPageState extends State<ListViewPage> {
         ],
       ),
     );
+  }
+}
+
+class _AddMemberDialog extends StatefulWidget {
+  final ListAppList list;
+  const _AddMemberDialog({Key? key, required this.list}) : super(key: key);
+  @override
+  _AddMemberDialogState createState() => _AddMemberDialogState();
+}
+
+class _AddMemberDialogState extends State<_AddMemberDialog> {
+  @override
+  Widget build(BuildContext context) {
+    final currentUser = context.read<ListAppAuthProvider>().loggedInListAppUser;
+
+    final Future<List<ListAppUser?>> friendsFrom = ListAppFriendshipManager
+        .instance
+        .getFriendsFromByUid(currentUser!.databaseId);
+
+    final Future<List<ListAppUser?>> friendsTo = ListAppFriendshipManager
+        .instance
+        .getFriendsToByUid(currentUser.databaseId);
+
+    return ListTile(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.add_circle_outline,
+              color: Theme.of(context).disabledColor,
+            ),
+            Padding(padding: EdgeInsets.all(5)),
+            Text(
+              'Add new member...',
+              style: TextStyle(
+                color: Theme.of(context).disabledColor,
+              ),
+            ),
+          ],
+        ),
+        onTap: () async {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return StatefulBuilder(builder: (context, setState) {
+                  return FutureBuilder(
+                      future: Future.wait([friendsFrom, friendsTo]),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<List<ListAppUser?>>> snapshot) {
+                        if (snapshot.hasData) {
+                          final allFriends = snapshot.data![0]
+                                  .where((element) => !widget
+                                      .list.membersAsUsers
+                                      .contains(element))
+                                  .toList() +
+                              snapshot.data![1]
+                                  .where((element) => !widget
+                                      .list.membersAsUsers
+                                      .contains(element))
+                                  .toList();
+
+                          return AlertDialog(
+                            title: Text("Choose members to add"),
+                            content: StatefulBuilder(builder:
+                                (BuildContext context, StateSetter setState) {
+                              return Container(
+                                  height: 300,
+                                  width: 300,
+                                  child: ListView.builder(
+                                    itemCount: allFriends.length,
+                                    itemBuilder: (context, i) {
+                                      return Container(
+                                          decoration: BoxDecoration(
+                                              border: Border(
+                                                  bottom: BorderSide(
+                                            color: Colors.grey,
+                                            width: 0.8,
+                                          ))),
+                                          child: ListTile(
+                                            leading: CircleAvatar(
+                                              backgroundImage: NetworkImage(
+                                                  allFriends
+                                                      .elementAt(i)!
+                                                      .profilePictureURL!),
+                                            ),
+                                            onTap: () {
+                                              setState(() {});
+                                            },
+                                            title: Text(
+                                              allFriends
+                                                      .elementAt(i)!
+                                                      .firstName +
+                                                  ' ' +
+                                                  allFriends
+                                                      .elementAt(i)!
+                                                      .lastName,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            trailing: IconButton(
+                                                icon: Icon(
+                                                  Icons.person_add_alt_rounded,
+                                                ),
+                                                onPressed: () {
+                                                  ListAppListManager
+                                                          .instanceForUserUid(
+                                                              currentUser
+                                                                  .databaseId)
+                                                      .addMemberToList(
+                                                          widget
+                                                              .list.databaseId!,
+                                                          allFriends
+                                                              .elementAt(i)!
+                                                              .databaseId);
+                                                }),
+                                          ));
+                                    },
+                                  ));
+                            }),
+                          );
+                        }
+                        return AlertDialog(
+                          title: Text("ALLA FINE"),
+                        );
+                      });
+                });
+              });
+        });
   }
 }

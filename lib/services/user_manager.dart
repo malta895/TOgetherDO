@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/models/list.dart';
@@ -15,7 +17,7 @@ class ListAppUserManager with ChangeNotifier {
 
   static ListAppUserManager get instance => _instance;
 
-  final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
+  final _firebaseStorageInstance = firebase_storage.FirebaseStorage.instance;
 
   final _usersCollection = FirebaseFirestore.instance
       .collection(ListAppUser.collectionName)
@@ -24,6 +26,22 @@ class ListAppUserManager with ChangeNotifier {
             return ListAppUser.fromJson(snapshots.data()!);
           },
           toFirestore: (user, _) => user.toJson());
+
+  Future<void> changeProfilePicture(
+      ListAppUser user, PickedFile imageFile) async {
+    final imageRef =
+        _firebaseStorageInstance.ref('pro-pic-user-' + user.databaseId);
+
+    await imageRef.putData(await imageFile.readAsBytes());
+
+    final profilePictureURL = await imageRef.getDownloadURL();
+    await _usersCollection
+        .doc(user.databaseId)
+        .update({'profilePictureURL': profilePictureURL});
+
+    // set the new image to the user
+    user.profilePictureURL = profilePictureURL;
+  }
 
   /// saves an instance of an user on firestore. If not given the uid is generated automatically
   Future<void> saveInstance(ListAppUser user) async {

@@ -73,6 +73,7 @@ dependencies:
   equatable: ^2.0.3
   intl: ^0.17.0
   animations: ^2.0.0
+  image_picker: ^0.8.1+3
 
 
   

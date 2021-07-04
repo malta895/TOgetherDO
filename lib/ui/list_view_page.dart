@@ -719,16 +719,15 @@ class _ListViewPageState extends State<ListViewPage> {
     );
   }
 
-  Future<void> _showAddMemberRoute(BuildContext context) async {
-    // TODO Implement add member to list logic
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => NewItemPage()),
-    );
-    if (result != null) {
-      _addListItem(result);
-    }
-  }
+  // Future<void> _showAddMemberRoute(BuildContext context) async {
+  //   final result = await Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => NewItemPage()),
+  //   );
+  //   if (result != null) {
+  //     _addListItem(result);
+  //   }
+  // }
 
   Widget _buildMembersListView(BuildContext context) {
     // put the add element at first, then followed by the list members
@@ -758,7 +757,11 @@ class _ListViewPageState extends State<ListViewPage> {
   Future<void> _showNewItemRoute(BuildContext context) async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => NewItemPage()),
+      MaterialPageRoute(
+          builder: (context) => NewItemPage(
+                currentList: widget.listAppList,
+                currentUser: _loggedInListAppUser,
+              )),
     );
     if (result != null) {
       _addListItem(result);

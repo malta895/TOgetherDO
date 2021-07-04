@@ -3,13 +3,13 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/notification_badge.dart';
-import 'package:mobile_applications/ui/notification_page.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -25,6 +25,8 @@ class _ProfilePageState extends State<ProfilePage> {
   late ListAppUser _loggedInListAppUser;
   late String _currentUsername;
 
+  final ImagePicker _imagePicker = ImagePicker();
+
   @override
   void initState() {
     super.initState();
@@ -32,6 +34,12 @@ class _ProfilePageState extends State<ProfilePage> {
         context.read<ListAppAuthProvider>().loggedInListAppUser!;
 
     _currentUsername = _loggedInListAppUser.username ?? '';
+  }
+
+  Future<void> _changeProfilePhoto(PickedFile? imageFile) async {
+    if (imageFile == null) return;
+    await ListAppUserManager.instance
+        .changeProfilePicture(_loggedInListAppUser, imageFile);
   }
 
   Future<void> _changeUserName(BuildContext context) async {
@@ -144,10 +152,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 IconButton(
                     icon: const Icon(Icons.add_a_photo),
                     color: Colors.white,
-                    onPressed: () {
-                      // TODO change propic
-                      print("Photo pushed");
-                    })
+                    onPressed: () async {
+                      final PickedFile? imageFile = await _imagePicker.getImage(
+                          source: ImageSource.gallery);
+
+                      await _changeProfilePhoto(imageFile);
+                      setState(() {});
+                    }),
               ]),
               SizedBox(
                 height: 30.0,

@@ -71,6 +71,10 @@ void main() {
     test('The item json should have type', () {
       expect(simpleItem.toJson().containsKey('itemType'), true);
     });
+
+    test('The item json should have type simple', () {
+      expect(simpleItem.toJson()['itemType'], 'simple');
+    });
     test('The simple item should have quantityPerMember = 1', () {
       expect(simpleItem.toJson()['quantityPerMember'] == 1, true);
     });
@@ -119,6 +123,7 @@ void main() {
     test('The item json should have type', () {
       expect(multiFulfillmentItemMember.toJson().containsKey('itemType'), true);
     });
+
     test('The simple item should have maxQuantity = 1', () {
       expect(multiFulfillmentItemMember.toJson()['maxQuantity'] == 3, true);
     });

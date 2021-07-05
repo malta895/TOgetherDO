@@ -6,7 +6,7 @@ import 'package:mobile_applications/models/user.dart';
 
 /// The item manager. This is not a singleton as a new instance is created for each subcollection
 class ListAppItemManager {
-  final _itemCollectionRef;
+  final CollectionReference<BaseItem> _itemCollectionRef;
   final String listUid;
   final String userUid;
 
@@ -51,10 +51,8 @@ class ListAppItemManager {
   }
 
   Future<void> saveInstance(BaseItem item) async {
-    if (item.databaseId != null) {
-      await _itemCollectionRef.doc(item.databaseId).set(item);
-      return;
-    }
-    await _itemCollectionRef.doc().set(item);
+    final _docRef = _itemCollectionRef.doc(item.databaseId);
+    item.databaseId = _docRef.id;
+    await _docRef.set(item);
   }
 }

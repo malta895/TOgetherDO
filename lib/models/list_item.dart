@@ -22,6 +22,17 @@ extension ParseToString on ItemType {
         return 'Multiple People item';
     }
   }
+
+  String getDescription() {
+    switch (this) {
+      case ItemType.simple:
+        return 'The simple item can only be completed by one person';
+      case ItemType.multiFulfillment:
+        return 'The multiFulfillment item can be completed once by each person in the list.';
+      case ItemType.multiFulfillmentMember:
+        return 'The mumultiFulfillmentMember item can be completed more times by any member in the list';
+    }
+  }
 }
 
 ///Any type of item. the specific types will implement in different ways the methods
@@ -204,7 +215,6 @@ class MultiFulfillmentItem extends BaseItem {
   Map<String, dynamic> toJson() => _$MultiFulfillmentItemToJson(this)
     ..addAll({
       'itemType': _$ItemTypeEnumMap[this.itemType],
-      "itemType": this.itemType,
       "quantityPerMember": this.quantityPerMember,
     });
 }

@@ -7,6 +7,8 @@ exports.onCreateList = require('./on-create-list');
 
 exports.onUpdateList = require('./on-update-list');
 
+exports.onDeleteList = require('./on-delete-list');
+
 exports.onCreateFriendship = require('./on-create-friendship');
 
 exports.onCreateNotification = require('./on-create-notification');

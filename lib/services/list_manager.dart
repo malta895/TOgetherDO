@@ -108,9 +108,23 @@ class ListAppListManager {
   }
 
   Future<bool?> addMemberToList(String lid, String uid) async {
-    final queryResult = await _listCollectionRef.doc(lid).update({
-      "members": FieldValue.arrayUnion([uid])
-    });
+    _listCollectionRef
+        .doc(lid)
+        .update({
+          "members": FieldValue.arrayUnion([uid])
+        })
+        .then((value) => true)
+        .catchError((e) => false);
+  }
+
+  Future<bool?> removeMemberFromList(String lid, String uid) async {
+    _listCollectionRef
+        .doc(lid)
+        .update({
+          "members": FieldValue.arrayRemove([uid])
+        })
+        .then((value) => true)
+        .catchError((e) => false);
   }
 
   Future<void> deleteList(ListAppList list) async {

@@ -44,31 +44,13 @@ class ListViewPage extends StatefulWidget {
     //TODO fetch from backend instead
     listAppList.membersAsUsers.addAll([
       ListAppUser(
-          databaseId: "siaodkjasd",
+          databaseId: "9LUBLCszUrU4mukuRWhHFS2iexL2",
           username: "lawfriends",
           firstName: "Lorenzo",
           lastName: "Amici",
           email: "lawfriends12@gmail.com"),
       ListAppUser(
-          databaseId: "asdjhfka",
-          username: "malta.95",
-          firstName: "Luca",
-          lastName: "Maltagliati",
-          email: "malta95@gmail.com"),
-      ListAppUser(
-          databaseId: "asdjhfka",
-          username: "malta.95",
-          firstName: "Luca",
-          lastName: "Maltagliati",
-          email: "malta95@gmail.com"),
-      ListAppUser(
-          databaseId: "asdjhfka",
-          username: "malta.95",
-          firstName: "Luca",
-          lastName: "Maltagliati",
-          email: "malta95@gmail.com"),
-      ListAppUser(
-          databaseId: "asdjhfka",
+          databaseId: "lGmqaAgJZqVIdqXt3GmQFNC9E3D3",
           username: "malta.95",
           firstName: "Luca",
           lastName: "Maltagliati",
@@ -96,7 +78,7 @@ class ListViewPage extends StatefulWidget {
       MultiFulfillmentMemberItem(
           name: "Buy movie tickets", maxQuantity: 5, quantityPerMember: 3),
     ]);
-    listAppList.items
+    /*listAppList.items
         .elementAt(1)
         .fulfill(member: listAppList.membersAsUsers.elementAt(0));
     listAppList.items.elementAt(5).fulfill(
@@ -112,7 +94,7 @@ class ListViewPage extends StatefulWidget {
         .fulfill(member: listAppList.membersAsUsers.elementAt(2));
     listAppList.items
         .elementAt(4)
-        .fulfill(member: listAppList.membersAsUsers.elementAt(3));
+        .fulfill(member: listAppList.membersAsUsers.elementAt(3));*/
   }
 
   @override
@@ -166,7 +148,7 @@ class _ListViewPageState extends State<ListViewPage> {
       child: ListView.builder(
         itemCount: membersNum,
         itemBuilder: (context, i) {
-          return _buildMemberRow(context, itemMembers.elementAt(i));
+          return _buildMemberRow(context, itemMembers.elementAt(i), false);
         },
       ),
     );
@@ -577,21 +559,82 @@ class _ListViewPageState extends State<ListViewPage> {
         });
   }
 
-  Widget _buildMemberRow(BuildContext context, ListAppUser member) {
-    return Container(
-        decoration: BoxDecoration(
-            border: Border(
-                bottom: BorderSide(
-          color: Colors.grey,
-          width: 0.8,
-        ))),
-        child: ListTile(
-            leading: Icon(Icons.person, color: _assignedColors[member]),
-            title: Text(
-              member.firstName + ' ' + member.lastName,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, color: _assignedColors[member]),
-            )));
+  Widget _buildMemberRow(BuildContext context, ListAppUser member, bool admin) {
+    final chosenWidget = !admin
+        ? Container(
+            decoration: BoxDecoration(
+                border: Border(
+                    bottom: BorderSide(
+              color: Colors.grey,
+              width: 0.8,
+            ))),
+            child: ListTile(
+                leading: Icon(Icons.person, color: _assignedColors[member]),
+                title: Text(
+                  member.firstName + ' ' + member.lastName,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: _assignedColors[member]),
+                )))
+        : Container(
+            decoration: BoxDecoration(
+                border: Border(
+                    bottom: BorderSide(
+              color: Colors.grey,
+              width: 0.8,
+            ))),
+            child: ListTile(
+              leading: Icon(Icons.person, color: _assignedColors[member]),
+              title: Text(
+                member.firstName + ' ' + member.lastName,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: _assignedColors[member]),
+              ),
+              trailing: member.databaseId == _loggedInListAppUser.databaseId
+                  ? IconButton(
+                      icon: Icon(Icons.person_off_rounded),
+                      onPressed: () => null,
+                    )
+                  : IconButton(
+                      icon: Icon(Icons.person_remove_alt_1_rounded),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text("Delete member"),
+                                content: Text(
+                                    "Are you sure you want to remove " +
+                                        member.displayName +
+                                        " from this list?"),
+                                actions: <Widget>[
+                                  TextButton(
+                                      style: TextButton.styleFrom(
+                                          primary: Colors.red),
+                                      onPressed: () {
+                                        print("Sto provando a cancellare: " +
+                                            member.databaseId);
+                                        ListAppListManager.instanceForUserUid(
+                                                _loggedInListAppUser.databaseId)
+                                            .removeMemberFromList(
+                                                widget.listAppList.databaseId!,
+                                                member.databaseId);
+                                        Navigator.of(context).pop(true);
+                                      },
+                                      child: Text('REMOVE')),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: const Text("CANCEL"),
+                                  ),
+                                ],
+                              );
+                            });
+                      },
+                    ),
+            ));
+    return chosenWidget;
   }
 
   Widget _buildMemberRowAndQuantity(
@@ -647,13 +690,91 @@ class _ListViewPageState extends State<ListViewPage> {
         ));
   }
 
+  Future<void> _deleteOrAbandonList(ListAppList list) async {
+    final listAppUser =
+        await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
+
+    if (listAppUser == null) return;
+
+    if (list.creatorUid == listAppUser.databaseId) {
+      await ListAppListManager.instanceForUser(listAppUser).deleteList(list);
+      Navigator.of(context).pop();
+    } else {
+      await ListAppListManager.instanceForUser(listAppUser)
+          .leaveList(list.creatorUid ?? '', list);
+      Navigator.of(context).pop();
+    }
+  }
+
+  void popupMenuFunction(String option) {
+    final currentListAppUser =
+        context.read<ListAppAuthProvider>().loggedInListAppUser!;
+
+    final bool doesUserOwnList =
+        widget.listAppList.creatorUid == currentListAppUser.databaseId;
+
+    switch (option) {
+      case "leave":
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text(
+                    "Are you sure you wish to ${doesUserOwnList ? 'delete' : 'leave'} the " +
+                        widget.listAppList.name +
+                        " list?"),
+                content: doesUserOwnList
+                    ? Text(
+                        "You and all the other participants will not see this list anymore")
+                    : Text(
+                        "If you push LEAVE, you will abandon this list and you won't be able to join it unless someone invites you again"),
+                actions: <Widget>[
+                  TextButton(
+                      style: TextButton.styleFrom(primary: Colors.red),
+                      onPressed: () {
+                        _deleteOrAbandonList(widget.listAppList);
+                        Navigator.of(context).pop(true);
+                      },
+                      child: Text(doesUserOwnList ? 'DELETE' : 'LEAVE')),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: const Text("CANCEL"),
+                  ),
+                ],
+              );
+            });
+        break;
+      default:
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final currentListAppUser =
+        context.read<ListAppAuthProvider>().loggedInListAppUser!;
+
+    final bool doesUserOwnList =
+        widget.listAppList.creatorUid == currentListAppUser.databaseId;
     return DefaultTabController(
       length: 2,
       initialIndex: 0,
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          actions: <Widget>[
+            PopupMenuButton<String>(
+              onSelected: popupMenuFunction,
+              itemBuilder: (BuildContext context) {
+                return [
+                  PopupMenuItem<String>(
+                    value: "leave",
+                    child: Text(
+                        "${doesUserOwnList ? 'Delete list' : 'Leave list'}"),
+                  )
+                ];
+              },
+            )
+          ],
+        ),
         body: _buildScaffoldBody(context),
       ),
     );
@@ -731,12 +852,17 @@ class _ListViewPageState extends State<ListViewPage> {
   }
 
   Widget _buildMembersListView(BuildContext context) {
+    bool admin;
+    if (!widget.canAddNewMembers)
+      admin = false;
+    else
+      admin = true;
     // put the add element at first, then followed by the list members
     final membersListView = ListView.builder(
       itemCount: widget.listAppList.membersAsUsers.length,
       itemBuilder: (context, i) {
         return _buildMemberRow(
-            context, widget.listAppList.membersAsUsers.elementAt(i));
+            context, widget.listAppList.membersAsUsers.elementAt(i), admin);
       },
     );
 

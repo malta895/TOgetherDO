@@ -113,20 +113,27 @@ class _NotificationPage extends State<NotificationPage> {
             notificationsTable = Container();
             break;
           case ConnectionState.done:
-            notificationsTable = ListView.builder(
-                itemCount: notificationList.length,
-                itemBuilder: (context, i) {
-                  switch (notificationList[i].runtimeType) {
-                    case FriendshipNotification:
-                      return _buildFriendshipRow(context,
-                          notificationList[i] as FriendshipNotification);
+            notificationList.length > 0
+                ? notificationsTable = ListView.builder(
+                    itemCount: notificationList.length,
+                    itemBuilder: (context, i) {
+                      switch (notificationList[i].runtimeType) {
+                        case FriendshipNotification:
+                          return _buildFriendshipRow(context,
+                              notificationList[i] as FriendshipNotification);
 
-                    case ListInviteNotification:
-                      return _buildInvitationRow(context,
-                          notificationList[i] as ListInviteNotification);
-                  }
-                  return Container();
-                });
+                        case ListInviteNotification:
+                          return _buildInvitationRow(context,
+                              notificationList[i] as ListInviteNotification);
+                      }
+
+                      return Container();
+                    })
+                : notificationsTable = Center(
+                    child: Text(
+                    "There are no notifications",
+                    style: TextStyle(fontSize: 22),
+                  ));
         }
         return RefreshIndicator(
           key: _refreshIndicatorKey,

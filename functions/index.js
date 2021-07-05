@@ -11,4 +11,6 @@ exports.onDeleteList = require('./on-delete-list');
 
 exports.onCreateFriendship = require('./on-create-friendship');
 
+exports.onDeleteFriendship = require('./on-create-friendship');
+
 exports.onCreateNotification = require('./on-create-notification');

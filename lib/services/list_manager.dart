@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/list.dart';
+import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/notification_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 
 class ListAppListManager {
@@ -53,6 +55,13 @@ class ListAppListManager {
     return newInstance;
   }
 
+  final _notificationsCollection = FirebaseFirestore.instance
+      .collection(ListAppNotification.collectionName)
+      .withConverter<ListAppNotification>(
+          fromFirestore: (snapshots, _) =>
+              ListAppNotification.fromJson(snapshots.data()!),
+          toFirestore: (notification, _) => notification.toJson());
+
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
 
   Future<void> saveInstance(ListAppList list) async {
@@ -89,6 +98,26 @@ class ListAppListManager {
 
     // remove bad lists
     awaitedLists.removeWhere((element) => element.databaseId == null);
+
+    // remove lists that the user hasn't already accepted
+    awaitedLists.forEach((element) async {
+      final notificationQuery = await _notificationsCollection
+          .where('notificationType', isEqualTo: "listInvite")
+          .where('listId', isEqualTo: element.databaseId)
+          .where('userId', isEqualTo: _userUid)
+          .where('status', isEqualTo: "undefined")
+          .get();
+      if (notificationQuery.docs.length == 0) {
+        awaitedLists
+            .removeWhere((list) => list.databaseId == element.databaseId);
+      }
+    });
+
+    print(awaitedLists.length);
+
+    awaitedLists.forEach((element) {
+      print(element.name);
+    });
 
     switch (orderBy) {
       case 'createdAt':

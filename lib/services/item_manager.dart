@@ -50,6 +50,20 @@ class ListAppItemManager {
     }
   }
 
+  Future<List<BaseItem>> getItems() async {
+    final queryResult = await _itemCollectionRef.get();
+
+    return queryResult.docs.map((e) {
+      return e.data();
+    }).toList();
+  }
+
+  Future<bool> listItemNameExists(String name) async {
+    final queryResult =
+        await _itemCollectionRef.where("name", isEqualTo: name).get();
+    return queryResult.docs.isNotEmpty;
+  }
+
   Future<void> saveInstance(BaseItem item) async {
     final _docRef = _itemCollectionRef.doc(item.databaseId);
     item.databaseId = _docRef.id;

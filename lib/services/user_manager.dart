@@ -7,6 +7,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/item_manager.dart';
 import 'package:mobile_applications/services/list_manager.dart';
 
 class ListAppUserManager with ChangeNotifier {
@@ -147,6 +148,10 @@ class ListAppUserManager with ChangeNotifier {
         }));
 
         listAppList.members = usernames.toSet();
+
+        listAppList.items = await ListAppItemManager.instanceForList(
+                e.id, listAppList.creatorUid!)
+            .getItems();
 
         if (listAppList.creatorUid == null) {
           print("The list ${listAppList.databaseId} has null creatorUid!");

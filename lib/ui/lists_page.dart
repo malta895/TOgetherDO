@@ -6,16 +6,13 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_applications/models/list.dart';
-import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/list_manager.dart';
-import 'package:mobile_applications/services/notification_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/list_view_page.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/new_list.dart';
 import 'package:mobile_applications/ui/notification_badge.dart';
-import 'package:mobile_applications/ui/notification_page.dart';
 import 'package:provider/provider.dart';
 
 class ListsPage extends StatefulWidget {

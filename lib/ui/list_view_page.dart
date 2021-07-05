@@ -32,7 +32,7 @@ class ListViewPage extends StatefulWidget {
     required this.canAddNewMembers,
     this.canAddNewItems = true,
   }) {
-    _createMockItems();
+    // _createMockItems();
   }
 
   void _createMockItems() {
@@ -57,7 +57,6 @@ class ListViewPage extends StatefulWidget {
           email: "malta95@gmail.com"),
     ]);
 
-    listAppList.items = Set<BaseItem>();
     /* aList.items.addAll([
       SimpleItem(1, "Simple element - undone", "A simple undone element"),
       SimpleItem(2, "Simple element - done", "A simple done element"),
@@ -67,7 +66,7 @@ class ListViewPage extends StatefulWidget {
       MultiFulfillmentMemberItem(5, "Lord of the rings trilogy",
           "the complete lord of the rings trilogy", 5, 3),
     ]); */
-    listAppList.items.addAll([
+    listAppList.items = [
       SimpleItem(name: "Simple element - undone"),
       SimpleItem(name: "Simple element - done"),
       SimpleItem(name: "Buy groceries"),
@@ -77,8 +76,13 @@ class ListViewPage extends StatefulWidget {
       MultiFulfillmentItem(name: "Take out old sofa", maxQuantity: 5),
       MultiFulfillmentMemberItem(
           name: "Buy movie tickets", maxQuantity: 5, quantityPerMember: 3),
+<<<<<<< HEAD
     ]);
     /*listAppList.items
+=======
+    ];
+    listAppList.items
+>>>>>>> 32a247e1b9e9689bdf291cae9b9d4ac6fcb0d8dd
         .elementAt(1)
         .fulfill(member: listAppList.membersAsUsers.elementAt(0));
     listAppList.items.elementAt(5).fulfill(

@@ -52,12 +52,15 @@ class _NewItemFormState extends State<_NewItemForm> {
   // Note: This is a `GlobalKey<FormState>`,
   // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
+  final _nameKey = GlobalKey();
 
   final TextEditingController _titleController = TextEditingController();
 
   ItemType _selectedItemType = ItemType.simple;
   int _itemsCounter = 1;
   int _membersCounter = 1;
+
+  String? _nameValidatorMessage;
 
   late final Map<ItemType, ExpandableController> _expandableControllers;
 
@@ -83,6 +86,15 @@ class _NewItemFormState extends State<_NewItemForm> {
             Padding(
               padding: EdgeInsets.only(top: 10.0),
               child: TextFormField(
+                key: _nameKey,
+                onChanged: (_) {
+                  if (_nameValidatorMessage != null) {
+                    setState(() {
+                      _nameValidatorMessage = null;
+                      _formKey.currentState?.validate();
+                    });
+                  }
+                },
                 controller: _titleController,
                 cursorColor: Theme.of(context).textTheme.headline1!.color!,
                 decoration: InputDecoration(
@@ -103,7 +115,8 @@ class _NewItemFormState extends State<_NewItemForm> {
                   if (value?.isEmpty == true) {
                     return 'Please enter some text';
                   }
-                  return null;
+
+                  return _nameValidatorMessage;
                 },
               ),
             ),
@@ -134,6 +147,18 @@ class _NewItemFormState extends State<_NewItemForm> {
                 onPressed: () async {
                   // Validate returns true if the form is valid, or false
                   // otherwise.
+                  final itemManagerInstance =
+                      ListAppItemManager.instanceForList(
+                    widget.currentList.databaseId!,
+                    widget.currentUser.databaseId,
+                  );
+                  if (await itemManagerInstance
+                      .listItemNameExists(_titleController.text)) {
+                    setState(() {
+                      _nameValidatorMessage =
+                          'An item with this name already exists';
+                    });
+                  }
                   if (_formKey.currentState?.validate() == true) {
                     BaseItem newItem;
 
@@ -158,14 +183,7 @@ class _NewItemFormState extends State<_NewItemForm> {
                         break;
                     }
 
-                    // TODO: add the item to the list on the backend
-
-                    await ListAppItemManager.instanceForList(
-                      widget.currentList.databaseId!,
-                      widget.currentUser.databaseId,
-                    ).saveInstance(newItem);
-
-                    print(newItem.databaseId!);
+                    await itemManagerInstance.saveInstance(newItem);
 
                     Navigator.pop<BaseItem>(
                       context,

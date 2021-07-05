@@ -3,6 +3,7 @@ import 'dart:core';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/list_item.dart';
 import 'package:mobile_applications/models/utils.dart';
+import 'package:mobile_applications/services/notification_manager.dart';
 
 import 'user.dart';
 
@@ -55,8 +56,8 @@ class ListAppList {
   @JsonKey(defaultValue: const {})
   Set<String?> members = const {};
 
-  @JsonKey(defaultValue: const {})
-  Set<BaseItem> items;
+  @JsonKey(ignore: true)
+  List<BaseItem> items = [];
 
   int get length => items.length;
 
@@ -74,7 +75,6 @@ class ListAppList {
       this.listType = ListType
           .public, // NOTE maybe better to make it required and remove the default value
       this.description,
-      this.items = const {},
       this.membersAsUsers = const {}})
       : this.createdAt = createdAt ?? DateTime.now() {
     members = membersAsUsers.map((e) => e.databaseId).toSet();

@@ -50,7 +50,13 @@ class ListAppItemManager {
     }
   }
 
+  Future<List<BaseItem>> getItems() async {
+    final queryResult = await _itemCollectionRef.get();
 
+    return queryResult.docs.map((e) {
+      return e.data();
+    }).toList();
+  }
 
   Future<bool> listItemNameExists(String name) async {
     final queryResult =

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/item_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 
 class ListAppListManager {
@@ -68,6 +69,8 @@ class ListAppListManager {
 
     var docs = queryResult.docs;
 
+    bool isBadListPresent = false;
+
     final listsInjectedWithData = docs.map((e) async {
       try {
         final list = e.data();
@@ -77,18 +80,25 @@ class ListAppListManager {
           list.creator =
               await ListAppUserManager.instance.getUserByUid(creatorUid);
         }
+
+        list.items =
+            await ListAppItemManager.instanceForList(e.id, list.creatorUid!)
+                .getItems();
         return list;
       } on CheckedFromJsonException catch (e) {
         print(e.message);
         // if the list could not be retrieved just put a value that will be removed later
+        // unfortunately we can't skip values with map()
+        isBadListPresent = true;
         return ListAppList(name: 'null');
       }
-    });
+    }).toList();
 
     var awaitedLists = await Future.wait(listsInjectedWithData);
 
     // remove bad lists
-    awaitedLists.removeWhere((element) => element.databaseId == null);
+    if (isBadListPresent)
+      awaitedLists.removeWhere((element) => element.databaseId == null);
 
     switch (orderBy) {
       case 'createdAt':

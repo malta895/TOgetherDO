@@ -150,7 +150,7 @@ class _NewItemFormState extends State<_NewItemForm> {
                   final itemManagerInstance =
                       ListAppItemManager.instanceForList(
                     widget.currentList.databaseId!,
-                    widget.currentUser.databaseId,
+                    widget.currentList.creator!.databaseId,
                   );
                   if (await itemManagerInstance
                       .listItemNameExists(_titleController.text)) {

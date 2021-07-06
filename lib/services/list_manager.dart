@@ -3,11 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/models/user.dart';
-<<<<<<< HEAD
-import 'package:mobile_applications/services/notification_manager.dart';
-=======
 import 'package:mobile_applications/services/item_manager.dart';
->>>>>>> 32a247e1b9e9689bdf291cae9b9d4ac6fcb0d8dd
 import 'package:mobile_applications/services/user_manager.dart';
 
 class ListAppListManager {
@@ -113,13 +109,15 @@ class ListAppListManager {
       awaitedLists.removeWhere((element) => element.databaseId == null);
 
     // remove lists that the user hasn't already accepted
+    // LEVA FOREACH
+    // notEqualTo con indice
+    // FALLO IN USER MANAGERRRR
     awaitedLists.forEach((element) async {
       final notificationQuery = await _notificationsCollection
           .where('notificationType', isEqualTo: "listInvite")
           .where('listId', isEqualTo: element.databaseId)
           .where('userId', isEqualTo: _userUid)
-          .where('status', isEqualTo: "undefined")
-          .get();
+          .where('status', whereIn: ["undefined", "rejected"]).get();
       if (notificationQuery.docs.length == 0) {
         awaitedLists
             .removeWhere((list) => list.databaseId == element.databaseId);

@@ -76,13 +76,8 @@ class ListViewPage extends StatefulWidget {
       MultiFulfillmentItem(name: "Take out old sofa", maxQuantity: 5),
       MultiFulfillmentMemberItem(
           name: "Buy movie tickets", maxQuantity: 5, quantityPerMember: 3),
-<<<<<<< HEAD
-    ]);
-    /*listAppList.items
-=======
     ];
     listAppList.items
->>>>>>> 32a247e1b9e9689bdf291cae9b9d4ac6fcb0d8dd
         .elementAt(1)
         .fulfill(member: listAppList.membersAsUsers.elementAt(0));
     listAppList.items.elementAt(5).fulfill(
@@ -98,7 +93,7 @@ class ListViewPage extends StatefulWidget {
         .fulfill(member: listAppList.membersAsUsers.elementAt(2));
     listAppList.items
         .elementAt(4)
-        .fulfill(member: listAppList.membersAsUsers.elementAt(3));*/
+        .fulfill(member: listAppList.membersAsUsers.elementAt(3));
   }
 
   @override

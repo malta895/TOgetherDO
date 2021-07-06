@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/material.dart';
@@ -19,6 +20,9 @@ class ListAppUserManager with ChangeNotifier {
   static ListAppUserManager get instance => _instance;
 
   final _firebaseStorageInstance = firebase_storage.FirebaseStorage.instance;
+
+  final _cloudFunctonsInstance =
+      FirebaseFunctions.instanceFor(region: "europe-west6");
 
   final _usersCollection = FirebaseFirestore.instance
       .collection(ListAppUser.collectionName)
@@ -127,6 +131,32 @@ class ListAppUserManager with ChangeNotifier {
     }
   }
 
+  Future<List<ListAppList>> getListsMerged(ListAppUser listAppUser,
+      {String? orderBy}) async {
+    final callable = _cloudFunctonsInstance.httpsCallable(
+      'getListsByUser-getListsByUser',
+      options: HttpsCallableOptions(
+        timeout: const Duration(seconds: 30),
+      ),
+    );
+
+    final result = await callable();
+
+    final lists = result.data as List<Object?>;
+
+    return lists.map((e) {
+      final list = (e as Map<Object?, Object?>);
+
+      list.removeWhere((key, value) => !(key is String));
+
+      final Map<String, dynamic> cleanedList = list.map((key, value) {
+        return MapEntry(key as String, value);
+      });
+
+      return ListAppList.fromJson(cleanedList);
+    }).toList();
+  }
+
   ///Gets the lists in wich the given user is in
   Future<List<ListAppList>> getLists(ListAppUser listAppUser,
       {String? orderBy}) async {
@@ -149,6 +179,12 @@ class ListAppUserManager with ChangeNotifier {
 
         listAppList.members = usernames.toSet();
 
+        listAppList.members.forEach((e) async {
+          final member =
+              await ListAppUserManager.instance.getUserByUsername(e!);
+          if (member != null) listAppList.membersAsUsers.add(member);
+        });
+
         listAppList.items = await ListAppItemManager.instanceForList(
                 e.id, listAppList.creatorUid!)
             .getItems();
@@ -160,7 +196,7 @@ class ListAppUserManager with ChangeNotifier {
             .getUserByUid(listAppList.creatorUid!);
 
         return listAppList;
-      }));
+      }).toList());
 
       final ownedLists = await ListAppListManager.instanceForUser(listAppUser)
           .getLists(orderBy: orderBy);

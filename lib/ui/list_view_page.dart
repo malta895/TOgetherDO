@@ -779,7 +779,7 @@ class _ListViewPageState extends State<ListViewPage> {
   // Future<void> _showAddMemberRoute(BuildContext context) async {
   //   final result = await Navigator.push(
   //     context,
-  //     MaterialPageRoute(builder: (context) => NewItemPage()),
+  //     MaterialPageRoute(builder: (context) {}),
   //   );
   //   if (result != null) {
   //     _addListItem(result);
@@ -787,17 +787,20 @@ class _ListViewPageState extends State<ListViewPage> {
   // }
 
   Widget _buildMembersListView(BuildContext context) {
-    bool admin;
+    bool isAdmin;
     if (!widget.canAddNewMembers)
-      admin = false;
+      isAdmin = false;
     else
-      admin = true;
+      isAdmin = true;
     // put the add element at first, then followed by the list members
     final membersListView = ListView.builder(
       itemCount: widget.listAppList.membersAsUsers.length,
       itemBuilder: (context, i) {
         return _buildMemberRow(
-            context, widget.listAppList.membersAsUsers.elementAt(i), admin);
+          context,
+          widget.listAppList.membersAsUsers.elementAt(i),
+          isAdmin,
+        );
       },
     );
 

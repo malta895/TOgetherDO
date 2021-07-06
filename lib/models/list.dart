@@ -3,7 +3,6 @@ import 'dart:core';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/list_item.dart';
 import 'package:mobile_applications/models/utils.dart';
-import 'package:mobile_applications/services/notification_manager.dart';
 
 import 'user.dart';
 
@@ -66,18 +65,20 @@ class ListAppList {
   @JsonKey(ignore: true)
   ListAppUser? creator;
 
-  ListAppList(
-      {required this.name,
-      DateTime? createdAt,
-      this.expiryDate,
-      this.databaseId,
-      this.creatorUid,
-      this.listType = ListType
-          .public, // NOTE maybe better to make it required and remove the default value
-      this.description,
-      this.membersAsUsers = const {}})
-      : this.createdAt = createdAt ?? DateTime.now() {
-    members = membersAsUsers.map((e) => e.databaseId).toSet();
+  ListAppList({
+    required this.name,
+    DateTime? createdAt,
+    this.expiryDate,
+    this.databaseId,
+    this.creatorUid,
+    this.listType = ListType
+        .public, // NOTE maybe better to make it required and remove the default value
+    this.description,
+    Set<ListAppUser>? membersAsUsers,
+  })  : this.createdAt = createdAt ?? DateTime.now(),
+        this.membersAsUsers = membersAsUsers ?? {} {
+    if (membersAsUsers != null)
+      members = membersAsUsers.map((e) => e.databaseId).toSet();
   }
 
   factory ListAppList.fromJson(Map<String, dynamic> json) =>

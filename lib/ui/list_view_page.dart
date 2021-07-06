@@ -31,70 +31,7 @@ class ListViewPage extends StatefulWidget {
     this.listAppList, {
     required this.canAddNewMembers,
     this.canAddNewItems = true,
-  }) {
-    // _createMockItems();
-  }
-
-  void _createMockItems() {
-    if (listAppList.membersAsUsers != null &&
-        listAppList.membersAsUsers.isNotEmpty) return;
-
-    listAppList.membersAsUsers = Set<ListAppUser>();
-
-    //TODO fetch from backend instead
-    listAppList.membersAsUsers.addAll([
-      ListAppUser(
-          databaseId: "9LUBLCszUrU4mukuRWhHFS2iexL2",
-          username: "lawfriends",
-          firstName: "Lorenzo",
-          lastName: "Amici",
-          email: "lawfriends12@gmail.com"),
-      ListAppUser(
-          databaseId: "lGmqaAgJZqVIdqXt3GmQFNC9E3D3",
-          username: "malta.95",
-          firstName: "Luca",
-          lastName: "Maltagliati",
-          email: "malta95@gmail.com"),
-    ]);
-
-    /* aList.items.addAll([
-      SimpleItem(1, "Simple element - undone", "A simple undone element"),
-      SimpleItem(2, "Simple element - done", "A simple done element"),
-      SimpleItem(3, "Buy groceries", "go to buy some groceries"),
-      MultiFulfillmentItem(
-          4, "Buy movie tickets", "go to buy some movie tickets", 5),
-      MultiFulfillmentMemberItem(5, "Lord of the rings trilogy",
-          "the complete lord of the rings trilogy", 5, 3),
-    ]); */
-    listAppList.items = [
-      SimpleItem(name: "Simple element - undone"),
-      SimpleItem(name: "Simple element - done"),
-      SimpleItem(name: "Buy groceries"),
-      SimpleItem(
-          name:
-              "This is a very long item title to see how it fits in the screen"),
-      MultiFulfillmentItem(name: "Take out old sofa", maxQuantity: 5),
-      MultiFulfillmentMemberItem(
-          name: "Buy movie tickets", maxQuantity: 5, quantityPerMember: 3),
-    ];
-    listAppList.items
-        .elementAt(1)
-        .fulfill(member: listAppList.membersAsUsers.elementAt(0));
-    listAppList.items.elementAt(5).fulfill(
-        member: listAppList.membersAsUsers.elementAt(1), quantityFulfilled: 2);
-    listAppList.items
-        .elementAt(4)
-        .fulfill(member: listAppList.membersAsUsers.elementAt(0));
-    listAppList.items
-        .elementAt(4)
-        .fulfill(member: listAppList.membersAsUsers.elementAt(1));
-    listAppList.items
-        .elementAt(4)
-        .fulfill(member: listAppList.membersAsUsers.elementAt(2));
-    listAppList.items
-        .elementAt(4)
-        .fulfill(member: listAppList.membersAsUsers.elementAt(3));
-  }
+  });
 
   @override
   _ListViewPageState createState() => _ListViewPageState();
@@ -842,7 +779,7 @@ class _ListViewPageState extends State<ListViewPage> {
   // Future<void> _showAddMemberRoute(BuildContext context) async {
   //   final result = await Navigator.push(
   //     context,
-  //     MaterialPageRoute(builder: (context) => NewItemPage()),
+  //     MaterialPageRoute(builder: (context) {}),
   //   );
   //   if (result != null) {
   //     _addListItem(result);
@@ -850,17 +787,20 @@ class _ListViewPageState extends State<ListViewPage> {
   // }
 
   Widget _buildMembersListView(BuildContext context) {
-    bool admin;
+    bool isAdmin;
     if (!widget.canAddNewMembers)
-      admin = false;
+      isAdmin = false;
     else
-      admin = true;
+      isAdmin = true;
     // put the add element at first, then followed by the list members
     final membersListView = ListView.builder(
       itemCount: widget.listAppList.membersAsUsers.length,
       itemBuilder: (context, i) {
         return _buildMemberRow(
-            context, widget.listAppList.membersAsUsers.elementAt(i), admin);
+          context,
+          widget.listAppList.membersAsUsers.elementAt(i),
+          isAdmin,
+        );
       },
     );
 

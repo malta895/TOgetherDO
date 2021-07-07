@@ -30,7 +30,7 @@ class _NotificationPage extends State<NotificationPage> {
 
     if (listAppUser != null) {
       return ListAppNotificationManager.instance
-          .getNotificationsByUid(listAppUser.databaseId, "createdAt");
+          .getNotificationsByUserId(listAppUser.databaseId, "createdAt");
     }
     return Future.value(null);
   }

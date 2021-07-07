@@ -3,11 +3,11 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/database_manager.dart';
 import 'package:mobile_applications/services/item_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 
-class ListAppListManager {
-  final CollectionReference<ListAppList> _listCollectionRef;
+class ListAppListManager extends DatabaseManager<ListAppList> {
   static Query? _collectionGroup;
   static Query<ListAppList>? _collectionGroupConverted;
   final String _userUid;
@@ -31,17 +31,17 @@ class ListAppListManager {
   static final Map<String, ListAppListManager> _cachedInstances = {};
 
   ListAppListManager._privateConstructor(this._userUid)
-      : _listCollectionRef = FirebaseFirestore.instance
+      : super(FirebaseFirestore.instance
             .collection(ListAppUser.collectionName)
             .doc(_userUid)
             .collection(ListAppList.collectionName)
             .withConverter<ListAppList>(
                 fromFirestore: (snapshots, _) =>
                     ListAppList.fromJson(snapshots.data()!),
-                toFirestore: (list, _) => list.toJson());
+                toFirestore: (list, _) => list.toJson()));
 
   static ListAppListManager instanceForUser(ListAppUser user) =>
-      instanceForUserUid(user.databaseId);
+      instanceForUserUid(user.databaseId!);
   static ListAppListManager instanceForUserUid(String userUid) {
     if (_cachedInstances.containsKey(userUid)) {
       return _cachedInstances[userUid]!;
@@ -64,16 +64,20 @@ class ListAppListManager {
 
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
 
-  Future<void> saveInstance(ListAppList list) async {
-    if (list.databaseId != null) {
-      await _listCollectionRef.doc(list.databaseId).set(list);
-      return;
-    }
-    await _listCollectionRef.add(list);
+  @override
+  Future<void> saveToFirestore(ListAppList list) async {
+    final _docRef = this.firebaseCollection.doc(list.databaseId);
+    list.databaseId = _docRef.id;
+    await _docRef.set(list);
+  }
+
+  @override
+  Future<ListAppList?> getByUid(String uid) {
+    return getListById(uid);
   }
 
   Future<List<ListAppList>> getLists({String? orderBy}) async {
-    final queryResult = await _listCollectionRef.get();
+    final queryResult = await this.firebaseCollection.get();
 
     var docs = queryResult.docs;
 
@@ -85,8 +89,7 @@ class ListAppListManager {
         list.databaseId = e.id;
         final creatorUid = list.creatorUid;
         if (creatorUid != null) {
-          list.creator =
-              await ListAppUserManager.instance.getUserByUid(creatorUid);
+          list.creator = await ListAppUserManager.instance.getByUid(creatorUid);
         }
 
         list.items =
@@ -142,13 +145,13 @@ class ListAppListManager {
   }
 
   Future<ListAppList?> getListById(String id) async {
-    final queryresult = await _listCollectionRef.doc(id).get();
-
+    final queryresult = await this.firebaseCollection.doc(id).get();
     return queryresult.data();
   }
 
   Future<bool?> addMemberToList(String lid, String uid) async {
-    _listCollectionRef
+    this
+        .firebaseCollection
         .doc(lid)
         .update({
           "members": FieldValue.arrayUnion([uid])
@@ -158,19 +161,14 @@ class ListAppListManager {
   }
 
   Future<bool?> removeMemberFromList(String lid, String uid) async {
-    _listCollectionRef
+    this
+        .firebaseCollection
         .doc(lid)
         .update({
           "members": FieldValue.arrayRemove([uid])
         })
         .then((value) => true)
         .catchError((e) => false);
-  }
-
-  Future<void> deleteList(ListAppList list) async {
-    if (list.databaseId != null) {
-      await _listCollectionRef.doc(list.databaseId).delete();
-    }
   }
 
   Future<bool> leaveList(String ownerUid, ListAppList list) async {
@@ -191,7 +189,7 @@ class ListAppListManager {
         return true;
       }
       return false;
-    } on CheckedFromJsonException catch (e) {
+    } on CheckedFromJsonException catch (_) {
       return false;
     }
   }

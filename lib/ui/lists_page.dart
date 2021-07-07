@@ -93,7 +93,8 @@ class _ListsPageState extends State<ListsPage>
     if (listAppUser == null) return;
 
     if (list.creatorUid == listAppUser.databaseId) {
-      await ListAppListManager.instanceForUser(listAppUser).deleteList(list);
+      await ListAppListManager.instanceForUser(listAppUser)
+          .deleteInstance(list);
       setState(() {
         final removeIndex = _listAppLists
             .indexWhere((element) => element.databaseId == list.databaseId);

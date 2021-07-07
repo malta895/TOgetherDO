@@ -550,12 +550,13 @@ class _ListViewPageState extends State<ListViewPage> {
                                           primary: Colors.red),
                                       onPressed: () {
                                         print("Sto provando a cancellare: " +
-                                            member.databaseId);
+                                            member.databaseId!);
                                         ListAppListManager.instanceForUserUid(
-                                                _loggedInListAppUser.databaseId)
+                                                _loggedInListAppUser
+                                                    .databaseId!)
                                             .removeMemberFromList(
                                                 widget.listAppList.databaseId!,
-                                                member.databaseId);
+                                                member.databaseId!);
                                         Navigator.of(context).pop(true);
                                       },
                                       child: Text('REMOVE')),
@@ -633,7 +634,8 @@ class _ListViewPageState extends State<ListViewPage> {
     if (listAppUser == null) return;
 
     if (list.creatorUid == listAppUser.databaseId) {
-      await ListAppListManager.instanceForUser(listAppUser).deleteList(list);
+      await ListAppListManager.instanceForUser(listAppUser)
+          .deleteInstance(list);
       Navigator.of(context).pop();
     } else {
       await ListAppListManager.instanceForUser(listAppUser)
@@ -943,11 +945,11 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
 
     final Future<List<ListAppUser?>> friendsFrom = ListAppFriendshipManager
         .instance
-        .getFriendsFromByUid(currentUser!.databaseId);
+        .getFriendsFromByUid(currentUser!.databaseId!);
 
     final Future<List<ListAppUser?>> friendsTo = ListAppFriendshipManager
         .instance
-        .getFriendsToByUid(currentUser.databaseId);
+        .getFriendsToByUid(currentUser.databaseId!);
 
     return ListTile(
         title: Row(
@@ -1033,13 +1035,13 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                                                   ListAppListManager
                                                           .instanceForUserUid(
                                                               currentUser
-                                                                  .databaseId)
+                                                                  .databaseId!)
                                                       .addMemberToList(
                                                           widget
                                                               .list.databaseId!,
                                                           allFriends
                                                               .elementAt(i)!
-                                                              .databaseId);
+                                                              .databaseId!);
                                                 }),
                                           ));
                                     },

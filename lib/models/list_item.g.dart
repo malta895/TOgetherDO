@@ -7,7 +7,6 @@ part of 'list_item.dart';
 // **************************************************************************
 
 Map<String, dynamic> _$BaseItemToJson(BaseItem instance) => <String, dynamic>{
-      'hasListeners': instance.hasListeners,
       'databaseId': instance.databaseId,
       'name': instance.name,
       'description': instance.description,

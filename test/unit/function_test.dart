@@ -69,6 +69,7 @@ void main() {
 
   group('Testing simpleItem to json', () {
     test('The item json should have type', () {
+      expect(simpleItem.itemType, ItemType.simple);
       expect(simpleItem.toJson().containsKey('itemType'), true);
     });
 
@@ -180,10 +181,11 @@ void main() {
     });
 
     final ListAppNotification friendshipNotification = FriendshipNotification(
-        userId: '123',
-        userFrom: '456',
-        status: NotificationStatus.undefined,
-        friendshipId: 'abc');
+      userId: '123',
+      userFrom: '456',
+      status: NotificationStatus.undefined,
+      friendshipId: 'abc',
+    );
     final friendshipNotificationToJson = friendshipNotification.toJson();
     group('Test list invite notification', () {
       test('list invite type consinstency', () {

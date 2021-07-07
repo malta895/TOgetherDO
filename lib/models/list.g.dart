@@ -9,12 +9,12 @@ part of 'list.dart';
 ListAppList _$ListAppListFromJson(Map<String, dynamic> json) {
   return $checkedNew('ListAppList', json, () {
     final val = ListAppList(
+      databaseId: $checkedConvert(json, 'databaseId', (v) => v as String?),
       name: $checkedConvert(json, 'name', (v) => v as String),
       createdAt: $checkedConvert(
           json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
       expiryDate: $checkedConvert(json, 'expiryDate',
           (v) => ModelUtils.nullableDateTimeFromJson(v as int?)),
-      databaseId: $checkedConvert(json, 'databaseId', (v) => v as String?),
       creatorUid: $checkedConvert(json, 'creatorUid', (v) => v as String?),
       listType: $checkedConvert(
           json, 'listType', (v) => _$enumDecode(_$ListTypeEnumMap, v)),

@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mobile_applications/models/base_model.dart';
 import 'package:mobile_applications/models/user.dart';
 
 part 'notification.g.dart';
@@ -22,10 +23,8 @@ extension ParseToString on NotificationStatus {
 }
 
 @JsonSerializable(checked: true, createFactory: false)
-abstract class ListAppNotification {
+abstract class ListAppNotification extends BaseModel {
   static const String collectionName = 'notifications';
-
-  String? databaseId;
   final String userId;
   final String userFrom;
 
@@ -38,13 +37,14 @@ abstract class ListAppNotification {
   @JsonKey(ignore: true)
   ListAppUser? sender;
 
-  ListAppNotification(
-      {this.databaseId,
-      required this.userId,
-      this.createdAt,
-      required this.userFrom,
-      required this.status,
-      required this.notificationType});
+  ListAppNotification({
+    String? databaseId,
+    required this.userId,
+    this.createdAt,
+    required this.userFrom,
+    required this.status,
+    required this.notificationType,
+  }) : super(databaseId);
 
   factory ListAppNotification.fromJson(Map<String, dynamic> json) {
     switch (json['notificationType'] as String) {
@@ -57,12 +57,16 @@ abstract class ListAppNotification {
         throw StateError("Item type not recognized");
     }
   }
+
   Map<String, dynamic> toJson() {
+    final baseNotificationToJson = _$ListAppNotificationToJson(this);
     switch (this.notificationType) {
       case 'listInvite':
-        return (this as ListInviteNotification).toJson();
+        return _$ListInviteNotificationToJson(this as ListInviteNotification)
+          ..addAll(baseNotificationToJson);
       case 'friendship':
-        return (this as FriendshipNotification).toJson();
+        return _$FriendshipNotificationToJson(this as FriendshipNotification)
+          ..addAll(baseNotificationToJson);
 
       default:
         throw StateError("Item type not recognized");
@@ -95,9 +99,6 @@ class ListInviteNotification extends ListAppNotification {
 
   factory ListInviteNotification.fromJson(Map<String, dynamic> json) =>
       _$ListInviteNotificationFromJson(json);
-
-  Map<String, dynamic> toJson() => _$ListInviteNotificationToJson(this)
-    ..addAll({'notificationType': this.notificationType});
 }
 
 @JsonSerializable(
@@ -123,7 +124,4 @@ class FriendshipNotification extends ListAppNotification {
 
   factory FriendshipNotification.fromJson(Map<String, dynamic> json) =>
       _$FriendshipNotificationFromJson(json);
-
-  Map<String, dynamic> toJson() => _$FriendshipNotificationToJson(this)
-    ..addAll({'notificationType': this.notificationType});
 }

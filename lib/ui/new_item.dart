@@ -150,7 +150,7 @@ class _NewItemFormState extends State<_NewItemForm> {
                   final itemManagerInstance =
                       ListAppItemManager.instanceForList(
                     widget.currentList.databaseId!,
-                    widget.currentList.creator!.databaseId,
+                    widget.currentList.creator!.databaseId!,
                   );
                   if (await itemManagerInstance
                       .listItemNameExists(_titleController.text)) {
@@ -183,7 +183,7 @@ class _NewItemFormState extends State<_NewItemForm> {
                         break;
                     }
 
-                    await itemManagerInstance.saveInstance(newItem);
+                    await itemManagerInstance.saveToFirestore(newItem);
 
                     Navigator.pop<BaseItem>(
                       context,

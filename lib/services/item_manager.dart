@@ -3,20 +3,17 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/list_item.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/database_manager.dart';
 
 /// The item manager. This is not a singleton as a new instance is created for each subcollection
-class ListAppItemManager {
-  final CollectionReference<BaseItem> _itemCollectionRef;
+class ListAppItemManager extends DatabaseManager<BaseItem> {
   final String listUid;
   final String userUid;
-
-  final FirebaseFirestore _firestoreInstance = FirebaseFirestore.instance;
-
   //cache the instances to avoid creating new ones every time we operate on the same list
   static final Map<String, ListAppItemManager> _cachedInstances = {};
 
   ListAppItemManager._privateConstructor(this.listUid, this.userUid)
-      : _itemCollectionRef = FirebaseFirestore.instance
+      : super(FirebaseFirestore.instance
             .collection(ListAppUser.collectionName)
             .doc(userUid)
             .collection(ListAppList.collectionName)
@@ -25,7 +22,7 @@ class ListAppItemManager {
             .withConverter<BaseItem>(
                 fromFirestore: (snapshots, _) =>
                     BaseItem.fromJson(snapshots.data()!),
-                toFirestore: (instance, _) => instance.toJson());
+                toFirestore: (instance, _) => instance.toJson()));
 
   static ListAppItemManager instanceForList(String listUid, String userUid) {
     if (_cachedInstances.containsKey(listUid)) {
@@ -42,7 +39,7 @@ class ListAppItemManager {
 
   Future<BaseItem?> getItemByUid(String uid) async {
     try {
-      final queryResult = await _itemCollectionRef.doc(uid).get();
+      final queryResult = await this.firebaseCollection.doc(uid).get();
       return queryResult.data();
     } on CheckedFromJsonException catch (e) {
       print(e);
@@ -51,7 +48,7 @@ class ListAppItemManager {
   }
 
   Future<List<BaseItem>> getItems() async {
-    final queryResult = await _itemCollectionRef.get();
+    final queryResult = await this.firebaseCollection.get();
 
     return queryResult.docs.map((e) {
       return e.data();
@@ -60,13 +57,19 @@ class ListAppItemManager {
 
   Future<bool> listItemNameExists(String name) async {
     final queryResult =
-        await _itemCollectionRef.where("name", isEqualTo: name).get();
+        await this.firebaseCollection.where("name", isEqualTo: name).get();
     return queryResult.docs.isNotEmpty;
   }
 
-  Future<void> saveInstance(BaseItem item) async {
-    final _docRef = _itemCollectionRef.doc(item.databaseId);
+  @override
+  Future<void> saveToFirestore(BaseItem item) async {
+    final _docRef = this.firebaseCollection.doc(item.databaseId);
     item.databaseId = _docRef.id;
     await _docRef.set(item);
+  }
+
+  @override
+  Future<BaseItem?> getByUid(String uid) {
+    return getItemByUid(uid);
   }
 }

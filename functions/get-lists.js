@@ -3,7 +3,7 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
 // gets all the lists the user has access to
-exports.getListsByUser = functions.https.onCall(async (data, context) =>  {
+exports.getListsByUser = functions.region('europe-west6').https.onCall(async (data, context) =>  {
     let userUid;
 
     if(context.auth){

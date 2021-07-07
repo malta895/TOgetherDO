@@ -86,12 +86,6 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
     }
   }
 
-  @override
-  Future<ListAppNotification?> getByUid(String uid) {
-    // TODO: implement getByUid
-    throw UnimplementedError();
-  }
-
   /*Future<List<ListAppFriendship?>> getNotificationsByUid(String uid) async {
     final queryResult =
         await this.firebaseCollection.where('userId', isEqualTo: uid).get();

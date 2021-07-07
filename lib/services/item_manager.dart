@@ -60,16 +60,4 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
         await this.firebaseCollection.where("name", isEqualTo: name).get();
     return queryResult.docs.isNotEmpty;
   }
-
-  @override
-  Future<void> saveToFirestore(BaseItem item) async {
-    final _docRef = this.firebaseCollection.doc(item.databaseId);
-    item.databaseId = _docRef.id;
-    await _docRef.set(item);
-  }
-
-  @override
-  Future<BaseItem?> getByUid(String uid) {
-    return getItemByUid(uid);
-  }
 }

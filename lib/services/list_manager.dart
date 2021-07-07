@@ -64,18 +64,6 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
 
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
 
-  @override
-  Future<void> saveToFirestore(ListAppList list) async {
-    final _docRef = this.firebaseCollection.doc(list.databaseId);
-    list.databaseId = _docRef.id;
-    await _docRef.set(list);
-  }
-
-  @override
-  Future<ListAppList?> getByUid(String uid) {
-    return getListById(uid);
-  }
-
   Future<List<ListAppList>> getLists({String? orderBy}) async {
     final queryResult = await this.firebaseCollection.get();
 
@@ -142,11 +130,6 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
     }
 
     return awaitedLists.toList();
-  }
-
-  Future<ListAppList?> getListById(String id) async {
-    final queryresult = await this.firebaseCollection.doc(id).get();
-    return queryresult.data();
   }
 
   Future<bool?> addMemberToList(String lid, String uid) async {

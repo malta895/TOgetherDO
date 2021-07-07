@@ -109,17 +109,4 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
 
     return true;
   }
-
-  @override
-  Future<ListAppFriendship?> getByUid(String uid) async {
-    final queryResult = await this.firebaseCollection.doc(uid).get();
-    return queryResult.data();
-  }
-
-  @override
-  Future<void> saveToFirestore(ListAppFriendship friendship) async {
-    final docRef = this.firebaseCollection.doc(friendship.databaseId!);
-    friendship.databaseId = docRef.id;
-    await this.firebaseCollection.doc(friendship.databaseId!).set(friendship);
-  }
 }

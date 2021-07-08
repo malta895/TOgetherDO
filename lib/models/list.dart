@@ -48,19 +48,18 @@ class ListAppList extends BaseModel {
 
   final ListType listType;
 
-  @JsonKey(ignore: true)
-  Set<ListAppUser> membersAsUsers;
-
   @JsonKey(defaultValue: const {})
   Set<String?> members = const {};
-
-  @JsonKey(ignore: true)
-  List<BaseItem> items = [];
 
   int get length => items.length;
 
   String? creatorUid;
 
+  // fields to add when querying
+  @JsonKey(ignore: true)
+  List<ListAppUser> membersAsUsers;
+  @JsonKey(ignore: true)
+  List<BaseItem> items = [];
   @JsonKey(ignore: true)
   ListAppUser? creator;
 
@@ -73,9 +72,9 @@ class ListAppList extends BaseModel {
     this.listType = ListType
         .public, // NOTE maybe better to make it required and remove the default value
     this.description,
-    Set<ListAppUser>? membersAsUsers,
+    List<ListAppUser>? membersAsUsers,
   })  : this.createdAt = createdAt ?? DateTime.now(),
-        this.membersAsUsers = membersAsUsers ?? {},
+        this.membersAsUsers = membersAsUsers ?? [],
         super(databaseId) {
     if (membersAsUsers != null)
       members = membersAsUsers.map((e) => e.databaseId).toSet();

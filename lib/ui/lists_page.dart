@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/list_manager.dart';
-import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/list_view_page.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/new_list.dart';
@@ -78,8 +77,8 @@ class _ListsPageState extends State<ListsPage>
         await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
 
     if (listAppUser != null) {
-      final lists = await ListAppUserManager.instance
-          .getLists(listAppUser, orderBy: 'createdAt');
+      final lists = await ListAppListManager.instanceForUser(listAppUser)
+          .getUserLists(listAppUser, orderBy: 'createdAt');
       return lists;
     }
 

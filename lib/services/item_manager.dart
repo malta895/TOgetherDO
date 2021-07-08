@@ -50,9 +50,18 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
   Future<List<BaseItem>> getItems() async {
     final queryResult = await this.firebaseCollection.get();
 
-    return queryResult.docs.map((e) {
-      return e.data();
+    final listWithNulls = queryResult.docs.map((e) {
+      try {
+        return e.data();
+      } on CheckedFromJsonException catch (e) {
+        print(e);
+        return null;
+      }
     }).toList();
+
+    listWithNulls.removeWhere((element) => element == null);
+
+    return listWithNulls.cast<BaseItem>();
   }
 
   Future<bool> listItemNameExists(String name) async {

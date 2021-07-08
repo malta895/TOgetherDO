@@ -16,27 +16,13 @@ class FriendsPage extends StatefulWidget {
 class _FriendsList extends State<FriendsPage> {
   final String title = 'Friends';
 
-  //TODO fetch actual data from backend
-  final ListAppUser _user = ListAppUser(
-      databaseId: "shdopjf",
-      firstName: "Luca",
-      lastName: "Maltagliati",
-      email: "luca.malta@mail.com",
-      username: "malta",
-      friends: {
-        ListAppUser(
-            databaseId: 'sdifasp',
-            firstName: "Lorenzo",
-            lastName: "Amici",
-            email: "lorenzo.amici@mail.com",
-            username: "lorenzo.amici@mail.com"),
-      });
-
   Widget _buildListItems(BuildContext context) {
+    // TODO remove hardcoded value
     final Future<List<ListAppUser?>> friendsFrom = ListAppFriendshipManager
         .instance
         .getFriendsFromByUid("9LUBLCszUrU4mukuRWhHFS2iexL2");
 
+    // TODO remove hardcoded value
     final Future<List<ListAppUser?>> friendsTo = ListAppFriendshipManager
         .instance
         .getFriendsToByUid("9LUBLCszUrU4mukuRWhHFS2iexL2");

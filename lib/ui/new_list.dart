@@ -45,7 +45,7 @@ class _NewListFormState extends State<_NewListForm> {
     _listTitleController = TextEditingController();
   }
 
-  late Set<ListAppUser> members = {};
+  late List<ListAppUser> members = [];
 
   Widget _buildListTitleField() {
     return Padding(
@@ -231,7 +231,7 @@ class _NewListFormState extends State<_NewListForm> {
 
 // TODO sistemare quando avremo gli amici dal db
 class _AddMemberDialog extends StatefulWidget {
-  final Set<ListAppUser?> members;
+  final List<ListAppUser?> members;
   const _AddMemberDialog({Key? key, required this.members}) : super(key: key);
   @override
   _AddMemberDialogState createState() => _AddMemberDialogState();

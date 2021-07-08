@@ -9,8 +9,6 @@ import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/database_manager.dart';
-import 'package:mobile_applications/services/item_manager.dart';
-import 'package:mobile_applications/services/list_manager.dart';
 
 class ListAppUserManager extends DatabaseManager<ListAppUser>
     with ChangeNotifier {
@@ -144,66 +142,5 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
 
       return ListAppList.fromJson(cleanedList);
     }).toList();
-  }
-
-  /// Gets the lists in which the given user is in
-  Future<List<ListAppList>> getLists(ListAppUser listAppUser,
-      {String? orderBy}) async {
-    try {
-      final queryResult = await ListAppListManager.getCollectionGroupConverted()
-          .where('members', arrayContains: listAppUser.databaseId)
-          .get();
-
-      final participantLists =
-          await Future.wait(queryResult.docs.map((e) async {
-        final listAppList = e.data();
-        listAppList.databaseId = e.id;
-
-        // replace the users id with the usernames
-        final usernames = await Future.wait(listAppList.members.map((e) async {
-          if (e == null) return null;
-          final user = await getByUid(e);
-          return user?.username;
-        }));
-
-        listAppList.members = usernames.toSet();
-
-        listAppList.members.forEach((e) async {
-          final member =
-              await ListAppUserManager.instance.getUserByUsername(e!);
-          if (member != null) listAppList.membersAsUsers.add(member);
-        });
-
-        listAppList.items = await ListAppItemManager.instanceForList(
-                e.id, listAppList.creatorUid!)
-            .getItems();
-
-        if (listAppList.creatorUid == null) {
-          print("The list ${listAppList.databaseId} has null creatorUid!");
-        }
-        listAppList.creator =
-            await ListAppUserManager.instance.getByUid(listAppList.creatorUid!);
-
-        return listAppList;
-      }).toList());
-
-      final ownedLists = await ListAppListManager.instanceForUser(listAppUser)
-          .getLists(orderBy: orderBy);
-
-      final listAppLists = participantLists.followedBy(ownedLists).toList();
-
-      switch (orderBy) {
-        case 'createdAt':
-          listAppLists.sort((a, b) {
-            return b.createdAt.compareTo(a.createdAt);
-          });
-          break;
-      }
-
-      return listAppLists;
-    } on FirebaseException catch (e) {
-      print(e.toString());
-      throw ListAppException(e.message.toString());
-    }
   }
 }

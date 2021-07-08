@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:mobile_applications/services/authentication.dart';
-import 'package:mobile_applications/ui/notification_page.dart';
 import 'package:mobile_applications/services/notification_manager.dart';
+import 'package:mobile_applications/ui/notification_page.dart';
+import 'package:provider/provider.dart';
 
 class NotificationBadge extends StatefulWidget {
   @override
@@ -18,9 +18,9 @@ class _NotificationBadge extends State<NotificationBadge> {
         await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
 
     if (listAppUser != null) {
-      print("GETNOTIFICATIONNUMBER" + listAppUser.databaseId);
+      print("GETNOTIFICATIONNUMBER" + listAppUser.databaseId!);
       return ListAppNotificationManager.instance
-          .getUnansweredNotifications(listAppUser.databaseId, "createdAt");
+          .getUnansweredNotifications(listAppUser.databaseId!, "createdAt");
     }
 
     return Future.value(0);

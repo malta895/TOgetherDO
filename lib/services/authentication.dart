@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mobile_applications/models/user.dart';
-
 import 'package:mobile_applications/services/user_manager.dart';
 
 ///A wrapper of FirebaseAuth, that provides a better interface to the login ui
@@ -54,8 +53,7 @@ class ListAppAuthProvider with ChangeNotifier {
     ListAppUserManager.instance.addListener(() async {
       final uid = _loggedInListAppUser?.databaseId;
       if (uid != null) {
-        _loggedInListAppUser =
-            await ListAppUserManager.instance.getUserByUid(uid);
+        _loggedInListAppUser = await ListAppUserManager.instance.getByUid(uid);
       }
     });
   }
@@ -74,7 +72,7 @@ class ListAppAuthProvider with ChangeNotifier {
   ///if not present, it also creates it
   Future<void> _createListAppUser(User firebaseUser) async {
     ListAppUser? listAppUser =
-        await ListAppUserManager.instance.getUserByUid(firebaseUser.uid);
+        await ListAppUserManager.instance.getByUid(firebaseUser.uid);
 
     if (listAppUser == null) {
       final notificationToken = await FirebaseMessaging.instance.getToken();
@@ -90,7 +88,7 @@ class ListAppAuthProvider with ChangeNotifier {
             notificationToken == null ? {} : {notificationToken},
       );
 
-      await ListAppUserManager.instance.saveInstance(listAppUser);
+      await ListAppUserManager.instance.saveToFirestore(listAppUser);
     }
     _loggedInListAppUser = listAppUser;
   }

@@ -76,7 +76,7 @@ class LoginScreen extends StatelessWidget {
             currentUser.username = username;
 
             currentUser.isNew = false;
-            await ListAppUserManager.instance.saveInstance(currentUser);
+            await ListAppUserManager.instance.saveToFirestore(currentUser);
           }
 
           // we get here only if everything goes well

@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mobile_applications/models/base_model.dart';
 import 'package:mobile_applications/models/list_item.dart';
 import 'package:mobile_applications/models/utils.dart';
 
@@ -31,11 +32,9 @@ extension ParseToString on ListType {
 // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 /// The app list
 @JsonSerializable(checked: true)
-class ListAppList {
+class ListAppList extends BaseModel {
   static const String collectionName = 'lists';
 
-  /// the id provided by the data source
-  String? databaseId;
   final String name;
   final String? description;
 
@@ -66,17 +65,18 @@ class ListAppList {
   ListAppUser? creator;
 
   ListAppList({
+    String? databaseId,
     required this.name,
     DateTime? createdAt,
     this.expiryDate,
-    this.databaseId,
     this.creatorUid,
     this.listType = ListType
         .public, // NOTE maybe better to make it required and remove the default value
     this.description,
     Set<ListAppUser>? membersAsUsers,
   })  : this.createdAt = createdAt ?? DateTime.now(),
-        this.membersAsUsers = membersAsUsers ?? {} {
+        this.membersAsUsers = membersAsUsers ?? {},
+        super(databaseId) {
     if (membersAsUsers != null)
       members = membersAsUsers.map((e) => e.databaseId).toSet();
   }
@@ -84,7 +84,9 @@ class ListAppList {
   factory ListAppList.fromJson(Map<String, dynamic> json) =>
       _$ListAppListFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ListAppListToJson(this);
+  Map<String, dynamic> toJson() {
+    return _$ListAppListToJson(this);
+  }
 }
 
 class ListAppFulfillment {

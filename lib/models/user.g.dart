@@ -9,7 +9,7 @@ part of 'user.dart';
 ListAppUser _$ListAppUserFromJson(Map<String, dynamic> json) {
   return $checkedNew('ListAppUser', json, () {
     final val = ListAppUser(
-      databaseId: $checkedConvert(json, 'databaseId', (v) => v as String),
+      databaseId: $checkedConvert(json, 'databaseId', (v) => v as String?),
       email: $checkedConvert(json, 'email', (v) => v as String),
       notificationTokens: $checkedConvert(json, 'notificationTokens',
               (v) => (v as List<dynamic>?)?.map((e) => e as String).toSet()) ??

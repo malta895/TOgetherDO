@@ -30,7 +30,7 @@ class _NotificationPage extends State<NotificationPage> {
 
     if (listAppUser != null) {
       return ListAppNotificationManager.instance
-          .getNotificationsByUid(listAppUser.databaseId, "createdAt");
+          .getNotificationsByUserId(listAppUser.databaseId, "createdAt");
     }
     return Future.value(null);
   }
@@ -279,7 +279,7 @@ class _NotificationPage extends State<NotificationPage> {
       BuildContext context, ListInviteNotification notification) {
     final notificationFuture =
         ListAppListManager.instanceForUserUid(notification.listOwner)
-            .getListById(notification.listId);
+            .getByUid(notification.listId);
     return FutureBuilder<ListAppList?>(
         future: notificationFuture,
         builder: (context, AsyncSnapshot<ListAppList?> snapshot) {

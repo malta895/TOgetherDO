@@ -1,10 +1,11 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mobile_applications/models/base_model.dart';
 
 part 'friendship.g.dart';
 
 /// It represents the friendship between 2 users
 @JsonSerializable(checked: true)
-class ListAppFriendship {
+class ListAppFriendship extends BaseModel {
   static const String collectionName = 'friendships';
 
   /// The user who sent the friend request
@@ -20,13 +21,17 @@ class ListAppFriendship {
 
   void acceptRequest() => requestAccepted = true;
 
-  ListAppFriendship(
-      {required this.userFrom,
-      required this.userTo,
-      this.requestAccepted = false});
+  ListAppFriendship({
+    String? databaseId,
+    required this.userFrom,
+    required this.userTo,
+    this.requestAccepted = false,
+  }) : super(databaseId);
 
   factory ListAppFriendship.fromJson(Map<String, dynamic> json) =>
       _$ListAppFriendshipFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ListAppFriendshipToJson(this);
+  Map<String, dynamic> toJson() {
+    return _$ListAppFriendshipToJson(this);
+  }
 }

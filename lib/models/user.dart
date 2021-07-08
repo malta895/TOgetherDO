@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mobile_applications/models/base_model.dart';
 
 // We need to specify which file the generated serialization code will be saved to
 part 'user.g.dart';
@@ -7,12 +8,9 @@ part 'user.g.dart';
 @JsonSerializable(
   checked: true,
 ) // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
-class ListAppUser {
+class ListAppUser extends BaseModel {
   ///the name of the collection used as a table/collection name in the database
   static const String collectionName = 'users';
-
-  /// The id provided by the data source
-  String databaseId;
 
   String firstName;
   String lastName;
@@ -35,7 +33,7 @@ class ListAppUser {
   Set<String> notificationTokens;
 
   ListAppUser({
-    required this.databaseId,
+    String? databaseId,
     required this.email,
     this.notificationTokens = const {},
     this.firstName = '',
@@ -47,7 +45,8 @@ class ListAppUser {
     this.friends = const {},
     this.isNew = false,
   })  : this.displayName = displayName ?? firstName + ' ' + lastName,
-        this.username = username ?? email.substring(0, email.indexOf('@'));
+        this.username = username ?? email.substring(0, email.indexOf('@')),
+        super(databaseId);
 
   String get fullName =>
       displayName.isNotEmpty ? displayName : firstName + ' ' + lastName;

@@ -2,8 +2,8 @@
 import 'dart:collection';
 import 'dart:core';
 
-import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mobile_applications/models/base_model.dart';
 
 import 'user.dart';
 
@@ -36,10 +36,12 @@ extension ParseToString on ItemType {
 }
 
 ///Any type of item. the specific types will implement in different ways the methods
-@JsonSerializable(checked: true, createFactory: false)
-abstract class BaseItem with ChangeNotifier {
+@JsonSerializable(
+  checked: true,
+  createFactory: false,
+)
+abstract class BaseItem extends BaseModel {
   static const String collectionName = 'items';
-  String? databaseId;
   final String name;
   final String? description;
   final int maxQuantity;
@@ -48,13 +50,13 @@ abstract class BaseItem with ChangeNotifier {
   final ItemType itemType;
 
   BaseItem({
-    this.databaseId,
+    String? databaseId,
     required this.name,
     this.description,
     required this.maxQuantity,
     required this.quantityPerMember,
     required this.itemType,
-  });
+  }) : super(databaseId);
 
   int quantityFulfilledBy(ListAppUser member);
 
@@ -82,14 +84,17 @@ abstract class BaseItem with ChangeNotifier {
   }
 
   Map<String, dynamic> toJson() {
+    final baseItemToJson = _$BaseItemToJson(this);
     switch (this.itemType) {
       case ItemType.simple:
-        return (this as SimpleItem).toJson();
+        return _$SimpleItemToJson(this as SimpleItem)..addAll(baseItemToJson);
       case ItemType.multiFulfillment:
-        return (this as MultiFulfillmentItem).toJson();
+        return _$MultiFulfillmentItemToJson(this as MultiFulfillmentItem)
+          ..addAll(baseItemToJson);
       case ItemType.multiFulfillmentMember:
-        return (this as MultiFulfillmentMemberItem).toJson();
-
+        return _$MultiFulfillmentMemberItemToJson(
+            this as MultiFulfillmentMemberItem)
+          ..addAll(baseItemToJson);
       default:
         throw StateError("Item type not recognized");
     }
@@ -155,16 +160,9 @@ class SimpleItem extends BaseItem {
 
   factory SimpleItem.fromJson(Map<String, dynamic> json) =>
       _$SimpleItemFromJson(json);
-
-  Map<String, dynamic> toJson() => _$SimpleItemToJson(this)
-    ..addAll({
-      'itemType': _$ItemTypeEnumMap[this.itemType],
-      "quantityPerMember": this.quantityPerMember,
-      "maxQuantity": this.maxQuantity
-    });
 }
 
-//List item with multiple fulfillments, members can fulfill once
+/// List item with multiple fulfillments, members can fulfill once
 @JsonSerializable(
   checked: true,
 ) // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
@@ -211,12 +209,6 @@ class MultiFulfillmentItem extends BaseItem {
 
   factory MultiFulfillmentItem.fromJson(Map<String, dynamic> json) =>
       _$MultiFulfillmentItemFromJson(json);
-
-  Map<String, dynamic> toJson() => _$MultiFulfillmentItemToJson(this)
-    ..addAll({
-      'itemType': _$ItemTypeEnumMap[this.itemType],
-      "quantityPerMember": this.quantityPerMember,
-    });
 }
 
 ///List item with multiple fulfillments, members can fulfill more times
@@ -279,9 +271,4 @@ class MultiFulfillmentMemberItem extends BaseItem {
 
   factory MultiFulfillmentMemberItem.fromJson(Map<String, dynamic> json) =>
       _$MultiFulfillmentMemberItemFromJson(json);
-
-  Map<String, dynamic> toJson() => _$MultiFulfillmentMemberItemToJson(this)
-    ..addAll({
-      'itemType': _$ItemTypeEnumMap[this.itemType],
-    });
 }

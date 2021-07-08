@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:mobile_applications/models/friendship.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/friendship_manager.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/new_friends.dart';
 import 'package:mobile_applications/ui/notification_badge.dart';
-import 'package:mobile_applications/ui/notification_page.dart';
 
 class FriendsPage extends StatefulWidget {
   static final String routeName = "/friends";

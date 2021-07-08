@@ -150,7 +150,7 @@ class _NewItemFormState extends State<_NewItemForm> {
                   final itemManagerInstance =
                       ListAppItemManager.instanceForList(
                     widget.currentList.databaseId!,
-                    widget.currentList.creator!.databaseId,
+                    widget.currentList.creator!.databaseId!,
                   );
                   if (await itemManagerInstance
                       .listItemNameExists(_titleController.text)) {
@@ -183,7 +183,7 @@ class _NewItemFormState extends State<_NewItemForm> {
                         break;
                     }
 
-                    await itemManagerInstance.saveInstance(newItem);
+                    await itemManagerInstance.saveToFirestore(newItem);
 
                     Navigator.pop<BaseItem>(
                       context,
@@ -213,8 +213,13 @@ class _NewItemFormState extends State<_NewItemForm> {
               onChanged: (selectedItemType) {
                 if (selectedItemType != null) {
                   setState(() {
-                    _itemsCounter = 1;
-                    _membersCounter = 1;
+                    if (selectedItemType == ItemType.multiFulfillmentMember) {
+                      _itemsCounter = 2;
+                      _membersCounter = 2;
+                    } else {
+                      _itemsCounter = 1;
+                      _membersCounter = 1;
+                    }
                     _selectedItemType = selectedItemType;
                     _expandableControllers.forEach((key, controller) {
                       if (key != _selectedItemType) controller.expanded = false;
@@ -262,14 +267,14 @@ class _NewItemFormState extends State<_NewItemForm> {
             TextButton(
               child: Icon(
                 Icons.remove,
-                color: _membersCounter > 1
+                color: _membersCounter > 2
                     ? Theme.of(context).textTheme.headline1!.color
                     : Theme.of(context).disabledColor,
               ),
               // minWidth: 5.0,
               onPressed: () {
                 setState(() {
-                  if (_membersCounter > 1) _membersCounter--;
+                  if (_membersCounter > 2) _membersCounter--;
                 });
               },
             ),
@@ -295,6 +300,8 @@ class _NewItemFormState extends State<_NewItemForm> {
   }
 
   ListTile _buildMultiFulfillmentForm(BuildContext context) {
+    final minItems =
+        _selectedItemType == ItemType.multiFulfillmentMember ? 2 : 1;
     return ListTile(
       contentPadding: EdgeInsets.all(5.0),
       title: Text(
@@ -309,14 +316,14 @@ class _NewItemFormState extends State<_NewItemForm> {
             TextButton(
                 child: Icon(
                   Icons.remove,
-                  color: _itemsCounter > 0
+                  color: _itemsCounter > minItems
                       ? Theme.of(context).textTheme.headline1!.color
                       : Theme.of(context).disabledColor,
                 ),
                 // minWidth: 5.0,
                 onPressed: () {
                   setState(() {
-                    if (_itemsCounter > 1) {
+                    if (_itemsCounter > minItems) {
                       _itemsCounter--;
                       if (_membersCounter > _itemsCounter)
                         _membersCounter = _itemsCounter;

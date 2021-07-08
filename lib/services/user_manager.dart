@@ -2,20 +2,28 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/database_manager.dart';
 import 'package:mobile_applications/services/item_manager.dart';
 import 'package:mobile_applications/services/list_manager.dart';
 
-class ListAppUserManager with ChangeNotifier {
+class ListAppUserManager extends DatabaseManager<ListAppUser>
+    with ChangeNotifier {
   static ListAppUserManager _instance =
       ListAppUserManager._privateConstructor();
 
-  ListAppUserManager._privateConstructor();
+  ListAppUserManager._privateConstructor()
+      : super(FirebaseFirestore.instance
+            .collection(ListAppUser.collectionName)
+            .withConverter<ListAppUser>(
+                fromFirestore: (snapshots, _) =>
+                    ListAppUser.fromJson(snapshots.data()!),
+                toFirestore: (user, _) => user.toJson()));
 
   static ListAppUserManager get instance => _instance;
 
@@ -24,23 +32,16 @@ class ListAppUserManager with ChangeNotifier {
   final _cloudFunctonsInstance =
       FirebaseFunctions.instanceFor(region: "europe-west6");
 
-  final _usersCollection = FirebaseFirestore.instance
-      .collection(ListAppUser.collectionName)
-      .withConverter<ListAppUser>(
-          fromFirestore: (snapshots, _) {
-            return ListAppUser.fromJson(snapshots.data()!);
-          },
-          toFirestore: (user, _) => user.toJson());
-
   Future<void> changeProfilePicture(
       ListAppUser user, PickedFile imageFile) async {
     final imageRef =
-        _firebaseStorageInstance.ref('pro-pic-user-' + user.databaseId);
+        _firebaseStorageInstance.ref('pro-pic-user-' + user.databaseId!);
 
     await imageRef.putData(await imageFile.readAsBytes());
 
     final profilePictureURL = await imageRef.getDownloadURL();
-    await _usersCollection
+    await this
+        .firebaseCollection
         .doc(user.databaseId)
         .update({'profilePictureURL': profilePictureURL});
 
@@ -48,15 +49,10 @@ class ListAppUserManager with ChangeNotifier {
     user.profilePictureURL = profilePictureURL;
   }
 
-  /// saves an instance of an user on firestore. If not given the uid is generated automatically
-  Future<void> saveInstance(ListAppUser user) async {
-    await _usersCollection.doc(user.databaseId).set(user);
-  }
-
   Future<ListAppUser?> getUserByEmail(String email) async {
     try {
       final queryResult =
-          await _usersCollection.where('email', isEqualTo: email).get();
+          await this.firebaseCollection.where('email', isEqualTo: email).get();
 
       return queryResult.docs.single.data();
     } on CheckedFromJsonException catch (e) {
@@ -67,21 +63,12 @@ class ListAppUserManager with ChangeNotifier {
 
   Future<ListAppUser?> getUserByUsername(String username) async {
     try {
-      final queryResult =
-          await _usersCollection.where('username', isEqualTo: username).get();
+      final queryResult = await this
+          .firebaseCollection
+          .where('username', isEqualTo: username)
+          .get();
 
       return queryResult.docs.single.data();
-    } on CheckedFromJsonException catch (e) {
-      print(e.message);
-      return null;
-    }
-  }
-
-  Future<ListAppUser?> getUserByUid(String uid) async {
-    try {
-      final queryResult = await _usersCollection.doc(uid).get();
-
-      return queryResult.data();
     } on CheckedFromJsonException catch (e) {
       print(e.message);
       return null;
@@ -91,8 +78,10 @@ class ListAppUserManager with ChangeNotifier {
   ///Returns `true` if the given username is already present on database. Unauthenticated method, since anyone can see if an username exists before choosing it
   Future<bool> usernameExists(String username) async {
     try {
-      final queryResult =
-          await _usersCollection.where('username', isEqualTo: username).get();
+      final queryResult = await this
+          .firebaseCollection
+          .where('username', isEqualTo: username)
+          .get();
       return queryResult.size == 1;
     } on CheckedFromJsonException catch (e) {
       print(e.message);
@@ -120,7 +109,7 @@ class ListAppUserManager with ChangeNotifier {
     }
 
     try {
-      await _usersCollection.doc(userId).update({'username': username});
+      await this.firebaseCollection.doc(userId).update({'username': username});
       notifyListeners();
     } on FirebaseException catch (e) {
       print(e.message);
@@ -157,7 +146,7 @@ class ListAppUserManager with ChangeNotifier {
     }).toList();
   }
 
-  ///Gets the lists in wich the given user is in
+  /// Gets the lists in which the given user is in
   Future<List<ListAppList>> getLists(ListAppUser listAppUser,
       {String? orderBy}) async {
     try {
@@ -173,7 +162,7 @@ class ListAppUserManager with ChangeNotifier {
         // replace the users id with the usernames
         final usernames = await Future.wait(listAppList.members.map((e) async {
           if (e == null) return null;
-          final user = await getUserByUid(e);
+          final user = await getByUid(e);
           return user?.username;
         }));
 
@@ -192,8 +181,8 @@ class ListAppUserManager with ChangeNotifier {
         if (listAppList.creatorUid == null) {
           print("The list ${listAppList.databaseId} has null creatorUid!");
         }
-        listAppList.creator = await ListAppUserManager.instance
-            .getUserByUid(listAppList.creatorUid!);
+        listAppList.creator =
+            await ListAppUserManager.instance.getByUid(listAppList.creatorUid!);
 
         return listAppList;
       }).toList());

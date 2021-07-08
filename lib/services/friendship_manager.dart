@@ -2,66 +2,69 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_applications/models/friendship.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/database_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 
-class ListAppFriendshipManager with ChangeNotifier {
+class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
+    with ChangeNotifier {
   static ListAppFriendshipManager _instance =
       ListAppFriendshipManager._privateConstructor();
 
-  ListAppFriendshipManager._privateConstructor();
+  ListAppFriendshipManager._privateConstructor()
+      : super(FirebaseFirestore.instance
+            .collection(ListAppFriendship.collectionName)
+            .withConverter<ListAppFriendship>(
+                fromFirestore: (snapshots, _) =>
+                    ListAppFriendship.fromJson(snapshots.data()!),
+                toFirestore: (friendship, _) => friendship.toJson()));
 
   static ListAppFriendshipManager get instance => _instance;
 
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
 
-  final _friendshipsCollection = FirebaseFirestore.instance
-      .collection(ListAppFriendship.collectionName)
-      .withConverter<ListAppFriendship>(
-          fromFirestore: (snapshots, _) =>
-              ListAppFriendship.fromJson(snapshots.data()!),
-          toFirestore: (friendship, _) => friendship.toJson());
-
   Future<List<ListAppUser?>> getFriendsFromByUid(String uid) async {
-    final queryResultFrom = await _friendshipsCollection
+    final queryResultFrom = await this
+        .firebaseCollection
         .where('userFrom', isEqualTo: uid)
         .where('requestAccepted', isEqualTo: true)
         .get();
 
     return Future.wait(queryResultFrom.docs.map((element) async {
       return await ListAppUserManager.instance
-          .getUserByUid((element.data().userTo));
+          .getByUid((element.data().userTo));
     }));
   }
 
   Future<List<ListAppUser?>> getFriendsToByUid(String uid) async {
-    final queryResultTo = await _friendshipsCollection
+    final queryResultTo = await this
+        .firebaseCollection
         .where('userTo', isEqualTo: uid)
         .where('requestAccepted', isEqualTo: true)
         .get();
 
     return Future.wait(queryResultTo.docs.map((element) async {
       return await ListAppUserManager.instance
-          .getUserByUid((element.data().userFrom));
+          .getByUid((element.data().userFrom));
     }));
   }
 
   Future<ListAppFriendship?> getFriendshipById(String id) async {
-    final queryResult = await _friendshipsCollection.doc(id).get();
+    final queryResult = await this.firebaseCollection.doc(id).get();
 
     return queryResult.data();
   }
 
-  Future<bool> addFriendByEmail(String email, String userFrom) async {
+  Future<bool> addFriendByEmail(String email, String? userFromUid) async {
     try {
       ListAppUser? userTo =
           await ListAppUserManager.instance.getUserByEmail(email);
       if (userTo != null) {
         final newFriendship = ListAppFriendship(
-            userFrom: userFrom,
-            userTo: userTo.databaseId,
+            userFrom: userFromUid!,
+            userTo: userTo.databaseId!,
             requestAccepted: false);
 
-        await _friendshipsCollection.add(newFriendship);
+        await this.firebaseCollection.add(newFriendship);
       }
     } on StateError catch (_) {
       return false;
@@ -75,10 +78,10 @@ class ListAppFriendshipManager with ChangeNotifier {
       if (userTo != null) {
         final newFriendship = ListAppFriendship(
             userFrom: userFrom,
-            userTo: userTo.databaseId,
+            userTo: userTo.databaseId!,
             requestAccepted: false);
 
-        await _friendshipsCollection.add(newFriendship);
+        await this.firebaseCollection.add(newFriendship);
         return true;
       }
     }).catchError((onError) {
@@ -95,10 +98,10 @@ class ListAppFriendshipManager with ChangeNotifier {
       if (userTo != null) {
         final newFriendship = ListAppFriendship(
             userFrom: userFrom,
-            userTo: userTo.databaseId,
+            userTo: userTo.databaseId!,
             requestAccepted: false);
 
-        await _friendshipsCollection.add(newFriendship);
+        await this.firebaseCollection.add(newFriendship);
       }
     } on TypeError catch (_) {
       return false;

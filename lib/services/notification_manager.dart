@@ -1,30 +1,31 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/notification.dart';
+import 'package:mobile_applications/services/database_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 
-class ListAppNotificationManager with ChangeNotifier {
+class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
   static ListAppNotificationManager _instance =
       ListAppNotificationManager._privateConstructor();
 
-  ListAppNotificationManager._privateConstructor();
+  ListAppNotificationManager._privateConstructor()
+      : super(FirebaseFirestore.instance
+            .collection(ListAppNotification.collectionName)
+            .withConverter<ListAppNotification>(
+                fromFirestore: (snapshots, _) =>
+                    ListAppNotification.fromJson(snapshots.data()!),
+                toFirestore: (notification, _) => notification.toJson()));
 
   static ListAppNotificationManager get instance => _instance;
 
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
 
-  final _notificationsCollection = FirebaseFirestore.instance
-      .collection(ListAppNotification.collectionName)
-      .withConverter<ListAppNotification>(
-          fromFirestore: (snapshots, _) =>
-              ListAppNotification.fromJson(snapshots.data()!),
-          toFirestore: (notification, _) => notification.toJson());
-
-  Future<List<ListAppNotification>> getNotificationsByUid(
-      String uid, String? orderBy) async {
-    final queryResult =
-        await _notificationsCollection.where('userId', isEqualTo: uid).get();
+  Future<List<ListAppNotification>> getNotificationsByUserId(
+      String? userUid, String? orderBy) async {
+    final queryResult = await this
+        .firebaseCollection
+        .where('userId', isEqualTo: userUid!)
+        .get();
 
     var docs = queryResult.docs;
 
@@ -41,7 +42,7 @@ class ListAppNotificationManager with ChangeNotifier {
       print("STATUS");
       print(notification.status);
       final sender =
-          await ListAppUserManager.instance.getUserByUid(notification.userFrom);
+          await ListAppUserManager.instance.getByUid(notification.userFrom);
 
       notification.databaseId = e.id;
       notification.sender = sender;
@@ -50,12 +51,12 @@ class ListAppNotificationManager with ChangeNotifier {
   }
 
   Future<bool> acceptNotification(String id) async {
-    await _notificationsCollection.doc(id).update({"status": "accepted"});
+    await this.firebaseCollection.doc(id).update({"status": "accepted"});
     return true;
   }
 
   Future<bool> rejectNotification(String id) async {
-    await _notificationsCollection.doc(id).update({"status": "rejected"});
+    await this.firebaseCollection.doc(id).update({"status": "rejected"});
     return true;
   }
 
@@ -63,7 +64,7 @@ class ListAppNotificationManager with ChangeNotifier {
     try {
       var cont = 0;
       print("Inizio getunanswered");
-      var notificationList = await getNotificationsByUid(uid, orderBy);
+      var notificationList = await getNotificationsByUserId(uid, orderBy);
 
       for (var item in notificationList) {
         if (item.status == NotificationStatus.undefined) {
@@ -87,7 +88,7 @@ class ListAppNotificationManager with ChangeNotifier {
 
   /*Future<List<ListAppFriendship?>> getNotificationsByUid(String uid) async {
     final queryResult =
-        await _notificationsCollection.where('userId', isEqualTo: uid).get();
+        await this.firebaseCollection.where('userId', isEqualTo: uid).get();
 
     print("getNotificationsByUid");
 

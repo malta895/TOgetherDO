@@ -5,7 +5,6 @@ import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/friendship_manager.dart';
 import 'package:mobile_applications/services/list_manager.dart';
-import 'package:mobile_applications/services/user_manager.dart';
 import 'package:provider/provider.dart';
 
 class NewListPage extends StatelessWidget {
@@ -158,7 +157,7 @@ class _NewListFormState extends State<_NewListForm> {
         style: ElevatedButton.styleFrom(
           primary: Theme.of(context).accentColor,
         ),
-        onPressed: () {
+        onPressed: () async {
           // exit when is uploading to avoid duplicates
           if (isUploading) return;
           isUploading = true;
@@ -170,30 +169,34 @@ class _NewListFormState extends State<_NewListForm> {
           // otherwise.
           if (_formKey.currentState?.validate() == true) {
             final newList = ListAppList(
-                name: _listTitleController.text,
-                description: _listDescriptionController.text,
-                listType: _listTypeValue,
-                creatorUid: currentUser!.databaseId,
-                membersAsUsers: members);
+              name: _listTitleController.text,
+              description: _listDescriptionController.text,
+              listType: _listTypeValue,
+              creatorUid: currentUser!.databaseId,
+              membersAsUsers: members,
+            );
 
             // If the form is valid, display a Snackbar.
-            // NOTE se abbiamo tempo sarebbe carino mettere l'animazione che c'é
+            // TODO se abbiamo tempo sarebbe carino mettere l'animazione che c'é
             // sui bottoni al login (bisognerebbe copiarla dalla libreria)
             final snackBar = ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text('Uploading data')));
 
             final user = context.read<ListAppAuthProvider>().loggedInUser!;
-            ListAppListManager.instanceForUserUid(user.uid)
-                .saveInstance(newList)
-                .then((_) {
+
+            try {
+              await ListAppListManager.instanceForUserUid(user.uid)
+                  .saveToFirestore(newList);
               snackBar.close();
               Navigator.of(context).pop<ListAppList?>(newList);
               isUploading = false;
-            }, onError: (_) {
+            } on Exception catch (e) {
+              print(e);
               ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Error while creating list')));
               isUploading = false;
-            });
+              rethrow;
+            }
           }
         },
         child: Text('Submit'),
@@ -243,11 +246,11 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
 
     final Future<List<ListAppUser?>> friendsFrom = ListAppFriendshipManager
         .instance
-        .getFriendsFromByUid(currentUser!.databaseId);
+        .getFriendsFromByUid(currentUser!.databaseId!);
 
     final Future<List<ListAppUser?>> friendsTo = ListAppFriendshipManager
         .instance
-        .getFriendsToByUid(currentUser.databaseId);
+        .getFriendsToByUid(currentUser.databaseId!);
 
     return Padding(
         padding: EdgeInsets.only(top: 15),

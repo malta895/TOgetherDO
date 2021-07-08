@@ -4,6 +4,7 @@ import 'package:mobile_applications/models/friendship.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/database_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
+import 'package:mobile_applications/services/utils.dart';
 
 class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
     with ChangeNotifier {
@@ -29,7 +30,9 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
         .where('requestAccepted', isEqualTo: true)
         .get();
 
-    return Future.wait(queryResultFrom.docs.map((element) async {
+    return Future.wait(queryResultFrom.docs
+        .where((element) => ManagerUtils.doesElementConvertFromJson(element))
+        .map((element) async {
       return await ListAppUserManager.instance
           .getByUid((element.data().userTo));
     }));

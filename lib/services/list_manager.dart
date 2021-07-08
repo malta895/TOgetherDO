@@ -5,6 +5,7 @@ import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/database_manager.dart';
 import 'package:mobile_applications/services/item_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
+import 'package:mobile_applications/services/utils.dart';
 
 class ListAppListManager extends DatabaseManager<ListAppList> {
   static Query? _collectionGroup;
@@ -86,16 +87,9 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
     //   }
     // });
 
-    final listAppLists = combinedQueryResult.where((element) {
-      // take only the non-malformed elements
-      try {
-        element.data();
-
-        return true;
-      } on CheckedFromJsonException catch (_) {
-        return false;
-      }
-    }).map((listDocumentSnapshot) async {
+    final listAppLists = combinedQueryResult
+        .where((element) => ManagerUtils.doesElementConvertFromJson(element))
+        .map((listDocumentSnapshot) async {
       final ListAppList listAppList = listDocumentSnapshot.data();
 
       // inject creator

@@ -46,7 +46,7 @@ class ListAppUser extends BaseModel {
     this.isNew = false,
   })  : this.displayName = displayName ?? firstName + ' ' + lastName,
         this.username = username ?? email.substring(0, email.indexOf('@')),
-        super(databaseId);
+        super(databaseId: databaseId);
 
   String get fullName =>
       displayName.isNotEmpty ? displayName : firstName + ' ' + lastName;

@@ -1,5 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/base_model.dart';
+// ignore: unused_import
+import 'package:mobile_applications/models/utils.dart';
 
 part 'friendship.g.dart';
 
@@ -26,7 +28,7 @@ class ListAppFriendship extends BaseModel {
     required this.userFrom,
     required this.userTo,
     this.requestAccepted = false,
-  }) : super(databaseId);
+  }) : super(databaseId: databaseId);
 
   factory ListAppFriendship.fromJson(Map<String, dynamic> json) =>
       _$ListAppFriendshipFromJson(json);

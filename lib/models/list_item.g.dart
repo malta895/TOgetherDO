@@ -8,6 +8,7 @@ part of 'list_item.dart';
 
 Map<String, dynamic> _$BaseItemToJson(BaseItem instance) => <String, dynamic>{
       'databaseId': instance.databaseId,
+      'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
       'name': instance.name,
       'description': instance.description,
       'maxQuantity': instance.maxQuantity,
@@ -27,6 +28,8 @@ SimpleItem _$SimpleItemFromJson(Map<String, dynamic> json) {
       databaseId: $checkedConvert(json, 'databaseId', (v) => v as String?),
       name: $checkedConvert(json, 'name', (v) => v as String),
       description: $checkedConvert(json, 'description', (v) => v as String?),
+      createdAt: $checkedConvert(
+          json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
     );
     return val;
   });
@@ -35,6 +38,7 @@ SimpleItem _$SimpleItemFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$SimpleItemToJson(SimpleItem instance) =>
     <String, dynamic>{
       'databaseId': instance.databaseId,
+      'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
       'name': instance.name,
       'description': instance.description,
     };
@@ -46,6 +50,8 @@ MultiFulfillmentItem _$MultiFulfillmentItemFromJson(Map<String, dynamic> json) {
       name: $checkedConvert(json, 'name', (v) => v as String),
       description: $checkedConvert(json, 'description', (v) => v as String?),
       maxQuantity: $checkedConvert(json, 'maxQuantity', (v) => v as int),
+      createdAt: $checkedConvert(
+          json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
     );
     return val;
   });
@@ -55,6 +61,7 @@ Map<String, dynamic> _$MultiFulfillmentItemToJson(
         MultiFulfillmentItem instance) =>
     <String, dynamic>{
       'databaseId': instance.databaseId,
+      'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
       'name': instance.name,
       'description': instance.description,
       'maxQuantity': instance.maxQuantity,
@@ -70,6 +77,8 @@ MultiFulfillmentMemberItem _$MultiFulfillmentMemberItemFromJson(
       maxQuantity: $checkedConvert(json, 'maxQuantity', (v) => v as int),
       quantityPerMember:
           $checkedConvert(json, 'quantityPerMember', (v) => v as int),
+      createdAt: $checkedConvert(
+          json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
     );
     return val;
   });
@@ -79,6 +88,7 @@ Map<String, dynamic> _$MultiFulfillmentMemberItemToJson(
         MultiFulfillmentMemberItem instance) =>
     <String, dynamic>{
       'databaseId': instance.databaseId,
+      'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
       'name': instance.name,
       'description': instance.description,
       'maxQuantity': instance.maxQuantity,

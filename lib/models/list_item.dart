@@ -4,6 +4,8 @@ import 'dart:core';
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/base_model.dart';
+// ignore: unused_import
+import 'package:mobile_applications/models/utils.dart';
 
 import 'user.dart';
 
@@ -56,7 +58,11 @@ abstract class BaseItem extends BaseModel {
     required this.maxQuantity,
     required this.quantityPerMember,
     required this.itemType,
-  }) : super(databaseId);
+    DateTime? createdAt,
+  }) : super(
+          databaseId: databaseId,
+          createdAt: createdAt,
+        );
 
   int quantityFulfilledBy(ListAppUser member);
 
@@ -108,14 +114,20 @@ abstract class BaseItem extends BaseModel {
 class SimpleItem extends BaseItem {
   ListAppUser? _fulfiller;
 
-  SimpleItem({String? databaseId, required String name, String? description})
-      : super(
-            itemType: ItemType.simple,
-            databaseId: databaseId,
-            name: name,
-            description: description,
-            maxQuantity: 1,
-            quantityPerMember: 1);
+  SimpleItem({
+    String? databaseId,
+    required String name,
+    String? description,
+    createdAt,
+  }) : super(
+          itemType: ItemType.simple,
+          databaseId: databaseId,
+          name: name,
+          description: description,
+          maxQuantity: 1,
+          quantityPerMember: 1,
+          createdAt: createdAt,
+        );
 
   ListAppUser? get fulfiller {
     return _fulfiller;
@@ -169,18 +181,21 @@ class SimpleItem extends BaseItem {
 class MultiFulfillmentItem extends BaseItem {
   Set<ListAppUser> _fulfillers = Set<ListAppUser>();
 
-  MultiFulfillmentItem(
-      {String? databaseId,
-      required String name,
-      String? description,
-      required int maxQuantity})
-      : super(
-            itemType: ItemType.multiFulfillment,
-            databaseId: databaseId,
-            name: name,
-            description: description,
-            maxQuantity: maxQuantity,
-            quantityPerMember: 1);
+  MultiFulfillmentItem({
+    String? databaseId,
+    required String name,
+    String? description,
+    required int maxQuantity,
+    createdAt,
+  }) : super(
+          itemType: ItemType.multiFulfillment,
+          databaseId: databaseId,
+          name: name,
+          description: description,
+          maxQuantity: maxQuantity,
+          quantityPerMember: 1,
+          createdAt: createdAt,
+        );
 
   @override
   bool fulfill({required ListAppUser member, int quantityFulfilled = 1}) {
@@ -219,19 +234,22 @@ class MultiFulfillmentMemberItem extends BaseItem {
   //map each member with a number representing how many times they have fulfilled
   Map<ListAppUser, int> _fulfillers = Map<ListAppUser, int>();
 
-  MultiFulfillmentMemberItem(
-      {String? databaseId,
-      required String name,
-      String? description,
-      required int maxQuantity,
-      required int quantityPerMember})
-      : super(
-            itemType: ItemType.multiFulfillmentMember,
-            databaseId: databaseId,
-            name: name,
-            description: description,
-            maxQuantity: maxQuantity,
-            quantityPerMember: quantityPerMember);
+  MultiFulfillmentMemberItem({
+    String? databaseId,
+    required String name,
+    String? description,
+    required int maxQuantity,
+    required int quantityPerMember,
+    createdAt,
+  }) : super(
+          itemType: ItemType.multiFulfillmentMember,
+          databaseId: databaseId,
+          name: name,
+          description: description,
+          maxQuantity: maxQuantity,
+          quantityPerMember: quantityPerMember,
+          createdAt: createdAt,
+        );
 
   @override
   bool fulfill({required ListAppUser member, int quantityFulfilled = 1}) {

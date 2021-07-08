@@ -3,6 +3,7 @@ import 'dart:core';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/base_model.dart';
 import 'package:mobile_applications/models/list_item.dart';
+// ignore: unused_import
 import 'package:mobile_applications/models/utils.dart';
 
 import 'user.dart';
@@ -39,9 +40,6 @@ class ListAppList extends BaseModel {
   final String? description;
 
   @JsonKey(
-      fromJson: ModelUtils.dateTimeFromJson, toJson: ModelUtils.dateTimeToJson)
-  final DateTime createdAt;
-  @JsonKey(
       fromJson: ModelUtils.nullableDateTimeFromJson,
       toJson: ModelUtils.nullableDateTimeToJson)
   final DateTime? expiryDate;
@@ -73,9 +71,8 @@ class ListAppList extends BaseModel {
         .public, // NOTE maybe better to make it required and remove the default value
     this.description,
     List<ListAppUser>? membersAsUsers,
-  })  : this.createdAt = createdAt ?? DateTime.now(),
-        this.membersAsUsers = membersAsUsers ?? [],
-        super(databaseId) {
+  })  : this.membersAsUsers = membersAsUsers ?? [],
+        super(databaseId: databaseId) {
     if (membersAsUsers != null)
       members = membersAsUsers.map((e) => e.databaseId).toSet();
   }
@@ -98,8 +95,9 @@ class ListAppFulfillment {
   /// if the list item has a price, this contains the amount countributed by the user
   final double priceContribution;
 
-  ListAppFulfillment(
-      {required this.member,
-      required this.quantityCompleted,
-      required this.priceContribution});
+  ListAppFulfillment({
+    required this.member,
+    required this.quantityCompleted,
+    required this.priceContribution,
+  });
 }

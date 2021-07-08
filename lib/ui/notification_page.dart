@@ -57,7 +57,7 @@ class _NotificationPage extends State<NotificationPage> {
       profilePictureURL:
           "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVLqfekg_kitC_QJ5kgBUTh2tt5EIcxEnQDQ&usqp=CAU");*/
 
-  final ListAppList list = ListAppList(name: "Birthday");
+  //final ListAppList list = ListAppList(name: "Birthday");
 
   final Set<ListAppNotification> notificationList = {};
 

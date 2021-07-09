@@ -20,10 +20,13 @@ jobs:
         java-version: '12.x'
     
     # Setup the flutter environment.
-    - uses: subosito/flutter-action@v1.5.0
+    - uses: subosito/flutter-action@v1.5.3
       with:
         channel: 'stable'
-    
+
+    # See flutter details
+    - run: flutter doctor -v
+
     # Get flutter dependencies.
     - run: flutter pub get
     
@@ -33,12 +36,12 @@ jobs:
     # Run widget tests for our flutter project.
     - run: flutter test -r expanded
 
-      # apk build removed for faster CI
-    # # Build apk.
-    # - run: flutter build apk
+
+    # Build apk.
+    - run: flutter build apk
     
-    # # Upload generated apk to the artifacts.
-    # - uses: actions/upload-artifact@v1
-    #   with:
-    #     name: release-apk
-    #     path: build/app/outputs/apk/release/app-release.apk
+    # Upload generated apk to the artifacts.
+    - uses: actions/upload-artifact@v1
+      with:
+        name: release-apk
+        path: build/app/outputs/apk/release/app-release.apk

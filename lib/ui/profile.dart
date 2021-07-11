@@ -240,7 +240,7 @@ class _ProfilePageState extends State<ProfilePage> {
             // leading: Icon(Icons.menu), // not needed, automatically added by Drawer
             title: Text(title),
             actions: [NotificationBadge()]),
-        drawer: ListAppNavDrawer(ProfilePage.routeName),
+        drawer: const ListAppNavDrawer(routeName: ProfilePage.routeName),
         body: _buildProfile(context));
   }
 }

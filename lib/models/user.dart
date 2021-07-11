@@ -31,6 +31,7 @@ class ListAppUser extends BaseModel {
   @JsonKey(defaultValue: {})
   Set<String> notificationTokens;
 
+  /// The email is ignored because not needed outside of the app, it is populated only for current user
   @JsonKey(ignore: true)
   String? email;
 

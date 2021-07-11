@@ -47,7 +47,7 @@ class SettingsScreen extends StatefulWidget {
           }
           return Scaffold(
               appBar: AppBar(title: Text('Settings UI')),
-              drawer: ListAppNavDrawer(SettingsScreen.routeName),
+              drawer: ListAppNavDrawer(routeName: SettingsScreen.routeName),
               body: Column(children: [
                 Container(
                     decoration: BoxDecoration(
@@ -137,7 +137,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
     return Scaffold(
         appBar: AppBar(title: Text('Settings')),
-        drawer: ListAppNavDrawer(SettingsScreen.routeName),
+        drawer: const ListAppNavDrawer(routeName: SettingsScreen.routeName),
         body: Column(children: [
           Container(
               decoration: BoxDecoration(

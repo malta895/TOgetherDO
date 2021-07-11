@@ -20,94 +20,16 @@ class ListAppNavDrawerStateInfo with ChangeNotifier {
   }
 }
 
-class ListAppNavDrawer extends StatefulWidget {
-  final String currentRouteName;
-  const ListAppNavDrawer(this.currentRouteName);
+class ListAppNavDrawer extends StatelessWidget {
+  final String routeName;
+  const ListAppNavDrawer({required this.routeName});
 
-  @override
-  _ListAppNavDrawerState createState() => _ListAppNavDrawerState();
-}
-
-class _ListAppNavDrawerState extends State<ListAppNavDrawer> {
-  Future<ListAppUser?>? _userFuture;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    _userFuture =
-        Provider.of<ListAppAuthProvider>(context).getLoggedInListAppUser();
-  }
-
-  final Map<String, int?> _destinationsRouteNamesAndIndexes = {
+  static const destinationsRouteNamesAndIndexes = {
     ListsPage.routeName: 0,
     SettingsScreen.routeName: 1,
     FriendsPage.routeName: 2,
     ProfilePage.routeName: null,
   };
-
-  Widget _buildUserDetailsInkWell(BuildContext context) {
-    return FutureBuilder<ListAppUser?>(
-        future: _userFuture,
-        builder: (BuildContext context, AsyncSnapshot<ListAppUser?> snapshot) {
-          ListAppUser? listAppUser = snapshot.data;
-
-          return InkWell(
-            onTap: () {
-              Provider.of<ListAppNavDrawerStateInfo>(context, listen: false)
-                      .currentDrawerIndex =
-                  _destinationsRouteNamesAndIndexes[ProfilePage.routeName];
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => ProfilePage()),
-              );
-            },
-            child: DrawerHeader(
-              margin: EdgeInsets.zero,
-              decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor),
-              child: Stack(
-                children: <Widget>[
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: CircleAvatar(
-                      backgroundImage: () {
-                        final String? photoURL = listAppUser?.profilePictureURL;
-
-                        if (photoURL != null) return NetworkImage(photoURL);
-
-                        return AssetImage("assets/sample-profile.png");
-                      }() as ImageProvider,
-                      radius: 40.0,
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      listAppUser?.fullName ?? "",
-                      style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontSize: 20.0),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight + Alignment(0, .3),
-                    child: Text(
-                      Provider.of<ListAppAuthProvider>(context)
-                          .loggedInUser!
-                          .email!,
-                      style: TextStyle(
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
-  }
 
   ListTile _buildMenuItem(
       {required Icon icon,
@@ -120,7 +42,7 @@ class _ListAppNavDrawerState extends State<ListAppNavDrawer> {
     return ListTile(
         leading: icon,
         title: Text(title),
-        selected: _destinationsRouteNamesAndIndexes[destinationRouteName]
+        selected: destinationsRouteNamesAndIndexes[destinationRouteName]
                 ?.compareTo(currentDrawerIndex ?? -1) ==
             0,
         onTap: () {
@@ -130,9 +52,9 @@ class _ListAppNavDrawerState extends State<ListAppNavDrawer> {
 
           Provider.of<ListAppNavDrawerStateInfo>(context, listen: false)
                   .currentDrawerIndex =
-              _destinationsRouteNamesAndIndexes[destinationRouteName];
+              destinationsRouteNamesAndIndexes[destinationRouteName];
 
-          if (widget.currentRouteName == destinationRouteName) return;
+          if (routeName == destinationRouteName) return;
 
           if (pushReplacement) {
             Navigator.pushReplacementNamed(context, destinationRouteName);
@@ -146,41 +68,39 @@ class _ListAppNavDrawerState extends State<ListAppNavDrawer> {
   Widget build(BuildContext context) {
     int? currentDrawerIndex =
         Provider.of<ListAppNavDrawerStateInfo>(context).currentDrawerIndex ??
-            _destinationsRouteNamesAndIndexes[widget.currentRouteName];
+            destinationsRouteNamesAndIndexes[routeName];
 
     return Drawer(
       child: ListView(
         children: <Widget>[
-          //TODO choose which DrawerHeader we should use
-          //_buildUserAccountsDrawerHeader(context),
-          _buildUserDetailsInkWell(context),
-          Divider(
+          const _UserDetailsInkWell(),
+          const Divider(
             height: 1,
             thickness: 1,
           ),
           _buildMenuItem(
-            icon: Icon(Icons.list),
+            icon: const Icon(Icons.list),
             context: context,
             currentDrawerIndex: currentDrawerIndex,
             title: "My Lists",
             destinationRouteName: ListsPage.routeName,
           ),
           _buildMenuItem(
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
             context: context,
             currentDrawerIndex: currentDrawerIndex,
             title: "Settings",
             destinationRouteName: SettingsScreen.routeName,
           ),
           _buildMenuItem(
-            icon: Icon(Icons.people),
+            icon: const Icon(Icons.people),
             context: context,
             currentDrawerIndex: currentDrawerIndex,
             title: "Friends",
             destinationRouteName: FriendsPage.routeName,
           ),
           _buildMenuItem(
-              icon: Icon(Icons.logout),
+              icon: const Icon(Icons.logout),
               context: context,
               title: "Logout",
               currentDrawerIndex: currentDrawerIndex,
@@ -188,6 +108,106 @@ class _ListAppNavDrawerState extends State<ListAppNavDrawer> {
               pushReplacement: true,
               onTap: () => context.read<ListAppAuthProvider>().logout()),
         ],
+      ),
+    );
+  }
+}
+
+class _UserDetailsInkWell extends StatefulWidget {
+  const _UserDetailsInkWell({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _UserDetailsInkWellState();
+}
+
+class _UserDetailsInkWellState extends State<_UserDetailsInkWell> {
+  Stream<ListAppUser?>? _userStream;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    print('BUILD NAVIGATION DRAWER');
+
+    _userStream = Provider.of<ListAppAuthProvider>(context)
+        .getLoggedInListAppUserStream();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Provider.of<ListAppNavDrawerStateInfo>(context, listen: false)
+                .currentDrawerIndex =
+            ListAppNavDrawer
+                .destinationsRouteNamesAndIndexes[ProfilePage.routeName];
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => ProfilePage()),
+        );
+      },
+      child: DrawerHeader(
+        margin: EdgeInsets.zero,
+        decoration:
+            BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
+        child: StreamBuilder<ListAppUser?>(
+            stream: _userStream,
+            builder:
+                (BuildContext context, AsyncSnapshot<ListAppUser?> snapshot) {
+              ListAppUser? listAppUser;
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                case ConnectionState.waiting:
+                  return Container();
+                case ConnectionState.active:
+                case ConnectionState.done:
+                  listAppUser = snapshot.data;
+                  return Stack(
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: CircleAvatar(
+                          backgroundImage: () {
+                            final String? photoURL =
+                                listAppUser?.profilePictureURL;
+
+                            if (photoURL != null) return NetworkImage(photoURL);
+
+                            return const AssetImage(
+                                "assets/sample-profile.png");
+                          }() as ImageProvider,
+                          radius: 40.0,
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          listAppUser?.fullName ?? "",
+                          style: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                              fontSize: 20.0),
+                        ),
+                      ),
+                      Align(
+                        alignment:
+                            Alignment.centerRight + const Alignment(0, .3),
+                        child: Text(
+                          listAppUser?.email ?? '',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+              }
+            }),
       ),
     );
   }

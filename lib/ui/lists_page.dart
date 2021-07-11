@@ -6,6 +6,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_applications/models/list.dart';
+import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/ui/list_details_page.dart';
@@ -30,6 +31,8 @@ class _ListsPageState extends State<ListsPage>
 
   Future<List<ListAppList>>? _listsFuture;
 
+  late final ListAppUser? _currentListAppUser;
+
   // the current shown lists, needed as state for the AnimatedList to work properly
   List<ListAppList> _listAppLists = [];
 
@@ -46,7 +49,11 @@ class _ListsPageState extends State<ListsPage>
       ..addStatusListener((AnimationStatus status) {
         setState(() {});
       });
+
     super.initState();
+
+    _currentListAppUser =
+        context.read<ListAppAuthProvider>().loggedInListAppUser;
 
     _listsFuture = _fetchLists();
     SchedulerBinding.instance?.addPostFrameCallback((_) {
@@ -126,9 +133,9 @@ class _ListsPageState extends State<ListsPage>
               itemBuilder: (context, i, animation) {
                 return SlideTransition(
                     // The slide happens when a new list is added
-                    position: animation.drive(
-                        Tween<Offset>(begin: Offset(1, 0), end: Offset(0, 0))
-                            .chain(CurveTween(curve: Curves.ease))),
+                    position: animation.drive(Tween<Offset>(
+                            begin: const Offset(1, 0), end: const Offset(0, 0))
+                        .chain(CurveTween(curve: Curves.ease))),
                     child: _buildRow(context, _listAppLists[i]));
               },
             ),
@@ -166,7 +173,7 @@ class _ListsPageState extends State<ListsPage>
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(),
+                    const CircularProgressIndicator(),
                   ],
                 );
               case ConnectionState.done:
@@ -178,11 +185,8 @@ class _ListsPageState extends State<ListsPage>
   }
 
   Widget _buildRow(BuildContext context, ListAppList listAppList) {
-    final currentListAppUser =
-        context.read<ListAppAuthProvider>().loggedInListAppUser!;
-
     final bool doesUserOwnList =
-        listAppList.creatorUid == currentListAppUser.databaseId;
+        listAppList.creatorUid == _currentListAppUser?.databaseId;
 
     return Dismissible(
       confirmDismiss: (DismissDirection direction) async {
@@ -195,9 +199,9 @@ class _ListsPageState extends State<ListsPage>
                       listAppList.name +
                       " list?"),
               content: doesUserOwnList
-                  ? Text(
+                  ? const Text(
                       "You and all the other participants will not see this list anymore")
-                  : Text(
+                  : const Text(
                       "If you push LEAVE, you will abandon this list and you won't be able to join it unless someone invites you again"),
               actions: <Widget>[
                 TextButton(
@@ -221,10 +225,10 @@ class _ListsPageState extends State<ListsPage>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                SizedBox(
+                const SizedBox(
                   width: 20,
                 ),
-                Icon(
+                const Icon(
                   Icons.delete,
                 ),
               ],
@@ -236,7 +240,7 @@ class _ListsPageState extends State<ListsPage>
         await _deleteOrAbandonList(listAppList);
       },
       child: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
               border: Border(
                   bottom: BorderSide(
             //                   <--- left side
@@ -244,14 +248,14 @@ class _ListsPageState extends State<ListsPage>
             width: 0.8,
           ))),
           child: ListTile(
-            key: Key("Item tile"),
-            leading: Icon(
+            key: const Key("Item tile"),
+            leading: const Icon(
               Icons.list,
               size: 40,
             ),
             trailing: Column(
               children: [
-                Icon(
+                const Icon(
                   Icons.date_range,
                   size: 20,
                 ),
@@ -262,7 +266,7 @@ class _ListsPageState extends State<ListsPage>
             ),
             title: Text(
               listAppList.name,
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             isThreeLine: true,
             subtitle: Text((doesUserOwnList
@@ -290,7 +294,7 @@ class _ListsPageState extends State<ListsPage>
           title: Text(title),
           actions: [NotificationBadge()],
         ),
-        drawer: ListAppNavDrawer(ListsPage.routeName),
+        drawer: const ListAppNavDrawer(routeName: ListsPage.routeName),
         body: _buildListItems(context),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () async {
@@ -304,13 +308,13 @@ class _ListsPageState extends State<ListsPage>
             if (newList != null) {
               setState(() {
                 _listAppLists.insert(0, newList);
-                _animatedListKey.currentState
-                    ?.insertItem(0, duration: Duration(milliseconds: 700));
+                _animatedListKey.currentState?.insertItem(0,
+                    duration: const Duration(milliseconds: 700));
               });
             }
           },
-          icon: Icon(Icons.add),
-          label: Text('NEW LIST'),
+          icon: const Icon(Icons.add),
+          label: const Text('NEW LIST'),
         ));
   }
 }

@@ -32,6 +32,14 @@ class ListAppAuthProvider with ChangeNotifier {
     return _loggedInListAppUser;
   }
 
+  Stream<ListAppUser?> getLoggedInListAppUserStream() async* {
+    await for (User? firebaseUser in authState) {
+      if (firebaseUser == null) yield null;
+      await _createListAppUser(firebaseUser!);
+      yield _loggedInListAppUser;
+    }
+  }
+
   static int _initializationCounter = 0;
 
   ListAppAuthProvider(this.firebaseAuth) {
@@ -92,6 +100,9 @@ class ListAppAuthProvider with ChangeNotifier {
 
       await ListAppUserManager.instance.saveToFirestore(listAppUser);
     }
+    // inject email, because it is not retrieved from db
+    listAppUser.email = firebaseUser.email;
+
     _loggedInListAppUser = listAppUser;
   }
 

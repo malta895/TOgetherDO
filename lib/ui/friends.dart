@@ -80,7 +80,7 @@ class _FriendsList extends State<FriendsPage> {
           title: Text(title),
           actions: [NotificationBadge()],
         ),
-        drawer: ListAppNavDrawer(FriendsPage.routeName),
+        drawer: const ListAppNavDrawer(routeName: FriendsPage.routeName),
         body: _buildListItems(context),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => {

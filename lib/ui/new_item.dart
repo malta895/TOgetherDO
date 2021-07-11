@@ -11,7 +11,7 @@ class NewItemPage extends StatelessWidget {
   final ListAppList currentList;
   final ListAppUser currentUser;
 
-  NewItemPage({
+  const NewItemPage({
     required this.currentList,
     required this.currentUser,
   });
@@ -34,7 +34,7 @@ class _NewItemForm extends StatefulWidget {
   final ListAppList currentList;
   final ListAppUser currentUser;
 
-  _NewItemForm({
+  const _NewItemForm({
     required this.currentList,
     required this.currentUser,
   });

@@ -13,7 +13,7 @@ import 'package:mobile_applications/ui/notification_badge.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
-  static final String routeName = "/profile";
+  static const String routeName = "/profile";
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -197,7 +197,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return _buildRow(
       context: context,
       title: 'Email',
-      text: Text(_loggedInListAppUser.email,
+      text: Text(_loggedInListAppUser.email ?? '',
           style: TextStyle(
               fontSize: 16,
               color: Theme.of(context).textTheme.headline1!.color)),

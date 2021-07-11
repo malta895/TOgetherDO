@@ -8,7 +8,7 @@ enum FadeDirection {
 }
 
 class FadeIn extends StatefulWidget {
-  FadeIn({
+  const FadeIn({
     Key? key,
     this.fadeDirection = FadeDirection.startToEnd,
     this.offset = 1.0,

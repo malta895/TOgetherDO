@@ -1,13 +1,12 @@
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/theme.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:app_settings/app_settings.dart';
-
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatefulWidget {
-  static final String routeName = "/settings_ui";
+  static const String routeName = "/settings_ui";
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class RoundButton extends StatefulWidget {
-  RoundButton({
+  const RoundButton({
     Key? key,
     required this.icon,
     required this.onPressed,

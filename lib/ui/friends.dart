@@ -7,7 +7,7 @@ import 'package:mobile_applications/ui/new_friends.dart';
 import 'package:mobile_applications/ui/notification_badge.dart';
 
 class FriendsPage extends StatefulWidget {
-  static final String routeName = "/friends";
+  static const String routeName = "/friends";
 
   @override
   _FriendsList createState() => _FriendsList();
@@ -65,7 +65,7 @@ class _FriendsList extends State<FriendsPage> {
             friend.fullName,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: Text(friend.email),
+          subtitle: Text(friend.username ?? ''),
           onTap: () {
             print(friend.fullName);
           },

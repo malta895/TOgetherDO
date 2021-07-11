@@ -12,7 +12,7 @@ abstract class ManagerUtils {
       queryDocumentSnapshot.data();
       return true;
     } on CheckedFromJsonException catch (e) {
-      if (throwError ?? false) rethrow;
+      if (throwError == true) rethrow;
       log(e.message ?? 'Unknown checked from json exception');
       return false;
     }

@@ -6,7 +6,6 @@ import 'package:test/test.dart';
 void main() {
   var userTest = ListAppUser(
       databaseId: "123abdd",
-      email: "prova@test.com",
       firstName: "testFirstName",
       lastName: "testLastName");
   group('Testing SimpleItem', () {

@@ -15,37 +15,38 @@ class ListAppUser extends BaseModel {
   String firstName;
   String lastName;
   String displayName;
-  final String email;
 
   ///The username. By default is equal to the first part of the email, but can be changed
   String? username;
-  String? phoneNumber;
+
   String? profilePictureURL;
 
-  @JsonKey(defaultValue: const {})
+  @JsonKey(defaultValue: {})
   Set<ListAppUser> friends;
 
   /// A new user that needs additional signup data
   bool isNew;
 
   /// The FCM tokens of the devices used by the user
-  @JsonKey(defaultValue: const {})
+  @JsonKey(defaultValue: {})
   Set<String> notificationTokens;
 
+  @JsonKey(ignore: true)
+  String? email;
+
   ListAppUser({
+    this.email,
     String? databaseId,
-    required this.email,
     this.notificationTokens = const {},
     this.firstName = '',
     this.lastName = '',
     String? displayName,
     String? username,
-    this.phoneNumber,
     this.profilePictureURL,
     this.friends = const {},
     this.isNew = false,
   })  : this.displayName = displayName ?? firstName + ' ' + lastName,
-        this.username = username ?? email.substring(0, email.indexOf('@')),
+        this.username = username ?? '',
         super(databaseId: databaseId);
 
   String get fullName =>

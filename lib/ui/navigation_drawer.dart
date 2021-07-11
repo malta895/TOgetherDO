@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/ui/friends.dart';
 import 'package:mobile_applications/ui/lists_page.dart';
 import 'package:mobile_applications/ui/login/login_screen.dart';
@@ -22,7 +22,7 @@ class ListAppNavDrawerStateInfo with ChangeNotifier {
 
 class ListAppNavDrawer extends StatefulWidget {
   final String currentRouteName;
-  ListAppNavDrawer(this.currentRouteName);
+  const ListAppNavDrawer(this.currentRouteName);
 
   @override
   _ListAppNavDrawerState createState() => _ListAppNavDrawerState();
@@ -94,7 +94,9 @@ class _ListAppNavDrawerState extends State<ListAppNavDrawer> {
                   Align(
                     alignment: Alignment.centerRight + Alignment(0, .3),
                     child: Text(
-                      listAppUser?.email ?? '',
+                      Provider.of<ListAppAuthProvider>(context)
+                          .loggedInUser!
+                          .email!,
                       style: TextStyle(
                         color: Colors.grey,
                       ),

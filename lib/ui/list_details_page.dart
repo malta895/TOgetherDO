@@ -18,7 +18,7 @@ import 'package:provider/provider.dart';
 
 import '../models/user.dart';
 
-class ListViewPage extends StatefulWidget {
+class ListDetailsPage extends StatefulWidget {
   final ListAppList listAppList;
 
   /// If `true`, the button to add new members will be shown
@@ -27,17 +27,17 @@ class ListViewPage extends StatefulWidget {
   /// If `true`, the button to add new list items will be shown
   final bool canAddNewItems;
 
-  ListViewPage(
+  const ListDetailsPage(
     this.listAppList, {
     required this.canAddNewMembers,
     this.canAddNewItems = true,
   });
 
   @override
-  _ListViewPageState createState() => _ListViewPageState();
+  _ListDetailsPageState createState() => _ListDetailsPageState();
 }
 
-class _ListViewPageState extends State<ListViewPage> {
+class _ListDetailsPageState extends State<ListDetailsPage> {
   late ListAppUser _loggedInListAppUser;
   late final HashMap<ListAppUser, Color> _assignedColors =
       HashMap<ListAppUser, Color>();
@@ -138,10 +138,10 @@ class _ListViewPageState extends State<ListViewPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    SizedBox(
+                    const SizedBox(
                       width: 20,
                     ),
-                    Icon(
+                    const Icon(
                       Icons.delete,
                       color: Colors.white,
                     ),
@@ -167,7 +167,7 @@ class _ListViewPageState extends State<ListViewPage> {
                         flex: 5,
                         child: Text(
                           aListItem.name,
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: Colors.grey,
                               decoration: TextDecoration.lineThrough),
                         ),
@@ -239,10 +239,10 @@ class _ListViewPageState extends State<ListViewPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                       ),
-                      Icon(
+                      const Icon(
                         Icons.delete,
                         color: Colors.white,
                       ),
@@ -266,7 +266,7 @@ class _ListViewPageState extends State<ListViewPage> {
                           Expanded(
                               flex: 5,
                               child: Text(aListItem.name,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color: Colors.grey,
                                       decoration: TextDecoration.lineThrough))),
                           Expanded(
@@ -381,10 +381,10 @@ class _ListViewPageState extends State<ListViewPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                       ),
-                      Icon(
+                      const Icon(
                         Icons.delete,
                         color: Colors.white,
                       ),
@@ -407,7 +407,7 @@ class _ListViewPageState extends State<ListViewPage> {
                     flex: 5,
                     child: Text(aListItem.name,
                         style: aListItem.isFulfilled()
-                            ? TextStyle(
+                            ? const TextStyle(
                                 color: Colors.grey,
                                 decoration: TextDecoration.lineThrough)
                             : TextStyle(
@@ -426,7 +426,7 @@ class _ListViewPageState extends State<ListViewPage> {
               trailing: Container(
                 width: 40,
                 child: IconButton(
-                  padding: EdgeInsets.all(0),
+                  padding: const EdgeInsets.all(0),
                   icon: Icon(Icons.add_circle,
                       color: Theme.of(context).accentColor),
                   onPressed: () async =>
@@ -451,7 +451,8 @@ class _ListViewPageState extends State<ListViewPage> {
           return StatefulBuilder(builder: (context, setPickerState) {
             //we need it to be stateful because the widget state can change while the dialog is opened
             return AlertDialog(
-                title: Text("How many times have you completed this item?"),
+                title:
+                    const Text("How many times have you completed this item?"),
                 content: NumberPicker(
                   minValue: 0,
                   maxValue: aListItem.quantityPerMember,
@@ -498,7 +499,7 @@ class _ListViewPageState extends State<ListViewPage> {
   Widget _buildMemberRow(BuildContext context, ListAppUser member, bool admin) {
     final chosenWidget = !admin
         ? Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 border: Border(
                     bottom: BorderSide(
               color: Colors.grey,
@@ -513,7 +514,7 @@ class _ListViewPageState extends State<ListViewPage> {
                       color: _assignedColors[member]),
                 )))
         : Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 border: Border(
                     bottom: BorderSide(
               color: Colors.grey,
@@ -529,17 +530,17 @@ class _ListViewPageState extends State<ListViewPage> {
               ),
               trailing: member.databaseId == _loggedInListAppUser.databaseId
                   ? IconButton(
-                      icon: Icon(Icons.person_off_rounded),
+                      icon: const Icon(Icons.person_off_rounded),
                       onPressed: () => null,
                     )
                   : IconButton(
-                      icon: Icon(Icons.person_remove_alt_1_rounded),
+                      icon: const Icon(Icons.person_remove_alt_1_rounded),
                       onPressed: () {
                         showDialog(
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: Text("Delete member"),
+                                title: const Text("Delete member"),
                                 content: Text(
                                     "Are you sure you want to remove " +
                                         member.displayName +
@@ -559,7 +560,7 @@ class _ListViewPageState extends State<ListViewPage> {
                                                 member.databaseId!);
                                         Navigator.of(context).pop(true);
                                       },
-                                      child: Text('REMOVE')),
+                                      child: const Text('REMOVE')),
                                   TextButton(
                                     onPressed: () =>
                                         Navigator.of(context).pop(false),
@@ -577,7 +578,7 @@ class _ListViewPageState extends State<ListViewPage> {
   Widget _buildMemberRowAndQuantity(
       BuildContext context, ListAppUser member, int quantity) {
     return Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             border: Border(
                 bottom: BorderSide(
           color: Colors.grey,
@@ -592,7 +593,7 @@ class _ListViewPageState extends State<ListViewPage> {
             ),
             trailing: Text(
               quantity.toString(),
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             )));
   }
 
@@ -662,9 +663,9 @@ class _ListViewPageState extends State<ListViewPage> {
                         widget.listAppList.name +
                         " list?"),
                 content: doesUserOwnList
-                    ? Text(
+                    ? const Text(
                         "You and all the other participants will not see this list anymore")
-                    : Text(
+                    : const Text(
                         "If you push LEAVE, you will abandon this list and you won't be able to join it unless someone invites you again"),
                 actions: <Widget>[
                   TextButton(
@@ -750,7 +751,7 @@ class _ListViewPageState extends State<ListViewPage> {
                 // the sizedBox is needed to remove the title space
                 elevation: 0,
                 automaticallyImplyLeading: false,
-                bottom: TabBar(
+                bottom: const TabBar(
                   indicatorColor: Colors.white,
                   tabs: [
                     Tab(text: 'ITEMS', icon: Icon(Icons.done)),
@@ -857,7 +858,7 @@ class _ListViewPageState extends State<ListViewPage> {
                 Icons.add_circle_outline,
                 color: Theme.of(context).disabledColor,
               ),
-              Padding(padding: EdgeInsets.all(5)),
+              const Padding(padding: EdgeInsets.all(5)),
               Text(
                 'Add new list item...',
                 style: TextStyle(
@@ -881,7 +882,7 @@ class _ListViewPageState extends State<ListViewPage> {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/list_default.png'),
+          image: const AssetImage('assets/list_default.png'),
           //TODO image: aList.imageURL != null && alist.imageURL.isNotEmpy ? NetworkImage(aList.imageURL) :AssetImage('assets/list_default.png'),
           fit: BoxFit.cover,
           colorFilter: ColorFilter.mode(
@@ -897,9 +898,9 @@ class _ListViewPageState extends State<ListViewPage> {
                 ListTile(
                   dense: true,
                   horizontalTitleGap: 0.5,
-                  leading: Icon(Icons.list),
+                  leading: const Icon(Icons.list),
                   title: Text(widget.listAppList.name,
-                      style: TextStyle(fontSize: 20)),
+                      style: const TextStyle(fontSize: 20)),
                   subtitle: widget.listAppList.description != null
                       ? Text(widget.listAppList.description!)
                       : null,
@@ -907,7 +908,7 @@ class _ListViewPageState extends State<ListViewPage> {
                 ListTile(
                   dense: true,
                   horizontalTitleGap: 0.5,
-                  leading: Icon(Icons.date_range),
+                  leading: const Icon(Icons.date_range),
                   title: Text(DateFormat('MMM dd')
                       .format(widget.listAppList.createdAt)),
                   subtitle: Text(
@@ -916,7 +917,7 @@ class _ListViewPageState extends State<ListViewPage> {
                 ListTile(
                   dense: true,
                   horizontalTitleGap: 0.5,
-                  leading: Icon(Icons.person_pin_rounded),
+                  leading: const Icon(Icons.person_pin_rounded),
                   title: Text(
                       widget.listAppList.creator?.displayName ?? 'John Smith'),
                   subtitle:
@@ -959,7 +960,7 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
               Icons.add_circle_outline,
               color: Theme.of(context).disabledColor,
             ),
-            Padding(padding: EdgeInsets.all(5)),
+            const Padding(padding: EdgeInsets.all(5)),
             Text(
               'Add new member...',
               style: TextStyle(
@@ -990,7 +991,7 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                                   .toList();
 
                           return AlertDialog(
-                            title: Text("Choose members to add"),
+                            title: const Text("Choose members to add"),
                             content: StatefulBuilder(builder:
                                 (BuildContext context, StateSetter setState) {
                               return Container(
@@ -1000,7 +1001,7 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                                     itemCount: allFriends.length,
                                     itemBuilder: (context, i) {
                                       return Container(
-                                          decoration: BoxDecoration(
+                                          decoration: const BoxDecoration(
                                               border: Border(
                                                   bottom: BorderSide(
                                             color: Colors.grey,
@@ -1024,11 +1025,11 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                                                   allFriends
                                                       .elementAt(i)!
                                                       .lastName,
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                   fontWeight: FontWeight.bold),
                                             ),
                                             trailing: IconButton(
-                                                icon: Icon(
+                                                icon: const Icon(
                                                   Icons.person_add_alt_rounded,
                                                 ),
                                                 onPressed: () {
@@ -1049,7 +1050,7 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                             }),
                           );
                         }
-                        return AlertDialog(
+                        return const AlertDialog(
                           title: Text("ALLA FINE"),
                         );
                       });

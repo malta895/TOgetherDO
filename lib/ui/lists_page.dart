@@ -8,15 +8,15 @@ import 'package:intl/intl.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/list_manager.dart';
-import 'package:mobile_applications/ui/list_view_page.dart';
+import 'package:mobile_applications/ui/list_details_page.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/new_list.dart';
 import 'package:mobile_applications/ui/notification_badge.dart';
 import 'package:provider/provider.dart';
 
 class ListsPage extends StatefulWidget {
-  static final String routeName = "/home";
-  static final String humanReadableName = "My Lists";
+  static const String routeName = "/home";
+  static const String humanReadableName = "My Lists";
 
   @override
   _ListsPageState createState() => _ListsPageState();
@@ -149,32 +149,32 @@ class _ListsPageState extends State<ListsPage>
   }
 
   Widget _buildListItems(BuildContext context) {
-    return FutureBuilder<List<ListAppList>>(
-        initialData: [],
-        future: _listsFuture,
-        builder: (context, AsyncSnapshot<List<ListAppList>> snapshot) {
-          final listAppLists = snapshot.data ?? [];
+    return RefreshIndicator(
+      key: _refreshIndicatorKey,
+      onRefresh: _refreshPage,
+      child: FutureBuilder<List<ListAppList>>(
+          initialData: [],
+          future: _listsFuture,
+          builder: (context, AsyncSnapshot<List<ListAppList>> snapshot) {
+            final listAppLists = snapshot.data ?? [];
 
-          late Widget listsTable;
-
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-            case ConnectionState.active:
-              listsTable = Container();
-              break;
-            case ConnectionState.done:
-              _listAppLists = listAppLists;
-              listsTable = _buildAnimated(context);
-          }
-
-          //The refresh indicator is shown when we swipe from the upper side of the screen
-          return RefreshIndicator(
-            key: _refreshIndicatorKey,
-            onRefresh: _refreshPage,
-            child: listsTable,
-          );
-        });
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+              case ConnectionState.waiting:
+              case ConnectionState.active:
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                  ],
+                );
+              case ConnectionState.done:
+                _listAppLists = listAppLists;
+                return _buildAnimated(context);
+            }
+          }),
+    );
   }
 
   Widget _buildRow(BuildContext context, ListAppList listAppList) {
@@ -273,7 +273,7 @@ class _ListsPageState extends State<ListsPage>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (BuildContext context) => ListViewPage(
+                    builder: (BuildContext context) => ListDetailsPage(
                           listAppList,
                           canAddNewMembers: doesUserOwnList,
                         )),

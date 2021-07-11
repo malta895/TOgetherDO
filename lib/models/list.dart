@@ -28,6 +28,17 @@ extension ParseToString on ListType {
         return 'Private list';
     }
   }
+
+  String getDescription() {
+    switch (this) {
+      case ListType.public:
+        return 'A public list can be seen and '
+            ' managed by the creator, who can see and complete the items like the other members.';
+      case ListType.private:
+        return 'The items of a private list are added by the creator, '
+            'but it can be completed by the members only and the creator is not able to see who completed them.';
+    }
+  }
 }
 
 // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
@@ -46,7 +57,7 @@ class ListAppList extends BaseModel {
 
   final ListType listType;
 
-  @JsonKey(defaultValue: const {})
+  @JsonKey(defaultValue: {})
   Set<String?> members = const {};
 
   int get length => items.length;

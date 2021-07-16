@@ -470,11 +470,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: bf400eb8463baec909c3290a01605010fc88eb63
-      resolved-ref: bf400eb8463baec909c3290a01605010fc88eb63
+      ref: d132ad0
+      resolved-ref: d132ad006c12ab7984b458c8a1ef86c441aa02a4
       url: "https://github.com/malta895/flutter_login"
     source: git
-    version: "2.0.0"
+    version: "2.2.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:

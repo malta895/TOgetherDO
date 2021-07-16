@@ -37,10 +37,10 @@ Map<String, dynamic> _$ListAppUserToJson(ListAppUser instance) =>
       'databaseId': instance.databaseId,
       'firstName': instance.firstName,
       'lastName': instance.lastName,
-      'displayName': instance.displayName,
       'username': instance.username,
       'profilePictureURL': instance.profilePictureURL,
       'friends': instance.friends.toList(),
       'isNew': instance.isNew,
       'notificationTokens': instance.notificationTokens.toList(),
+      'displayName': instance.displayName,
     };

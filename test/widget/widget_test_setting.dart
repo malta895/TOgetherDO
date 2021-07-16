@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/settings_ui.dart';
-import 'package:provider/provider.dart';
 import 'package:mobile_applications/ui/theme.dart';
+import 'package:provider/provider.dart';
 
 Widget createHomeScreen() => MultiProvider(
       providers: [
@@ -30,8 +30,8 @@ void main() {
   group('Settings Page Widget Tests', () {
     testWidgets('Testing if theme setting works', (tester) async {
       await tester.pumpWidget(createHomeScreen());
-      await tester.tap(find.byKey(Key("theme setting")));
-      await tester.pumpAndSettle(Duration(seconds: 1));
+      await tester.tap(find.byKey(const Key("theme setting")));
+      await tester.pumpAndSettle(const Duration(seconds: 1));
       final textColorFinder = tester.widget<Text>(find.byType(Text));
       expect(textColorFinder.style!.color, Colors.pinkAccent[400]);
       //expect(find.text("Dark theme").style.color, findsOneWidget);

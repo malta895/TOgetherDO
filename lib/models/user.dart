@@ -14,7 +14,7 @@ class ListAppUser extends BaseModel {
 
   String firstName;
   String lastName;
-  String displayName;
+  String? _displayName;
 
   ///The username. By default is equal to the first part of the email, but can be changed
   String? username;
@@ -46,12 +46,12 @@ class ListAppUser extends BaseModel {
     this.profilePictureURL,
     this.friends = const {},
     this.isNew = false,
-  })  : this.displayName = displayName ?? firstName + ' ' + lastName,
+  })  : this._displayName = displayName,
         this.username = username ?? '',
         super(databaseId: databaseId);
 
-  String get fullName =>
-      displayName.isNotEmpty ? displayName : firstName + ' ' + lastName;
+  String get fullName => firstName + ' ' + lastName;
+  String get displayName => _displayName ?? fullName;
   String get initials => firstName.substring(0, 1) + lastName.substring(0, 1);
 
   factory ListAppUser.fromJson(Map<String, dynamic> json) =>

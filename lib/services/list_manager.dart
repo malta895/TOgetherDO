@@ -7,6 +7,7 @@ import 'package:mobile_applications/services/item_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/services/utils.dart';
 
+/// Implemented as a Multiton
 class ListAppListManager extends DatabaseManager<ListAppList> {
   static Query? _collectionGroup;
   static Query<ListAppList>? _collectionGroupConverted;

@@ -61,30 +61,6 @@ class LoginScreen extends StatelessWidget {
         const UserFormField(keyName: 'firstName', displayName: 'Name'),
         const UserFormField(keyName: 'lastName', displayName: 'Surname'),
       ],
-      onAdditionalFieldsSubmit: (fields) async {
-        final username = fields['username'];
-        final firstName = fields['firstName'] ?? '';
-        final lastName = fields['lastName'] ?? '';
-
-        try {
-          final currentUser =
-              context.read<ListAppAuthProvider>().loggedInListAppUser;
-          if (currentUser != null) {
-            currentUser.firstName = firstName;
-            currentUser.lastName = lastName;
-            await ListAppUserManager.instance.validateUsername(username);
-            currentUser.username = username;
-
-            currentUser.isNew = false;
-            await ListAppUserManager.instance.saveToFirestore(currentUser);
-          }
-
-          // we get here only if everything goes well
-          return null;
-        } on ListAppException catch (e) {
-          return e.message;
-        }
-      },
       theme: LoginTheme(
         bodyStyle: TextStyle(
           color: Theme.of(context).textTheme.headline1!.color,
@@ -114,13 +90,48 @@ class LoginScreen extends StatelessWidget {
             .read<ListAppAuthProvider>()
             .loginViaEmailPassword(loginData.name, loginData.password);
       },
-      onSignup: (loginData) {
+      onSignup: (SignupData signupData) async {
         print('Signup info');
-        print('Name: ${loginData.name}');
-        print('Password: ${loginData.password}');
-        return context
-            .read<ListAppAuthProvider>()
-            .signupWithEmailAndPassword(loginData.name, loginData.password);
+        print('Name: ${signupData.name}');
+        print('Password: ${signupData.password}');
+
+        String? error;
+
+        if (signupData.name != null && signupData.password != null) {
+          error = await context
+              .read<ListAppAuthProvider>()
+              .signupWithEmailAndPassword(
+                  signupData.name!, signupData.password!);
+
+          if (error != null) return error;
+        }
+
+        final fields = signupData.additionalSignupData;
+
+        if (fields != null) {
+          final username = fields['username'];
+          final firstName = fields['firstName'] ?? '';
+          final lastName = fields['lastName'] ?? '';
+
+          try {
+            final currentUser =
+                context.read<ListAppAuthProvider>().loggedInListAppUser;
+            if (currentUser != null) {
+              currentUser.firstName = firstName;
+              currentUser.lastName = lastName;
+              await ListAppUserManager.instance.validateUsername(username);
+              currentUser.username = username;
+
+              currentUser.isNew = false;
+              await ListAppUserManager.instance.saveToFirestore(currentUser);
+            }
+
+            // we get here only if everything goes well
+            return null;
+          } on ListAppException catch (e) {
+            return e.message;
+          }
+        }
       },
       onSubmitAnimationCompleted: () {
         for (int i = 0; i < 1000; i++) print("Login successful");

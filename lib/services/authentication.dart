@@ -34,8 +34,11 @@ class ListAppAuthProvider with ChangeNotifier {
 
   Stream<ListAppUser?> getLoggedInListAppUserStream() async* {
     await for (User? firebaseUser in authState) {
-      if (firebaseUser == null) yield null;
-      await _createListAppUser(firebaseUser!);
+      if (firebaseUser == null) {
+        yield null;
+        continue;
+      }
+      await _createListAppUser(firebaseUser);
       yield _loggedInListAppUser;
     }
   }

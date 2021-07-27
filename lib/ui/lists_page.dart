@@ -205,9 +205,12 @@ class _ListsPageState extends State<ListsPage>
                       "If you push LEAVE, you will abandon this list and you won't be able to join it unless someone invites you again"),
               actions: <Widget>[
                 TextButton(
-                    style: TextButton.styleFrom(primary: Colors.red),
-                    onPressed: () => Navigator.of(context).pop(true),
-                    child: Text(doesUserOwnList ? 'DELETE' : 'LEAVE')),
+                  style: TextButton.styleFrom(primary: Colors.red),
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: doesUserOwnList
+                      ? const Text('DELETE')
+                      : const Text('LEAVE'),
+                ),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
                   child: const Text("CANCEL"),

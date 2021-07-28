@@ -1,13 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/exception.dart';
-import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/database_config.dart';
 import 'package:mobile_applications/services/database_manager.dart';
 
 class ListAppUserManager extends DatabaseManager<ListAppUser>
@@ -16,7 +14,7 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
       ListAppUserManager._privateConstructor();
 
   ListAppUserManager._privateConstructor()
-      : super(FirebaseFirestore.instance
+      : super(DatabaseConfig.firebaseFirestoreInstance
             .collection(ListAppUser.collectionName)
             .withConverter<ListAppUser>(
                 fromFirestore: (snapshots, _) =>
@@ -25,10 +23,10 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
 
   static ListAppUserManager get instance => _instance;
 
-  final _firebaseStorageInstance = firebase_storage.FirebaseStorage.instance;
+  final _firebaseStorageInstance = DatabaseConfig.firebaseStorage;
 
-  final _cloudFunctonsInstance =
-      FirebaseFunctions.instanceFor(region: "europe-west6");
+  // final _cloudFunctonsInstance =
+  //     FirebaseFunctions.instanceFor(region: "europe-west6");
 
   Future<void> changeProfilePicture(
       ListAppUser user, PickedFile imageFile) async {
@@ -116,31 +114,5 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
       print(e.message);
       throw ListAppException('An error occurred. Please try again later.');
     }
-  }
-
-  Future<List<ListAppList>> getListsMerged(ListAppUser listAppUser,
-      {String? orderBy}) async {
-    final callable = _cloudFunctonsInstance.httpsCallable(
-      'getListsByUser-getListsByUser',
-      options: HttpsCallableOptions(
-        timeout: const Duration(seconds: 30),
-      ),
-    );
-
-    final result = await callable();
-
-    final lists = result.data as List<Object?>;
-
-    return lists.map((e) {
-      final list = (e as Map<Object?, Object?>);
-
-      list.removeWhere((key, value) => !(key is String));
-
-      final Map<String, dynamic> cleanedList = list.map((key, value) {
-        return MapEntry(key as String, value);
-      });
-
-      return ListAppList.fromJson(cleanedList);
-    }).toList();
   }
 }

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/database_config.dart';
 import 'package:mobile_applications/services/database_manager.dart';
 import 'package:mobile_applications/services/item_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
@@ -14,13 +15,13 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
   final String _userUid;
 
   static Query getCollectionGroup() {
-    _collectionGroup ??=
-        FirebaseFirestore.instance.collectionGroup(ListAppList.collectionName);
+    _collectionGroup ??= DatabaseConfig.firebaseFirestoreInstance
+        .collectionGroup(ListAppList.collectionName);
     return _collectionGroup!;
   }
 
   static Query<ListAppList> getCollectionGroupConverted() {
-    _collectionGroupConverted ??= FirebaseFirestore.instance
+    _collectionGroupConverted ??= DatabaseConfig.firebaseFirestoreInstance
         .collectionGroup(ListAppList.collectionName)
         .withConverter<ListAppList>(
             fromFirestore: (snapshots, _) =>
@@ -32,7 +33,7 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
   static final Map<String, ListAppListManager> _cachedInstances = {};
 
   ListAppListManager._privateConstructor(this._userUid)
-      : super(FirebaseFirestore.instance
+      : super(DatabaseConfig.firebaseFirestoreInstance
             .collection(ListAppUser.collectionName)
             .doc(_userUid)
             .collection(ListAppList.collectionName)
@@ -56,7 +57,8 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
     return newInstance;
   }
 
-  final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
+  final FirebaseFirestore firestoreInstance =
+      DatabaseConfig.firebaseFirestoreInstance;
 
   /// Get all the lists the user is in, as owner or as member
   Future<List<ListAppList>> getUserLists(ListAppUser user,
@@ -151,7 +153,7 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
 
   Future<bool> leaveList(String ownerUid, ListAppList list) async {
     try {
-      final ownerListCollectionRef = FirebaseFirestore.instance
+      final ownerListCollectionRef = DatabaseConfig.firebaseFirestoreInstance
           .collection(ListAppUser.collectionName)
           .doc(ownerUid)
           .collection(ListAppList.collectionName);

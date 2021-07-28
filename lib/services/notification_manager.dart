@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/notification.dart';
+import 'package:mobile_applications/services/database_config.dart';
 import 'package:mobile_applications/services/database_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 
@@ -9,7 +10,7 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
       ListAppNotificationManager._privateConstructor();
 
   ListAppNotificationManager._privateConstructor()
-      : super(FirebaseFirestore.instance
+      : super(DatabaseConfig.firebaseFirestoreInstance
             .collection(ListAppNotification.collectionName)
             .withConverter<ListAppNotification>(
                 fromFirestore: (snapshots, _) =>
@@ -18,7 +19,8 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
 
   static ListAppNotificationManager get instance => _instance;
 
-  final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
+  final FirebaseFirestore firestoreInstance =
+      DatabaseConfig.firebaseFirestoreInstance;
 
   Future<List<ListAppNotification>> getNotificationsByUserId(
       String? userUid, String? orderBy) async {

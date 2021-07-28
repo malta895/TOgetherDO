@@ -2,13 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/base_model.dart';
+import 'package:mobile_applications/services/database_config.dart';
 
 /// The database manager. Contains common methods for convenience
 abstract class DatabaseManager<T extends BaseModel> {
   @protected
   final CollectionReference<T> firebaseCollection;
 
-  DatabaseManager(this.firebaseCollection);
+  final FirebaseFirestore firestoreInstance;
+
+  DatabaseManager(this.firebaseCollection)
+      : firestoreInstance = DatabaseConfig.firebaseFirestoreInstance;
 
   /// Saves the instance to firestore, overwriting it if already exists
   Future<void> saveToFirestore(T instance) async {

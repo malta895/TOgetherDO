@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_applications/models/friendship.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/database_config.dart';
 import 'package:mobile_applications/services/database_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/services/utils.dart';
@@ -12,7 +13,7 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
       ListAppFriendshipManager._privateConstructor();
 
   ListAppFriendshipManager._privateConstructor()
-      : super(FirebaseFirestore.instance
+      : super(DatabaseConfig.firebaseFirestoreInstance
             .collection(ListAppFriendship.collectionName)
             .withConverter<ListAppFriendship>(
                 fromFirestore: (snapshots, _) =>
@@ -21,7 +22,8 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
 
   static ListAppFriendshipManager get instance => _instance;
 
-  final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
+  final FirebaseFirestore firestoreInstance =
+      DatabaseConfig.firebaseFirestoreInstance;
 
   Future<List<ListAppUser?>> getFriendsFromByUid(String uid) async {
     final queryResultFrom = await this

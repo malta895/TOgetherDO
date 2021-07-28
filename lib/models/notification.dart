@@ -3,6 +3,8 @@ import 'dart:core';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/base_model.dart';
 import 'package:mobile_applications/models/user.dart';
+// ignore: unused_import
+import 'package:mobile_applications/models/utils.dart';
 
 part 'notification.g.dart';
 
@@ -28,8 +30,6 @@ abstract class ListAppNotification extends BaseModel {
   final String userId;
   final String userFrom;
 
-  int? createdAt;
-
   final String notificationType;
 
   final NotificationStatus status;
@@ -40,11 +40,14 @@ abstract class ListAppNotification extends BaseModel {
   ListAppNotification({
     String? databaseId,
     required this.userId,
-    this.createdAt,
     required this.userFrom,
     required this.status,
     required this.notificationType,
-  }) : super(databaseId);
+    DateTime? createdAt,
+  }) : super(
+          databaseId: databaseId,
+          createdAt: createdAt,
+        );
 
   factory ListAppNotification.fromJson(Map<String, dynamic> json) {
     switch (json['notificationType'] as String) {
@@ -81,17 +84,17 @@ class ListInviteNotification extends ListAppNotification {
   String listId;
   String listOwner;
 
-  ListInviteNotification(
-      {required userId,
-      required userFrom,
-      required NotificationStatus status,
-      required this.listOwner,
-      required this.listId,
-      databaseId,
-      createdAt})
-      : super(
-            databaseId: databaseId,
+  ListInviteNotification({
+    required userId,
+    required userFrom,
+    required NotificationStatus status,
+    required this.listOwner,
+    required this.listId,
+    databaseId,
+    createdAt,
+  }) : super(
             createdAt: createdAt,
+            databaseId: databaseId,
             notificationType: 'listInvite',
             userId: userId,
             userFrom: userFrom,
@@ -107,16 +110,16 @@ class ListInviteNotification extends ListAppNotification {
 class FriendshipNotification extends ListAppNotification {
   String friendshipId;
 
-  FriendshipNotification(
-      {required userId,
-      required userFrom,
-      required NotificationStatus status,
-      required this.friendshipId,
-      databaseId,
-      createdAt})
-      : super(
-            databaseId: databaseId,
+  FriendshipNotification({
+    required userId,
+    required userFrom,
+    required NotificationStatus status,
+    required this.friendshipId,
+    databaseId,
+    DateTime? createdAt,
+  }) : super(
             createdAt: createdAt,
+            databaseId: databaseId,
             notificationType: 'friendship',
             userId: userId,
             userFrom: userFrom,

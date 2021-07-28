@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/list.dart';
-import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/database_manager.dart';
 import 'package:mobile_applications/services/item_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
+import 'package:mobile_applications/services/utils.dart';
 
+/// Implemented as a Multiton
 class ListAppListManager extends DatabaseManager<ListAppList> {
   static Query? _collectionGroup;
   static Query<ListAppList>? _collectionGroupConverted;
@@ -55,71 +56,65 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
     return newInstance;
   }
 
-  final _notificationsCollection = FirebaseFirestore.instance
-      .collection(ListAppNotification.collectionName)
-      .withConverter<ListAppNotification>(
-          fromFirestore: (snapshots, _) =>
-              ListAppNotification.fromJson(snapshots.data()!),
-          toFirestore: (notification, _) => notification.toJson());
-
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
 
-  Future<List<ListAppList>> getLists({String? orderBy}) async {
-    final queryResult = await this.firebaseCollection.get();
+  /// Get all the lists the user is in, as owner or as member
+  Future<List<ListAppList>> getUserLists(ListAppUser user,
+      {String? orderBy}) async {
+    // the owned lists are already in this instance of the manager
+    final queryResultOwnedLists = await this.firebaseCollection.get();
 
-    var docs = queryResult.docs;
+    final queryResultMemberLists = await getCollectionGroupConverted()
+        .where('members', arrayContains: user.databaseId)
+        .get();
 
-    bool isBadListPresent = false;
+    final combinedQueryResult =
+        queryResultMemberLists.docs.followedBy(queryResultOwnedLists.docs);
 
-    final listsInjectedWithData = docs.map((e) async {
-      try {
-        final list = e.data();
-        list.databaseId = e.id;
-        final creatorUid = list.creatorUid;
-        if (creatorUid != null) {
-          list.creator = await ListAppUserManager.instance.getByUid(creatorUid);
-        }
-
-        list.items =
-            await ListAppItemManager.instanceForList(e.id, list.creatorUid!)
-                .getItems();
-        return list;
-      } on CheckedFromJsonException catch (e) {
-        print(e.message);
-        // if the list could not be retrieved just put a value that will be removed later
-        // unfortunately we can't skip values with map()
-        isBadListPresent = true;
-        return ListAppList(name: 'null');
-      }
-    }).toList();
-
-    var awaitedLists = await Future.wait(listsInjectedWithData);
-
-    // remove bad lists
-    if (isBadListPresent)
-      awaitedLists.removeWhere((element) => element.databaseId == null);
-
-    // remove lists that the user hasn't already accepted
+    // TODO remove lists that the user hasn't already accepted
+    // probabilmente basta non mettere in members finchè non si accetta
     // LEVA FOREACH
     // notEqualTo con indice
     // FALLO IN USER MANAGERRRR
-    awaitedLists.forEach((element) async {
-      final notificationQuery = await _notificationsCollection
-          .where('notificationType', isEqualTo: "listInvite")
-          .where('listId', isEqualTo: element.databaseId)
-          .where('userId', isEqualTo: _userUid)
-          .where('status', whereIn: ["undefined", "rejected"]).get();
-      if (notificationQuery.docs.length == 0) {
-        awaitedLists
-            .removeWhere((list) => list.databaseId == element.databaseId);
-      }
-    });
+    // awaitedLists.forEach((element) async {
+    //   final notificationQuery = await _notificationsCollection
+    //       .where('notificationType', isEqualTo: "listInvite")
+    //       .where('listId', isEqualTo: element.databaseId)
+    //       .where('userId', isEqualTo: _userUid)
+    //       .where('status', whereIn: ["undefined", "rejected"]).get();
+    //   if (notificationQuery.docs.length == 0) {
+    //     awaitedLists
+    //         .removeWhere((list) => list.databaseId == element.databaseId);
+    //   }
+    // });
 
-    print(awaitedLists.length);
+    final listAppLists = combinedQueryResult
+        .where((element) => ManagerUtils.doesElementConvertFromJson(element))
+        .map((listDocumentSnapshot) async {
+      final ListAppList listAppList = listDocumentSnapshot.data();
 
-    awaitedLists.forEach((element) {
-      print(element.name);
-    });
+      // inject creator
+      listAppList.creator =
+          await ListAppUserManager.instance.getByUid(listAppList.creatorUid!);
+
+      // inject users
+      listAppList.members.forEach((memberUserUid) async {
+        final listAppUser =
+            await ListAppUserManager.instance.getByUid(memberUserUid!);
+
+        if (listAppUser != null) listAppList.membersAsUsers.add(listAppUser);
+      });
+
+      //inject items
+      // TODO we can remove it if we fetch them at need
+      listAppList.items = await ListAppItemManager.instanceForList(
+              listDocumentSnapshot.id, listAppList.creatorUid!)
+          .getItems();
+
+      return listAppList;
+    }).toList();
+
+    final awaitedLists = await Future.wait(listAppLists);
 
     switch (orderBy) {
       case 'createdAt':
@@ -129,7 +124,7 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
         break;
     }
 
-    return awaitedLists.toList();
+    return awaitedLists;
   }
 
   Future<bool?> addMemberToList(String lid, String uid) async {

@@ -32,9 +32,9 @@ ListAppList _$ListAppListFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$ListAppListToJson(ListAppList instance) =>
     <String, dynamic>{
       'databaseId': instance.databaseId,
+      'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
       'name': instance.name,
       'description': instance.description,
-      'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
       'expiryDate': ModelUtils.nullableDateTimeToJson(instance.expiryDate),
       'listType': _$ListTypeEnumMap[instance.listType],
       'members': instance.members.toList(),

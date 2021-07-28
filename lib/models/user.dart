@@ -14,42 +14,44 @@ class ListAppUser extends BaseModel {
 
   String firstName;
   String lastName;
-  String displayName;
-  final String email;
+  String? _displayName;
 
   ///The username. By default is equal to the first part of the email, but can be changed
   String? username;
-  String? phoneNumber;
+
   String? profilePictureURL;
 
-  @JsonKey(defaultValue: const {})
+  @JsonKey(defaultValue: {})
   Set<ListAppUser> friends;
 
   /// A new user that needs additional signup data
   bool isNew;
 
   /// The FCM tokens of the devices used by the user
-  @JsonKey(defaultValue: const {})
+  @JsonKey(defaultValue: {})
   Set<String> notificationTokens;
 
+  /// The email is ignored because not needed outside of the app, it is populated only for current user
+  @JsonKey(ignore: true)
+  String? email;
+
   ListAppUser({
+    this.email,
     String? databaseId,
-    required this.email,
     this.notificationTokens = const {},
     this.firstName = '',
     this.lastName = '',
     String? displayName,
     String? username,
-    this.phoneNumber,
     this.profilePictureURL,
     this.friends = const {},
     this.isNew = false,
-  })  : this.displayName = displayName ?? firstName + ' ' + lastName,
-        this.username = username ?? email.substring(0, email.indexOf('@')),
-        super(databaseId);
+  })  : this._displayName = displayName,
+        this.username = username ?? '',
+        super(databaseId: databaseId);
 
-  String get fullName =>
-      displayName.isNotEmpty ? displayName : firstName + ' ' + lastName;
+  String get fullName => firstName + ' ' + lastName;
+  String get displayName => _displayName ?? fullName;
   String get initials => firstName.substring(0, 1) + lastName.substring(0, 1);
 
   factory ListAppUser.fromJson(Map<String, dynamic> json) =>

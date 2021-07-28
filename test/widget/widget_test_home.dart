@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_applications/services/authentication.dart';
-import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/lists_page.dart';
-import 'package:provider/provider.dart';
+import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/theme.dart';
+import 'package:provider/provider.dart';
 
 Widget createHomeScreen() => MultiProvider(
       providers: [
@@ -41,14 +41,14 @@ void main() {
     });*/
     testWidgets('Testing tap on list', (tester) async {
       await tester.pumpWidget(createHomeScreen());
-      await tester.tap(find.byKey(Key("Item tile")).first);
-      await tester.pumpAndSettle(Duration(seconds: 1));
+      await tester.tap(find.byKey(const Key("Item tile")).first);
+      await tester.pumpAndSettle(const Duration(seconds: 1));
       expect(find.text("Buy groceries"), findsOneWidget);
     });
     testWidgets('Testing tap on "New List" button', (tester) async {
       await tester.pumpWidget(createHomeScreen());
       await tester.tap(find.byType(FloatingActionButton));
-      await tester.pumpAndSettle(Duration(seconds: 1));
+      await tester.pumpAndSettle(const Duration(seconds: 1));
       expect(find.textContaining("I am the only one"), findsOneWidget);
     });
     /*testWidgets('Testing IconButtons', (tester) async {

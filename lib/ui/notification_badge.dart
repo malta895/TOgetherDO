@@ -59,7 +59,7 @@ class _NotificationBadge extends State<NotificationBadge> {
                   right: 7.0,
                   child: new Icon(Icons.brightness_1,
                       size: 15.0, color: Colors.redAccent),
-                )
+                ),
               ]);
           }
 

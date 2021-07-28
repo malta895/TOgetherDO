@@ -7,7 +7,7 @@ import 'package:mobile_applications/ui/new_friends.dart';
 import 'package:mobile_applications/ui/notification_badge.dart';
 
 class FriendsPage extends StatefulWidget {
-  static final String routeName = "/friends";
+  static const String routeName = "/friends";
 
   @override
   _FriendsList createState() => _FriendsList();
@@ -16,27 +16,13 @@ class FriendsPage extends StatefulWidget {
 class _FriendsList extends State<FriendsPage> {
   final String title = 'Friends';
 
-  //TODO fetch actual data from backend
-  final ListAppUser _user = ListAppUser(
-      databaseId: "shdopjf",
-      firstName: "Luca",
-      lastName: "Maltagliati",
-      email: "luca.malta@mail.com",
-      username: "malta",
-      friends: {
-        ListAppUser(
-            databaseId: 'sdifasp',
-            firstName: "Lorenzo",
-            lastName: "Amici",
-            email: "lorenzo.amici@mail.com",
-            username: "lorenzo.amici@mail.com"),
-      });
-
   Widget _buildListItems(BuildContext context) {
+    // TODO remove hardcoded value
     final Future<List<ListAppUser?>> friendsFrom = ListAppFriendshipManager
         .instance
         .getFriendsFromByUid("9LUBLCszUrU4mukuRWhHFS2iexL2");
 
+    // TODO remove hardcoded value
     final Future<List<ListAppUser?>> friendsTo = ListAppFriendshipManager
         .instance
         .getFriendsToByUid("9LUBLCszUrU4mukuRWhHFS2iexL2");
@@ -79,7 +65,7 @@ class _FriendsList extends State<FriendsPage> {
             friend.fullName,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: Text(friend.email),
+          subtitle: Text(friend.username ?? ''),
           onTap: () {
             print(friend.fullName);
           },
@@ -94,7 +80,7 @@ class _FriendsList extends State<FriendsPage> {
           title: Text(title),
           actions: [NotificationBadge()],
         ),
-        drawer: ListAppNavDrawer(FriendsPage.routeName),
+        drawer: const ListAppNavDrawer(routeName: FriendsPage.routeName),
         body: _buildListItems(context),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => {

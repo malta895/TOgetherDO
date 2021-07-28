@@ -12,7 +12,7 @@ class NewListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('New list'),
+        title: const Text('New list'),
       ),
       body: _NewListForm(),
     );
@@ -25,7 +25,7 @@ class _NewListForm extends StatefulWidget {
 }
 
 class _NewListDropdownMenu extends StatefulWidget {
-  _NewListDropdownMenu({Key? key}) : super(key: key);
+  const _NewListDropdownMenu({Key? key}) : super(key: key);
 
   @override
   _NewListDropdownMenuState createState() => _NewListDropdownMenuState();
@@ -45,21 +45,21 @@ class _NewListFormState extends State<_NewListForm> {
     _listTitleController = TextEditingController();
   }
 
-  late Set<ListAppUser> members = {};
+  late List<ListAppUser> members = [];
 
   Widget _buildListTitleField() {
     return Padding(
-        padding: EdgeInsets.only(top: 10.0),
+        padding: const EdgeInsets.only(top: 10.0),
         child: TextFormField(
           autovalidateMode: AutovalidateMode.onUserInteraction,
           controller: _listTitleController,
           cursorColor: Theme.of(context).textTheme.headline1!.color!,
           decoration: InputDecoration(
-              contentPadding: EdgeInsets.all(5.0),
+              contentPadding: const EdgeInsets.all(5.0),
               filled: true,
               fillColor: Theme.of(context).splashColor,
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                borderRadius: const BorderRadius.all(Radius.circular(12.0)),
                 borderSide: BorderSide(
                     color: Theme.of(context).textTheme.headline1!.color!,
                     width: 1.0),
@@ -79,18 +79,18 @@ class _NewListFormState extends State<_NewListForm> {
 
   Widget _buildListDescriptionField() {
     return Padding(
-        padding: EdgeInsets.only(top: 10.0),
+        padding: const EdgeInsets.only(top: 10.0),
         child: TextFormField(
           keyboardType: TextInputType.multiline,
           maxLines: null,
           controller: _listDescriptionController,
           cursorColor: Theme.of(context).textTheme.headline1!.color!,
           decoration: InputDecoration(
-              contentPadding: EdgeInsets.all(5.0),
+              contentPadding: const EdgeInsets.all(5.0),
               filled: true,
               fillColor: Theme.of(context).splashColor,
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                borderRadius: const BorderRadius.all(Radius.circular(12.0)),
                 borderSide: BorderSide(
                     color: Theme.of(context).textTheme.headline1!.color!,
                     width: 1.0),
@@ -110,42 +110,23 @@ class _NewListFormState extends State<_NewListForm> {
 
   Widget _buildListTypeSelector() {
     return Padding(
-      padding: EdgeInsets.only(top: 15),
-      child: DropdownButtonFormField<ListType>(
-        value: ListType.public,
-        style: TextStyle(
-          color: Theme.of(context).textTheme.headline1!.color,
-          fontSize: 16.0,
-        ),
-        decoration: InputDecoration(
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(12.0)),
-              borderSide: BorderSide(
-                  color: Theme.of(context).textTheme.headline1!.color!,
-                  width: 1.0),
-            ),
-            contentPadding: EdgeInsets.all(5.0),
-            filled: true,
-            fillColor: Theme.of(context).splashColor,
-            border: InputBorder.none,
-            labelStyle:
-                TextStyle(color: Theme.of(context).textTheme.headline1!.color)),
-        icon: Icon(Icons.arrow_drop_down),
-        iconSize: 24,
-        elevation: 16,
-        onChanged: (newValue) {
-          setState(() {
-            _listTypeValue = newValue ?? ListType.public;
-          });
-        },
-        items: ListType.values.map((e) {
-          return DropdownMenuItem<ListType>(
-            value: e,
-            child: Text(e.toReadableString()),
-          );
-        }).toList(),
-      ),
-    );
+        padding: const EdgeInsets.only(top: 15),
+        child: Column(
+          children: ListType.values.map((builtListType) {
+            return RadioListTile<ListType>(
+              value: builtListType,
+              title: Text(builtListType.toReadableString()),
+              subtitle: Text(builtListType.getDescription()),
+              groupValue: _listTypeValue,
+              onChanged: (selectedListType) {
+                if (selectedListType == null) return;
+                setState(() {
+                  _listTypeValue = selectedListType;
+                });
+              },
+            );
+          }).toList(),
+        ));
   }
 
   Widget _buildSubmitButton() {
@@ -180,7 +161,7 @@ class _NewListFormState extends State<_NewListForm> {
             // TODO se abbiamo tempo sarebbe carino mettere l'animazione che c'é
             // sui bottoni al login (bisognerebbe copiarla dalla libreria)
             final snackBar = ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text('Uploading data')));
+                .showSnackBar(const SnackBar(content: Text('Uploading data')));
 
             final user = context.read<ListAppAuthProvider>().loggedInUser!;
 
@@ -193,13 +174,13 @@ class _NewListFormState extends State<_NewListForm> {
             } on Exception catch (e) {
               print(e);
               ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error while creating list')));
+                  const SnackBar(content: Text('Error while creating list')));
               isUploading = false;
               rethrow;
             }
           }
         },
-        child: Text('Submit'),
+        child: const Text('Submit'),
       ),
     );
   }
@@ -210,14 +191,34 @@ class _NewListFormState extends State<_NewListForm> {
     return Form(
       key: _formKey,
       child: Padding(
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            Row(
+              children: <Widget>[
+                const Expanded(child: Divider()),
+                const Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: Text('List details'),
+                ),
+                const Expanded(child: Divider()),
+              ],
+            ),
             _buildListTitleField(),
             _buildListDescriptionField(),
+            Row(
+              children: <Widget>[
+                const Expanded(child: Divider()),
+                const Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: Text('Choose the list type'),
+                ),
+                const Expanded(child: Divider()),
+              ],
+            ),
             _buildListTypeSelector(),
-            _NewListDropdownMenu(),
+            const _NewListDropdownMenu(),
             _AddMemberDialog(
               members: members,
             ),
@@ -231,7 +232,7 @@ class _NewListFormState extends State<_NewListForm> {
 
 // TODO sistemare quando avremo gli amici dal db
 class _AddMemberDialog extends StatefulWidget {
-  final Set<ListAppUser?> members;
+  final List<ListAppUser?> members;
   const _AddMemberDialog({Key? key, required this.members}) : super(key: key);
   @override
   _AddMemberDialogState createState() => _AddMemberDialogState();
@@ -253,9 +254,9 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
         .getFriendsToByUid(currentUser.databaseId!);
 
     return Padding(
-        padding: EdgeInsets.only(top: 15),
+        padding: const EdgeInsets.only(top: 15),
         child: ListTile(
-            contentPadding: EdgeInsets.all(5.0),
+            contentPadding: const EdgeInsets.all(5.0),
             title: Text(
               "Add participants",
               style: TextStyle(
@@ -283,7 +284,7 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                                     allFriends.length, false);
                                 print(selectedFriendsValues);
                                 return AlertDialog(
-                                    title: Text("Choose members to add"),
+                                    title: const Text("Choose members to add"),
                                     content: StatefulBuilder(builder:
                                         (BuildContext context,
                                             StateSetter setState) {
@@ -294,9 +295,11 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                                             itemCount: allFriends.length,
                                             itemBuilder: (context, i) {
                                               return Container(
-                                                  decoration: BoxDecoration(
-                                                      border: Border(
-                                                          bottom: BorderSide(
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                          border: Border(
+                                                              bottom:
+                                                                  BorderSide(
                                                     color: Colors.grey,
                                                     width: 0.8,
                                                   ))),
@@ -328,7 +331,7 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                                                             allFriends
                                                                 .elementAt(i)!
                                                                 .lastName,
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             fontWeight:
                                                                 FontWeight
                                                                     .bold),
@@ -375,9 +378,9 @@ class _NewListDropdownMenuState extends State<_NewListDropdownMenu> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.only(top: 15),
+            padding: const EdgeInsets.only(top: 15),
             child: CheckboxListTile(
-                contentPadding: EdgeInsets.all(5.0),
+                contentPadding: const EdgeInsets.all(5.0),
                 title: Text(
                   'I am the only one who can add participants',
                   style: TextStyle(

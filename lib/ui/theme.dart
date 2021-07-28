@@ -6,11 +6,11 @@ ThemeData darkTheme = ThemeData(
     primaryColor: Colors.cyan[900],
     accentColor: Colors.pinkAccent[400],
     splashColor: Colors.grey[800],
-    textTheme: TextTheme(
+    textTheme: const TextTheme(
       headline1: TextStyle(
           fontSize: 72.0, fontWeight: FontWeight.bold, color: Colors.white),
     ),
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       centerTitle: true,
     ));
 
@@ -18,13 +18,13 @@ ThemeData lightTheme = ThemeData(
     primaryColor: Colors.cyan[700],
     accentColor: Colors.pinkAccent[700],
     splashColor: Colors.grey[200],
-    textTheme: TextTheme(
+    textTheme: const TextTheme(
       headline1: TextStyle(
           fontSize: 72.0, fontWeight: FontWeight.bold, color: Colors.black),
     ),
     errorColor: Colors.black,
     brightness: Brightness.light,
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       centerTitle: true,
     ));
 

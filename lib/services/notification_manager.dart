@@ -32,7 +32,7 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
     switch (orderBy) {
       case 'createdAt':
         docs.sort((a, b) {
-          return b.data().createdAt!.compareTo(a.data().createdAt as int);
+          return b.data().createdAt.compareTo(a.data().createdAt);
         });
         break;
     }

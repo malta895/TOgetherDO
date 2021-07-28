@@ -6,18 +6,18 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_applications/models/list.dart';
+import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/list_manager.dart';
-import 'package:mobile_applications/services/user_manager.dart';
-import 'package:mobile_applications/ui/list_view_page.dart';
+import 'package:mobile_applications/ui/list_details_page.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/new_list.dart';
 import 'package:mobile_applications/ui/notification_badge.dart';
 import 'package:provider/provider.dart';
 
 class ListsPage extends StatefulWidget {
-  static final String routeName = "/home";
-  static final String humanReadableName = "My Lists";
+  static const String routeName = "/home";
+  static const String humanReadableName = "My Lists";
 
   @override
   _ListsPageState createState() => _ListsPageState();
@@ -30,6 +30,8 @@ class _ListsPageState extends State<ListsPage>
   late AnimationController _listsShowAnimationController;
 
   Future<List<ListAppList>>? _listsFuture;
+
+  late final ListAppUser? _currentListAppUser;
 
   // the current shown lists, needed as state for the AnimatedList to work properly
   List<ListAppList> _listAppLists = [];
@@ -47,7 +49,11 @@ class _ListsPageState extends State<ListsPage>
       ..addStatusListener((AnimationStatus status) {
         setState(() {});
       });
+
     super.initState();
+
+    _currentListAppUser =
+        context.read<ListAppAuthProvider>().loggedInListAppUser;
 
     _listsFuture = _fetchLists();
     SchedulerBinding.instance?.addPostFrameCallback((_) {
@@ -78,8 +84,8 @@ class _ListsPageState extends State<ListsPage>
         await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
 
     if (listAppUser != null) {
-      final lists = await ListAppUserManager.instance
-          .getLists(listAppUser, orderBy: 'createdAt');
+      final lists = await ListAppListManager.instanceForUser(listAppUser)
+          .getUserLists(listAppUser, orderBy: 'createdAt');
       return lists;
     }
 
@@ -127,9 +133,9 @@ class _ListsPageState extends State<ListsPage>
               itemBuilder: (context, i, animation) {
                 return SlideTransition(
                     // The slide happens when a new list is added
-                    position: animation.drive(
-                        Tween<Offset>(begin: Offset(1, 0), end: Offset(0, 0))
-                            .chain(CurveTween(curve: Curves.ease))),
+                    position: animation.drive(Tween<Offset>(
+                            begin: const Offset(1, 0), end: const Offset(0, 0))
+                        .chain(CurveTween(curve: Curves.ease))),
                     child: _buildRow(context, _listAppLists[i]));
               },
             ),
@@ -150,40 +156,37 @@ class _ListsPageState extends State<ListsPage>
   }
 
   Widget _buildListItems(BuildContext context) {
-    return FutureBuilder<List<ListAppList>>(
-        initialData: [],
-        future: _listsFuture,
-        builder: (context, AsyncSnapshot<List<ListAppList>> snapshot) {
-          final listAppLists = snapshot.data ?? [];
+    return RefreshIndicator(
+      key: _refreshIndicatorKey,
+      onRefresh: _refreshPage,
+      child: FutureBuilder<List<ListAppList>>(
+          initialData: [],
+          future: _listsFuture,
+          builder: (context, AsyncSnapshot<List<ListAppList>> snapshot) {
+            final listAppLists = snapshot.data ?? [];
 
-          late Widget listsTable;
-
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-            case ConnectionState.active:
-              listsTable = Container();
-              break;
-            case ConnectionState.done:
-              _listAppLists = listAppLists;
-              listsTable = _buildAnimated(context);
-          }
-
-          //The refresh indicator is shown when we swipe from the upper side of the screen
-          return RefreshIndicator(
-            key: _refreshIndicatorKey,
-            onRefresh: _refreshPage,
-            child: listsTable,
-          );
-        });
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+              case ConnectionState.waiting:
+              case ConnectionState.active:
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(),
+                  ],
+                );
+              case ConnectionState.done:
+                _listAppLists = listAppLists;
+                return _buildAnimated(context);
+            }
+          }),
+    );
   }
 
   Widget _buildRow(BuildContext context, ListAppList listAppList) {
-    final currentListAppUser =
-        context.read<ListAppAuthProvider>().loggedInListAppUser!;
-
     final bool doesUserOwnList =
-        listAppList.creatorUid == currentListAppUser.databaseId;
+        listAppList.creatorUid == _currentListAppUser?.databaseId;
 
     return Dismissible(
       confirmDismiss: (DismissDirection direction) async {
@@ -196,15 +199,18 @@ class _ListsPageState extends State<ListsPage>
                       listAppList.name +
                       " list?"),
               content: doesUserOwnList
-                  ? Text(
+                  ? const Text(
                       "You and all the other participants will not see this list anymore")
-                  : Text(
+                  : const Text(
                       "If you push LEAVE, you will abandon this list and you won't be able to join it unless someone invites you again"),
               actions: <Widget>[
                 TextButton(
-                    style: TextButton.styleFrom(primary: Colors.red),
-                    onPressed: () => Navigator.of(context).pop(true),
-                    child: Text(doesUserOwnList ? 'DELETE' : 'LEAVE')),
+                  style: TextButton.styleFrom(primary: Colors.red),
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: doesUserOwnList
+                      ? const Text('DELETE')
+                      : const Text('LEAVE'),
+                ),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
                   child: const Text("CANCEL"),
@@ -222,10 +228,10 @@ class _ListsPageState extends State<ListsPage>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                SizedBox(
+                const SizedBox(
                   width: 20,
                 ),
-                Icon(
+                const Icon(
                   Icons.delete,
                 ),
               ],
@@ -237,7 +243,7 @@ class _ListsPageState extends State<ListsPage>
         await _deleteOrAbandonList(listAppList);
       },
       child: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
               border: Border(
                   bottom: BorderSide(
             //                   <--- left side
@@ -245,14 +251,14 @@ class _ListsPageState extends State<ListsPage>
             width: 0.8,
           ))),
           child: ListTile(
-            key: Key("Item tile"),
-            leading: Icon(
+            key: const Key("Item tile"),
+            leading: const Icon(
               Icons.list,
               size: 40,
             ),
             trailing: Column(
               children: [
-                Icon(
+                const Icon(
                   Icons.date_range,
                   size: 20,
                 ),
@@ -263,7 +269,7 @@ class _ListsPageState extends State<ListsPage>
             ),
             title: Text(
               listAppList.name,
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             isThreeLine: true,
             subtitle: Text((doesUserOwnList
@@ -274,7 +280,7 @@ class _ListsPageState extends State<ListsPage>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (BuildContext context) => ListViewPage(
+                    builder: (BuildContext context) => ListDetailsPage(
                           listAppList,
                           canAddNewMembers: doesUserOwnList,
                         )),
@@ -291,7 +297,7 @@ class _ListsPageState extends State<ListsPage>
           title: Text(title),
           actions: [NotificationBadge()],
         ),
-        drawer: ListAppNavDrawer(ListsPage.routeName),
+        drawer: const ListAppNavDrawer(routeName: ListsPage.routeName),
         body: _buildListItems(context),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () async {
@@ -305,13 +311,13 @@ class _ListsPageState extends State<ListsPage>
             if (newList != null) {
               setState(() {
                 _listAppLists.insert(0, newList);
-                _animatedListKey.currentState
-                    ?.insertItem(0, duration: Duration(milliseconds: 700));
+                _animatedListKey.currentState?.insertItem(0,
+                    duration: const Duration(milliseconds: 700));
               });
             }
           },
-          icon: Icon(Icons.add),
-          label: Text('NEW LIST'),
+          icon: const Icon(Icons.add),
+          label: const Text('NEW LIST'),
         ));
   }
 }

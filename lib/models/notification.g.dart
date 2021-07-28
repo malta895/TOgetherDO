@@ -10,9 +10,9 @@ Map<String, dynamic> _$ListAppNotificationToJson(
         ListAppNotification instance) =>
     <String, dynamic>{
       'databaseId': instance.databaseId,
+      'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
       'userId': instance.userId,
       'userFrom': instance.userFrom,
-      'createdAt': instance.createdAt,
       'notificationType': instance.notificationType,
       'status': _$NotificationStatusEnumMap[instance.status],
     };
@@ -34,7 +34,8 @@ ListInviteNotification _$ListInviteNotificationFromJson(
       listOwner: $checkedConvert(json, 'listOwner', (v) => v as String),
       listId: $checkedConvert(json, 'listId', (v) => v as String),
       databaseId: $checkedConvert(json, 'databaseId', (v) => v),
-      createdAt: $checkedConvert(json, 'createdAt', (v) => v),
+      createdAt: $checkedConvert(
+          json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
     );
     return val;
   });
@@ -44,9 +45,9 @@ Map<String, dynamic> _$ListInviteNotificationToJson(
         ListInviteNotification instance) =>
     <String, dynamic>{
       'databaseId': instance.databaseId,
+      'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
       'userId': instance.userId,
       'userFrom': instance.userFrom,
-      'createdAt': instance.createdAt,
       'status': _$NotificationStatusEnumMap[instance.status],
       'listId': instance.listId,
       'listOwner': instance.listOwner,
@@ -88,7 +89,8 @@ FriendshipNotification _$FriendshipNotificationFromJson(
           json, 'status', (v) => _$enumDecode(_$NotificationStatusEnumMap, v)),
       friendshipId: $checkedConvert(json, 'friendshipId', (v) => v as String),
       databaseId: $checkedConvert(json, 'databaseId', (v) => v),
-      createdAt: $checkedConvert(json, 'createdAt', (v) => v),
+      createdAt: $checkedConvert(
+          json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
     );
     return val;
   });
@@ -98,9 +100,9 @@ Map<String, dynamic> _$FriendshipNotificationToJson(
         FriendshipNotification instance) =>
     <String, dynamic>{
       'databaseId': instance.databaseId,
+      'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
       'userId': instance.userId,
       'userFrom': instance.userFrom,
-      'createdAt': instance.createdAt,
       'status': _$NotificationStatusEnumMap[instance.status],
       'friendshipId': instance.friendshipId,
     };

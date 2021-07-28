@@ -16,3 +16,5 @@ exports.onDeleteFriendship = require('./on-create-friendship');
 exports.onCreateNotification = require('./on-create-notification');
 
 exports.getListsByUser = require('./get-lists');
+
+exports.getUserByEmail = require('./get-user-by-email');

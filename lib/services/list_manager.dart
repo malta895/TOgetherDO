@@ -2,38 +2,41 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/user.dart';
-import 'package:mobile_applications/services/database_config.dart';
 import 'package:mobile_applications/services/database_manager.dart';
 import 'package:mobile_applications/services/item_manager.dart';
+import 'package:mobile_applications/services/manager_config.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/services/utils.dart';
 
 /// Implemented as a Multiton
 class ListAppListManager extends DatabaseManager<ListAppList> {
   static Query? _collectionGroup;
-  static Query<ListAppList>? _collectionGroupConverted;
+  static Query<ListAppList?>? _collectionGroupConverted;
   final String _userUid;
 
   static Query getCollectionGroup() {
-    _collectionGroup ??= DatabaseConfig.firebaseFirestoreInstance
+    _collectionGroup ??= ManagerConfig.firebaseFirestoreInstance
         .collectionGroup(ListAppList.collectionName);
     return _collectionGroup!;
   }
 
-  static Query<ListAppList> getCollectionGroupConverted() {
-    _collectionGroupConverted ??= DatabaseConfig.firebaseFirestoreInstance
+  static Query<ListAppList?> getCollectionGroupConverted() {
+    _collectionGroupConverted ??= ManagerConfig.firebaseFirestoreInstance
         .collectionGroup(ListAppList.collectionName)
-        .withConverter<ListAppList>(
-            fromFirestore: (snapshots, _) =>
-                ListAppList.fromJson(snapshots.data()!),
-            toFirestore: (list, _) => list.toJson());
+        .withConverter<ListAppList?>(
+            fromFirestore: (snapshots, _) {
+              final snapshotsData = snapshots.data();
+              if (snapshotsData == null) return null;
+              return ListAppList.fromJson(snapshotsData);
+            },
+            toFirestore: (list, _) => list!.toJson());
     return _collectionGroupConverted!;
   }
 
   static final Map<String, ListAppListManager> _cachedInstances = {};
 
   ListAppListManager._privateConstructor(this._userUid)
-      : super(DatabaseConfig.firebaseFirestoreInstance
+      : super(ManagerConfig.firebaseFirestoreInstance
             .collection(ListAppUser.collectionName)
             .doc(_userUid)
             .collection(ListAppList.collectionName)
@@ -58,7 +61,7 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
   }
 
   final FirebaseFirestore firestoreInstance =
-      DatabaseConfig.firebaseFirestoreInstance;
+      ManagerConfig.firebaseFirestoreInstance;
 
   /// Get all the lists the user is in, as owner or as member
   Future<List<ListAppList>> getUserLists(ListAppUser user,
@@ -93,7 +96,7 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
     final listAppLists = combinedQueryResult
         .where((element) => ManagerUtils.doesElementConvertFromJson(element))
         .map((listDocumentSnapshot) async {
-      final ListAppList listAppList = listDocumentSnapshot.data();
+      final ListAppList listAppList = listDocumentSnapshot.data()!;
 
       // inject creator
       listAppList.creator =
@@ -153,7 +156,7 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
 
   Future<bool> leaveList(String ownerUid, ListAppList list) async {
     try {
-      final ownerListCollectionRef = DatabaseConfig.firebaseFirestoreInstance
+      final ownerListCollectionRef = ManagerConfig.firebaseFirestoreInstance
           .collection(ListAppUser.collectionName)
           .doc(ownerUid)
           .collection(ListAppList.collectionName);

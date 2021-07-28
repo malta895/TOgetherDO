@@ -17,4 +17,7 @@ abstract class ManagerUtils {
       return false;
     }
   }
+
+  static T? nullOrSingleData<T>(QuerySnapshot<T?> querySnapshot) =>
+      querySnapshot.docs.isEmpty ? null : querySnapshot.docs.single.data();
 }

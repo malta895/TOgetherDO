@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/notification.dart';
-import 'package:mobile_applications/services/database_config.dart';
 import 'package:mobile_applications/services/database_manager.dart';
+import 'package:mobile_applications/services/manager_config.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 
 class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
@@ -10,17 +10,20 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
       ListAppNotificationManager._privateConstructor();
 
   ListAppNotificationManager._privateConstructor()
-      : super(DatabaseConfig.firebaseFirestoreInstance
+      : super(ManagerConfig.firebaseFirestoreInstance
             .collection(ListAppNotification.collectionName)
-            .withConverter<ListAppNotification>(
-                fromFirestore: (snapshots, _) =>
-                    ListAppNotification.fromJson(snapshots.data()!),
-                toFirestore: (notification, _) => notification.toJson()));
+            .withConverter<ListAppNotification?>(
+                fromFirestore: (snapshots, _) {
+                  final snapshotsData = snapshots.data();
+                  if (snapshotsData == null) return null;
+                  return ListAppNotification.fromJson(snapshotsData);
+                },
+                toFirestore: (notification, _) => notification!.toJson()));
 
   static ListAppNotificationManager get instance => _instance;
 
   final FirebaseFirestore firestoreInstance =
-      DatabaseConfig.firebaseFirestoreInstance;
+      ManagerConfig.firebaseFirestoreInstance;
 
   Future<List<ListAppNotification>> getNotificationsByUserId(
       String? userUid, String? orderBy) async {
@@ -34,13 +37,13 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
     switch (orderBy) {
       case 'createdAt':
         docs.sort((a, b) {
-          return b.data().createdAt.compareTo(a.data().createdAt);
+          return b.data()!.createdAt.compareTo(a.data()!.createdAt);
         });
         break;
     }
 
     return Future.wait(docs.map((e) async {
-      final notification = e.data();
+      final notification = e.data()!;
       print("STATUS");
       print(notification.status);
       final sender =

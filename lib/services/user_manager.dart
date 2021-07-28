@@ -29,7 +29,9 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
   //     FirebaseFunctions.instanceFor(region: "europe-west6");
 
   Future<void> changeProfilePicture(
-      ListAppUser user, PickedFile imageFile) async {
+    ListAppUser user,
+    XFile imageFile,
+  ) async {
     final imageRef =
         _firebaseStorageInstance.ref('pro-pic-user-' + user.databaseId!);
 

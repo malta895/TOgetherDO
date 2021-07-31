@@ -1,32 +1,50 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/ui/lists_page.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/theme.dart';
 import 'package:provider/provider.dart';
 
-Widget createHomeScreen() => MultiProvider(
-      providers: [
-        ChangeNotifierProvider<ThemeChanger>(
-          create: (_) => ThemeChanger(),
+Widget createHomeScreen() {
+  // we need a fake signed in user in order to display their data
+  final mockUser = MockUser(
+    uid: '123uid',
+    displayName: 'John Doe',
+    email: 'johndoe@email.com',
+  );
+
+  return MultiProvider(
+    providers: [
+      ChangeNotifierProvider<ThemeChanger>(
+        create: (_) => ThemeChanger(),
+      ),
+      ChangeNotifierProvider<ListAppNavDrawerStateInfo>(
+        create: (_) => ListAppNavDrawerStateInfo(),
+      ),
+      Provider<ListAppAuthProvider>(
+        create: (_) => ListAppAuthProvider(
+          MockFirebaseAuth(
+            signedIn: true,
+            mockUser: mockUser,
+          ),
         ),
-        ChangeNotifierProvider<ListAppNavDrawerStateInfo>(
-          create: (_) => ListAppNavDrawerStateInfo(),
-        ),
-        Provider<ListAppAuthProvider>(
-            create: (_) => ListAppAuthProvider(FirebaseAuth.instance)),
-        StreamProvider(
-          create: (context) => context.read<ListAppAuthProvider>().authState,
-          //initially no user is logged in
-          initialData: null,
-        )
-      ],
-      child: MaterialApp(home: ListsPage()),
-    );
+      ),
+      StreamProvider(
+        create: (context) => context.read<ListAppAuthProvider>().authState,
+        //initially no user is logged in
+        initialData: null,
+      )
+    ],
+    child: MaterialApp(home: ListsPage()),
+  );
+}
 
 void main() {
+  final mockListAppUser = ListAppUser();
+
   group('Home Page Widget Tests', () {
     testWidgets('Testing if ListView shows up', (tester) async {
       await tester.pumpWidget(createHomeScreen());

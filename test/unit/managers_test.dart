@@ -10,7 +10,12 @@ import 'package:test/test.dart';
 
 import 'managers_test.mocks.dart';
 
-class MockHttpsCallable extends Mock implements HttpsCallable {}
+class MockHttpsCallable extends Mock implements HttpsCallable {
+  @override
+  Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async {
+    return MockHttpsCallableResult();
+  }
+}
 
 class MockHttpsCallableResult<T> extends Mock
     implements HttpsCallableResult<T> {}
@@ -61,7 +66,10 @@ void main() {
           ),
         )).thenReturn(fakeHttpsCallable);
 
-        when(fakeHttpsCallableResult.data()).thenAnswer((_) async => testUser);
+        // when(fakeHttpsCallable('doe@email.com'))
+        //     .thenAnswer((_) async => fakeHttpsCallableResult);
+
+        // when(fakeHttpsCallableResult.data()).thenAnswer((_) async => testUser);
 
         final user =
             await ListAppUserManager.instance.getByEmail('doe@email.com');
@@ -72,9 +80,11 @@ void main() {
 
         final wrongUser =
             await ListAppUserManager.instance.getByEmail('random');
+
         expect(wrongUser, null);
       },
-      skip: 'Find a way to mock the cloud functions properly', // TODO fix this
+      skip:
+          'TODO Find a way to mock the cloud functions properly', // TODO fix this
     );
 
     test('test getByUsername', () async {

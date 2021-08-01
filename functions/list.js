@@ -23,6 +23,23 @@ exports.setCreatedAt = functions.region('europe-west6').firestore.document('user
     }
 );
 
+exports.setAdminAsMember = functions.region('europe-west6').firestore.document('users/{userId}/lists/{listId}').onCreate(
+    async (snapshot, context) => {
+        return admin.firestore().collection('users')
+            .doc(context.params.userId)
+            .collection('lists')
+            .doc(context.params.listId)
+            .members
+            .add(context.params.userId)
+            .then(() => {
+                console.log("Added admin as a member");
+            })
+            .catch((error) => {
+                console.error("Error while adding admin as member");
+                return null;
+            });
+    })
+
 exports.createNotification = functions.region('europe-west6').firestore.document('users/{userId}/lists/{listId}').onCreate(
     async (snapshot, context) => {
         const sender = await admin.firestore().collection('users').doc(context.params.userId).get();

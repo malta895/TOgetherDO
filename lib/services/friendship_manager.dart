@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_applications/models/friendship.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/database_manager.dart';
+import 'package:mobile_applications/services/manager_config.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/services/utils.dart';
 
@@ -12,16 +13,21 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
       ListAppFriendshipManager._privateConstructor();
 
   ListAppFriendshipManager._privateConstructor()
-      : super(FirebaseFirestore.instance
+      : super(ManagerConfig.firebaseFirestoreInstance
             .collection(ListAppFriendship.collectionName)
-            .withConverter<ListAppFriendship>(
-                fromFirestore: (snapshots, _) =>
-                    ListAppFriendship.fromJson(snapshots.data()!),
-                toFirestore: (friendship, _) => friendship.toJson()));
+            .withConverter<ListAppFriendship?>(
+                fromFirestore: (snapshots, _) {
+                  final snapshotsData = snapshots.data();
+                  return snapshotsData == null
+                      ? null
+                      : ListAppFriendship.fromJson(snapshotsData);
+                },
+                toFirestore: (friendship, _) => friendship!.toJson()));
 
   static ListAppFriendshipManager get instance => _instance;
 
-  final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
+  final FirebaseFirestore firestoreInstance =
+      ManagerConfig.firebaseFirestoreInstance;
 
   Future<List<ListAppUser?>> getFriendsFromByUid(String uid) async {
     final queryResultFrom = await this
@@ -34,7 +40,7 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
         .where((element) => ManagerUtils.doesElementConvertFromJson(element))
         .map((element) async {
       return await ListAppUserManager.instance
-          .getByUid((element.data().userTo));
+          .getByUid((element.data()!.userTo));
     }));
   }
 
@@ -47,7 +53,7 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
 
     return Future.wait(queryResultTo.docs.map((element) async {
       return await ListAppUserManager.instance
-          .getByUid((element.data().userFrom));
+          .getByUid((element.data()!.userFrom));
     }));
   }
 
@@ -59,8 +65,7 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
 
   Future<bool> addFriendByEmail(String email, String? userFromUid) async {
     try {
-      ListAppUser? userTo =
-          await ListAppUserManager.instance.getUserByEmail(email);
+      ListAppUser? userTo = await ListAppUserManager.instance.getByEmail(email);
       if (userTo != null) {
         final newFriendship = ListAppFriendship(
             userFrom: userFromUid!,
@@ -97,7 +102,7 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
   Future<bool> addFriendByUsername(String username, String userFrom) async {
     try {
       ListAppUser? userTo =
-          await ListAppUserManager.instance.getUserByUsername(username);
+          await ListAppUserManager.instance.getByUsername(username);
       if (userTo != null) {
         final newFriendship = ListAppFriendship(
             userFrom: userFrom,

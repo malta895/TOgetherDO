@@ -27,8 +27,8 @@ class _NotificationBadge extends State<NotificationBadge> {
   }
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
     unansweredNotifications = getNotificationNumber();
     getNotificationNumber().then((value) => print(value));

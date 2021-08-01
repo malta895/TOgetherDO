@@ -36,7 +36,7 @@ class _ProfilePageState extends State<ProfilePage> {
     _currentUsername = _loggedInListAppUser.username ?? '';
   }
 
-  Future<void> _changeProfilePhoto(PickedFile? imageFile) async {
+  Future<void> _changeProfilePhoto(XFile? imageFile) async {
     if (imageFile == null) return;
     await ListAppUserManager.instance
         .changeProfilePicture(_loggedInListAppUser, imageFile);
@@ -54,10 +54,10 @@ class _ProfilePageState extends State<ProfilePage> {
           // The stateful widget is necessary to keep updated the OK button enabled or disabled based on the current username value
           return StatefulBuilder(builder: (context, setDialogState) {
             return AlertDialog(
-              title: Text('Enter a new username'),
+              title: const Text('Enter a new username'),
               content: TextField(
                 controller: textFieldController,
-                decoration: InputDecoration(hintText: "New name"),
+                decoration: const InputDecoration(hintText: "New name"),
                 onChanged: (value) {
                   setDialogState(() {
                     _newUsername = value;
@@ -68,7 +68,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 TextButton(
                   style: TextButton.styleFrom(
                       backgroundColor: Colors.red, primary: Colors.white),
-                  child: Text('CANCEL'),
+                  child: const Text('CANCEL'),
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -78,7 +78,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       backgroundColor:
                           _newUsername.isEmpty ? Colors.grey : Colors.green,
                       primary: Colors.white),
-                  child: Text('OK'),
+                  child: const Text('OK'),
                   onPressed: () async {
                     if (_newUsername.isEmpty) {
                       return;
@@ -140,7 +140,7 @@ class _ProfilePageState extends State<ProfilePage> {
             children: <Widget>[
               Stack(alignment: const Alignment(1.2, 1.2), children: [
                 _loggedInListAppUser.profilePictureURL == null
-                    ? CircleAvatar(
+                    ? const CircleAvatar(
                         backgroundImage:
                             AssetImage('assets/sample-profile.png'),
                         radius: 70.0,
@@ -153,19 +153,19 @@ class _ProfilePageState extends State<ProfilePage> {
                     icon: const Icon(Icons.add_a_photo),
                     color: Colors.white,
                     onPressed: () async {
-                      final PickedFile? imageFile = await _imagePicker.getImage(
+                      final XFile? imageFile = await _imagePicker.pickImage(
                           source: ImageSource.gallery);
 
                       await _changeProfilePhoto(imageFile);
                       setState(() {});
                     }),
               ]),
-              SizedBox(
+              const SizedBox(
                 height: 30.0,
               ),
               Text(
                 _loggedInListAppUser.fullName,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 24.0,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -210,7 +210,7 @@ class _ProfilePageState extends State<ProfilePage> {
       required Text text,
       Function()? onModify}) {
     return Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             border: Border(
                 bottom: BorderSide(
           //                   <--- left side

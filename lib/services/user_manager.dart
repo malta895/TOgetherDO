@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/exception.dart';
-import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/database_manager.dart';
+import 'package:mobile_applications/services/manager_config.dart';
+import 'package:mobile_applications/services/utils.dart' show ManagerUtils;
 
 class ListAppUserManager extends DatabaseManager<ListAppUser>
     with ChangeNotifier {
@@ -16,22 +16,26 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
       ListAppUserManager._privateConstructor();
 
   ListAppUserManager._privateConstructor()
-      : super(FirebaseFirestore.instance
+      : super(ManagerConfig.firebaseFirestoreInstance
             .collection(ListAppUser.collectionName)
-            .withConverter<ListAppUser>(
-                fromFirestore: (snapshots, _) =>
-                    ListAppUser.fromJson(snapshots.data()!),
-                toFirestore: (user, _) => user.toJson()));
+            .withConverter<ListAppUser?>(
+                fromFirestore: (snapshots, _) {
+                  final snapshotsData = snapshots.data();
+                  if (snapshotsData == null) return null;
+                  return ListAppUser.fromJson(snapshotsData);
+                },
+                toFirestore: (user, _) => user!.toJson()));
 
   static ListAppUserManager get instance => _instance;
 
-  final _firebaseStorageInstance = firebase_storage.FirebaseStorage.instance;
+  final _firebaseStorageInstance = ManagerConfig.firebaseStorage;
 
-  final _cloudFunctonsInstance =
-      FirebaseFunctions.instanceFor(region: "europe-west6");
+  final _firebaseFunctions = ManagerConfig.firebaseFunctions;
 
   Future<void> changeProfilePicture(
-      ListAppUser user, PickedFile imageFile) async {
+    ListAppUser user,
+    XFile imageFile,
+  ) async {
     final imageRef =
         _firebaseStorageInstance.ref('pro-pic-user-' + user.databaseId!);
 
@@ -47,26 +51,32 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
     user.profilePictureURL = profilePictureURL;
   }
 
-  Future<ListAppUser?> getUserByEmail(String email) async {
+  Future<ListAppUser?> getByEmail(String email) async {
     try {
-      final queryResult =
-          await this.firebaseCollection.where('email', isEqualTo: email).get();
+      final callable = _firebaseFunctions.httpsCallable(
+        'getUserByEmail-getUserByEmail',
+        options: HttpsCallableOptions(
+          timeout: const Duration(seconds: 30),
+        ),
+      );
 
-      return queryResult.docs.single.data();
+      final result = await callable(email);
+
+      return result.data<ListAppUser?>();
     } on CheckedFromJsonException catch (e) {
       print(e.message);
       return null;
     }
   }
 
-  Future<ListAppUser?> getUserByUsername(String username) async {
+  Future<ListAppUser?> getByUsername(String username) async {
     try {
       final queryResult = await this
           .firebaseCollection
           .where('username', isEqualTo: username)
           .get();
 
-      return queryResult.docs.single.data();
+      return ManagerUtils.nullOrSingleData(queryResult);
     } on CheckedFromJsonException catch (e) {
       print(e.message);
       return null;
@@ -116,31 +126,5 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
       print(e.message);
       throw ListAppException('An error occurred. Please try again later.');
     }
-  }
-
-  Future<List<ListAppList>> getListsMerged(ListAppUser listAppUser,
-      {String? orderBy}) async {
-    final callable = _cloudFunctonsInstance.httpsCallable(
-      'getListsByUser-getListsByUser',
-      options: HttpsCallableOptions(
-        timeout: const Duration(seconds: 30),
-      ),
-    );
-
-    final result = await callable();
-
-    final lists = result.data as List<Object?>;
-
-    return lists.map((e) {
-      final list = (e as Map<Object?, Object?>);
-
-      list.removeWhere((key, value) => !(key is String));
-
-      final Map<String, dynamic> cleanedList = list.map((key, value) {
-        return MapEntry(key as String, value);
-      });
-
-      return ListAppList.fromJson(cleanedList);
-    }).toList();
   }
 }

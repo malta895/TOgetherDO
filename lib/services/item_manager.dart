@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/list_item.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/database_manager.dart';
+import 'package:mobile_applications/services/manager_config.dart';
 
 /// The item manager. This is not a singleton as a new instance is created for each subcollection
 class ListAppItemManager extends DatabaseManager<BaseItem> {
@@ -13,7 +13,7 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
   static final Map<String, ListAppItemManager> _cachedInstances = {};
 
   ListAppItemManager._privateConstructor(this.listUid, this.userUid)
-      : super(FirebaseFirestore.instance
+      : super(ManagerConfig.firebaseFirestoreInstance
             .collection(ListAppUser.collectionName)
             .doc(userUid)
             .collection(ListAppList.collectionName)

@@ -11,6 +11,7 @@ import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/list_item.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/friendship_manager.dart';
+import 'package:mobile_applications/services/item_manager.dart';
 import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/ui/new_item.dart';
 import 'package:numberpicker/numberpicker.dart';
@@ -150,7 +151,13 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                 alignment: Alignment.centerLeft,
               )),
           key: UniqueKey(),
-          onDismissed: (DismissDirection direction) {
+          onDismissed: (DismissDirection direction) async {
+            final itemManagerInstance = ListAppItemManager.instanceForList(
+              widget.listAppList.databaseId!,
+              widget.listAppList.creator!.databaseId!,
+            );
+
+            await itemManagerInstance.deleteInstance(aListItem);
             setState(() {
               widget.listAppList.items
                   .removeWhere((element) => element == aListItem);
@@ -251,7 +258,13 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                   alignment: Alignment.centerLeft,
                 )),
             key: UniqueKey(),
-            onDismissed: (DismissDirection direction) {
+            onDismissed: (DismissDirection direction) async {
+              final itemManagerInstance = ListAppItemManager.instanceForList(
+                widget.listAppList.databaseId!,
+                widget.listAppList.creator!.databaseId!,
+              );
+
+              await itemManagerInstance.deleteInstance(aListItem);
               setState(() {
                 widget.listAppList.items
                     .removeWhere((element) => element == aListItem);
@@ -393,7 +406,13 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                   alignment: Alignment.centerLeft,
                 )),
             key: UniqueKey(),
-            onDismissed: (DismissDirection direction) {
+            onDismissed: (DismissDirection direction) async {
+              final itemManagerInstance = ListAppItemManager.instanceForList(
+                widget.listAppList.databaseId!,
+                widget.listAppList.creator!.databaseId!,
+              );
+
+              await itemManagerInstance.deleteInstance(aListItem);
               setState(() {
                 widget.listAppList.items
                     .removeWhere((element) => element == aListItem);

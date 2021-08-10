@@ -71,10 +71,8 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
 
   Future<ListAppUser?> getByUsername(String username) async {
     try {
-      final queryResult = await this
-          .firebaseCollection
-          .where('username', isEqualTo: username)
-          .get();
+      final queryResult =
+          await firebaseCollection.where('username', isEqualTo: username).get();
 
       return ManagerUtils.nullOrSingleData(queryResult);
     } on CheckedFromJsonException catch (e) {
@@ -86,10 +84,8 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
   ///Returns `true` if the given username is already present on database. Unauthenticated method, since anyone can see if an username exists before choosing it
   Future<bool> usernameExists(String username) async {
     try {
-      final queryResult = await this
-          .firebaseCollection
-          .where('username', isEqualTo: username)
-          .get();
+      final queryResult =
+          await firebaseCollection.where('username', isEqualTo: username).get();
       return queryResult.size == 1;
     } on CheckedFromJsonException catch (e) {
       print(e.message);
@@ -108,7 +104,7 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
     }
   }
 
-  ///Updates the username on firestore. Returns `false` on failure
+  /// Updates the username on firestore. Returns `false` on failure
   Future<void> updateUsername(String username, String? userId) async {
     if (userId == null) throw ListAppException('No user is logged in.');
 

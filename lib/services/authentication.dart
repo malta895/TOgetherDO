@@ -1,12 +1,12 @@
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/manager_config.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 
 ///A wrapper of FirebaseAuth, that provides a better interface to the login ui
@@ -86,7 +86,8 @@ class ListAppAuthProvider with ChangeNotifier {
         await ListAppUserManager.instance.getByUid(firebaseUser.uid);
 
     if (listAppUser == null) {
-      final notificationToken = await FirebaseMessaging.instance.getToken();
+      final notificationToken =
+          await ManagerConfig.firebaseMessaging?.getToken();
 
       String? email = firebaseUser.email;
 

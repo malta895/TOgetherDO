@@ -1,6 +1,7 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
+import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/manager_config.dart';
 import 'package:mobile_applications/services/user_manager.dart';
@@ -34,7 +35,7 @@ void main() {
     firebaseFunctions: fakeFirebaseFunctions,
   );
 
-  group('Test usermanager', () {
+  void createTestUser() {
     final testUser = ListAppUser(
       databaseId: '123prova',
       username: 'johndoe',
@@ -44,7 +45,11 @@ void main() {
     );
 
     ListAppUserManager.instance.saveToFirestore(testUser);
+  }
 
+  createTestUser();
+
+  group('Test usermanager', () {
     test('test getByUid', () async {
       final user = await ListAppUserManager.instance.getByUid('123prova');
       expect(
@@ -82,12 +87,14 @@ void main() {
             await ListAppUserManager.instance.getByEmail('random');
 
         expect(wrongUser, null);
+
+        fakeFirebaseFirestore.clearPersistence();
       },
       skip:
           'TODO Find a way to mock the cloud functions properly', // TODO fix this
     );
 
-    test('test getByUsername', () async {
+    test('getByUsername', () async {
       final user = await ListAppUserManager.instance.getByUsername('johndoe');
       expect(
         user?.databaseId,
@@ -97,6 +104,45 @@ void main() {
       final wrongUser =
           await ListAppUserManager.instance.getByUsername('random');
       expect(wrongUser, null);
+
+      // bad user, without required attributes
+      fakeFirebaseFirestore
+          .collection('users')
+          .doc('bad_user')
+          .set({'bad': 'bad', 'username': 'bad'});
+
+      final badUser = await ListAppUserManager.instance.getByUsername('bad');
+
+      expect(badUser, null);
+
+      await fakeFirebaseFirestore.collection('users').doc('bad_user').delete();
+    });
+
+    test('usernameExists', () async {
+      final trueResult =
+          await ListAppUserManager.instance.usernameExists('johndoe');
+      expect(trueResult, true);
+
+      final falseResult =
+          await ListAppUserManager.instance.usernameExists('johndoe1');
+
+      expect(falseResult, false);
+    });
+
+    test('validateUsername', () async {
+      try {
+        await ListAppUserManager.instance.validateUsername('johndoe');
+        fail('Expected a ListAppException to be thrown');
+      } on ListAppException catch (e) {
+        expect(e.message, 'The username is already taken');
+      }
+
+      try {
+        await ListAppUserManager.instance.validateUsername('');
+        fail('Expected a ListAppException to be thrown');
+      } on ListAppException catch (e) {
+        expect(e.message, 'The username is empty');
+      }
     });
   });
 }

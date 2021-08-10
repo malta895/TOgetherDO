@@ -47,19 +47,26 @@ extension ParseToString on ListType {
 class ListAppList extends BaseModel {
   static const String collectionName = 'lists';
 
+  /// The name of the list
   final String name;
+
+  /// Optional. A brief description of the list.
   final String? description;
 
+  /// The expiry date, if set, describes the deadline of the list completion
   @JsonKey(
       fromJson: ModelUtils.nullableDateTimeFromJson,
       toJson: ModelUtils.nullableDateTimeToJson)
   final DateTime? expiryDate;
 
+  /// The type of this list
   final ListType listType;
 
+  /// The members of the list
   @JsonKey(defaultValue: {})
   Set<String?> members = const {};
 
+  /// the number of items in the list
   int get length => items.length;
 
   String? creatorUid;

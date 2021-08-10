@@ -49,62 +49,59 @@ class _NewListFormState extends State<_NewListForm> {
 
   Widget _buildListTitleField() {
     return Padding(
-        padding: const EdgeInsets.only(top: 10.0),
-        child: TextFormField(
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          controller: _listTitleController,
-          cursorColor: Theme.of(context).textTheme.headline1!.color!,
-          decoration: InputDecoration(
-              contentPadding: const EdgeInsets.all(5.0),
-              filled: true,
-              fillColor: Theme.of(context).splashColor,
-              focusedBorder: OutlineInputBorder(
-                borderRadius: const BorderRadius.all(Radius.circular(12.0)),
-                borderSide: BorderSide(
-                    color: Theme.of(context).textTheme.headline1!.color!,
-                    width: 1.0),
-              ),
-              border: InputBorder.none,
-              labelText: 'Enter the list title',
-              labelStyle: TextStyle(
-                  color: Theme.of(context).textTheme.headline1!.color)),
-          validator: (value) {
-            if (value?.isEmpty == true) {
-              return 'The title is required';
-            }
-            return null;
-          },
-        ));
+      padding: const EdgeInsets.only(top: 5.0),
+      child: TextFormField(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        controller: _listTitleController,
+        cursorColor: Theme.of(context).textTheme.headline1!.color!,
+        decoration: InputDecoration(
+            contentPadding: const EdgeInsets.all(5.0),
+            filled: true,
+            fillColor: Theme.of(context).splashColor,
+            focusedBorder: OutlineInputBorder(
+              borderRadius: const BorderRadius.all(Radius.circular(12.0)),
+              borderSide: BorderSide(
+                  color: Theme.of(context).textTheme.headline1!.color!,
+                  width: 1.0),
+            ),
+            border: InputBorder.none,
+            labelText: 'Enter the list title',
+            labelStyle:
+                TextStyle(color: Theme.of(context).textTheme.headline1!.color)),
+        validator: (value) {
+          if (value?.isEmpty == true) {
+            return 'The title is required';
+          }
+          return null;
+        },
+      ),
+    );
   }
 
   Widget _buildListDescriptionField() {
     return Padding(
-        padding: const EdgeInsets.only(top: 10.0),
+        padding: const EdgeInsets.only(top: 5.0),
         child: TextFormField(
           keyboardType: TextInputType.multiline,
           maxLines: null,
           controller: _listDescriptionController,
           cursorColor: Theme.of(context).textTheme.headline1!.color!,
           decoration: InputDecoration(
-              contentPadding: const EdgeInsets.all(5.0),
-              filled: true,
-              fillColor: Theme.of(context).splashColor,
-              focusedBorder: OutlineInputBorder(
-                borderRadius: const BorderRadius.all(Radius.circular(12.0)),
-                borderSide: BorderSide(
-                    color: Theme.of(context).textTheme.headline1!.color!,
-                    width: 1.0),
+            contentPadding: const EdgeInsets.all(5.0),
+            filled: true,
+            fillColor: Theme.of(context).splashColor,
+            focusedBorder: OutlineInputBorder(
+              borderRadius: const BorderRadius.all(Radius.circular(12.0)),
+              borderSide: BorderSide(
+                color: Theme.of(context).textTheme.headline1!.color!,
+                width: 1.0,
               ),
-              border: InputBorder.none,
-              labelText: 'Enter a description for the list',
-              labelStyle: TextStyle(
-                  color: Theme.of(context).textTheme.headline1!.color)),
-          /*validator: (value) {
-            if (value?.isEmpty == true) {
-              return 'Please enter some text';
-            }
-            return null;
-          },*/
+            ),
+            border: InputBorder.none,
+            labelText: 'Enter a description for the list',
+            labelStyle:
+                TextStyle(color: Theme.of(context).textTheme.headline1!.color),
+          ),
         ));
   }
 
@@ -191,7 +188,7 @@ class _NewListFormState extends State<_NewListForm> {
     return Form(
       key: _formKey,
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(15.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -205,8 +202,14 @@ class _NewListFormState extends State<_NewListForm> {
                 const Expanded(child: Divider()),
               ],
             ),
-            _buildListTitleField(),
-            _buildListDescriptionField(),
+            Flexible(
+              flex: 3,
+              child: _buildListTitleField(),
+            ),
+            Flexible(
+              flex: 3,
+              child: _buildListDescriptionField(),
+            ),
             Row(
               children: <Widget>[
                 const Expanded(child: Divider()),
@@ -217,12 +220,25 @@ class _NewListFormState extends State<_NewListForm> {
                 const Expanded(child: Divider()),
               ],
             ),
-            _buildListTypeSelector(),
-            const _NewListDropdownMenu(),
-            _AddMemberDialog(
-              members: members,
+            Flexible(
+              flex: 16,
+              child: _buildListTypeSelector(),
             ),
-            _buildSubmitButton()
+            const Flexible(
+              flex: 6,
+              child: _NewListDropdownMenu(),
+            ),
+            Flexible(
+              flex: 6,
+              fit: FlexFit.tight,
+              child: _AddMemberDialog(
+                members: members,
+              ),
+            ),
+            Flexible(
+              flex: 5,
+              child: _buildSubmitButton(),
+            )
           ],
         ),
       ),
@@ -254,118 +270,108 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
         .getFriendsToByUid(currentUser.databaseId!);
 
     return Padding(
-        padding: const EdgeInsets.only(top: 15),
-        child: ListTile(
-            contentPadding: const EdgeInsets.all(5.0),
-            title: Text(
-              "Add participants",
-              style: TextStyle(
-                  fontSize: 16,
-                  color: Theme.of(context).textTheme.headline1!.color),
-            ),
-            tileColor: Theme.of(context).splashColor,
-            trailing: IconButton(
-                icon: Icon(Icons.person_add,
-                    color: Theme.of(context).accentColor),
-                onPressed: () => showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return StatefulBuilder(builder: (context, setState) {
-                        return FutureBuilder(
-                            future: Future.wait([friendsFrom, friendsTo]),
-                            builder: (BuildContext context,
-                                AsyncSnapshot<List<List<ListAppUser?>>>
-                                    snapshot) {
-                              if (snapshot.hasData) {
-                                final allFriends =
-                                    snapshot.data![0] + snapshot.data![1];
+      padding: const EdgeInsets.all(5.0),
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(5.0),
+        title: const Text("Add participants"),
+        tileColor: Theme.of(context).splashColor,
+        trailing: IconButton(
+          icon: Icon(Icons.person_add, color: Theme.of(context).accentColor),
+          onPressed: () => showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return StatefulBuilder(
+                  builder: (context, setState) {
+                    return FutureBuilder(
+                      future: Future.wait([friendsFrom, friendsTo]),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<List<ListAppUser?>>> snapshot) {
+                        if (snapshot.hasData) {
+                          final allFriends =
+                              snapshot.data![0] + snapshot.data![1];
 
-                                selectedFriendsValues = List<bool?>.filled(
-                                    allFriends.length, false);
-                                print(selectedFriendsValues);
-                                return AlertDialog(
-                                    title: const Text("Choose members to add"),
-                                    content: StatefulBuilder(builder:
-                                        (BuildContext context,
-                                            StateSetter setState) {
+                          selectedFriendsValues =
+                              List<bool?>.filled(allFriends.length, false);
+                          print(selectedFriendsValues);
+                          return AlertDialog(
+                            title: const Text("Choose members to add"),
+                            content: StatefulBuilder(builder:
+                                (BuildContext context, StateSetter setState) {
+                              return Container(
+                                  height: 300,
+                                  width: 300,
+                                  child: ListView.builder(
+                                    itemCount: allFriends.length,
+                                    itemBuilder: (context, i) {
                                       return Container(
-                                          height: 300,
-                                          width: 300,
-                                          child: ListView.builder(
-                                            itemCount: allFriends.length,
-                                            itemBuilder: (context, i) {
-                                              return Container(
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                          border: Border(
-                                                              bottom:
-                                                                  BorderSide(
-                                                    color: Colors.grey,
-                                                    width: 0.8,
-                                                  ))),
-                                                  child: CheckboxListTile(
-                                                      activeColor:
-                                                          Theme.of(context)
-                                                              .accentColor,
-                                                      secondary: CircleAvatar(
-                                                        backgroundImage:
-                                                            NetworkImage(allFriends
-                                                                .elementAt(i)!
-                                                                .profilePictureURL!),
-                                                      ),
-                                                      value:
-                                                          selectedFriendsValues
-                                                              .elementAt(i),
-                                                      onChanged:
-                                                          (bool? newValue) {
-                                                        setState(() {
-                                                          selectedFriendsValues[
-                                                              i] = newValue;
-                                                        });
-                                                      },
-                                                      title: Text(
-                                                        allFriends
-                                                                .elementAt(i)!
-                                                                .firstName +
-                                                            ' ' +
-                                                            allFriends
-                                                                .elementAt(i)!
-                                                                .lastName,
-                                                        style: const TextStyle(
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      )));
-                                            },
-                                          ));
-                                    }),
-                                    actions: <Widget>[
-                                      TextButton(
-                                          style: TextButton.styleFrom(
-                                              primary: Theme.of(context)
-                                                  .accentColor),
-                                          onPressed: () => {
-                                                for (var i = 0;
-                                                    i < allFriends.length;
-                                                    i++)
-                                                  {
-                                                    if (selectedFriendsValues[
-                                                            i] ==
-                                                        true)
-                                                      {
-                                                        widget.members
-                                                            .add(allFriends[i])
-                                                      }
-                                                  },
-                                                Navigator.of(context).pop(true)
-                                              },
-                                          child: const Text("ADD")),
-                                    ]);
-                              }
-                              return Container();
-                            });
-                      });
-                    }))));
+                                        decoration: const BoxDecoration(
+                                            border: Border(
+                                                bottom: BorderSide(
+                                          color: Colors.grey,
+                                          width: 0.8,
+                                        ))),
+                                        child: CheckboxListTile(
+                                          activeColor:
+                                              Theme.of(context).accentColor,
+                                          secondary: CircleAvatar(
+                                            backgroundImage: NetworkImage(
+                                                allFriends
+                                                    .elementAt(i)!
+                                                    .profilePictureURL!),
+                                          ),
+                                          value: selectedFriendsValues
+                                              .elementAt(i),
+                                          onChanged: (bool? newValue) {
+                                            setState(() {
+                                              selectedFriendsValues[i] =
+                                                  newValue;
+                                            });
+                                          },
+                                          title: Text(
+                                            allFriends.elementAt(i)!.firstName +
+                                                ' ' +
+                                                allFriends
+                                                    .elementAt(i)!
+                                                    .lastName,
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ));
+                            }),
+                            actions: <Widget>[
+                              TextButton(
+                                  style: TextButton.styleFrom(
+                                      primary: Theme.of(context).accentColor),
+                                  onPressed: () => {
+                                        for (var i = 0;
+                                            i < allFriends.length;
+                                            i++)
+                                          {
+                                            if (selectedFriendsValues[i] ==
+                                                true)
+                                              {
+                                                widget.members
+                                                    .add(allFriends[i])
+                                              }
+                                          },
+                                        Navigator.of(context).pop(true)
+                                      },
+                                  child: const Text("ADD")),
+                            ],
+                          );
+                        }
+                        return Container();
+                      },
+                    );
+                  },
+                );
+              }),
+        ),
+      ),
+    );
   }
 }
 
@@ -374,29 +380,25 @@ class _NewListDropdownMenuState extends State<_NewListDropdownMenu> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(top: 15),
-            child: CheckboxListTile(
-                contentPadding: const EdgeInsets.all(5.0),
-                title: Text(
-                  'I am the only one who can add participants',
-                  style: TextStyle(
-                    color: Theme.of(context).textTheme.headline1!.color,
-                    fontSize: 16.0,
-                  ),
-                ),
-                value: _checkBoxValue,
-                tileColor: Theme.of(context).splashColor,
-                activeColor: Theme.of(context).accentColor,
-                onChanged: (newValue) {
-                  setState(() {
-                    _checkBoxValue = newValue;
-                  });
-                }),
+    return Padding(
+      padding: const EdgeInsets.only(top: 5.0),
+      child: CheckboxListTile(
+          contentPadding: const EdgeInsets.all(5.0),
+          title: Text(
+            'I am the only one who can add participants',
+            style: TextStyle(
+              color: Theme.of(context).textTheme.headline1!.color,
+              fontSize: 16.0,
+            ),
           ),
-        ]);
+          value: _checkBoxValue,
+          tileColor: Theme.of(context).splashColor,
+          activeColor: Theme.of(context).accentColor,
+          onChanged: (newValue) {
+            setState(() {
+              _checkBoxValue = newValue;
+            });
+          }),
+    );
   }
 }

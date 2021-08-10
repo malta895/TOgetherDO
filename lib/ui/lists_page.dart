@@ -63,8 +63,8 @@ class _ListsPageState extends State<ListsPage>
 
   @override
   void dispose() {
-    super.dispose();
     _listsShowAnimationController.dispose();
+    super.dispose();
   }
 
   bool get _isAnimationRunningForwardsOrComplete {
@@ -251,7 +251,7 @@ class _ListsPageState extends State<ListsPage>
             width: 0.8,
           ))),
           child: ListTile(
-            key: const Key("Item tile"),
+            key: Key(listAppList.databaseId!),
             leading: const Icon(
               Icons.list,
               size: 40,

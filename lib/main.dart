@@ -39,6 +39,7 @@ Future<void> main() async {
     firebaseFirestore: FirebaseFirestore.instance,
     firebaseStorage: FirebaseStorage.instance,
     firebaseFunctions: FirebaseFunctions.instanceFor(region: 'europe-west6'),
+    firebaseMessaging: FirebaseMessaging.instance,
   );
 
   FirebaseMessaging.onBackgroundMessage(_messageHandler);

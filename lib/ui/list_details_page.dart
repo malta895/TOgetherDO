@@ -814,13 +814,17 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
       isAdmin = false;
     else
       isAdmin = true;
+
+    final allMembers = widget.listAppList.membersAsUsers;
+    // insert the creator as first member
+    allMembers.insert(0, widget.listAppList.creator!);
     // put the add element at first, then followed by the list members
     final membersListView = ListView.builder(
-      itemCount: widget.listAppList.membersAsUsers.length,
+      itemCount: allMembers.length,
       itemBuilder: (context, i) {
         return _buildMemberRow(
           context,
-          widget.listAppList.membersAsUsers.elementAt(i),
+          allMembers.elementAt(i),
           isAdmin,
         );
       },

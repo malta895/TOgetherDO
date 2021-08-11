@@ -1,7 +1,44 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:mobile_applications/services/authentication.dart';
+import 'package:mobile_applications/services/user_manager.dart';
+import 'package:mobile_applications/ui/lists_page.dart';
+import 'package:mobile_applications/ui/navigation_drawer.dart';
+import 'package:mobile_applications/ui/theme.dart';
+import 'package:provider/provider.dart';
 
-class MockDatabase {
+class TestUtils {
+  static Widget createHomeScreen() {
+    final mockUser = MockUser(
+      uid: 'user1_id',
+      email: "john@doe.com",
+      displayName: 'John Doe',
+    );
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ThemeChanger>(
+          create: (_) => ThemeChanger(),
+        ),
+        ChangeNotifierProvider<ListAppNavDrawerStateInfo>(
+          create: (_) => ListAppNavDrawerStateInfo(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ListAppAuthProvider(
+            MockFirebaseAuth(
+              signedIn: true,
+              mockUser: mockUser,
+            ),
+          ),
+        ),
+        ChangeNotifierProvider(create: (_) => ListAppUserManager.instance),
+      ],
+      child: MaterialApp(home: ListsPage()),
+    );
+  }
+
   /// create an instance of a mock database with pre-filled data and returns the FakeFirebaseFirestore instance
   static FirebaseFirestore createMockDatabase() {
     final fakeFirebaseFirestore = FakeFirebaseFirestore();

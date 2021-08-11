@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+<<<<<<< HEAD
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,34 @@ import '../unit/managers_test.mocks.dart';
       ],
       child: MaterialApp(home: SettingsScreen()),
     );*/
+=======
+import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mobile_applications/services/manager_config.dart';
+
+import '../mock_database.dart';
+import '../unit/managers_test.dart';
+import '../unit/managers_test.mocks.dart';
+
+>>>>>>> aaf32aa77b0e4c959f01eb9d626eb41f799fd248
 void main() {
+  // initialize here cause it could be useful in tests
+  FirebaseFirestore fakeFirebaseFirestore;
+  setUpAll(() {
+    fakeFirebaseFirestore = TestUtils.createMockDatabase();
+    final fakeFirebaseStorage = MockFirebaseStorage();
+    final fakeFirebaseFunctions = MockFirebaseFunctions();
+    final fakeHttpsCallable = MockHttpsCallableResult();
+    final fakeHttpsCallableResult = MockHttpsCallableResult();
+
+    ManagerConfig.initialize(
+      firebaseStorage: fakeFirebaseStorage,
+      firebaseFirestore: fakeFirebaseFirestore,
+      firebaseFunctions: fakeFirebaseFunctions,
+    );
+  });
+
   //ThemeData currentTheme = lightTheme;
   FirebaseFirestore fakeFirebaseFirestore;
   setUpAll(() {
@@ -85,7 +113,11 @@ void main() {
     testWidgets(
       'Testing if theme setting works',
       (tester) async {
+<<<<<<< HEAD
         await tester.pumpWidget(createSettingsScreen());
+=======
+        await tester.pumpWidget(TestUtils.createHomeScreen());
+>>>>>>> aaf32aa77b0e4c959f01eb9d626eb41f799fd248
         await tester.tap(find.byKey(const Key("theme setting")));
         await tester.pumpAndSettle(const Duration(seconds: 3));
         final textColorFinder =

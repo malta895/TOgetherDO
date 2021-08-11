@@ -30,8 +30,7 @@ class _ListsPageState extends State<ListsPage>
   late AnimationController _listsShowAnimationController;
 
   Future<List<ListAppList>>? _listsFuture;
-
-  late final ListAppUser? _currentListAppUser;
+  Future<ListAppUser?>? _listAppUserFuture;
 
   // the current shown lists, needed as state for the AnimatedList to work properly
   List<ListAppList> _listAppLists = [];
@@ -52,8 +51,8 @@ class _ListsPageState extends State<ListsPage>
 
     super.initState();
 
-    _currentListAppUser =
-        context.read<ListAppAuthProvider>().loggedInListAppUser;
+    _listAppUserFuture =
+        context.read<ListAppAuthProvider>().getLoggedInListAppUser();
 
     _listsFuture = _fetchLists();
     SchedulerBinding.instance?.addPostFrameCallback((_) {
@@ -185,109 +184,123 @@ class _ListsPageState extends State<ListsPage>
   }
 
   Widget _buildRow(BuildContext context, ListAppList listAppList) {
-    final bool doesUserOwnList =
-        listAppList.creatorUid == _currentListAppUser?.databaseId;
+    return FutureBuilder<ListAppUser?>(
+        future: _listAppUserFuture,
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              return Container();
+            case ConnectionState.done:
+              final currentListAppUser = snapshot.data!;
+              final bool doesUserOwnList =
+                  listAppList.creatorUid == currentListAppUser.databaseId;
 
-    return Dismissible(
-      confirmDismiss: (DismissDirection direction) async {
-        return await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text(
-                  "Are you sure you wish to ${doesUserOwnList ? 'delete' : 'leave'} the " +
-                      listAppList.name +
-                      " list?"),
-              content: doesUserOwnList
-                  ? const Text(
-                      "You and all the other participants will not see this list anymore")
-                  : const Text(
-                      "If you push LEAVE, you will abandon this list and you won't be able to join it unless someone invites you again"),
-              actions: <Widget>[
-                TextButton(
-                  style: TextButton.styleFrom(primary: Colors.red),
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: doesUserOwnList
-                      ? const Text('DELETE')
-                      : const Text('LEAVE'),
+              return Dismissible(
+                confirmDismiss: (DismissDirection direction) async {
+                  return await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text(
+                            "Are you sure you wish to ${doesUserOwnList ? 'delete' : 'leave'} the " +
+                                listAppList.name +
+                                " list?"),
+                        content: doesUserOwnList
+                            ? const Text(
+                                "You and all the other participants will not see this list anymore")
+                            : const Text(
+                                "If you push LEAVE, you will abandon this list and you won't be able to join it unless someone invites you again"),
+                        actions: <Widget>[
+                          TextButton(
+                            style: TextButton.styleFrom(primary: Colors.red),
+                            onPressed: () => Navigator.of(context).pop(true),
+                            child: doesUserOwnList
+                                ? const Text('DELETE')
+                                : const Text('LEAVE'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(false),
+                            child: const Text("CANCEL"),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                dismissThresholds: {DismissDirection.startToEnd: 0.3},
+                direction: DismissDirection.startToEnd,
+                background: Container(
+                    color: Colors.red,
+                    child: Align(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          const Icon(
+                            Icons.delete,
+                          ),
+                        ],
+                      ),
+                      alignment: Alignment.centerLeft,
+                    )),
+                key: UniqueKey(),
+                onDismissed: (DismissDirection direction) async {
+                  await _deleteOrAbandonList(listAppList);
+                },
+                child: Container(
+                  decoration: const BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(
+                    //                   <--- left side
+                    color: Colors.grey,
+                    width: 0.8,
+                  ))),
+                  child: ListTile(
+                    key: Key(listAppList.databaseId!),
+                    leading: const Icon(
+                      Icons.list,
+                      size: 40,
+                    ),
+                    trailing: Column(
+                      children: [
+                        const Icon(
+                          Icons.date_range,
+                          size: 20,
+                        ),
+                        // see https://pub.dev/documentation/intl/latest/intl/DateFormat-class.html
+                        Text(
+                            DateFormat('MMM dd').format(listAppList.createdAt)),
+                        Text(DateFormat.jm().format(listAppList.createdAt)),
+                      ],
+                    ),
+                    title: Text(
+                      listAppList.name,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    isThreeLine: true,
+                    subtitle: Text((doesUserOwnList
+                            ? 'Me'
+                            : listAppList.creator?.username ?? 'unknown') +
+                        "\n${listAppList.length} element${listAppList.length == 1 ? '' : 's'}"),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) => ListDetailsPage(
+                                  listAppList,
+                                  canAddNewMembers: doesUserOwnList,
+                                )),
+                      );
+                    },
+                  ),
                 ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text("CANCEL"),
-                ),
-              ],
-            );
-          },
-        );
-      },
-      dismissThresholds: {DismissDirection.startToEnd: 0.3},
-      direction: DismissDirection.startToEnd,
-      background: Container(
-          color: Colors.red,
-          child: Align(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(
-                  width: 20,
-                ),
-                const Icon(
-                  Icons.delete,
-                ),
-              ],
-            ),
-            alignment: Alignment.centerLeft,
-          )),
-      key: UniqueKey(),
-      onDismissed: (DismissDirection direction) async {
-        await _deleteOrAbandonList(listAppList);
-      },
-      child: Container(
-          decoration: const BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(
-            //                   <--- left side
-            color: Colors.grey,
-            width: 0.8,
-          ))),
-          child: ListTile(
-            key: Key(listAppList.databaseId!),
-            leading: const Icon(
-              Icons.list,
-              size: 40,
-            ),
-            trailing: Column(
-              children: [
-                const Icon(
-                  Icons.date_range,
-                  size: 20,
-                ),
-                // see https://pub.dev/documentation/intl/latest/intl/DateFormat-class.html
-                Text(DateFormat('MMM dd').format(listAppList.createdAt)),
-                Text(DateFormat.jm().format(listAppList.createdAt)),
-              ],
-            ),
-            title: Text(
-              listAppList.name,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            isThreeLine: true,
-            subtitle: Text((doesUserOwnList
-                    ? 'Me'
-                    : listAppList.creator?.username ?? 'unknown') +
-                "\n${listAppList.length} element${listAppList.length == 1 ? '' : 's'}"),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (BuildContext context) => ListDetailsPage(
-                          listAppList,
-                          canAddNewMembers: doesUserOwnList,
-                        )),
               );
-            },
-          )),
-    );
+          }
+        });
   }
 
   @override

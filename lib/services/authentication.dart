@@ -16,9 +16,7 @@ class ListAppAuthProvider with ChangeNotifier {
   ListAppUser? _loggedInListAppUser;
 
   /// returns the current logged in user, null if no one is loggedIn
-  User? get loggedInUser {
-    return firebaseAuth.currentUser;
-  }
+  User? get loggedInUser => firebaseAuth.currentUser;
 
   /// returns the ListAppUser instance of the current logged in user
   ListAppUser? get loggedInListAppUser {
@@ -106,6 +104,8 @@ class ListAppAuthProvider with ChangeNotifier {
     }
     // inject email, because it is not retrieved from db
     listAppUser.email = firebaseUser.email;
+    // inject the databaseId in case it is not provided
+    listAppUser.databaseId ??= firebaseUser.uid;
 
     _loggedInListAppUser = listAppUser;
   }

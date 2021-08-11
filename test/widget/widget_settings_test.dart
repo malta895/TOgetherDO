@@ -1,37 +1,36 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_applications/services/authentication.dart';
-import 'package:mobile_applications/ui/navigation_drawer.dart';
-import 'package:mobile_applications/ui/settings_ui.dart';
-import 'package:mobile_applications/ui/theme.dart';
-import 'package:provider/provider.dart';
+import 'package:mobile_applications/services/manager_config.dart';
 
-Widget createHomeScreen() => MultiProvider(
-      providers: [
-        ChangeNotifierProvider<ThemeChanger>(
-          create: (_) => ThemeChanger(),
-        ),
-        ChangeNotifierProvider<ListAppNavDrawerStateInfo>(
-          create: (_) => ListAppNavDrawerStateInfo(),
-        ),
-        Provider<ListAppAuthProvider>(
-            create: (_) => ListAppAuthProvider(FirebaseAuth.instance)),
-        StreamProvider(
-          create: (context) => context.read<ListAppAuthProvider>().authState,
-          //initially no user is logged in
-          initialData: null,
-        )
-      ],
-      child: MaterialApp(home: SettingsScreen()),
-    );
+import '../mock_database.dart';
+import '../unit/managers_test.dart';
+import '../unit/managers_test.mocks.dart';
+
 void main() {
+  // initialize here cause it could be useful in tests
+  FirebaseFirestore fakeFirebaseFirestore;
+  setUpAll(() {
+    fakeFirebaseFirestore = TestUtils.createMockDatabase();
+    final fakeFirebaseStorage = MockFirebaseStorage();
+    final fakeFirebaseFunctions = MockFirebaseFunctions();
+    final fakeHttpsCallable = MockHttpsCallableResult();
+    final fakeHttpsCallableResult = MockHttpsCallableResult();
+
+    ManagerConfig.initialize(
+      firebaseStorage: fakeFirebaseStorage,
+      firebaseFirestore: fakeFirebaseFirestore,
+      firebaseFunctions: fakeFirebaseFunctions,
+    );
+  });
+
   //ThemeData currentTheme = lightTheme;
   group('Settings Page Widget Tests', () {
     testWidgets(
       'Testing if theme setting works',
       (tester) async {
-        await tester.pumpWidget(createHomeScreen());
+        await tester.pumpWidget(TestUtils.createHomeScreen());
         await tester.tap(find.byKey(const Key("theme setting")));
         await tester.pumpAndSettle(const Duration(seconds: 1));
         final textColorFinder = tester.widget<Text>(find.byType(Text));

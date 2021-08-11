@@ -19,6 +19,8 @@ class ListsPage extends StatefulWidget {
   static const String routeName = "/home";
   static const String humanReadableName = "My Lists";
 
+  const ListsPage();
+
   @override
   _ListsPageState createState() => _ListsPageState();
 }
@@ -191,7 +193,7 @@ class _ListsPageState extends State<ListsPage>
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
-              return Container();
+              return Container(key: const Key("noUsernameContainer"));
             case ConnectionState.done:
               final currentListAppUser = snapshot.data!;
               final bool doesUserOwnList =
@@ -260,6 +262,7 @@ class _ListsPageState extends State<ListsPage>
                     width: 0.8,
                   ))),
                   child: ListTile(
+                    // the key is needed for testing
                     key: Key(listAppList.databaseId!),
                     leading: const Icon(
                       Icons.list,
@@ -290,10 +293,11 @@ class _ListsPageState extends State<ListsPage>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (BuildContext context) => ListDetailsPage(
-                                  listAppList,
-                                  canAddNewMembers: doesUserOwnList,
-                                )),
+                          builder: (BuildContext context) => ListDetailsPage(
+                            listAppList,
+                            canAddNewMembers: doesUserOwnList,
+                          ),
+                        ),
                       );
                     },
                   ),

@@ -89,7 +89,7 @@ class _MaterialAppWithTheme extends StatelessWidget {
               theme: notifier.darkThemeBool ? lightTheme : darkTheme,
               routes: {
                 LoginScreen.routeName: (context) => LoginScreen(),
-                ListsPage.routeName: (context) => ListsPage(),
+                ListsPage.routeName: (context) => const ListsPage(),
                 FriendsPage.routeName: (context) => FriendsPage(),
                 SettingsScreen.routeName: (context) => SettingsScreen(),
               });

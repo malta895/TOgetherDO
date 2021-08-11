@@ -5,13 +5,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/user_manager.dart';
-import 'package:mobile_applications/ui/lists_page.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/theme.dart';
 import 'package:provider/provider.dart';
 
 class TestUtils {
-  static Widget createHomeScreen() {
+  static Widget createScreen({required Widget screen}) {
     final mockUser = MockUser(
       uid: 'user1_id',
       email: "john@doe.com",
@@ -35,7 +34,7 @@ class TestUtils {
         ),
         ChangeNotifierProvider(create: (_) => ListAppUserManager.instance),
       ],
-      child: MaterialApp(home: ListsPage()),
+      child: MaterialApp(home: screen),
     );
   }
 

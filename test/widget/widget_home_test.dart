@@ -8,7 +8,6 @@ import 'package:mobile_applications/ui/lists_page.dart';
 import 'package:mobile_applications/ui/new_list.dart';
 
 import '../mock_database.dart';
-import '../unit/managers_test.dart';
 import '../unit/managers_test.mocks.dart';
 
 void main() {
@@ -18,8 +17,6 @@ void main() {
     fakeFirebaseFirestore = TestUtils.createMockDatabase();
     final fakeFirebaseStorage = MockFirebaseStorage();
     final fakeFirebaseFunctions = MockFirebaseFunctions();
-    final fakeHttpsCallable = MockHttpsCallableResult();
-    final fakeHttpsCallableResult = MockHttpsCallableResult();
 
     ManagerConfig.initialize(
       firebaseStorage: fakeFirebaseStorage,
@@ -31,7 +28,8 @@ void main() {
   group('Home Page Widget Tests', () {
     testWidgets('ListView should show up and show the lists in the database',
         (tester) async {
-      await tester.pumpWidget(TestUtils.createHomeScreen());
+      await tester
+          .pumpWidget(TestUtils.createScreen(screen: const ListsPage()));
       await tester.pumpAndSettle();
 
       // the owned list should be shown
@@ -39,10 +37,23 @@ void main() {
 
       //the list in which the user is member should be shown
       expect(find.text("Fare la spesa"), findsOneWidget);
+
+      expect(find.byKey(const Key('list1_id')), findsOneWidget);
+
+      await tester.pumpAndSettle();
+
+      // the owner of the list should see Me as creator
+      expect(find.textContaining('unknown\n'), findsNothing);
+      expect(find.textContaining("johndoe1\n"), findsNothing);
+      expect(find.textContaining("Me\n"), findsOneWidget);
+
+      // we should see the name of the creator if we are not the list creator
+      expect(find.textContaining("johndoe2\n"), findsOneWidget);
     });
 
     testWidgets('Tap on list should show list details', (tester) async {
-      await tester.pumpWidget(TestUtils.createHomeScreen());
+      await tester
+          .pumpWidget(TestUtils.createScreen(screen: const ListsPage()));
       await tester.pumpAndSettle();
       // the key of the list is the database id of the list
       await tester.tap(find.byKey(const Key("list1_id")));
@@ -58,7 +69,8 @@ void main() {
     });
 
     testWidgets('Testing tap on "New List" button', (tester) async {
-      await tester.pumpWidget(TestUtils.createHomeScreen());
+      await tester
+          .pumpWidget(TestUtils.createScreen(screen: const ListsPage()));
       await tester.tap(find.byType(FloatingActionButton));
       await tester.pumpAndSettle();
 

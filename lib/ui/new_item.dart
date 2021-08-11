@@ -165,21 +165,21 @@ class _NewItemFormState extends State<_NewItemForm> {
                     switch (_selectedItemType) {
                       case ItemType.simple:
                         newItem = SimpleItem(
-                          name: _titleController.text,
-                        );
+                            name: _titleController.text,
+                            creatorUid: widget.currentUser.databaseId!);
                         break;
                       case ItemType.multiFulfillment:
                         newItem = MultiFulfillmentItem(
-                          name: _titleController.text,
-                          maxQuantity: _itemsCounter,
-                        );
+                            name: _titleController.text,
+                            maxQuantity: _itemsCounter,
+                            creatorUid: widget.currentUser.databaseId!);
                         break;
                       case ItemType.multiFulfillmentMember:
                         newItem = MultiFulfillmentMemberItem(
-                          name: _titleController.text,
-                          maxQuantity: _itemsCounter,
-                          quantityPerMember: _membersCounter,
-                        );
+                            name: _titleController.text,
+                            maxQuantity: _itemsCounter,
+                            quantityPerMember: _membersCounter,
+                            creatorUid: widget.currentUser.databaseId!);
                         break;
                     }
 

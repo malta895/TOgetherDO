@@ -9,7 +9,8 @@ void main() {
       firstName: "testFirstName",
       lastName: "testLastName");
   group('Testing SimpleItem', () {
-    var simpleTestItem = SimpleItem(name: "testing item");
+    var simpleTestItem =
+        SimpleItem(name: "testing item", creatorUid: userTest.databaseId!);
 
     test('The item should be fulfilled', () {
       simpleTestItem.fulfill(member: userTest);
@@ -22,8 +23,8 @@ void main() {
     });
   });
   group('Testing MultiFulfillmentItem', () {
-    var multiFulfillmentTestItem =
-        MultiFulfillmentItem(name: "testing item", maxQuantity: 5);
+    var multiFulfillmentTestItem = MultiFulfillmentItem(
+        name: "testing item", maxQuantity: 5, creatorUid: userTest.databaseId!);
 
     test('The item should be fulfilled', () {
       multiFulfillmentTestItem.fulfill(member: userTest, quantityFulfilled: 4);
@@ -38,7 +39,10 @@ void main() {
   });
   group('Testing MultiMemberItem', () {
     var multiMemberTestItem = MultiFulfillmentMemberItem(
-        name: "testing item", quantityPerMember: 3, maxQuantity: 5);
+        name: "testing item",
+        quantityPerMember: 3,
+        maxQuantity: 5,
+        creatorUid: userTest.databaseId!);
 
     test('The item should be fulfilled', () {
       multiMemberTestItem.fulfill(member: userTest, quantityFulfilled: 5);
@@ -61,9 +65,9 @@ void main() {
   });
 
   final BaseItem simpleItem = SimpleItem(
-    databaseId: '123',
-    name: 'testSimpleItem',
-  );
+      databaseId: '123',
+      name: 'testSimpleItem',
+      creatorUid: userTest.databaseId!);
   final simpleItemJson = simpleItem.toJson();
 
   group('Testing simpleItem to json', () {
@@ -89,10 +93,10 @@ void main() {
   });
 
   final BaseItem multiFulfillmentItem = MultiFulfillmentItem(
-    databaseId: '123',
-    name: 'testMultiFulfillmentItem',
-    maxQuantity: 3,
-  );
+      databaseId: '123',
+      name: 'testMultiFulfillmentItem',
+      maxQuantity: 3,
+      creatorUid: userTest.databaseId!);
   final multiFulfillmentItemJson = multiFulfillmentItem.toJson();
   group('Testing multiFulfillmentItem to json', () {
     test('The item json should have type', () {
@@ -113,11 +117,11 @@ void main() {
   });
 
   final BaseItem multiFulfillmentItemMember = MultiFulfillmentMemberItem(
-    databaseId: '123',
-    name: 'testmultiFulfillmentItemMember',
-    maxQuantity: 3,
-    quantityPerMember: 2,
-  );
+      databaseId: '123',
+      name: 'testmultiFulfillmentItemMember',
+      maxQuantity: 3,
+      quantityPerMember: 2,
+      creatorUid: userTest.databaseId!);
   final multiFulfillmentItemMemberJson = multiFulfillmentItemMember.toJson();
   group('Testing multiFulfillmentItemMember to json', () {
     test('The item json should have type', () {

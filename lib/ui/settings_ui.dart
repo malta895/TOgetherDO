@@ -150,6 +150,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: ListTile(
                   title: Text(
                     "Dark theme",
+                    key: Key("text"),
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,

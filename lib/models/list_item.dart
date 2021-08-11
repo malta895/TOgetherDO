@@ -48,6 +48,7 @@ abstract class BaseItem extends BaseModel {
   final String? description;
   final int maxQuantity;
   final int quantityPerMember;
+  final String creatorUid;
 
   final ItemType itemType;
 
@@ -58,11 +59,9 @@ abstract class BaseItem extends BaseModel {
     required this.maxQuantity,
     required this.quantityPerMember,
     required this.itemType,
+    required this.creatorUid,
     DateTime? createdAt,
-  }) : super(
-          databaseId: databaseId,
-          createdAt: createdAt,
-        );
+  }) : super(databaseId: databaseId, createdAt: createdAt);
 
   int quantityFulfilledBy(ListAppUser member);
 
@@ -118,6 +117,7 @@ class SimpleItem extends BaseItem {
     String? databaseId,
     required String name,
     String? description,
+    required String creatorUid,
     createdAt,
   }) : super(
           itemType: ItemType.simple,
@@ -127,6 +127,7 @@ class SimpleItem extends BaseItem {
           maxQuantity: 1,
           quantityPerMember: 1,
           createdAt: createdAt,
+          creatorUid: creatorUid,
         );
 
   ListAppUser? get fulfiller {
@@ -186,16 +187,17 @@ class MultiFulfillmentItem extends BaseItem {
     required String name,
     String? description,
     required int maxQuantity,
+    required String creatorUid,
     createdAt,
   }) : super(
-          itemType: ItemType.multiFulfillment,
-          databaseId: databaseId,
-          name: name,
-          description: description,
-          maxQuantity: maxQuantity,
-          quantityPerMember: 1,
-          createdAt: createdAt,
-        );
+            itemType: ItemType.multiFulfillment,
+            databaseId: databaseId,
+            name: name,
+            description: description,
+            maxQuantity: maxQuantity,
+            quantityPerMember: 1,
+            createdAt: createdAt,
+            creatorUid: creatorUid);
 
   @override
   bool fulfill({required ListAppUser member, int quantityFulfilled = 1}) {
@@ -240,16 +242,17 @@ class MultiFulfillmentMemberItem extends BaseItem {
     String? description,
     required int maxQuantity,
     required int quantityPerMember,
+    required String creatorUid,
     createdAt,
   }) : super(
-          itemType: ItemType.multiFulfillmentMember,
-          databaseId: databaseId,
-          name: name,
-          description: description,
-          maxQuantity: maxQuantity,
-          quantityPerMember: quantityPerMember,
-          createdAt: createdAt,
-        );
+            itemType: ItemType.multiFulfillmentMember,
+            databaseId: databaseId,
+            name: name,
+            description: description,
+            maxQuantity: maxQuantity,
+            quantityPerMember: quantityPerMember,
+            createdAt: createdAt,
+            creatorUid: creatorUid);
 
   @override
   bool fulfill({required ListAppUser member, int quantityFulfilled = 1}) {

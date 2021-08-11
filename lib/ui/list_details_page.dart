@@ -109,61 +109,115 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
   Widget _buildItemRow(BuildContext context, BaseItem aListItem) {
     switch (aListItem.itemType) {
       case ItemType.simple:
-        return Dismissible(
-          confirmDismiss: (DismissDirection direction) async {
-            return await showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title:
-                      const Text("Are you sure you wish to delete this item?"),
-                  actions: <Widget>[
-                    TextButton(
-                        style: TextButton.styleFrom(primary: Colors.red),
-                        onPressed: () => Navigator.of(context).pop(true),
-                        child: const Text("DELETE")),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(false),
-                      child: const Text("CANCEL"),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-          dismissThresholds: {DismissDirection.endToStart: 0.3},
-          direction: DismissDirection.startToEnd,
-          background: Container(
-              color: Colors.red,
-              child: Align(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    const Icon(
-                      Icons.delete,
-                      color: Colors.white,
-                    ),
-                  ],
-                ),
-                alignment: Alignment.centerLeft,
-              )),
-          key: UniqueKey(),
-          onDismissed: (DismissDirection direction) async {
-            final itemManagerInstance = ListAppItemManager.instanceForList(
-              widget.listAppList.databaseId!,
-              widget.listAppList.creator!.databaseId!,
-            );
+        if (aListItem.creatorUid == _loggedInListAppUser.databaseId) {
+          return Dismissible(
+            confirmDismiss: (DismissDirection direction) async {
+              return await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text(
+                        "Are you sure you wish to delete this item?"),
+                    actions: <Widget>[
+                      TextButton(
+                          style: TextButton.styleFrom(primary: Colors.red),
+                          onPressed: () => Navigator.of(context).pop(true),
+                          child: const Text("DELETE")),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text("CANCEL"),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            dismissThresholds: {DismissDirection.endToStart: 0.3},
+            direction: DismissDirection.startToEnd,
+            background: Container(
+                color: Colors.red,
+                child: Align(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      const Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                  alignment: Alignment.centerLeft,
+                )),
+            key: UniqueKey(),
+            onDismissed: (DismissDirection direction) async {
+              final itemManagerInstance = ListAppItemManager.instanceForList(
+                widget.listAppList.databaseId!,
+                widget.listAppList.creator!.databaseId!,
+              );
 
-            await itemManagerInstance.deleteInstance(aListItem);
-            setState(() {
-              widget.listAppList.items
-                  .removeWhere((element) => element == aListItem);
-            });
-          },
-          child: CheckboxListTile(
+              await itemManagerInstance.deleteInstance(aListItem);
+              setState(() {
+                widget.listAppList.items
+                    .removeWhere((element) => element == aListItem);
+              });
+            },
+            child: CheckboxListTile(
+              activeColor: Theme.of(context).accentColor,
+              title: aListItem.isFulfilled()
+                  ? Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Text(
+                            aListItem.name,
+                            style: const TextStyle(
+                                color: Colors.grey,
+                                decoration: TextDecoration.lineThrough),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.person,
+                                color: _assignedColors[
+                                    aListItem.getFulfillers()[0]],
+                              ),
+                              Text(
+                                aListItem.getFulfillers()[0].firstName,
+                                textScaleFactor: 0.7,
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  : Text(aListItem.name),
+              value: aListItem.isFulfilled(),
+              selected: aListItem.isFulfilled(),
+              onChanged: (bool? value) {
+                // TODO make async, make not selectable until the server has responded
+                setState(() {
+                  if (value == true) {
+                    aListItem.fulfill(member: _loggedInListAppUser);
+                  } else {
+                    aListItem.unfulfill(
+                        member: _loggedInListAppUser, quantityUnfulfilled: 1);
+                  }
+                });
+              },
+            ),
+          );
+        } else {
+          return CheckboxListTile(
             activeColor: Theme.of(context).accentColor,
             title: aListItem.isFulfilled()
                 ? Row(
@@ -213,8 +267,8 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                 }
               });
             },
-          ),
-        );
+          );
+        }
       case ItemType.multiFulfillment:
         return Dismissible(
             confirmDismiss: (DismissDirection direction) async {

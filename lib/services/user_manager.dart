@@ -60,9 +60,12 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
         ),
       );
 
-      final result = await callable(email);
+      final result = await callable({"email": email});
 
-      return result.data<ListAppUser?>();
+      final resultData = result.data;
+      if (resultData == null) return null;
+
+      return ListAppUser.fromJson(resultData as Map<String, dynamic>);
     } on CheckedFromJsonException catch (e) {
       print(e.message);
       return null;
@@ -122,5 +125,10 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
       print(e.message);
       throw ListAppException('An error occurred. Please try again later.');
     }
+  }
+
+  /// Gets the friends of the current user
+  Future<List<ListAppUser>> getFriends() async {
+    return [];
   }
 }

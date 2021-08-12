@@ -57,12 +57,6 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
     }));
   }
 
-  Future<ListAppFriendship?> getFriendshipById(String id) async {
-    final queryResult = await this.firebaseCollection.doc(id).get();
-
-    return queryResult.data();
-  }
-
   Future<bool> addFriendByEmail(String email, String? userFromUid) async {
     try {
       ListAppUser? userTo = await ListAppUserManager.instance.getByEmail(email);
@@ -79,24 +73,6 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
     }
 
     return true;
-
-    /*await ListAppUserManager.instance
-        .getUserByEmail(email)
-        .then((userTo) async {
-      if (userTo != null) {
-        final newFriendship = ListAppFriendship(
-            userFrom: userFrom,
-            userTo: userTo.databaseId!,
-            requestAccepted: false);
-
-        await this.firebaseCollection.add(newFriendship);
-        return true;
-      }
-    }).catchError((onError) {
-      print(onError);
-    });
-
-    return false;*/
   }
 
   Future<bool> addFriendByUsername(String username, String userFrom) async {

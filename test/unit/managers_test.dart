@@ -1,32 +1,18 @@
-import 'package:cloud_functions/cloud_functions.dart';
+import 'dart:convert';
+
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:firebase_cloud_functions_mock/firebase_cloud_functions_mock.dart';
 import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/manager_config.dart';
 import 'package:mobile_applications/services/user_manager.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'managers_test.mocks.dart';
-
-class MockHttpsCallable extends Mock implements HttpsCallable {
-  @override
-  Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async {
-    return MockHttpsCallableResult();
-  }
-}
-
-class MockHttpsCallableResult<T> extends Mock
-    implements HttpsCallableResult<T> {}
-
-@GenerateMocks([FirebaseFunctions])
 void main() {
   final fakeFirebaseFirestore = FakeFirebaseFirestore();
   final fakeFirebaseStorage = MockFirebaseStorage();
-  final fakeFirebaseFunctions = MockFirebaseFunctions();
-  final fakeHttpsCallable = MockHttpsCallable();
+  final fakeFirebaseFunctions = MockCloudFunctions();
 
   ManagerConfig.initialize(
     firebaseStorage: fakeFirebaseStorage,
@@ -63,17 +49,25 @@ void main() {
     test(
       'test getByEmail',
       () async {
-        when(fakeFirebaseFunctions.httpsCallable(
-          'getUserByEmail-getUserByEmail',
-          options: HttpsCallableOptions(
-            timeout: const Duration(seconds: 30),
-          ),
-        )).thenReturn(fakeHttpsCallable);
+        final testUser = {
+          "databaseId": '123prova',
+          "createdAt": 1625751035020,
+          "displayName": "John Doe",
+          "email": "doe@email.com",
+          "firstName": "John",
+          "friends": [],
+          "isNew": false,
+          "lastName": "Doe",
+          "notificationTokens": [],
+          "phoneNumber": null,
+          "profilePictureURL": null,
+          "username": "johndoe1",
+        };
 
-        // when(fakeHttpsCallable('doe@email.com'))
-        //     .thenAnswer((_) async => fakeHttpsCallableResult);
-
-        // when(fakeHttpsCallableResult.data()).thenAnswer((_) async => testUser);
+        fakeFirebaseFunctions.mockResult(
+            functionName: 'getUserByEmail-getUserByEmail',
+            json: jsonEncode(testUser),
+            parameters: {"email": "doe@email.com"});
 
         final user =
             await ListAppUserManager.instance.getByEmail('doe@email.com');
@@ -89,8 +83,6 @@ void main() {
 
         fakeFirebaseFirestore.clearPersistence();
       },
-      skip:
-          'TODO Find a way to mock the cloud functions properly', // TODO fix this
     );
 
     test('getByUsername', () async {

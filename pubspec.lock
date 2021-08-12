@@ -367,6 +367,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.0"
+  firebase_cloud_functions_mock:
+    dependency: "direct dev"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "4aa5c907fe29d242588cf8305b7802772bcd25bc"
+      url: "https://github.com/malta895/firebase_cloud_functions_mock"
+    source: git
+    version: "0.0.3"
   firebase_core:
     dependency: "direct main"
     description:
@@ -617,7 +626,7 @@ packages:
       name: image_picker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.8.3+1"
+    version: "0.8.3+2"
   image_picker_for_web:
     dependency: transitive
     description:

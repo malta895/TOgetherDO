@@ -158,8 +158,8 @@ class _NotificationPage extends State<NotificationPage> {
 
   Widget _buildFriendshipRow(
       BuildContext context, FriendshipNotification notification) {
-    final _friendshipFuture = ListAppFriendshipManager.instance
-        .getFriendshipById(notification.friendshipId);
+    final _friendshipFuture =
+        ListAppFriendshipManager.instance.getByUid(notification.friendshipId);
 
     return FutureBuilder<ListAppFriendship?>(
         future: _friendshipFuture,

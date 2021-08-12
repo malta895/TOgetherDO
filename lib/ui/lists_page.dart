@@ -79,7 +79,7 @@ class _ListsPageState extends State<ListsPage>
     }
   }
 
-  Future<List<ListAppList>>? _fetchLists() async {
+  Future<List<ListAppList>> _fetchLists() async {
     _listsShowAnimationController.reverse();
     final listAppUser =
         await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
@@ -90,7 +90,7 @@ class _ListsPageState extends State<ListsPage>
       return lists;
     }
 
-    return Future.value(null);
+    return [];
   }
 
   Future<void> _deleteOrAbandonList(ListAppList list) async {
@@ -149,7 +149,7 @@ class _ListsPageState extends State<ListsPage>
       await _listsShowAnimationController.reverse();
     _isManuallyRefreshing = true;
     final _newListsFuture = _fetchLists()
-      ?..then((value) => _listsShowAnimationController.forward());
+      ..then((value) => _listsShowAnimationController.forward());
     setState(() {
       _listsFuture = _newListsFuture;
     });

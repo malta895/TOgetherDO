@@ -80,6 +80,8 @@ dev_dependencies:
   flutter_launcher_icons: ^0.9.1
   fake_cloud_firestore: ^1.1.2
   firebase_storage_mocks: ^0.5.0
+  firebase_cloud_functions_mock:
+    git: https://github.com/malta895/firebase_cloud_functions_mock
   firebase_auth_mocks:
     git:
       url: https://github.com/malta895/firebase_auth_mocks

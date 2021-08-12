@@ -7,3 +7,5 @@ exports.friendship = require('./friendship');
 exports.list = require('./list');
 
 exports.notification = require('./notification');
+
+exports.getUserByEmail = require('./get-user-by-email');

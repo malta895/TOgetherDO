@@ -20,7 +20,7 @@ class NewItemPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('New item'),
+        title: const Text('New item'),
       ),
       body: _NewItemForm(
         currentList: currentList,
@@ -79,12 +79,12 @@ class _NewItemFormState extends State<_NewItemForm> {
     return Form(
       key: _formKey,
       child: Padding(
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.only(top: 10.0),
+              padding: const EdgeInsets.only(top: 10.0),
               child: TextFormField(
                 key: _nameKey,
                 onChanged: (_) {
@@ -98,11 +98,12 @@ class _NewItemFormState extends State<_NewItemForm> {
                 controller: _titleController,
                 cursorColor: Theme.of(context).textTheme.headline1!.color!,
                 decoration: InputDecoration(
-                    contentPadding: EdgeInsets.all(5.0),
+                    contentPadding: const EdgeInsets.all(5.0),
                     filled: true,
                     fillColor: Theme.of(context).splashColor,
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(12.0)),
                       borderSide: BorderSide(
                           color: Theme.of(context).textTheme.headline1!.color!,
                           width: 1.0),
@@ -124,12 +125,12 @@ class _NewItemFormState extends State<_NewItemForm> {
             // divider "Choose the item type
             Row(
               children: <Widget>[
-                Expanded(child: Divider()),
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
+                const Expanded(child: Divider()),
+                const Padding(
+                  padding: EdgeInsets.all(12.0),
                   child: Text('Choose the item type'),
                 ),
-                Expanded(child: Divider()),
+                const Expanded(child: Divider()),
               ],
             ),
 
@@ -143,7 +144,7 @@ class _NewItemFormState extends State<_NewItemForm> {
                 style: ElevatedButton.styleFrom(
                   primary: Colors.pinkAccent[700],
                 ),
-                child: Text('Submit'),
+                child: const Text('Submit'),
                 onPressed: () async {
                   // Validate returns true if the form is valid, or false
                   // otherwise.
@@ -254,7 +255,7 @@ class _NewItemFormState extends State<_NewItemForm> {
 
   ListTile _buildMultiFulfillmentMemberForm(BuildContext context) {
     return ListTile(
-      contentPadding: EdgeInsets.all(5.0),
+      contentPadding: const EdgeInsets.all(5.0),
       title: Text(
         "Number of people: ",
         style: TextStyle(
@@ -303,7 +304,7 @@ class _NewItemFormState extends State<_NewItemForm> {
     final minItems =
         _selectedItemType == ItemType.multiFulfillmentMember ? 2 : 1;
     return ListTile(
-      contentPadding: EdgeInsets.all(5.0),
+      contentPadding: const EdgeInsets.all(5.0),
       title: Text(
         "Number of items: ",
         style: TextStyle(

@@ -11,7 +11,7 @@ import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/ui/list_details_page.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
-import 'package:mobile_applications/ui/new_list.dart';
+import 'package:mobile_applications/ui/new_list_page.dart';
 import 'package:mobile_applications/ui/notification_badge.dart';
 import 'package:provider/provider.dart';
 

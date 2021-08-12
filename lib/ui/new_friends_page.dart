@@ -10,7 +10,7 @@ class NewFriendPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add a friend'),
+        title: const Text('Add a friend'),
       ),
       body: MyCustomForm(),
     );
@@ -50,12 +50,12 @@ class _MyCustomFormState extends State<MyCustomForm> {
     return Form(
       key: _formKey,
       child: Padding(
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.only(top: 15),
+              padding: const EdgeInsets.only(top: 15),
               child: DropdownButtonFormField<String>(
                 value: dropdownValue,
                 style: TextStyle(
@@ -64,18 +64,19 @@ class _MyCustomFormState extends State<MyCustomForm> {
                 ),
                 decoration: InputDecoration(
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(12.0)),
                       borderSide: BorderSide(
                           color: Theme.of(context).textTheme.headline1!.color!,
                           width: 1.0),
                     ),
-                    contentPadding: EdgeInsets.all(5.0),
+                    contentPadding: const EdgeInsets.all(5.0),
                     filled: true,
                     fillColor: Theme.of(context).splashColor,
                     border: InputBorder.none,
                     labelStyle: TextStyle(
                         color: Theme.of(context).textTheme.headline1!.color)),
-                icon: Icon(Icons.arrow_drop_down),
+                icon: const Icon(Icons.arrow_drop_down),
                 iconSize: 24,
                 elevation: 16,
                 onChanged: (String? newValue) {
@@ -96,16 +97,17 @@ class _MyCustomFormState extends State<MyCustomForm> {
               ),
             ),
             Padding(
-                padding: EdgeInsets.only(top: 10.0),
+                padding: const EdgeInsets.only(top: 10.0),
                 child: TextFormField(
                   controller: titleController,
                   cursorColor: Theme.of(context).textTheme.headline1!.color!,
                   decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(5.0),
+                      contentPadding: const EdgeInsets.all(5.0),
                       filled: true,
                       fillColor: Theme.of(context).splashColor,
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(12.0)),
                         borderSide: BorderSide(
                             color:
                                 Theme.of(context).textTheme.headline1!.color!,
@@ -139,14 +141,14 @@ class _MyCustomFormState extends State<MyCustomForm> {
                         await showDialog(
                           context: context,
                           builder: (BuildContext context) => AlertDialog(
-                            title: Text(
+                            title: const Text(
                               'Success!',
                               style: TextStyle(color: Colors.green),
                             ),
-                            content: Text('Friend successfully added!'),
+                            content: const Text('Friend successfully added!'),
                             actions: [
                               TextButton(
-                                child: Text('OK'),
+                                child: const Text('OK'),
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
@@ -158,7 +160,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                         await showDialog(
                           context: context,
                           builder: (BuildContext context) => AlertDialog(
-                            title: Text(
+                            title: const Text(
                               'Error',
                               style: TextStyle(color: Colors.red),
                             ),
@@ -167,7 +169,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                                 ' you inserted is invalid, please retry'),
                             actions: [
                               TextButton(
-                                child: Text('OK'),
+                                child: const Text('OK'),
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
@@ -184,14 +186,14 @@ class _MyCustomFormState extends State<MyCustomForm> {
                         await showDialog(
                           context: context,
                           builder: (BuildContext context) => AlertDialog(
-                            title: Text(
+                            title: const Text(
                               'Success!',
                               style: TextStyle(color: Colors.green),
                             ),
-                            content: Text('Friend successfully added!'),
+                            content: const Text('Friend successfully added!'),
                             actions: [
                               TextButton(
-                                child: Text('OK'),
+                                child: const Text('OK'),
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
@@ -203,7 +205,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                         await showDialog(
                           context: context,
                           builder: (BuildContext context) => AlertDialog(
-                            title: Text(
+                            title: const Text(
                               'Error',
                               style: TextStyle(color: Colors.red),
                             ),
@@ -212,7 +214,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                                 ' you inserted is invalid, please retry'),
                             actions: [
                               TextButton(
-                                child: Text('OK'),
+                                child: const Text('OK'),
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
@@ -224,7 +226,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                     }
                   }
                 },
-                child: Text('Submit'),
+                child: const Text('Submit'),
               ),
             ),
           ],

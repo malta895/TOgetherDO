@@ -15,7 +15,10 @@ import 'package:provider/provider.dart';
 //LORENZO 9LUBLCszUrU4mukuRWhHFS2iexL2
 
 class NotificationPage extends StatefulWidget {
-  static final String routeName = "/settings";
+  static const String routeName = "/notifications";
+
+  const NotificationPage();
+
   _NotificationPage createState() => _NotificationPage();
 }
 
@@ -32,7 +35,8 @@ class _NotificationPage extends State<NotificationPage> {
       return ListAppNotificationManager.instance
           .getNotificationsByUserId(listAppUser.databaseId, "createdAt");
     }
-    return Future.value(null);
+
+    return [];
   }
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
@@ -129,7 +133,7 @@ class _NotificationPage extends State<NotificationPage> {
 
                       return Container();
                     })
-                : notificationsTable = Center(
+                : notificationsTable = const Center(
                     child: Text(
                     "There are no notifications",
                     style: TextStyle(fontSize: 22),
@@ -172,7 +176,7 @@ class _NotificationPage extends State<NotificationPage> {
               switch (notification.status) {
                 case NotificationStatus.undefined:
                   return Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           border: Border(
                               bottom: BorderSide(
                         color: Colors.grey,
@@ -185,16 +189,17 @@ class _NotificationPage extends State<NotificationPage> {
                         title: Text(
                           notification.sender!.displayName +
                               " sent you a friendship request",
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        subtitle: Text("You can accept or decline the request"),
+                        subtitle:
+                            const Text("You can accept or decline the request"),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             TextButton(
                                 style: TextButton.styleFrom(
-                                  side:
-                                      BorderSide(color: Colors.green, width: 1),
+                                  side: const BorderSide(
+                                      color: Colors.green, width: 1),
                                 ),
                                 onPressed: () async {
                                   await ListAppNotificationManager.instance
@@ -205,16 +210,17 @@ class _NotificationPage extends State<NotificationPage> {
                                         _fetchNotifications();
                                   });
                                 },
-                                child: Icon(
+                                child: const Icon(
                                   Icons.done,
                                   color: Colors.green,
                                 )),
-                            SizedBox(
+                            const SizedBox(
                               width: 10,
                             ),
                             TextButton(
                                 style: TextButton.styleFrom(
-                                  side: BorderSide(color: Colors.red, width: 1),
+                                  side: const BorderSide(
+                                      color: Colors.red, width: 1),
                                 ),
                                 onPressed: () async {
                                   await ListAppNotificationManager.instance
@@ -225,7 +231,7 @@ class _NotificationPage extends State<NotificationPage> {
                                         _fetchNotifications();
                                   });
                                 },
-                                child: Icon(
+                                child: const Icon(
                                   Icons.close,
                                   color: Colors.red,
                                 ))
@@ -234,7 +240,7 @@ class _NotificationPage extends State<NotificationPage> {
                       ));
                 case NotificationStatus.accepted:
                   return Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           border: Border(
                               bottom: BorderSide(
                         color: Colors.grey,
@@ -248,12 +254,12 @@ class _NotificationPage extends State<NotificationPage> {
                           "You and " +
                               notification.sender!.displayName +
                               " are now friends!",
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ));
                 case NotificationStatus.rejected:
                   return Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           border: Border(
                               bottom: BorderSide(
                         color: Colors.grey,
@@ -267,7 +273,7 @@ class _NotificationPage extends State<NotificationPage> {
                             "You rejected " +
                                 notification.sender!.displayName +
                                 "'s friendship request",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           )));
               }
           }
@@ -295,14 +301,14 @@ class _NotificationPage extends State<NotificationPage> {
               switch (notification.status) {
                 case NotificationStatus.undefined:
                   return Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           border: Border(
                               bottom: BorderSide(
                         color: Colors.grey,
                         width: 0.8,
                       ))),
                       child: ListTile(
-                        leading: Icon(
+                        leading: const Icon(
                           Icons.list,
                           size: 30,
                         ),
@@ -311,17 +317,17 @@ class _NotificationPage extends State<NotificationPage> {
                               " added you to the list \"" +
                               snapshot.data!.name +
                               "\"",
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        subtitle:
-                            Text("You can accept or decline the invitation"),
+                        subtitle: const Text(
+                            "You can accept or decline the invitation"),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             TextButton(
                                 style: TextButton.styleFrom(
-                                  side:
-                                      BorderSide(color: Colors.green, width: 1),
+                                  side: const BorderSide(
+                                      color: Colors.green, width: 1),
                                 ),
                                 onPressed: () async {
                                   await ListAppNotificationManager.instance
@@ -332,16 +338,17 @@ class _NotificationPage extends State<NotificationPage> {
                                         _fetchNotifications();
                                   });
                                 },
-                                child: Icon(
+                                child: const Icon(
                                   Icons.done,
                                   color: Colors.green,
                                 )),
-                            SizedBox(
+                            const SizedBox(
                               width: 10,
                             ),
                             TextButton(
                                 style: TextButton.styleFrom(
-                                  side: BorderSide(color: Colors.red, width: 1),
+                                  side: const BorderSide(
+                                      color: Colors.red, width: 1),
                                 ),
                                 onPressed: () async {
                                   await ListAppNotificationManager.instance
@@ -352,7 +359,7 @@ class _NotificationPage extends State<NotificationPage> {
                                         _fetchNotifications();
                                   });
                                 },
-                                child: Icon(
+                                child: const Icon(
                                   Icons.close,
                                   color: Colors.red,
                                 ))
@@ -362,14 +369,14 @@ class _NotificationPage extends State<NotificationPage> {
 
                 case NotificationStatus.accepted:
                   return Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           border: Border(
                               bottom: BorderSide(
                         color: Colors.grey,
                         width: 0.8,
                       ))),
                       child: ListTile(
-                        leading: Icon(
+                        leading: const Icon(
                           Icons.list,
                           size: 30,
                         ),
@@ -377,24 +384,24 @@ class _NotificationPage extends State<NotificationPage> {
                           "You are now in the \"" +
                               snapshot.data!.name +
                               " list \"",
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        subtitle:
-                            Text("Click on this tile to explore the list!"),
+                        subtitle: const Text(
+                            "Click on this tile to explore the list!"),
                         //TODO make the onTap redirect to the list page
                         onTap: () => print("Redirect to the list page"),
                       ));
 
                 case NotificationStatus.rejected:
                   return Container(
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           border: Border(
                               bottom: BorderSide(
                         color: Colors.grey,
                         width: 0.8,
                       ))),
                       child: ListTile(
-                        leading: Icon(
+                        leading: const Icon(
                           Icons.list,
                           size: 30,
                         ),
@@ -402,7 +409,7 @@ class _NotificationPage extends State<NotificationPage> {
                           "You rejected the invitation to the \"" +
                               snapshot.data!.name +
                               "\" list",
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ));
               }

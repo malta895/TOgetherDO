@@ -136,7 +136,7 @@ class LoginScreen extends StatelessWidget {
       onSubmitAnimationCompleted: () {
         for (int i = 0; i < 1000; i++) print("Login successful");
         Navigator.of(context).pushReplacement(FadePageRoute(
-          builder: (context) => ListsPage(),
+          builder: (context) => const ListsPage(),
         ));
       },
       hideForgotPasswordButton:

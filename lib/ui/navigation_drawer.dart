@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
-import 'package:mobile_applications/ui/friends.dart';
+import 'package:mobile_applications/ui/friends_page.dart';
 import 'package:mobile_applications/ui/lists_page.dart';
 import 'package:mobile_applications/ui/login/login_screen.dart';
-import 'package:mobile_applications/ui/profile.dart';
-import 'package:mobile_applications/ui/settings_ui.dart';
+import 'package:mobile_applications/ui/profile_page.dart';
+import 'package:mobile_applications/ui/settings_page.dart';
 import 'package:provider/provider.dart';
 
 class ListAppNavDrawerStateInfo with ChangeNotifier {

@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_applications/services/manager_config.dart';
 import 'package:mobile_applications/ui/list_details_page.dart';
 import 'package:mobile_applications/ui/lists_page.dart';
-import 'package:mobile_applications/ui/new_list.dart';
+import 'package:mobile_applications/ui/new_list_page.dart';
 
 import '../mock_database.dart';
 import '../unit/managers_test.mocks.dart';

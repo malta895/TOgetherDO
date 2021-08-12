@@ -3,7 +3,7 @@ import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_applications/services/manager_config.dart';
-import 'package:mobile_applications/ui/settings_ui.dart';
+import 'package:mobile_applications/ui/settings_page.dart';
 
 import '../mock_database.dart';
 import '../unit/managers_test.mocks.dart';

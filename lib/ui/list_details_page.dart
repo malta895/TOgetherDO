@@ -13,7 +13,7 @@ import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/friendship_manager.dart';
 import 'package:mobile_applications/services/item_manager.dart';
 import 'package:mobile_applications/services/list_manager.dart';
-import 'package:mobile_applications/ui/new_item.dart';
+import 'package:mobile_applications/ui/new_item_page.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
 

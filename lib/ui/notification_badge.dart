@@ -44,20 +44,20 @@ class _NotificationBadge extends State<NotificationBadge> {
               return Stack(children: <Widget>[
                 Container(height: 56),
                 IconButton(
-                  icon: Icon(Icons.notifications),
+                  icon: const Icon(Icons.notifications),
                   onPressed: () => {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => NotificationPage()),
+                          builder: (context) => const NotificationPage()),
                     )
                   },
                 ),
-                Positioned(
+                const Positioned(
                   // draw a red marble
                   top: 7.0,
                   right: 7.0,
-                  child: new Icon(Icons.brightness_1,
+                  child: Icon(Icons.brightness_1,
                       size: 15.0, color: Colors.redAccent),
                 ),
               ]);
@@ -66,11 +66,12 @@ class _NotificationBadge extends State<NotificationBadge> {
           return Stack(children: <Widget>[
             Container(height: 56),
             IconButton(
-              icon: Icon(Icons.notifications),
+              icon: const Icon(Icons.notifications),
               onPressed: () => {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => NotificationPage()),
+                  MaterialPageRoute(
+                      builder: (context) => const NotificationPage()),
                 )
               },
             )

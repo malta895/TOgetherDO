@@ -27,7 +27,6 @@ void main() {
   final fakeFirebaseStorage = MockFirebaseStorage();
   final fakeFirebaseFunctions = MockFirebaseFunctions();
   final fakeHttpsCallable = MockHttpsCallable();
-  final fakeHttpsCallableResult = MockHttpsCallableResult();
 
   ManagerConfig.initialize(
     firebaseStorage: fakeFirebaseStorage,

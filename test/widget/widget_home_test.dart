@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_cloud_functions_mock/firebase_cloud_functions_mock.dart';
 import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,7 +9,6 @@ import 'package:mobile_applications/ui/lists_page.dart';
 import 'package:mobile_applications/ui/new_list_page.dart';
 
 import '../mock_database.dart';
-import '../unit/managers_test.mocks.dart';
 
 void main() {
   // initialize here cause it could be useful in tests
@@ -16,7 +16,7 @@ void main() {
   setUpAll(() {
     fakeFirebaseFirestore = TestUtils.createMockDatabase();
     final fakeFirebaseStorage = MockFirebaseStorage();
-    final fakeFirebaseFunctions = MockFirebaseFunctions();
+    final fakeFirebaseFunctions = MockCloudFunctions();
 
     ManagerConfig.initialize(
       firebaseStorage: fakeFirebaseStorage,

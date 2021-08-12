@@ -65,9 +65,10 @@ void main() {
         };
 
         fakeFirebaseFunctions.mockResult(
-            functionName: 'getUserByEmail-getUserByEmail',
-            json: jsonEncode(testUser),
-            parameters: {"email": "doe@email.com"});
+          functionName: 'getUserByEmail-getUserByEmail',
+          json: jsonEncode(testUser),
+          parameters: {"email": "doe@email.com"},
+        );
 
         final user =
             await ListAppUserManager.instance.getByEmail('doe@email.com');
@@ -76,12 +77,16 @@ void main() {
           '123prova',
         );
 
+        fakeFirebaseFunctions.mockResult(
+          functionName: 'getUserByEmail-getUserByEmail',
+          json: jsonEncode(null),
+          parameters: {"email": "random"},
+        );
+
         final wrongUser =
             await ListAppUserManager.instance.getByEmail('random');
 
         expect(wrongUser, null);
-
-        fakeFirebaseFirestore.clearPersistence();
       },
     );
 

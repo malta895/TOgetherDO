@@ -22,7 +22,7 @@ class ListAppUser extends BaseModel {
   String? profilePictureURL;
 
   @JsonKey(defaultValue: {})
-  Set<ListAppUser> friends;
+  Set<String> friends;
 
   /// A new user that needs additional signup data
   bool isNew;

@@ -2,7 +2,7 @@ const functions = require('firebase-functions');
 // Import and initialize the Firebase Admin SDK.
 const admin = require('firebase-admin');
 
-// Sends a notifications to all users when a new message is posted.
+// Sends a notifications to the user that receives the friend request
 exports.createNotifications = functions.region('europe-west6').firestore.document('friendships/{requestId}').onCreate(
     async (snapshot, context) => {
         console.log(snapshot.data().userFrom);
@@ -20,6 +20,49 @@ exports.createNotifications = functions.region('europe-west6').firestore.documen
         };
 
         admin.firestore().collection('notifications').add(newNotification).then((ok) => console.log(ok)).catch((e) => console.log(e));
+    });
+
+
+exports.addFriendAfterAccepted = functions.region('europe-west6').firestore.document('friendships/{requestId}').onUpdate(
+    async (change, context) => {
+        console.log(change);
+        const after = change.after.data();
+        const before = change.before.data();
+
+        const requestAccepted = after.requestAccepted == true && before.requestAccepted != after.requestAccepted;
+        const userFrom = after.userFrom;
+        const userTo = after.userTo;
+
+
+        console.log("requestAccepted:");
+        console.log(requestAccepted);
+        console.log(after.requestAccepted);
+        console.log(before.requestAccepted !== after.requestAccepted);
+
+        if (requestAccepted == true) {
+
+            const userFromRef = admin.firestore().collection('users').doc(userFrom);
+
+            const userFromDoc = await userFromRef.get();
+            
+            const userFromFriends  = userFromDoc.data().friends;
+            userFromFriends.push(userTo);
+
+            await userFromRef.update({
+                friends: userFromFriends
+            });
+
+            const userToRef = admin.firestore().collection('users').doc(userTo);
+
+            const userToDoc = await userToRef.get();
+            const userToFriends  = userToDoc.data().friends;
+
+            userToFriends.push(userFrom)
+            await userToRef.update({
+                friends: userToFriends
+            });
+        }
+
     });
 
 exports.deleteSentNotifications = functions.region('europe-west6').firestore.document('friendships/{friendshipId}').onDelete(

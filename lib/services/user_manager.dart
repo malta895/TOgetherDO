@@ -127,8 +127,8 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
     }
   }
 
-  /// Gets the friends of the current user
-  Future<List<ListAppUser>> getFriends() async {
+  /// Gets the friends of the user
+  Future<List<ListAppUser>> getFriends(ListAppUser user) async {
     return [];
   }
 }

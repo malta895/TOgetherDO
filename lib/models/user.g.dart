@@ -19,12 +19,8 @@ ListAppUser _$ListAppUserFromJson(Map<String, dynamic> json) {
       username: $checkedConvert(json, 'username', (v) => v as String?),
       profilePictureURL:
           $checkedConvert(json, 'profilePictureURL', (v) => v as String?),
-      friends: $checkedConvert(
-              json,
-              'friends',
-              (v) => (v as List<dynamic>?)
-                  ?.map((e) => ListAppUser.fromJson(e as Map<String, dynamic>))
-                  .toSet()) ??
+      friends: $checkedConvert(json, 'friends',
+              (v) => (v as List<dynamic>?)?.map((e) => e as String).toSet()) ??
           {},
       isNew: $checkedConvert(json, 'isNew', (v) => v as bool),
     );

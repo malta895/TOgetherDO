@@ -19,8 +19,6 @@ class ListAppFriendship extends BaseModel {
   /// The acceptance of the request. Two users are considered friends only if this is true
   bool requestAccepted = false;
 
-  //bool get requestAccepted => _requestAccepted;
-
   void acceptRequest() => requestAccepted = true;
 
   ListAppFriendship({

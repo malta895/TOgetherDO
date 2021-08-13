@@ -49,7 +49,7 @@ class TestUtils {
       "displayName": "John Doe",
       "email": "john@doe.com",
       "firstName": "John",
-      "friends": [],
+      "friends": ["user2_id", "johndoe2"],
       "isNew": false,
       "lastName": "Doe",
       "notificationTokens": [],
@@ -97,6 +97,17 @@ class TestUtils {
       "name": "Fare la spesa",
     };
 
+    final item1 = {
+      "createdAt": 1625838181902,
+      "creatorUid": "lGmqaAgJZqVIdqXt3GmQFNC9E3D3",
+      "databaseId": "item1_id",
+      "description": null,
+      "itemType": "simple",
+      "maxQuantity": 1,
+      "name": "prova",
+      "quantityPerMember": 1,
+    };
+
     fakeFirebaseFirestore
         .collection('users')
         .doc(user1["databaseId"] as String)
@@ -107,7 +118,8 @@ class TestUtils {
         .doc(user1["databaseId"] as String)
         .collection('lists')
         .doc(list1['databaseId'] as String)
-        .set(list1);
+          ..set(list1)
+          ..collection('items').doc(item1["databaseId"] as String).set(item1);
 
     fakeFirebaseFirestore
         .collection('users')

@@ -49,6 +49,10 @@ void main() {
 
       // we should see the name of the creator if we are not the list creator
       expect(find.textContaining("johndoe2\n"), findsOneWidget);
+
+      // test number of elements
+      expect(find.textContaining("0 elements"), findsOneWidget);
+      expect(find.textContaining("1 element"), findsOneWidget);
     });
 
     testWidgets('Tap on list should show list details', (tester) async {

@@ -27,7 +27,7 @@ class ListsPage extends StatefulWidget {
 
 class _ListsPageState extends State<ListsPage>
     with SingleTickerProviderStateMixin {
-  final String title = 'ListApp';
+  static const String title = 'ListApp';
 
   late AnimationController _listsShowAnimationController;
 
@@ -311,7 +311,7 @@ class _ListsPageState extends State<ListsPage>
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(title),
+          title: const Text(title),
           actions: [NotificationBadge()],
         ),
         drawer: const ListAppNavDrawer(routeName: ListsPage.routeName),

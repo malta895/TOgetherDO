@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/models/user.dart';
-import 'package:mobile_applications/services/friendship_manager.dart';
+import 'package:mobile_applications/services/authentication.dart';
+import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/new_friends_page.dart';
 import 'package:mobile_applications/ui/notification_badge.dart';
+import 'package:provider/provider.dart';
 
 class FriendsPage extends StatefulWidget {
   static const String routeName = "/friends";
@@ -12,45 +14,44 @@ class FriendsPage extends StatefulWidget {
   const FriendsPage();
 
   @override
-  _FriendsList createState() => _FriendsList();
+  _FriendsListState createState() => _FriendsListState();
 }
 
-class _FriendsList extends State<FriendsPage> {
+class _FriendsListState extends State<FriendsPage> {
   static const String title = 'Friends';
 
-  late final Future<List<ListAppUser?>> _friendsFrom;
-  late final Future<List<ListAppUser?>> _friendsTo;
+  late final Future<List<ListAppUser>> _friendsFuture;
 
   @override
   void initState() {
     super.initState();
-    // TODO remove hardcoded value
-    _friendsFrom = ListAppFriendshipManager.instance
-        .getFriendsFromByUid("9LUBLCszUrU4mukuRWhHFS2iexL2");
+    _friendsFuture = _fetchFriends();
+  }
 
-    // TODO remove hardcoded value
-    _friendsTo = ListAppFriendshipManager.instance
-        .getFriendsToByUid("9LUBLCszUrU4mukuRWhHFS2iexL2");
+  Future<List<ListAppUser>> _fetchFriends() async {
+    final loggedInListAppUser =
+        await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
+    if (loggedInListAppUser == null) return [];
+    return ListAppUserManager.instance.getFriends(loggedInListAppUser);
   }
 
   Widget _buildListItems(BuildContext context) {
-    return FutureBuilder(
-        future: Future.wait([_friendsFrom, _friendsTo]),
-        builder: (BuildContext context,
-            AsyncSnapshot<List<List<ListAppUser?>>> snapshot) {
-          if (snapshot.hasData) {
-            final friendsFrom = snapshot.data![0];
-            final friendsTo = snapshot.data![1];
-
-            final allFriends = friendsFrom.followedBy(friendsTo).toList();
-            return ListView.builder(
-              itemCount: friendsFrom.length + friendsTo.length,
-              itemBuilder: (context, i) {
-                return _buildRow(context, allFriends[i]!);
-              },
-            );
-          } else {
-            return Container();
+    return FutureBuilder<List<ListAppUser>>(
+        future: _friendsFuture,
+        builder: (BuildContext context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              return Container();
+            case ConnectionState.done:
+              final friends = snapshot.data!;
+              return ListView.builder(
+                itemCount: friends.length,
+                itemBuilder: (context, i) {
+                  return _buildRow(context, friends[i]);
+                },
+              );
           }
         });
   }

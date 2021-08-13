@@ -129,6 +129,14 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
 
   /// Gets the friends of the user
   Future<List<ListAppUser>> getFriends(ListAppUser user) async {
-    return [];
+    final friends = Future.wait(user.friends.map((friendUid) async {
+      return await this.getByUid(friendUid);
+    }).toList());
+
+    // remove null elements and convert to non nullable type
+    return (await friends)
+        .where((element) => element != null)
+        .map((e) => e!)
+        .toList();
   }
 }

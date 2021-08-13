@@ -72,7 +72,7 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
       var notificationList = await getNotificationsByUserId(uid, orderBy);
 
       for (var item in notificationList) {
-        if (item.status == NotificationStatus.undefined) {
+        if (item.status == NotificationStatus.pending) {
           cont++;
         }
       }

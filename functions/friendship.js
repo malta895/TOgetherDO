@@ -14,7 +14,7 @@ exports.createNotifications = functions.region('europe-west6').firestore.documen
             userFrom: sender.data().databaseId,
             userId: receiver.data().databaseId,
             notificationType: 'friendship',
-            status: 'undefined',
+            status: 'pending',
             friendshipId: context.params.requestId,
             databaseId: ''
         };

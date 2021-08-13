@@ -18,7 +18,7 @@ Map<String, dynamic> _$ListAppNotificationToJson(
     };
 
 const _$NotificationStatusEnumMap = {
-  NotificationStatus.undefined: 'undefined',
+  NotificationStatus.pending: 'pending',
   NotificationStatus.accepted: 'accepted',
   NotificationStatus.rejected: 'rejected',
 };

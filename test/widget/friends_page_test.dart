@@ -29,6 +29,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text("johndoe2"), findsOneWidget);
+      expect(find.text("John DoeSecond"), findsOneWidget);
     });
   });
 }

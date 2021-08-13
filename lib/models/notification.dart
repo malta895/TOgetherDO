@@ -9,17 +9,26 @@ import 'package:mobile_applications/models/utils.dart';
 part 'notification.g.dart';
 
 /// The notification status
-enum NotificationStatus { undefined, accepted, rejected }
+enum NotificationStatus {
+  /// The notification has been sent to the recipient, but no action has been taken yet
+  pending,
+
+  /// The notification has been accepted by the recipient
+  accepted,
+
+  /// The notification has been rejected by the recipient
+  rejected
+}
 
 extension ParseToString on NotificationStatus {
   String toReadableString() {
     switch (this) {
-      case NotificationStatus.undefined:
-        return 'undefined';
+      case NotificationStatus.pending:
+        return 'Pending';
       case NotificationStatus.accepted:
-        return 'accepted';
+        return 'Accepted';
       case NotificationStatus.rejected:
-        return 'rejected';
+        return 'Rejected';
     }
   }
 }

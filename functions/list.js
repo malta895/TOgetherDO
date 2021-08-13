@@ -53,7 +53,7 @@ exports.createNotification = functions.region('europe-west6').firestore.document
                 listOwner: context.params.userId,
                 userId: element,
                 notificationType: 'listInvite',
-                status: 'undefined',
+                status: 'pending',
                 listId: context.params.listId,
                 databaseId: ''
             };
@@ -76,7 +76,7 @@ exports.createNotification = functions.region('europe-west6').firestore.document
                     listOwner: context.params.userId,
                     userId: element,
                     notificationType: 'listInvite',
-                    status: 'undefined',
+                    status: 'pending',
                     listId: context.params.listId,
                     databaseId: ''
                 };

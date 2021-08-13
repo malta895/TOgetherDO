@@ -174,7 +174,7 @@ class _NotificationPage extends State<NotificationPage> {
               break;
             case ConnectionState.done:
               switch (notification.status) {
-                case NotificationStatus.undefined:
+                case NotificationStatus.pending:
                   return Container(
                       decoration: const BoxDecoration(
                           border: Border(
@@ -299,7 +299,7 @@ class _NotificationPage extends State<NotificationPage> {
               break;
             case ConnectionState.done:
               switch (notification.status) {
-                case NotificationStatus.undefined:
+                case NotificationStatus.pending:
                   return Container(
                       decoration: const BoxDecoration(
                           border: Border(

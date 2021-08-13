@@ -149,7 +149,7 @@ void main() {
     final ListAppNotification listInviteNotification = ListInviteNotification(
       userId: '123',
       userFrom: '456',
-      status: NotificationStatus.undefined,
+      status: NotificationStatus.pending,
       listOwner: '123',
       listId: '5',
       databaseId: '123',
@@ -186,7 +186,7 @@ void main() {
     final ListAppNotification friendshipNotification = FriendshipNotification(
       userId: '123',
       userFrom: '456',
-      status: NotificationStatus.undefined,
+      status: NotificationStatus.pending,
       friendshipId: 'abc',
     );
     final friendshipNotificationToJson = friendshipNotification.toJson();

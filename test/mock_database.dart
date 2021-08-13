@@ -10,6 +10,10 @@ import 'package:mobile_applications/ui/theme.dart';
 import 'package:provider/provider.dart';
 
 class TestUtils {
+  static bool _isDatabaseSet = false;
+  static final FakeFirebaseFirestore _fakeFirebaseFirestore =
+      FakeFirebaseFirestore();
+
   static Widget createScreen({required Widget screen}) {
     final mockUser = MockUser(
       uid: 'user1_id',
@@ -40,7 +44,8 @@ class TestUtils {
 
   /// create an instance of a mock database with pre-filled data and returns the FakeFirebaseFirestore instance
   static FirebaseFirestore createMockDatabase() {
-    final fakeFirebaseFirestore = FakeFirebaseFirestore();
+    if (_isDatabaseSet) return _fakeFirebaseFirestore;
+    _isDatabaseSet = true;
 
     // the logged in user
     final user1 = {
@@ -66,7 +71,7 @@ class TestUtils {
       "firstName": "John",
       "friends": [],
       "isNew": false,
-      "lastName": "Doe",
+      "lastName": "DoeSecond",
       "notificationTokens": [],
       "phoneNumber": null,
       "profilePictureURL": null,
@@ -108,12 +113,12 @@ class TestUtils {
       "quantityPerMember": 1,
     };
 
-    fakeFirebaseFirestore
+    _fakeFirebaseFirestore
         .collection('users')
         .doc(user1["databaseId"] as String)
         .set(user1);
 
-    fakeFirebaseFirestore
+    _fakeFirebaseFirestore
         .collection('users')
         .doc(user1["databaseId"] as String)
         .collection('lists')
@@ -121,18 +126,18 @@ class TestUtils {
           ..set(list1)
           ..collection('items').doc(item1["databaseId"] as String).set(item1);
 
-    fakeFirebaseFirestore
+    _fakeFirebaseFirestore
         .collection('users')
         .doc(user2["databaseId"] as String)
         .set(user2);
 
-    fakeFirebaseFirestore
+    _fakeFirebaseFirestore
         .collection('users')
         .doc(user2["databaseId"] as String)
         .collection('lists')
         .doc(list2['databaseId'] as String)
         .set(list2);
 
-    return fakeFirebaseFirestore;
+    return _fakeFirebaseFirestore;
   }
 }

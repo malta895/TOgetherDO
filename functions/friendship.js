@@ -55,7 +55,7 @@ exports.addFriendAfterAccepted = functions.region('europe-west6').firestore.docu
             const userToRef = admin.firestore().collection('users').doc(userTo);
 
             const userToDoc = await userToRef.get();
-            const userToFriends  = userToDoc.data().friends;
+            const userToFriends = userToDoc.data().friends;
 
             userToFriends.push(userFrom)
             await userToRef.update({
@@ -64,6 +64,38 @@ exports.addFriendAfterAccepted = functions.region('europe-west6').firestore.docu
         }
 
     });
+
+exports.removeFriendAfterDeleted = functions.region('europe-west6').firestore.document('friendships/{requestId}').onDelete(
+    async (snapshot, context) => {
+        console.log(snapshot);
+        const deletedFriendship = snapshot.data();
+        const userFrom = deletedFriendship.userFrom;
+        const userTo = deletedFriendship.userTo;
+
+
+        const userFromRef = admin.firestore().collection('users').doc(userFrom);
+
+        const userFromDoc = await userFromRef.get();
+
+        const userFromFriends = userFromDoc.data().friends.filter(e => e !== userTo);
+
+
+        await userFromRef.update({
+            friends: userFromFriends
+        });
+
+        const userToRef = admin.firestore().collection('users').doc(userTo);
+
+        const userToDoc = await userToRef.get();
+        const userToFriends = userToDoc.data().friends.filter(e => e !== userFrom);
+
+        await userToRef.update({
+            friends: userToFriends
+        });
+
+
+    });
+
 
 exports.deleteSentNotifications = functions.region('europe-west6').firestore.document('friendships/{friendshipId}').onDelete(
     async (snapshot, context) => {

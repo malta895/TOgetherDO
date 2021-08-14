@@ -62,11 +62,13 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
       ListAppUser? userTo = await ListAppUserManager.instance.getByEmail(email);
       if (userTo != null) {
         final newFriendship = ListAppFriendship(
-            userFrom: userFromUid!,
-            userTo: userTo.databaseId!,
-            requestAccepted: false);
+          userFrom: userFromUid!,
+          userTo: userTo.databaseId!,
+          requestAccepted: false,
+          requestedBy: FriendshipRequestMethod.email,
+        );
 
-        await this.firebaseCollection.add(newFriendship);
+        await saveToFirestore(newFriendship);
       }
     } on StateError catch (_) {
       return false;
@@ -81,11 +83,13 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
           await ListAppUserManager.instance.getByUsername(username);
       if (userTo != null) {
         final newFriendship = ListAppFriendship(
-            userFrom: userFrom,
-            userTo: userTo.databaseId!,
-            requestAccepted: false);
+          userFrom: userFrom,
+          userTo: userTo.databaseId!,
+          requestAccepted: false,
+          requestedBy: FriendshipRequestMethod.username,
+        );
 
-        await this.firebaseCollection.add(newFriendship);
+        await saveToFirestore(newFriendship);
       }
     } on TypeError catch (_) {
       return false;

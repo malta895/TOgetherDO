@@ -5,6 +5,14 @@ import 'package:mobile_applications/models/utils.dart';
 
 part 'friendship.g.dart';
 
+enum FriendshipRequestMethod {
+  /// the friendship has been requested by username
+  username,
+
+  /// the friendship has been requested by email
+  email
+}
+
 /// It represents the friendship between 2 users
 @JsonSerializable(checked: true)
 class ListAppFriendship extends BaseModel {
@@ -16,6 +24,9 @@ class ListAppFriendship extends BaseModel {
   /// The user who received the friend request
   final String userTo;
 
+  /// Requested by email or username
+  final FriendshipRequestMethod requestedBy;
+
   /// The acceptance of the request. Two users are considered friends only if this is true
   bool requestAccepted = false;
 
@@ -25,6 +36,7 @@ class ListAppFriendship extends BaseModel {
     String? databaseId,
     required this.userFrom,
     required this.userTo,
+    required this.requestedBy,
     this.requestAccepted = false,
   }) : super(databaseId: databaseId);
 

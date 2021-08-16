@@ -229,14 +229,14 @@ class _NewListFormState extends State<_NewListForm> {
               child: _NewListDropdownMenu(),
             ),
             Flexible(
-              flex: 0,
+              flex: 6,
               fit: FlexFit.tight,
               child: _AddMemberDialog(
                 members: members,
               ),
             ),
             Flexible(
-              flex: 0,
+              flex: 5,
               child: _buildSubmitButton(),
             )
           ],
@@ -270,7 +270,7 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
         .getFriendsToByUid(currentUser.databaseId!);
 
     return Padding(
-      padding: const EdgeInsets.all(5.0),
+      padding: const EdgeInsets.only(top: 5.0),
       child: ListTile(
         contentPadding: const EdgeInsets.all(5.0),
         title: const Text("Add participants"),

@@ -67,6 +67,7 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
   Future<bool> listItemNameExists(String name) async {
     final queryResult =
         await this.firebaseCollection.where("name", isEqualTo: name).get();
+    //print(queryResult.docs.first.data());
     return queryResult.docs.isNotEmpty;
   }
 }

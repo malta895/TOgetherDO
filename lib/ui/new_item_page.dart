@@ -190,6 +190,7 @@ class _NewItemFormState extends State<_NewItemForm> {
                       context,
                       newItem,
                     );
+                    print("Dopo navigator . pop");
                   }
                 },
               ),

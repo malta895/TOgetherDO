@@ -203,11 +203,11 @@ class _NewListFormState extends State<_NewListForm> {
               ],
             ),
             Flexible(
-              flex: 3,
+              flex: 0,
               child: _buildListTitleField(),
             ),
             Flexible(
-              flex: 3,
+              flex: 0,
               child: _buildListDescriptionField(),
             ),
             Row(
@@ -221,22 +221,22 @@ class _NewListFormState extends State<_NewListForm> {
               ],
             ),
             Flexible(
-              flex: 16,
+              flex: 0,
               child: _buildListTypeSelector(),
             ),
             const Flexible(
-              flex: 6,
+              flex: 0,
               child: _NewListDropdownMenu(),
             ),
             Flexible(
-              flex: 6,
+              flex: 0,
               fit: FlexFit.tight,
               child: _AddMemberDialog(
                 members: members,
               ),
             ),
             Flexible(
-              flex: 5,
+              flex: 0,
               child: _buildSubmitButton(),
             )
           ],

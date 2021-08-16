@@ -121,6 +121,9 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
 
     final awaitedLists = await Future.wait(listAppLists);
 
+    print("NOME DELLA LISTA");
+    print(awaitedLists.first.name);
+
     switch (orderBy) {
       case 'createdAt':
         awaitedLists.sort((a, b) {

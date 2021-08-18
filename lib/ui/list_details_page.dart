@@ -549,8 +549,9 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                         print("quantity prima setstate");
                         print(aListItem
                             .quantityFulfilledBy(_loggedInListAppUser));
-                        print(aListItem.getFulfillers());
-                        print(_difference);
+                        print("fulfiller prima" +
+                            aListItem.getFulfillers().toString());
+                        print("difference" + _difference.toString());
                         setState(() {
                           if (_added == 1) {
                             aListItem.fulfill(
@@ -562,6 +563,8 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                 quantityUnfulfilled: _difference);
                           }
                         });
+                        print("fulfiller dopo" +
+                            aListItem.getFulfillers().toString());
                         print("quantity dopo setstate");
                         print(aListItem
                             .quantityFulfilledBy(_loggedInListAppUser));

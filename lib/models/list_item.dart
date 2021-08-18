@@ -302,10 +302,15 @@ class MultiFulfillmentMemberItem extends BaseItem {
 
   @override
   bool unfulfill({required ListAppUser member, int quantityUnfulfilled = 1}) {
-    _fulfillers[member]! + quantityUnfulfilled <= 0
-        ? _fulfillers.remove(member)
-        : _fulfillers[member] = _fulfillers[member]! + quantityUnfulfilled;
-    return _fulfillers.remove(member) != null;
+    bool removed;
+    if (_fulfillers[member]! + quantityUnfulfilled <= 0) {
+      _fulfillers.remove(member);
+      removed = true;
+    } else {
+      _fulfillers[member] = _fulfillers[member]! + quantityUnfulfilled;
+      removed = false;
+    }
+    return removed;
   }
 
   factory MultiFulfillmentMemberItem.fromJson(Map<String, dynamic> json) =>

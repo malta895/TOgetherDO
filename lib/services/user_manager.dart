@@ -127,6 +127,39 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
     }
   }
 
+  Future<void> updateFirstName(String firstName, String? userId) async {
+    if (userId == null) throw ListAppException('No user is logged in.');
+
+    try {
+      await this
+          .firebaseCollection
+          .doc(userId)
+          .update({'firstName': firstName});
+      notifyListeners();
+    } on FirebaseException catch (e) {
+      print(e.message);
+      throw ListAppException('An error occurred. Please try again later.');
+    } on CheckedFromJsonException catch (e) {
+      print(e.message);
+      throw ListAppException('An error occurred. Please try again later.');
+    }
+  }
+
+  Future<void> updateLastName(String lastName, String? userId) async {
+    if (userId == null) throw ListAppException('No user is logged in.');
+
+    try {
+      await this.firebaseCollection.doc(userId).update({'lastName': lastName});
+      notifyListeners();
+    } on FirebaseException catch (e) {
+      print(e.message);
+      throw ListAppException('An error occurred. Please try again later.');
+    } on CheckedFromJsonException catch (e) {
+      print(e.message);
+      throw ListAppException('An error occurred. Please try again later.');
+    }
+  }
+
   /// Gets the friends of the user
   Future<List<ListAppUser>> getFriends(ListAppUser user) async {
     final friends = Future.wait(user.friends.map((friendUid) async {

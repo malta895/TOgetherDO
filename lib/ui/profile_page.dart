@@ -24,6 +24,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   late ListAppUser _loggedInListAppUser;
   late String _currentUsername;
+  late String _currentFirstName;
+  late String _currentLastName;
 
   final ImagePicker _imagePicker = ImagePicker();
 
@@ -34,6 +36,8 @@ class _ProfilePageState extends State<ProfilePage> {
         context.read<ListAppAuthProvider>().loggedInListAppUser!;
 
     _currentUsername = _loggedInListAppUser.username ?? '';
+    _currentFirstName = _loggedInListAppUser.firstName;
+    _currentLastName = _loggedInListAppUser.lastName;
   }
 
   Future<void> _changeProfilePhoto(XFile? imageFile) async {
@@ -118,6 +122,143 @@ class _ProfilePageState extends State<ProfilePage> {
         });
   }
 
+  Future<void> _changeFirstName(BuildContext context) async {
+    final textFieldController = TextEditingController(
+        text: context
+                .read<ListAppAuthProvider>()
+                .loggedInListAppUser
+                ?.firstName ??
+            '');
+    final oldFirstName =
+        context.read<ListAppAuthProvider>().loggedInListAppUser?.firstName;
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          String _newFirstName = '';
+          // The stateful widget is necessary to keep updated the OK button enabled or disabled based on the current username value
+          return StatefulBuilder(builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Enter a new first name'),
+              content: TextField(
+                controller: textFieldController,
+                decoration: const InputDecoration(hintText: "New name"),
+                onChanged: (value) {
+                  setDialogState(() {
+                    _newFirstName = value;
+                  });
+                },
+              ),
+              actions: <Widget>[
+                TextButton(
+                  style: TextButton.styleFrom(
+                      backgroundColor: Colors.red, primary: Colors.white),
+                  child: const Text('CANCEL'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                      backgroundColor: (_newFirstName.isEmpty ||
+                              _newFirstName == oldFirstName)
+                          ? Colors.grey
+                          : Colors.green,
+                      primary: Colors.white),
+                  child: const Text('OK'),
+                  onPressed: () async {
+                    if (_newFirstName.isEmpty ||
+                        _newFirstName == oldFirstName) {
+                      return;
+                    }
+
+                    {
+                      final currentUser =
+                          context.read<ListAppAuthProvider>().loggedInUser;
+
+                      await ListAppUserManager.instance
+                          .updateFirstName(_newFirstName, currentUser?.uid);
+
+                      setState(() {
+                        _currentFirstName = _newFirstName;
+                      });
+
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
+              ],
+            );
+          });
+        });
+  }
+
+  Future<void> _changeLastName(BuildContext context) async {
+    final textFieldController = TextEditingController(
+        text:
+            context.read<ListAppAuthProvider>().loggedInListAppUser?.lastName ??
+                '');
+    final oldLastName =
+        context.read<ListAppAuthProvider>().loggedInListAppUser?.lastName;
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          String _newLastName = '';
+          // The stateful widget is necessary to keep updated the OK button enabled or disabled based on the current username value
+          return StatefulBuilder(builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Enter a new Last name'),
+              content: TextField(
+                controller: textFieldController,
+                decoration: const InputDecoration(hintText: "New name"),
+                onChanged: (value) {
+                  setDialogState(() {
+                    _newLastName = value;
+                  });
+                },
+              ),
+              actions: <Widget>[
+                TextButton(
+                  style: TextButton.styleFrom(
+                      backgroundColor: Colors.red, primary: Colors.white),
+                  child: const Text('CANCEL'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                      backgroundColor:
+                          (_newLastName.isEmpty || _newLastName == oldLastName)
+                              ? Colors.grey
+                              : Colors.green,
+                      primary: Colors.white),
+                  child: const Text('OK'),
+                  onPressed: () async {
+                    if (_newLastName.isEmpty || _newLastName == oldLastName) {
+                      return;
+                    }
+
+                    {
+                      final currentUser =
+                          context.read<ListAppAuthProvider>().loggedInUser;
+
+                      await ListAppUserManager.instance
+                          .updateLastName(_newLastName, currentUser?.uid);
+
+                      setState(() {
+                        _currentLastName = _newLastName;
+                      });
+
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
+              ],
+            );
+          });
+        });
+  }
+
   //TODO implement password
 
   Widget _buildProfile(BuildContext context) {
@@ -179,7 +320,12 @@ class _ProfilePageState extends State<ProfilePage> {
           ))),
       Expanded(
           child: ListView(
-        children: [_buildUsernameRow(context), _buildEmailRow(context)],
+        children: [
+          _buildUsernameRow(context),
+          _buildFirstNameRow(context),
+          _buildLastNameRow(context),
+          _buildEmailRow(context)
+        ],
       ))
     ]));
   }
@@ -194,6 +340,32 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: Theme.of(context).textTheme.headline1!.color)),
         onModify: () {
           _changeUserName(context);
+        });
+  }
+
+  Widget _buildFirstNameRow(BuildContext context) {
+    return _buildRow(
+        context: context,
+        title: 'First name',
+        text: Text(_currentFirstName,
+            style: TextStyle(
+                fontSize: 16,
+                color: Theme.of(context).textTheme.headline1!.color)),
+        onModify: () {
+          _changeFirstName(context);
+        });
+  }
+
+  Widget _buildLastNameRow(BuildContext context) {
+    return _buildRow(
+        context: context,
+        title: 'Last name',
+        text: Text(_currentLastName,
+            style: TextStyle(
+                fontSize: 16,
+                color: Theme.of(context).textTheme.headline1!.color)),
+        onModify: () {
+          _changeLastName(context);
         });
   }
 

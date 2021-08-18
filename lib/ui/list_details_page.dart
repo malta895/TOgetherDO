@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/list_item.dart';
@@ -13,6 +14,7 @@ import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/friendship_manager.dart';
 import 'package:mobile_applications/services/item_manager.dart';
 import 'package:mobile_applications/services/list_manager.dart';
+import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/new_item_page.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
@@ -46,9 +48,11 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
   @override
   void initState() {
     super.initState();
+    var allUsers = widget.listAppList.membersAsUsers;
+    allUsers.insert(0, widget.listAppList.creator!);
 
-    if (widget.listAppList.membersAsUsers.isNotEmpty) {
-      var it = widget.listAppList.membersAsUsers.iterator;
+    if (allUsers.isNotEmpty) {
+      var it = allUsers.iterator;
       int index = 0;
       while (index <= Colors.primaries.length && it.moveNext()) {
         _assignedColors[it.current] = Colors.primaries[index];
@@ -623,14 +627,18 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                       style: TextButton.styleFrom(
                                           primary: Colors.red),
                                       onPressed: () {
-                                        print("Sto provando a cancellare: " +
-                                            member.databaseId!);
                                         ListAppListManager.instanceForUserUid(
                                                 _loggedInListAppUser
                                                     .databaseId!)
                                             .removeMemberFromList(
                                                 widget.listAppList.databaseId!,
                                                 member.databaseId!);
+
+                                        setState(() {
+                                          widget.listAppList.membersAsUsers
+                                              .remove(member);
+                                        });
+
                                         Navigator.of(context).pop(true);
                                       },
                                       child: const Text('REMOVE')),
@@ -725,39 +733,34 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
     final bool doesUserOwnList =
         widget.listAppList.creatorUid == currentListAppUser.databaseId;
 
-    switch (option) {
-      case "leave":
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text(
-                    "Are you sure you wish to ${doesUserOwnList ? 'delete' : 'leave'} the " +
-                        widget.listAppList.name +
-                        " list?"),
-                content: doesUserOwnList
-                    ? const Text(
-                        "You and all the other participants will not see this list anymore")
-                    : const Text(
-                        "If you push LEAVE, you will abandon this list and you won't be able to join it unless someone invites you again"),
-                actions: <Widget>[
-                  TextButton(
-                      style: TextButton.styleFrom(primary: Colors.red),
-                      onPressed: () {
-                        _deleteOrAbandonList(widget.listAppList);
-                        Navigator.of(context).pop(true);
-                      },
-                      child: Text(doesUserOwnList ? 'DELETE' : 'LEAVE')),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    child: const Text("CANCEL"),
-                  ),
-                ],
-              );
-            });
-        break;
-      default:
-    }
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+                "Are you sure you wish to ${doesUserOwnList ? 'delete' : 'leave'} the " +
+                    widget.listAppList.name +
+                    " list?"),
+            content: doesUserOwnList
+                ? const Text(
+                    "You and all the other participants will not see this list anymore")
+                : const Text(
+                    "If you push LEAVE, you will abandon this list and you won't be able to join it unless someone invites you again"),
+            actions: <Widget>[
+              TextButton(
+                  style: TextButton.styleFrom(primary: Colors.red),
+                  onPressed: () {
+                    _deleteOrAbandonList(widget.listAppList);
+                    Navigator.of(context).pop(true);
+                  },
+                  child: Text(doesUserOwnList ? 'DELETE' : 'LEAVE')),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("CANCEL"),
+              ),
+            ],
+          );
+        });
   }
 
   @override
@@ -871,7 +874,9 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
 
     final allMembers = widget.listAppList.membersAsUsers;
     // insert the creator as first member
-    allMembers.insert(0, widget.listAppList.creator!);
+    /*if (allMembers.length == widget.listAppList.membersAsUsers.length) {
+      allMembers.insert(0, widget.listAppList.creator!);
+    }*/
     // put the add element at first, then followed by the list members
     final membersListView = ListView.builder(
       itemCount: allMembers.length,
@@ -890,7 +895,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
     return Column(
       children: [
         _AddMemberDialog(
-          list: widget.listAppList,
+          widget.listAppList,
         ),
         Expanded(
           child: membersListView,
@@ -1011,7 +1016,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
 
 class _AddMemberDialog extends StatefulWidget {
   final ListAppList list;
-  const _AddMemberDialog({Key? key, required this.list}) : super(key: key);
+  const _AddMemberDialog(this.list);
   @override
   _AddMemberDialogState createState() => _AddMemberDialogState();
 }
@@ -1021,13 +1026,16 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
   Widget build(BuildContext context) {
     final currentUser = context.read<ListAppAuthProvider>().loggedInListAppUser;
 
-    final Future<List<ListAppUser?>> friendsFrom = ListAppFriendshipManager
+    /* final Future<List<ListAppUser?>> friendsFrom = ListAppFriendshipManager
         .instance
         .getFriendsFromByUid(currentUser!.databaseId!);
 
     final Future<List<ListAppUser?>> friendsTo = ListAppFriendshipManager
         .instance
-        .getFriendsToByUid(currentUser.databaseId!);
+        .getFriendsToByUid(currentUser.databaseId!); */
+
+    final Future<List<ListAppUser?>> friends =
+        ListAppUserManager.instance.getFriends(currentUser!);
 
     return ListTile(
         title: Row(
@@ -1051,12 +1059,12 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
               context: context,
               builder: (BuildContext context) {
                 return StatefulBuilder(builder: (context, setState) {
-                  return FutureBuilder(
-                      future: Future.wait([friendsFrom, friendsTo]),
+                  return FutureBuilder<List<ListAppUser?>>(
+                      future: friends,
                       builder: (BuildContext context,
-                          AsyncSnapshot<List<List<ListAppUser?>>> snapshot) {
+                          AsyncSnapshot<List<ListAppUser?>> snapshot) {
                         if (snapshot.hasData) {
-                          final allFriends = snapshot.data![0]
+                          /*final allFriends = snapshot.data![0]
                                   .where((element) => !widget
                                       .list.membersAsUsers
                                       .contains(element))
@@ -1065,7 +1073,19 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                                   .where((element) => !widget
                                       .list.membersAsUsers
                                       .contains(element))
-                                  .toList();
+                                  .toList(); */
+
+                          final onlyNonPresentFriends = snapshot.data!;
+
+                          print(onlyNonPresentFriends[0]!.email ==
+                              widget.list.membersAsUsers[1].email);
+
+                          widget.list.membersAsUsers.forEach((element) {
+                            onlyNonPresentFriends.removeWhere(
+                                (e) => e!.username == element.username);
+                          });
+                          /*friends.removeWhere((element) =>
+                              widget.list.membersAsUsers.contains(element));*/
 
                           return AlertDialog(
                             title: const Text("Choose members to add"),
@@ -1075,7 +1095,7 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                                   height: 300,
                                   width: 300,
                                   child: ListView.builder(
-                                    itemCount: allFriends.length,
+                                    itemCount: onlyNonPresentFriends.length,
                                     itemBuilder: (context, i) {
                                       return Container(
                                           decoration: const BoxDecoration(
@@ -1085,43 +1105,59 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                                             width: 0.8,
                                           ))),
                                           child: ListTile(
-                                            leading: CircleAvatar(
-                                              backgroundImage: NetworkImage(
-                                                  allFriends
-                                                      .elementAt(i)!
-                                                      .profilePictureURL!),
-                                            ),
-                                            onTap: () {
-                                              setState(() {});
-                                            },
-                                            title: Text(
-                                              allFriends
-                                                      .elementAt(i)!
-                                                      .firstName +
-                                                  ' ' +
-                                                  allFriends
-                                                      .elementAt(i)!
-                                                      .lastName,
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            trailing: IconButton(
-                                                icon: const Icon(
-                                                  Icons.person_add_alt_rounded,
-                                                ),
-                                                onPressed: () {
-                                                  ListAppListManager
-                                                          .instanceForUserUid(
-                                                              currentUser
-                                                                  .databaseId!)
-                                                      .addMemberToList(
-                                                          widget
-                                                              .list.databaseId!,
-                                                          allFriends
+                                              leading: CircleAvatar(
+                                                backgroundImage: NetworkImage(
+                                                    onlyNonPresentFriends
+                                                        .elementAt(i)!
+                                                        .profilePictureURL!),
+                                              ),
+                                              onTap: () {},
+                                              title: Text(
+                                                onlyNonPresentFriends
+                                                        .elementAt(i)!
+                                                        .firstName +
+                                                    ' ' +
+                                                    onlyNonPresentFriends
+                                                        .elementAt(i)!
+                                                        .lastName,
+                                                style: const TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              trailing: IconButton(
+                                                  icon: const Icon(
+                                                    Icons
+                                                        .person_add_alt_rounded,
+                                                  ),
+                                                  onPressed: () {
+                                                    ListAppListManager
+                                                            .instanceForUserUid(
+                                                                currentUser
+                                                                    .databaseId!)
+                                                        .addMemberToList(
+                                                            widget.list
+                                                                .databaseId!,
+                                                            onlyNonPresentFriends
+                                                                .elementAt(i)!
+                                                                .databaseId!);
+
+                                                    // not awaited because we let the dialog pop in the meantime
+                                                    Fluttertoast.showToast(
+                                                      msg: onlyNonPresentFriends
                                                               .elementAt(i)!
-                                                              .databaseId!);
-                                                }),
-                                          ));
+                                                              .fullName +
+                                                          " was added to the list!",
+                                                      toastLength:
+                                                          Toast.LENGTH_SHORT,
+                                                      gravity:
+                                                          ToastGravity.CENTER,
+                                                      timeInSecForIosWeb: 1,
+                                                      backgroundColor:
+                                                          Colors.green,
+                                                      textColor: Colors.white,
+                                                      fontSize: 16.0,
+                                                    );
+                                                  })));
                                     },
                                   ));
                             }),

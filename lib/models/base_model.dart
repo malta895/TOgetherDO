@@ -19,5 +19,7 @@ abstract class BaseModel {
   BaseModel({
     this.databaseId,
     DateTime? createdAt,
+    Set<String>? users,
+    List<int>? usersCompletions,
   }) : this.createdAt = createdAt ?? DateTime.now();
 }

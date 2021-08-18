@@ -41,7 +41,7 @@ class _ListsPageState extends State<ListsPage>
       new GlobalKey<RefreshIndicatorState>();
   bool _isManuallyRefreshing = false;
 
-  int newNotifications = 0;
+  //int newNotifications = 0;
 
   @override
   void initState() {
@@ -289,8 +289,8 @@ class _ListsPageState extends State<ListsPage>
                             ? 'Me'
                             : listAppList.creator?.username ?? 'unknown') +
                         "\n${listAppList.length} element${listAppList.length == 1 ? '' : 's'}"),
-                    onTap: () {
-                      Navigator.push(
+                    onTap: () async {
+                      await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (BuildContext context) => ListDetailsPage(
@@ -299,6 +299,8 @@ class _ListsPageState extends State<ListsPage>
                           ),
                         ),
                       );
+
+                      _refreshPage();
                     },
                   ),
                 ),

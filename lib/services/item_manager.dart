@@ -70,4 +70,20 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
     //print(queryResult.docs.first.data());
     return queryResult.docs.isNotEmpty;
   }
+
+  /*Future<bool> checkCompletionsForItem(String itemId) async {
+    final queryResult = await ManagerConfig.firebaseFirestoreInstance
+        .collection(ListAppUser.collectionName)
+        .doc(userUid)
+        .collection(ListAppList.collectionName)
+        .doc(listUid)
+        .collection("completions")
+        .where(itemId, isEqualTo: itemId)
+        .get();
+
+    print("COMPLETIONS");
+    print(queryResult.docs.first.data());
+
+    return queryResult.docs.isNotEmpty;
+  }*/
 }

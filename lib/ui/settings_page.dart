@@ -53,7 +53,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           notifier.toggleTheme();
                         }),
                   ))),
-          Container(
+/*          Container(
               decoration: const BoxDecoration(
                   border: Border(
                       bottom: BorderSide(
@@ -75,7 +75,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       icon: const Icon(Icons.sync_outlined),
                       onPressed: () {
                         print("Sync pushed");
-                      }))),
+                      }))), */
           Container(
               decoration: const BoxDecoration(
                   border: Border(

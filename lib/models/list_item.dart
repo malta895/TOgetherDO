@@ -54,6 +54,8 @@ abstract class BaseItem extends BaseModel {
 
   BaseItem({
     String? databaseId,
+    Set<String>? users,
+    List<int>? usersCompletions,
     required this.name,
     this.description,
     required this.maxQuantity,
@@ -61,7 +63,11 @@ abstract class BaseItem extends BaseModel {
     required this.itemType,
     required this.creatorUid,
     DateTime? createdAt,
-  }) : super(databaseId: databaseId, createdAt: createdAt);
+  }) : super(
+            databaseId: databaseId,
+            users: users,
+            usersCompletions: usersCompletions,
+            createdAt: createdAt);
 
   int quantityFulfilledBy(ListAppUser member);
 
@@ -115,6 +121,8 @@ class SimpleItem extends BaseItem {
 
   SimpleItem({
     String? databaseId,
+    Set<String>? users,
+    List<int>? usersCompletions,
     required String name,
     String? description,
     required String creatorUid,
@@ -122,6 +130,8 @@ class SimpleItem extends BaseItem {
   }) : super(
           itemType: ItemType.simple,
           databaseId: databaseId,
+          users: users,
+          usersCompletions: usersCompletions,
           name: name,
           description: description,
           maxQuantity: 1,
@@ -184,6 +194,8 @@ class MultiFulfillmentItem extends BaseItem {
 
   MultiFulfillmentItem({
     String? databaseId,
+    Set<String>? users,
+    List<int>? usersCompletions,
     required String name,
     String? description,
     required int maxQuantity,
@@ -192,6 +204,8 @@ class MultiFulfillmentItem extends BaseItem {
   }) : super(
             itemType: ItemType.multiFulfillment,
             databaseId: databaseId,
+            users: users,
+            usersCompletions: usersCompletions,
             name: name,
             description: description,
             maxQuantity: maxQuantity,
@@ -238,6 +252,8 @@ class MultiFulfillmentMemberItem extends BaseItem {
 
   MultiFulfillmentMemberItem({
     String? databaseId,
+    Set<String>? users,
+    List<int>? usersCompletions,
     required String name,
     String? description,
     required int maxQuantity,
@@ -247,6 +263,8 @@ class MultiFulfillmentMemberItem extends BaseItem {
   }) : super(
             itemType: ItemType.multiFulfillmentMember,
             databaseId: databaseId,
+            users: users,
+            usersCompletions: usersCompletions,
             name: name,
             description: description,
             maxQuantity: maxQuantity,

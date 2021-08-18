@@ -47,6 +47,8 @@ class _ProfilePageState extends State<ProfilePage> {
         text:
             context.read<ListAppAuthProvider>().loggedInListAppUser?.username ??
                 '');
+    final oldUsername =
+        context.read<ListAppAuthProvider>().loggedInListAppUser?.username;
     return await showDialog(
         context: context,
         builder: (context) {
@@ -76,11 +78,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 TextButton(
                   style: TextButton.styleFrom(
                       backgroundColor:
-                          _newUsername.isEmpty ? Colors.grey : Colors.green,
+                          (_newUsername.isEmpty || _newUsername == oldUsername)
+                              ? Colors.grey
+                              : Colors.green,
                       primary: Colors.white),
                   child: const Text('OK'),
                   onPressed: () async {
-                    if (_newUsername.isEmpty) {
+                    if (_newUsername.isEmpty || _newUsername == oldUsername) {
                       return;
                     }
 

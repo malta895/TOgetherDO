@@ -265,9 +265,16 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
         child: Column(children: <Widget>[
       Container(
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+            //                   <--- left side
+            color: Colors.grey,
+            width: 0.8,
+          ))),
           width: double.infinity,
           height: 220.0,
-          decoration: BoxDecoration(
+          /*decoration: BoxDecoration(
               gradient: LinearGradient(
             begin: FractionalOffset.topCenter,
             end: FractionalOffset
@@ -276,14 +283,14 @@ class _ProfilePageState extends State<ProfilePage> {
               Theme.of(context).primaryColor,
               Theme.of(context).accentColor
             ],
-          )),
+          )),*/
           //color: Colors.cyan[700],
           child: Center(
               child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Stack(alignment: const Alignment(1.2, 1.2), children: [
+              Stack(alignment: const Alignment(1.3, 1.3), children: [
                 _loggedInListAppUser.profilePictureURL == null
                     ? const CircleAvatar(
                         backgroundImage:
@@ -296,7 +303,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         radius: 70.0),
                 IconButton(
                     icon: const Icon(Icons.add_a_photo),
-                    color: Colors.white,
+                    color: Theme.of(context).accentColor,
                     onPressed: () async {
                       final XFile? imageFile = await _imagePicker.pickImage(
                           source: ImageSource.gallery);
@@ -306,14 +313,21 @@ class _ProfilePageState extends State<ProfilePage> {
                     }),
               ]),
               const SizedBox(
-                height: 30.0,
+                height: 10.0,
               ),
-              Text(
-                _loggedInListAppUser.fullName,
-                style: const TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius:
+                        const BorderRadius.all(Radius.circular(12.0))),
+                child: Text(
+                  _loggedInListAppUser.fullName,
+                  style: const TextStyle(
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               )
             ],

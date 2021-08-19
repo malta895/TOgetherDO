@@ -22,14 +22,14 @@ exports.setAdminAsMember = functions.region('europe-west6').firestore.document('
 exports.createNotification = functions.region('europe-west6').firestore.document('users/{userId}/lists/{listId}').onCreate(
     async (snapshot, context) => {
         const sender = await admin.firestore().collection('users').doc(context.params.userId).get();
-        console.log("Sender" + sender.data().displayName);
+        //console.log("Sender" + sender.data().displayName);
         const receivers = snapshot.data().members;
         console.log("snapshot.data" + snapshot.data());
         console.log("first element of receivers" + receivers[0]);
         receivers.forEach(element => {
             let newNotification = {
                 userFrom: sender.data().databaseId,
-                listnOwner: context.params.userId,
+                listOwner: context.params.userId,
                 userId: element,
                 notificationType: 'listInvite',
                 status: 'pending',
@@ -49,23 +49,47 @@ exports.updateNotification = functions.region('europe-west6').firestore.document
         const oldMembers = change.before.data().members;
         const newMembers = change.after.data().members;
         newMembers.forEach(element => {
-                if (!oldMembers.includes(element)) {
-                    let newNotification = {
-                        userFrom: context.params.userId,
-                        listOwner: context.params.userId,
-                        userId: element,
-                        notificationType: 'listInvite',
-                        status: 'pending',
-                        listId: context.params.listId,
-                        databaseId: ''
-                    };
+            if (!oldMembers.includes(element)) {
+                let newNotification = {
+                    userFrom: context.params.userId,
+                    listOwner: context.params.userId,
+                    userId: element,
+                    notificationType: 'listInvite',
+                    status: 'pending',
+                    listId: context.params.listId,
+                    databaseId: ''
+                };
 
-                    admin.firestore().collection('notifications').add(newNotification).then((ok) => console.log(ok)).catch((e) => console.log(e));
-                }
+                admin.firestore().collection('notifications').add(newNotification).then((ok) => console.log(ok)).catch((e) => console.log(e));
             }
+        }
         );
     }
 );
+
+exports.acceptInvite = functions.region('europe-west6').firestore.document('notifications/{notificationId}').onUpdate(
+    async (change, context) => {
+        const accepted = change.after.data().status;
+        uid = change.after.data().userId;
+
+        list = await admin.firestore().collection('users').doc(change.after.data().listOwner).collection('lists').doc(change.after.data().listId).get();
+
+        console.log(list.data().members);
+        members = list.data().members;
+        console.log(typeof (members));
+
+        if (accepted == "accepted") {
+            members[uid] = true;
+
+            admin.firestore().collection('users').doc(change.after.data().listOwner).collection('lists').doc(change.after.data().listId).set({ members: members }, { merge: true });
+
+        } else {
+            delete members[uid];
+
+            admin.firestore().collection('users').doc(change.after.data().listOwner).collection('lists').doc(change.after.data().listId).set({ members: members }, { merge: true });
+        }
+    }
+)
 
 exports.deleteSentNotifications = functions.region('europe-west6').firestore.document('users/{userId}/lists/{listId}').onDelete(
     async (snapshot, context) => {

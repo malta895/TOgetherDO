@@ -92,8 +92,8 @@ class ListAppList extends BaseModel {
   })  : this.membersAsUsers = membersAsUsers ?? [],
         super(databaseId: databaseId) {
     if (membersAsUsers != null)
-      members =
-          membersAsUsers.map((e) => e.databaseId).toSet() as Map<String, bool>;
+      members = membersAsUsers.map((e) => [e.databaseId, false]).toSet()
+          as Map<String, bool>;
   }
 
   factory ListAppList.fromJson(Map<String, dynamic> json) =>

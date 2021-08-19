@@ -5,6 +5,7 @@ import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/friendship_manager.dart';
 import 'package:mobile_applications/services/list_manager.dart';
+import 'package:mobile_applications/services/user_manager.dart';
 import 'package:provider/provider.dart';
 
 class NewListPage extends StatelessWidget {
@@ -151,7 +152,7 @@ class _NewListFormState extends State<_NewListForm> {
               description: _listDescriptionController.text,
               listType: _listTypeValue,
               creatorUid: currentUser!.databaseId,
-              membersAsUsers: members,
+              membersAsUsers: [],
             );
 
             // If the form is valid, display a Snackbar.
@@ -261,13 +262,16 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
   Widget build(BuildContext context) {
     final currentUser = context.read<ListAppAuthProvider>().loggedInListAppUser;
 
-    final Future<List<ListAppUser?>> friendsFrom = ListAppFriendshipManager
+    final Future<List<ListAppUser?>> friends =
+        ListAppUserManager.instance.getFriends(currentUser!);
+
+    /*final Future<List<ListAppUser?>> friendsFrom = ListAppFriendshipManager
         .instance
         .getFriendsFromByUid(currentUser!.databaseId!);
 
     final Future<List<ListAppUser?>> friendsTo = ListAppFriendshipManager
         .instance
-        .getFriendsToByUid(currentUser.databaseId!);
+        .getFriendsToByUid(currentUser.databaseId!);*/
 
     return Padding(
       padding: const EdgeInsets.only(top: 5.0),
@@ -282,13 +286,12 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
               builder: (BuildContext context) {
                 return StatefulBuilder(
                   builder: (context, setState) {
-                    return FutureBuilder(
-                      future: Future.wait([friendsFrom, friendsTo]),
+                    return FutureBuilder<List<ListAppUser?>>(
+                      future: friends,
                       builder: (BuildContext context,
-                          AsyncSnapshot<List<List<ListAppUser?>>> snapshot) {
+                          AsyncSnapshot<List<ListAppUser?>> snapshot) {
                         if (snapshot.hasData) {
-                          final allFriends =
-                              snapshot.data![0] + snapshot.data![1];
+                          final allFriends = snapshot.data!;
 
                           selectedFriendsValues =
                               List<bool?>.filled(allFriends.length, false);

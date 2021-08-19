@@ -64,7 +64,7 @@ class ListAppList extends BaseModel {
 
   /// The members of the list
   @JsonKey(defaultValue: {})
-  Set<String?> members = const {};
+  Map<String, bool> members = const {};
 
   /// the number of items in the list
   int get length => items.length;
@@ -92,7 +92,8 @@ class ListAppList extends BaseModel {
   })  : this.membersAsUsers = membersAsUsers ?? [],
         super(databaseId: databaseId) {
     if (membersAsUsers != null)
-      members = membersAsUsers.map((e) => e.databaseId).toSet();
+      members =
+          membersAsUsers.map((e) => e.databaseId).toSet() as Map<String, bool>;
   }
 
   factory ListAppList.fromJson(Map<String, dynamic> json) =>

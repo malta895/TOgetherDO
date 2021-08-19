@@ -23,8 +23,10 @@ ListAppList _$ListAppListFromJson(Map<String, dynamic> json) {
     $checkedConvert(
         json,
         'members',
-        (v) => val.members =
-            (v as List<dynamic>?)?.map((e) => e as String?).toSet() ?? {});
+        (v) => val.members = (v as Map<String, dynamic>?)?.map(
+              (k, e) => MapEntry(k, e as bool),
+            ) ??
+            {});
     return val;
   });
 }
@@ -37,7 +39,7 @@ Map<String, dynamic> _$ListAppListToJson(ListAppList instance) =>
       'description': instance.description,
       'expiryDate': ModelUtils.nullableDateTimeToJson(instance.expiryDate),
       'listType': _$ListTypeEnumMap[instance.listType],
-      'members': instance.members.toList(),
+      'members': instance.members,
       'creatorUid': instance.creatorUid,
     };
 

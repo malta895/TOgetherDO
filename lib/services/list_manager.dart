@@ -103,9 +103,9 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
           await ListAppUserManager.instance.getByUid(listAppList.creatorUid!);
 
       // inject users
-      listAppList.members.forEach((memberUserUid) async {
+      listAppList.members.forEach((memberUserUid, accepted) async {
         final listAppUser =
-            await ListAppUserManager.instance.getByUid(memberUserUid!);
+            await ListAppUserManager.instance.getByUid(memberUserUid);
 
         if (listAppUser != null) listAppList.membersAsUsers.add(listAppUser);
       });
@@ -136,9 +136,7 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
     this
         .firebaseCollection
         .doc(lid)
-        .update({
-          "members": FieldValue.arrayUnion([uid])
-        })
+        .update({"members.$uid": false})
         .then((value) => true)
         .catchError((e) => false);
   }
@@ -147,9 +145,7 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
     this
         .firebaseCollection
         .doc(lid)
-        .update({
-          "members": FieldValue.arrayRemove([uid])
-        })
+        .update({"members.$uid": FieldValue.delete()})
         .then((value) => true)
         .catchError((e) => false);
   }

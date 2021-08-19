@@ -93,13 +93,11 @@ class _ProfilePageState extends State<ProfilePage> {
                     }
 
                     try {
-                      final currentUser =
-                          context.read<ListAppAuthProvider>().loggedInUser;
-
                       await ListAppUserManager.instance
-                          .updateUsername(_newUsername, currentUser?.uid);
+                          .updateUsername(_newUsername, _loggedInListAppUser);
 
                       setState(() {
+                        _loggedInListAppUser.username = _newUsername;
                         _currentUsername = _newUsername;
                       });
 
@@ -172,13 +170,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     }
 
                     {
-                      final currentUser =
-                          context.read<ListAppAuthProvider>().loggedInUser;
-
                       await ListAppUserManager.instance
-                          .updateFirstName(_newFirstName, currentUser?.uid);
+                          .updateFirstName(_newFirstName, _loggedInListAppUser);
 
                       setState(() {
+                        _loggedInListAppUser.displayName = null;
+                        _loggedInListAppUser.firstName = _newFirstName;
                         _currentFirstName = _newFirstName;
                       });
 
@@ -239,13 +236,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     }
 
                     {
-                      final currentUser =
-                          context.read<ListAppAuthProvider>().loggedInUser;
-
                       await ListAppUserManager.instance
-                          .updateLastName(_newLastName, currentUser?.uid);
+                          .updateLastName(_newLastName, _loggedInListAppUser);
 
                       setState(() {
+                        _loggedInListAppUser.displayName = null;
+                        _loggedInListAppUser.lastName = _newLastName;
                         _currentLastName = _newLastName;
                       });
 

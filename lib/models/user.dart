@@ -54,6 +54,8 @@ class ListAppUser extends BaseModel {
   String get displayName => _displayName ?? fullName;
   String get initials => firstName.substring(0, 1) + lastName.substring(0, 1);
 
+  set displayName(String? displayName) => _displayName = displayName;
+
   factory ListAppUser.fromJson(Map<String, dynamic> json) =>
       _$ListAppUserFromJson(json);
 

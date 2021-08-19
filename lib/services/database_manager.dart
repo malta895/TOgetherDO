@@ -1,12 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/base_model.dart';
 import 'package:mobile_applications/services/manager_config.dart';
 
 /// The database manager. Contains common methods for convenience
 abstract class DatabaseManager<T extends BaseModel> {
-  @protected
   final CollectionReference<T?> firebaseCollection;
 
   final FirebaseFirestore firestoreInstance;

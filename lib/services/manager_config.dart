@@ -3,6 +3,8 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
+/// This class is needed to configure the instances of Firebase
+/// This way it is possible to test the application with mock instances
 class ManagerConfig {
   static FirebaseStorage? _firebaseStorageInstance;
   static FirebaseFirestore? _firebaseFirestoreInstance;

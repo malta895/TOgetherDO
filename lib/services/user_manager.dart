@@ -108,33 +108,16 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
   }
 
   /// Updates the username on firestore. Returns `false` on failure
-  Future<void> updateUsername(String username, String? userId) async {
-    if (userId == null) throw ListAppException('No user is logged in.');
-
+  Future<void> updateUsername(String username, ListAppUser currentUser) async {
     if (await usernameExists(username)) {
       throw ListAppException('The username is already taken');
     }
 
     try {
-      await this.firebaseCollection.doc(userId).update({'username': username});
-      notifyListeners();
-    } on FirebaseException catch (e) {
-      print(e.message);
-      throw ListAppException('An error occurred. Please try again later.');
-    } on CheckedFromJsonException catch (e) {
-      print(e.message);
-      throw ListAppException('An error occurred. Please try again later.');
-    }
-  }
-
-  Future<void> updateFirstName(String firstName, String? userId) async {
-    if (userId == null) throw ListAppException('No user is logged in.');
-
-    try {
       await this
           .firebaseCollection
-          .doc(userId)
-          .update({'firstName': firstName});
+          .doc(currentUser.databaseId)
+          .update({'username': username});
       notifyListeners();
     } on FirebaseException catch (e) {
       print(e.message);
@@ -145,11 +128,29 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
     }
   }
 
-  Future<void> updateLastName(String lastName, String? userId) async {
-    if (userId == null) throw ListAppException('No user is logged in.');
-
+  Future<void> updateFirstName(
+      String firstName, ListAppUser currentUser) async {
     try {
-      await this.firebaseCollection.doc(userId).update({'lastName': lastName});
+      await this.firebaseCollection.doc(currentUser.databaseId).update({
+        'firstName': firstName,
+        'displayName': null,
+      });
+      notifyListeners();
+    } on FirebaseException catch (e) {
+      print(e.message);
+      throw ListAppException('An error occurred. Please try again later.');
+    } on CheckedFromJsonException catch (e) {
+      print(e.message);
+      throw ListAppException('An error occurred. Please try again later.');
+    }
+  }
+
+  Future<void> updateLastName(String lastName, ListAppUser currentUser) async {
+    try {
+      await this.firebaseCollection.doc(currentUser.databaseId).update({
+        'lastName': lastName,
+        'displayName': null,
+      });
       notifyListeners();
     } on FirebaseException catch (e) {
       print(e.message);

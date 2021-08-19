@@ -189,7 +189,7 @@ class _UserDetailsInkWellState extends State<_UserDetailsInkWell> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                          listAppUser.displayName ?? "",
+                          listAppUser.displayName,
                           style: TextStyle(
                               color: Theme.of(context).primaryColor,
                               fontSize: 20.0),

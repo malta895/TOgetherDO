@@ -210,7 +210,9 @@ class ListAppAuthProvider with ChangeNotifier {
       }
 
       final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
 
       await firebaseAuth.signInWithCredential(credential);
 

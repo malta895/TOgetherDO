@@ -31,14 +31,15 @@ class ListAppNavDrawer extends StatelessWidget {
     ProfilePage.routeName: null,
   };
 
-  ListTile _buildMenuItem(
-      {required Icon icon,
-      required BuildContext context,
-      required String title,
-      required int? currentDrawerIndex,
-      required String destinationRouteName,
-      bool pushReplacement = false,
-      void Function()? onTap}) {
+  ListTile _buildMenuItem({
+    required Icon icon,
+    required BuildContext context,
+    required String title,
+    required int? currentDrawerIndex,
+    required String destinationRouteName,
+    bool pushReplacement = false,
+    void Function()? onTap,
+  }) {
     return ListTile(
         leading: icon,
         title: Text(title),
@@ -121,7 +122,7 @@ class _UserDetailsInkWell extends StatefulWidget {
 }
 
 class _UserDetailsInkWellState extends State<_UserDetailsInkWell> {
-  Stream<ListAppUser?>? _userStream;
+  late Future<ListAppUser?>? _userFuture;
 
   @override
   void initState() {
@@ -134,8 +135,8 @@ class _UserDetailsInkWellState extends State<_UserDetailsInkWell> {
 
     print('BUILD NAVIGATION DRAWER');
 
-    _userStream = Provider.of<ListAppAuthProvider>(context)
-        .getLoggedInListAppUserStream();
+    _userFuture =
+        Provider.of<ListAppAuthProvider>(context).getLoggedInListAppUser();
   }
 
   @override
@@ -156,18 +157,18 @@ class _UserDetailsInkWellState extends State<_UserDetailsInkWell> {
         margin: EdgeInsets.zero,
         decoration:
             BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
-        child: StreamBuilder<ListAppUser?>(
-            stream: _userStream,
+        child: FutureBuilder<ListAppUser?>(
+            future: _userFuture,
             builder:
                 (BuildContext context, AsyncSnapshot<ListAppUser?> snapshot) {
-              ListAppUser? listAppUser;
               switch (snapshot.connectionState) {
                 case ConnectionState.none:
                 case ConnectionState.waiting:
                   return Container();
                 case ConnectionState.active:
                 case ConnectionState.done:
-                  listAppUser = snapshot.data;
+                  final listAppUser = snapshot.data;
+                  if (listAppUser == null) return Container();
                   return Stack(
                     children: <Widget>[
                       Align(
@@ -175,7 +176,7 @@ class _UserDetailsInkWellState extends State<_UserDetailsInkWell> {
                         child: CircleAvatar(
                           backgroundImage: () {
                             final String? photoURL =
-                                listAppUser?.profilePictureURL;
+                                listAppUser.profilePictureURL;
 
                             if (photoURL != null) return NetworkImage(photoURL);
 
@@ -188,7 +189,7 @@ class _UserDetailsInkWellState extends State<_UserDetailsInkWell> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                          listAppUser?.fullName ?? "",
+                          listAppUser.displayName ?? "",
                           style: TextStyle(
                               color: Theme.of(context).primaryColor,
                               fontSize: 20.0),
@@ -198,7 +199,7 @@ class _UserDetailsInkWellState extends State<_UserDetailsInkWell> {
                         alignment:
                             Alignment.centerRight + const Alignment(0, .3),
                         child: Text(
-                          listAppUser?.email ?? '',
+                          listAppUser.email ?? '',
                           style: const TextStyle(
                             color: Colors.grey,
                           ),

@@ -312,13 +312,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 height: 10.0,
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 decoration: BoxDecoration(
                     color: Theme.of(context).primaryColor,
                     borderRadius:
                         const BorderRadius.all(Radius.circular(12.0))),
                 child: Text(
-                  _loggedInListAppUser.fullName,
+                  _loggedInListAppUser.displayName,
                   style: const TextStyle(
                     fontSize: 24.0,
                     fontWeight: FontWeight.bold,

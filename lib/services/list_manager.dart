@@ -69,9 +69,19 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
     // the owned lists are already in this instance of the manager
     final queryResultOwnedLists = await this.firebaseCollection.get();
 
+    if (queryResultOwnedLists.docs.isNotEmpty) {
+      print("NOME LISTA OWNED");
+      print(queryResultOwnedLists.docs.first.data()!.name);
+    }
+
     final queryResultMemberLists = await getCollectionGroupConverted()
         .where('members', arrayContains: user.databaseId)
         .get();
+
+    if (queryResultMemberLists.docs.isNotEmpty) {
+      print("NOME LISTA MEMBER");
+      print(queryResultMemberLists.docs.first.data()!.name);
+    }
 
     final combinedQueryResult =
         queryResultMemberLists.docs.followedBy(queryResultOwnedLists.docs);
@@ -104,10 +114,15 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
 
       // inject users
       listAppList.members.forEach((memberUserUid, accepted) async {
+        print(memberUserUid);
+        print(accepted);
         final listAppUser =
             await ListAppUserManager.instance.getByUid(memberUserUid);
 
-        if (listAppUser != null) listAppList.membersAsUsers.add(listAppUser);
+        if (listAppUser != null && accepted == true) {
+          print("ciao1");
+          listAppList.membersAsUsers.add(listAppUser);
+        }
       });
 
       //inject items

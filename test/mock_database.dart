@@ -86,7 +86,7 @@ class TestUtils {
       "description": "Lista numero 1",
       "expiryDate": null,
       "listType": "public",
-      "members": ["user2_id"],
+      "members": {"user2_id", true},
       "name": "Nuova lista",
     };
 
@@ -98,7 +98,7 @@ class TestUtils {
       "description": "Lista numero 2",
       "expiryDate": null,
       "listType": "public",
-      "members": ["user1_id"],
+      "members": {"user1_id", true},
       "name": "Fare la spesa",
     };
 

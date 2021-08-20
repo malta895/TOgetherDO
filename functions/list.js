@@ -86,7 +86,9 @@ exports.acceptInvite = functions.region('europe-west6').firestore.document('noti
         } else {
             delete members[uid];
 
-            admin.firestore().collection('users').doc(change.after.data().listOwner).collection('lists').doc(change.after.data().listId).set({ members: members }, { merge: true });
+            console.log(members);
+
+            admin.firestore().collection('users').doc(change.after.data().listOwner).collection('lists').doc(change.after.data().listId).update({ members: members }, { merge: true });
         }
     }
 )

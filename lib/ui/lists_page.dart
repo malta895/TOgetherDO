@@ -168,21 +168,29 @@ class _ListsPageState extends State<ListsPage>
 
             switch (snapshot.connectionState) {
               case ConnectionState.none:
+                return _buildNoLists();
               case ConnectionState.waiting:
               case ConnectionState.active:
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const CircularProgressIndicator(),
-                  ],
+                return const Center(
+                  child: CircularProgressIndicator(),
                 );
               case ConnectionState.done:
                 _listAppLists = listAppLists;
-                return _buildAnimated(context);
+                return listAppLists.isEmpty
+                    ? _buildNoLists()
+                    : _buildAnimated(context);
             }
           }),
     );
+  }
+
+  Widget _buildNoLists() {
+    // TODO make a nice image that points to new list button
+    return const Center(
+        child: Text(
+      "You don't have any list.",
+      style: TextStyle(fontSize: 22),
+    ));
   }
 
   Widget _buildRow(BuildContext context, ListAppList listAppList) {
@@ -206,9 +214,7 @@ class _ListsPageState extends State<ListsPage>
                     builder: (BuildContext context) {
                       return AlertDialog(
                         title: Text(
-                            "Are you sure you wish to ${doesUserOwnList ? 'delete' : 'leave'} the " +
-                                listAppList.name +
-                                " list?"),
+                            "Are you sure you wish to ${doesUserOwnList ? 'delete' : 'leave'} the ${listAppList.name} list?"),
                         content: doesUserOwnList
                             ? const Text(
                                 "You and all the other participants will not see this list anymore")

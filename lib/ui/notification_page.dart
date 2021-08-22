@@ -108,17 +108,21 @@ class _NotificationPage extends State<NotificationPage> {
       builder: (context, AsyncSnapshot<List<ListAppNotification>> snapshot) {
         final notificationList = snapshot.data ?? [];
 
-        late Widget notificationsTable;
-
         switch (snapshot.connectionState) {
           case ConnectionState.none:
+            return const Center(
+                child: Text(
+              "There are no notifications",
+              style: TextStyle(fontSize: 22),
+            ));
           case ConnectionState.waiting:
           case ConnectionState.active:
-            notificationsTable = Container();
-            break;
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           case ConnectionState.done:
-            notificationList.length > 0
-                ? notificationsTable = ListView.builder(
+            return notificationList.isEmpty
+                ? ListView.builder(
                     itemCount: notificationList.length,
                     itemBuilder: (context, i) {
                       switch (notificationList[i].runtimeType) {
@@ -133,7 +137,7 @@ class _NotificationPage extends State<NotificationPage> {
 
                       return Container();
                     })
-                : notificationsTable = const Center(
+                : const Center(
                     child: Text(
                     "There are no notifications",
                     style: TextStyle(fontSize: 22),

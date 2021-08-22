@@ -214,6 +214,15 @@ class _FriendsListState extends State<FriendsPage> {
           width: 0.8,
         ))),
         child: ListTile(
+          leading: friend.profilePictureURL == null
+              ? const CircleAvatar(
+                  backgroundImage: AssetImage('assets/sample-profile.png'),
+                  radius: 25.0,
+                )
+              : CircleAvatar(
+                  backgroundImage: NetworkImage(friend.profilePictureURL!),
+                  radius: 25.0,
+                ),
           title: Text(
             friend.fullName,
             style: const TextStyle(fontWeight: FontWeight.bold),

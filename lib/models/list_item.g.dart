@@ -14,6 +14,7 @@ Map<String, dynamic> _$BaseItemToJson(BaseItem instance) => <String, dynamic>{
       'maxQuantity': instance.maxQuantity,
       'quantityPerMember': instance.quantityPerMember,
       'creatorUid': instance.creatorUid,
+      'usersCompletions': instance.usersCompletions,
       'itemType': _$ItemTypeEnumMap[instance.itemType],
     };
 
@@ -27,6 +28,12 @@ SimpleItem _$SimpleItemFromJson(Map<String, dynamic> json) {
   return $checkedNew('SimpleItem', json, () {
     final val = SimpleItem(
       databaseId: $checkedConvert(json, 'databaseId', (v) => v as String?),
+      usersCompletions: $checkedConvert(
+          json,
+          'usersCompletions',
+          (v) => (v as Map<String, dynamic>?)?.map(
+                (k, e) => MapEntry(k, e as int),
+              )),
       name: $checkedConvert(json, 'name', (v) => v as String),
       description: $checkedConvert(json, 'description', (v) => v as String?),
       creatorUid: $checkedConvert(json, 'creatorUid', (v) => v as String),
@@ -44,12 +51,19 @@ Map<String, dynamic> _$SimpleItemToJson(SimpleItem instance) =>
       'name': instance.name,
       'description': instance.description,
       'creatorUid': instance.creatorUid,
+      'usersCompletions': instance.usersCompletions,
     };
 
 MultiFulfillmentItem _$MultiFulfillmentItemFromJson(Map<String, dynamic> json) {
   return $checkedNew('MultiFulfillmentItem', json, () {
     final val = MultiFulfillmentItem(
       databaseId: $checkedConvert(json, 'databaseId', (v) => v as String?),
+      usersCompletions: $checkedConvert(
+          json,
+          'usersCompletions',
+          (v) => (v as Map<String, dynamic>?)?.map(
+                (k, e) => MapEntry(k, e as int),
+              )),
       name: $checkedConvert(json, 'name', (v) => v as String),
       description: $checkedConvert(json, 'description', (v) => v as String?),
       maxQuantity: $checkedConvert(json, 'maxQuantity', (v) => v as int),
@@ -70,6 +84,7 @@ Map<String, dynamic> _$MultiFulfillmentItemToJson(
       'description': instance.description,
       'maxQuantity': instance.maxQuantity,
       'creatorUid': instance.creatorUid,
+      'usersCompletions': instance.usersCompletions,
     };
 
 MultiFulfillmentMemberItem _$MultiFulfillmentMemberItemFromJson(
@@ -77,6 +92,12 @@ MultiFulfillmentMemberItem _$MultiFulfillmentMemberItemFromJson(
   return $checkedNew('MultiFulfillmentMemberItem', json, () {
     final val = MultiFulfillmentMemberItem(
       databaseId: $checkedConvert(json, 'databaseId', (v) => v as String?),
+      usersCompletions: $checkedConvert(
+          json,
+          'usersCompletions',
+          (v) => (v as Map<String, dynamic>?)?.map(
+                (k, e) => MapEntry(k, e as int),
+              )),
       name: $checkedConvert(json, 'name', (v) => v as String),
       description: $checkedConvert(json, 'description', (v) => v as String?),
       maxQuantity: $checkedConvert(json, 'maxQuantity', (v) => v as int),
@@ -100,4 +121,5 @@ Map<String, dynamic> _$MultiFulfillmentMemberItemToJson(
       'maxQuantity': instance.maxQuantity,
       'quantityPerMember': instance.quantityPerMember,
       'creatorUid': instance.creatorUid,
+      'usersCompletions': instance.usersCompletions,
     };

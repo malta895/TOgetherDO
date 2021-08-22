@@ -25,13 +25,6 @@ class _NewListForm extends StatefulWidget {
   _NewListFormState createState() => _NewListFormState();
 }
 
-class _NewListDropdownMenu extends StatefulWidget {
-  const _NewListDropdownMenu({Key? key}) : super(key: key);
-
-  @override
-  _NewListDropdownMenuState createState() => _NewListDropdownMenuState();
-}
-
 class _NewListFormState extends State<_NewListForm> {
   final _formKey = GlobalKey<FormState>();
 
@@ -148,11 +141,11 @@ class _NewListFormState extends State<_NewListForm> {
           // otherwise.
           if (_formKey.currentState?.validate() == true) {
             final newList = ListAppList(
-              name: _listTitleController.text,
-              description: _listDescriptionController.text,
-              listType: _listTypeValue,
-              creatorUid: currentUser!.databaseId,
-            );
+                name: _listTitleController.text,
+                description: _listDescriptionController.text,
+                listType: _listTypeValue,
+                creatorUid: currentUser!.databaseId,
+                membersAsUsers: members);
 
             // If the form is valid, display a Snackbar.
             // TODO se abbiamo tempo sarebbe carino mettere l'animazione che c'é
@@ -224,13 +217,12 @@ class _NewListFormState extends State<_NewListForm> {
               flex: 0,
               child: _buildListTypeSelector(),
             ),
-            const Flexible(
-              flex: 0,
-              child: _NewListDropdownMenu(),
+            SizedBox(
+              height: 20,
             ),
             Flexible(
-              flex: 6,
-              fit: FlexFit.tight,
+              flex: 3,
+              //fit: FlexFit.tight,
               child: _AddMemberDialog(
                 members: members,
               ),
@@ -373,34 +365,6 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
               }),
         ),
       ),
-    );
-  }
-}
-
-class _NewListDropdownMenuState extends State<_NewListDropdownMenu> {
-  bool? _checkBoxValue = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 5.0),
-      child: CheckboxListTile(
-          contentPadding: const EdgeInsets.all(5.0),
-          title: Text(
-            'I am the only one who can add participants',
-            style: TextStyle(
-              color: Theme.of(context).textTheme.headline1!.color,
-              fontSize: 16.0,
-            ),
-          ),
-          value: _checkBoxValue,
-          tileColor: Theme.of(context).splashColor,
-          activeColor: Theme.of(context).accentColor,
-          onChanged: (newValue) {
-            setState(() {
-              _checkBoxValue = newValue;
-            });
-          }),
     );
   }
 }

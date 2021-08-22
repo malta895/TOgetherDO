@@ -50,12 +50,14 @@ abstract class BaseItem extends BaseModel {
   final int quantityPerMember;
   final String creatorUid;
 
+  Map<String, int>? usersCompletions;
+
   final ItemType itemType;
 
   BaseItem({
     String? databaseId,
     Set<String>? users,
-    List<int>? usersCompletions,
+    Map<String, int>? usersCompletions,
     required this.name,
     this.description,
     required this.maxQuantity,
@@ -63,11 +65,7 @@ abstract class BaseItem extends BaseModel {
     required this.itemType,
     required this.creatorUid,
     DateTime? createdAt,
-  }) : super(
-            databaseId: databaseId,
-            users: users,
-            usersCompletions: usersCompletions,
-            createdAt: createdAt);
+  }) : super(databaseId: databaseId, createdAt: createdAt);
 
   int quantityFulfilledBy(ListAppUser member);
 
@@ -122,7 +120,7 @@ class SimpleItem extends BaseItem {
   SimpleItem({
     String? databaseId,
     Set<String>? users,
-    List<int>? usersCompletions,
+    Map<String, int>? usersCompletions,
     required String name,
     String? description,
     required String creatorUid,
@@ -130,7 +128,6 @@ class SimpleItem extends BaseItem {
   }) : super(
           itemType: ItemType.simple,
           databaseId: databaseId,
-          users: users,
           usersCompletions: usersCompletions,
           name: name,
           description: description,
@@ -194,8 +191,7 @@ class MultiFulfillmentItem extends BaseItem {
 
   MultiFulfillmentItem({
     String? databaseId,
-    Set<String>? users,
-    List<int>? usersCompletions,
+    Map<String, int>? usersCompletions,
     required String name,
     String? description,
     required int maxQuantity,
@@ -204,7 +200,6 @@ class MultiFulfillmentItem extends BaseItem {
   }) : super(
             itemType: ItemType.multiFulfillment,
             databaseId: databaseId,
-            users: users,
             usersCompletions: usersCompletions,
             name: name,
             description: description,
@@ -252,8 +247,7 @@ class MultiFulfillmentMemberItem extends BaseItem {
 
   MultiFulfillmentMemberItem({
     String? databaseId,
-    Set<String>? users,
-    List<int>? usersCompletions,
+    Map<String, int>? usersCompletions,
     required String name,
     String? description,
     required int maxQuantity,
@@ -263,7 +257,6 @@ class MultiFulfillmentMemberItem extends BaseItem {
   }) : super(
             itemType: ItemType.multiFulfillmentMember,
             databaseId: databaseId,
-            users: users,
             usersCompletions: usersCompletions,
             name: name,
             description: description,

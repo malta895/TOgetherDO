@@ -212,6 +212,12 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                 setState(() {
                   if (value == true) {
                     aListItem.fulfill(member: _loggedInListAppUser);
+                    ListAppItemManager.instanceForList(
+                            widget.listAppList.databaseId!,
+                            _loggedInListAppUser.databaseId!)
+                        .fulfillItem(_loggedInListAppUser.databaseId!,
+                            aListItem.databaseId!, 1);
+                    print("ciao");
                   } else {
                     aListItem.unfulfill(
                         member: _loggedInListAppUser, quantityUnfulfilled: 1);

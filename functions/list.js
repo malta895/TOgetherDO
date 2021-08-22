@@ -24,9 +24,23 @@ exports.createNotification = functions.region('europe-west6').firestore.document
         const sender = await admin.firestore().collection('users').doc(context.params.userId).get();
         //console.log("Sender" + sender.data().displayName);
         const receivers = snapshot.data().members;
-        console.log("snapshot.data" + snapshot.data());
-        console.log("first element of receivers" + receivers[0]);
-        receivers.forEach(element => {
+        //console.log("snapshot.data" + snapshot.data());
+        //console.log("first element of receivers" + receivers[0]);
+        for (const [key, value] of Object.entries(receivers)) {
+            console.log(`${key} ${value}`);
+            let newNotification = {
+                userFrom: context.params.userId,
+                listOwner: context.params.userId,
+                userId: key,
+                notificationType: 'listInvite',
+                status: 'pending',
+                listId: context.params.listId,
+                databaseId: ''
+            };
+            admin.firestore().collection('notifications').add(newNotification).then((ok) => console.log(ok)).catch((e) => console.log(e));
+        }
+
+        /*receivers.forEach(element => {
             let newNotification = {
                 userFrom: sender.data().databaseId,
                 listOwner: context.params.userId,
@@ -39,7 +53,7 @@ exports.createNotification = functions.region('europe-west6').firestore.document
 
             admin.firestore().collection('notifications').add(newNotification).then((ok) => console.log(ok)).catch((e) => console.log(e));
         }
-        );
+        );*/
     }
 );
 
@@ -48,47 +62,49 @@ exports.updateNotification = functions.region('europe-west6').firestore.document
         //const sender = await admin.firestore().collection('users').doc(context.params.userId).get();
         const oldMembers = change.before.data().members;
         const newMembers = change.after.data().members;
-        newMembers.forEach(element => {
-            if (!oldMembers.includes(element)) {
+
+        for (const [key, value] of Object.entries(newMembers)) {
+            console.log(`${key} ${value}`);
+            if (!oldMembers.hasOwnProperty(key)) {
                 let newNotification = {
                     userFrom: context.params.userId,
                     listOwner: context.params.userId,
-                    userId: element,
+                    userId: key,
                     notificationType: 'listInvite',
                     status: 'pending',
                     listId: context.params.listId,
                     databaseId: ''
                 };
-
                 admin.firestore().collection('notifications').add(newNotification).then((ok) => console.log(ok)).catch((e) => console.log(e));
             }
         }
-        );
     }
 );
 
 exports.acceptInvite = functions.region('europe-west6').firestore.document('notifications/{notificationId}').onUpdate(
     async (change, context) => {
-        const accepted = change.after.data().status;
-        uid = change.after.data().userId;
+        if (change.after.data().notificationType == "listInvite") {
+            const accepted = change.after.data().status;
+            uid = change.after.data().userId;
 
-        list = await admin.firestore().collection('users').doc(change.after.data().listOwner).collection('lists').doc(change.after.data().listId).get();
+            list = await admin.firestore().collection('users').doc(change.after.data().listOwner).collection('lists').doc(change.after.data().listId).get();
 
-        console.log(list.data().members);
-        members = list.data().members;
-        console.log(typeof (members));
+            console.log(list.data().members);
+            members = list.data().members;
+            console.log(typeof (members));
 
-        if (accepted == "accepted") {
-            members[uid] = true;
+            if (accepted == "accepted") {
+                members[uid] = true;
 
-            admin.firestore().collection('users').doc(change.after.data().listOwner).collection('lists').doc(change.after.data().listId).set({ members: members }, { merge: true });
+                admin.firestore().collection('users').doc(change.after.data().listOwner).collection('lists').doc(change.after.data().listId).set({ members: members }, { merge: true });
 
-        } else {
-            delete members[uid];
+            } else {
+                delete members[uid];
 
-            console.log(members);
+                console.log(members);
 
-            admin.firestore().collection('users').doc(change.after.data().listOwner).collection('lists').doc(change.after.data().listId).update({ members: members }, { merge: true });
+                admin.firestore().collection('users').doc(change.after.data().listOwner).collection('lists').doc(change.after.data().listId).update({ members: members }, { merge: true });
+            }
         }
     }
 )

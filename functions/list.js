@@ -2,7 +2,7 @@ const functions = require('firebase-functions');
 
 const admin = require('firebase-admin');
 
-exports.setAdminAsMember = functions.region('europe-west6').firestore.document('users/{userId}/lists/{listId}').onCreate(
+/*exports.setAdminAsMember = functions.region('europe-west6').firestore.document('users/{userId}/lists/{listId}').onCreate(
     async (snapshot, context) => {
         return admin.firestore().collection('users')
             .doc(context.params.userId)
@@ -17,11 +17,11 @@ exports.setAdminAsMember = functions.region('europe-west6').firestore.document('
                 console.error("Error while adding admin as member");
                 return null;
             });
-    })
+    })*/
 
 exports.createNotification = functions.region('europe-west6').firestore.document('users/{userId}/lists/{listId}').onCreate(
     async (snapshot, context) => {
-        const sender = await admin.firestore().collection('users').doc(context.params.userId).get();
+        //const sender = await admin.firestore().collection('users').doc(context.params.userId).get();
         //console.log("Sender" + sender.data().displayName);
         const receivers = snapshot.data().members;
         //console.log("snapshot.data" + snapshot.data());
@@ -98,7 +98,7 @@ exports.acceptInvite = functions.region('europe-west6').firestore.document('noti
 
                 admin.firestore().collection('users').doc(change.after.data().listOwner).collection('lists').doc(change.after.data().listId).set({ members: members }, { merge: true });
 
-            } else {
+            } else if (accepted == "rejected") {
                 delete members[uid];
 
                 console.log(members);

@@ -121,7 +121,7 @@ class _NotificationPage extends State<NotificationPage> {
               child: CircularProgressIndicator(),
             );
           case ConnectionState.done:
-            return notificationList.isEmpty
+            return notificationList.isNotEmpty
                 ? ListView.builder(
                     itemCount: notificationList.length,
                     itemBuilder: (context, i) {
@@ -134,7 +134,6 @@ class _NotificationPage extends State<NotificationPage> {
                           return _buildInvitationRow(context,
                               notificationList[i] as ListInviteNotification);
                       }
-
                       return Container();
                     })
                 : const Center(
@@ -143,17 +142,6 @@ class _NotificationPage extends State<NotificationPage> {
                     style: TextStyle(fontSize: 22),
                   ));
         }
-        return RefreshIndicator(
-          key: _refreshIndicatorKey,
-          onRefresh: () async {
-            _isManuallyRefreshing = true;
-            setState(() {
-              _notificationsFuture = _fetchNotifications();
-            });
-            _isManuallyRefreshing = false;
-          },
-          child: notificationsTable,
-        );
 
         //return _buildRow(context, notificationList[i]);
       },
@@ -531,9 +519,19 @@ class _NotificationPage extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-        ),
-        body: _buildListItems(context, notificationList));
+      appBar: AppBar(
+        title: Text(title),
+      ),
+      body: RefreshIndicator(
+          key: _refreshIndicatorKey,
+          onRefresh: () async {
+            _isManuallyRefreshing = true;
+            setState(() {
+              _notificationsFuture = _fetchNotifications();
+            });
+            _isManuallyRefreshing = false;
+          },
+          child: _buildListItems(context, notificationList)),
+    );
   }
 }

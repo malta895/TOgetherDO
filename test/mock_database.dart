@@ -54,7 +54,7 @@ class TestUtils {
       "displayName": "John Doe",
       "email": "john@doe.com",
       "firstName": "John",
-      "friends": ["user2_id", "johndoe2"],
+      "friends": <String, bool>{"user2_id": true, "johndoe2": true},
       "isNew": false,
       "lastName": "Doe",
       "notificationTokens": [],
@@ -69,7 +69,7 @@ class TestUtils {
       "displayName": "John Doe",
       "email": "john@doe.com",
       "firstName": "John",
-      "friends": [],
+      "friends": <String, bool>{},
       "isNew": false,
       "lastName": "DoeSecond",
       "notificationTokens": [],
@@ -86,7 +86,7 @@ class TestUtils {
       "description": "Lista numero 1",
       "expiryDate": null,
       "listType": "public",
-      "members": {"user2_id", true},
+      "members": <String, bool>{"user2_id": true},
       "name": "Nuova lista",
     };
 
@@ -98,7 +98,7 @@ class TestUtils {
       "description": "Lista numero 2",
       "expiryDate": null,
       "listType": "public",
-      "members": {"user1_id", true},
+      "members": <String, bool>{"user1_id": true},
       "name": "Fare la spesa",
     };
 

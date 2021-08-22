@@ -8,6 +8,10 @@ class ModelUtils {
     return DateTime.fromMillisecondsSinceEpoch(intTimestamp);
   }
 
+  static Map<String, bool> friendsFromJson(Map<Object, Object> friendsJson) {
+    return {};
+  }
+
   static int? nullableDateTimeToJson(DateTime? time) =>
       time?.millisecondsSinceEpoch;
 }

@@ -90,6 +90,7 @@ class ListAppAuthProvider with ChangeNotifier {
       String? email = firebaseUser.email;
 
       listAppUser = ListAppUser(
+        friends: <String, bool>{},
         email: email,
         isNew: true,
         username: email?.substring(0, email.indexOf('@')),

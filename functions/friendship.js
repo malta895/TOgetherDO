@@ -46,7 +46,7 @@ exports.addFriendAfterAccepted = functions.region('europe-west6').firestore.docu
             const userFromDoc = await userFromRef.get();
             
             const userFromFriends  = userFromDoc.data().friends;
-            userFromFriends.push(userTo);
+            userFromFriends.push({userTo: true});
 
             await userFromRef.update({
                 friends: userFromFriends

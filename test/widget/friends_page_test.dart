@@ -128,6 +128,6 @@ void main() {
 
     expect(find.text("johndoe3"), findsOneWidget);
     expect(find.text("John DoeFriend"), findsOneWidget);
-    expect(find.text("Request pending..."), findsOneWidget);
+    expect(find.text("Request pending"), findsOneWidget);
   });
 }

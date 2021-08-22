@@ -207,51 +207,75 @@ class _FriendsListState extends State<FriendsPage> {
   Widget _buildRow(
       BuildContext context, ListAppUser friend, bool requestAccepted) {
     return Container(
-        decoration: const BoxDecoration(
-            border: Border(
-                bottom: BorderSide(
-          color: Colors.grey,
-          width: 0.8,
-        ))),
-        child: ListTile(
-          leading: friend.profilePictureURL == null
-              ? const CircleAvatar(
-                  backgroundImage: AssetImage('assets/sample-profile.png'),
-                  radius: 25.0,
-                )
-              : CircleAvatar(
-                  backgroundImage: NetworkImage(friend.profilePictureURL!),
-                  radius: 25.0,
-                ),
-          title: Text(
-            friend.fullName,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          subtitle: Text(friend.username ?? ''),
-          trailing: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: requestAccepted
-                ? const [
-                    Icon(Icons.supervisor_account_rounded),
-                    // TODO switch on accepted/pending
-                    Text(
+      decoration: const BoxDecoration(
+          border: Border(
+              bottom: BorderSide(
+        color: Colors.grey,
+        width: 0.8,
+      ))),
+      child: ListTile(
+        leading: friend.profilePictureURL == null
+            ? const CircleAvatar(
+                backgroundImage: AssetImage('assets/sample-profile.png'),
+                radius: 25.0,
+              )
+            : CircleAvatar(
+                backgroundImage: NetworkImage(friend.profilePictureURL!),
+                radius: 25.0,
+              ),
+        title: Text(
+          friend.fullName,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text(friend.username ?? ''),
+        trailing: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: requestAccepted
+              ? const [
+                  Icon(Icons.supervisor_account_rounded),
+                  Padding(
+                    padding: EdgeInsets.only(left: 18.0, right: 18.0),
+                    child: Text(
                       "Accepted",
                       textScaleFactor: 0.9,
                     ),
-                  ]
-                : const [
-                    Icon(Icons.supervised_user_circle_outlined),
-                    Text(
-                      "Request pending...",
-                      textScaleFactor: 0.9,
-                    ),
-                  ],
-          ),
-          onTap: () {
-            print(friend.fullName);
-          },
-        ));
+                  ),
+                ]
+              : [
+                  Stack(
+                    children: [
+                      const Icon(Icons.person),
+                      Positioned(
+                        bottom: .0,
+                        right: .0,
+                        child: Stack(
+                          children: [
+                            Icon(
+                              Icons.brightness_1,
+                              color: Theme.of(context).backgroundColor,
+                              size: 13.0,
+                            ),
+                            const Icon(
+                              Icons.watch_later,
+                              size: 13.0,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Text(
+                    "Request pending",
+                    textScaleFactor: 0.9,
+                  ),
+                ],
+        ),
+        onTap: () {
+          print(friend.fullName);
+        },
+      ),
+    );
   }
 
   @override

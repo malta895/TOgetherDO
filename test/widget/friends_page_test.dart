@@ -47,7 +47,7 @@ void main() {
           "displayName": "John DoeFriend",
           "email": "john@friend.com",
           "firstName": "John",
-          "friends": [],
+          "friends": <String, bool>{},
           "isNew": false,
           "lastName": "DoeFriend",
           "notificationTokens": [],
@@ -116,7 +116,6 @@ void main() {
         expect(friendship2["requestAccepted"], false);
         expect(friendship2["requestedBy"], "email");
       },
-      skip: true, // TODO remove when add to friends is completed
     );
   });
 }

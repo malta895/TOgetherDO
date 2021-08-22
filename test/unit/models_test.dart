@@ -49,13 +49,15 @@ void main() {
       expect(multiMemberTestItem.getFulfillers().contains(userTest), true);
     });
 
-    test('The item should be unfulfilled', () {
-      // TODO fix this, it does not work because fullfils are not stored anywhere
-      multiMemberTestItem.unfulfill(member: userTest, quantityUnfulfilled: -5);
-      expect(multiMemberTestItem.getFulfillers().contains(userTest), false);
-    },
-        skip:
-            ('it does not work because fulfills are not stored in the DB yet'));
+    test(
+      'The item should be unfulfilled',
+      () {
+        // TODO fix this, it does not work because fullfils are not stored anywhere
+        multiMemberTestItem.unfulfill(
+            member: userTest, quantityUnfulfilled: -5);
+        expect(multiMemberTestItem.getFulfillers().contains(userTest), false);
+      },
+    );
   });
   group('Testing User functions', () {
     test('The full name should be returned', () {

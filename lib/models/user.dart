@@ -20,14 +20,13 @@ class ListAppUser extends BaseModel {
   String? username;
 
   String? profilePictureURL;
-  // @JsonKey()
+
   Map<String, bool> friends;
 
   /// A new user that needs additional signup data
   bool isNew;
 
   /// The FCM tokens of the devices used by the user
-  @JsonKey(defaultValue: {})
   Set<String> notificationTokens;
 
   /// The email is ignored because not needed outside of the app, it is populated only for current user
@@ -43,7 +42,7 @@ class ListAppUser extends BaseModel {
     String? displayName,
     String? username,
     this.profilePictureURL,
-    this.friends = const {},
+    this.friends = const <String, bool>{},
     this.isNew = false,
   })  : this._displayName = displayName,
         this.username = username ?? '',

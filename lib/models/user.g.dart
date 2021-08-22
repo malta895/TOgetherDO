@@ -11,8 +11,7 @@ ListAppUser _$ListAppUserFromJson(Map<String, dynamic> json) {
     final val = ListAppUser(
       databaseId: $checkedConvert(json, 'databaseId', (v) => v as String?),
       notificationTokens: $checkedConvert(json, 'notificationTokens',
-              (v) => (v as List<dynamic>?)?.map((e) => e as String).toSet()) ??
-          {},
+          (v) => (v as List<dynamic>).map((e) => e as String).toSet()),
       firstName: $checkedConvert(json, 'firstName', (v) => v as String),
       lastName: $checkedConvert(json, 'lastName', (v) => v as String),
       displayName: $checkedConvert(json, 'displayName', (v) => v as String?),

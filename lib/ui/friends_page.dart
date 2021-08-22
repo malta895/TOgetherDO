@@ -47,14 +47,17 @@ class _FriendsListState extends State<FriendsPage> {
       value: (_) => true,
     );
 
-    final pendingFriends = await ListAppUserManager.instance
-        .getPendingFriends(_loggedInListAppUser!);
+    final pendingFriends = await ListAppUserManager.instance.getFriends(
+      _loggedInListAppUser!,
+      pendingRequests: true,
+    );
 
-    return friends
-      ..addAll(Map<ListAppUser, bool>.fromIterable(
-        pendingFriends,
-        value: (_) => false,
-      ));
+    friends.addAll(Map<ListAppUser, bool>.fromIterable(
+      pendingFriends,
+      value: (_) => false,
+    ));
+
+    return friends;
   }
 
   Future<void> _addNewFriend(BuildContext context) async {
@@ -211,6 +214,15 @@ class _FriendsListState extends State<FriendsPage> {
           width: 0.8,
         ))),
         child: ListTile(
+          leading: friend.profilePictureURL == null
+              ? const CircleAvatar(
+                  backgroundImage: AssetImage('assets/sample-profile.png'),
+                  radius: 25.0,
+                )
+              : CircleAvatar(
+                  backgroundImage: NetworkImage(friend.profilePictureURL!),
+                  radius: 25.0,
+                ),
           title: Text(
             friend.fullName,
             style: const TextStyle(fontWeight: FontWeight.bold),

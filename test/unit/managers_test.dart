@@ -55,7 +55,7 @@ void main() {
           "displayName": "John Doe",
           "email": "doe@email.com",
           "firstName": "John",
-          "friends": [],
+          "friends": {},
           "isNew": false,
           "lastName": "Doe",
           "notificationTokens": [],

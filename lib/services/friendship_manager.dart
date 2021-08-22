@@ -69,7 +69,8 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
         );
 
         await saveToFirestore(newFriendship);
-      }
+      } else
+        return false;
     } on StateError catch (_) {
       return false;
     }
@@ -90,7 +91,8 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
         );
 
         await saveToFirestore(newFriendship);
-      }
+      } else
+        return false;
     } on TypeError catch (_) {
       return false;
     }

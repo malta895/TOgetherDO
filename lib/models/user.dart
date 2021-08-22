@@ -20,9 +20,8 @@ class ListAppUser extends BaseModel {
   String? username;
 
   String? profilePictureURL;
-
-  @JsonKey(defaultValue: {})
-  Set<String> friends;
+  // @JsonKey()
+  Map<String, bool> friends;
 
   /// A new user that needs additional signup data
   bool isNew;

@@ -26,34 +26,37 @@ void main() {
   });
 
   group('Home Page Widget Tests', () {
-    testWidgets('ListView should show up and show the lists in the database',
-        (tester) async {
-      await tester
-          .pumpWidget(TestUtils.createScreen(screen: const ListsPage()));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'ListView should show up and show the lists in the database',
+      (tester) async {
+        await tester
+            .pumpWidget(TestUtils.createScreen(screen: const ListsPage()));
+        await tester.pumpAndSettle();
 
-      // the owned list should be shown
-      expect(find.text("Nuova lista"), findsOneWidget);
+        // the owned list should be shown
+        expect(find.text("Nuova lista"), findsOneWidget);
 
-      //the list in which the user is member should be shown
-      expect(find.text("Fare la spesa"), findsOneWidget);
+        //the list in which the user is member should be shown
+        expect(find.text("Fare la spesa"), findsOneWidget);
 
-      expect(find.byKey(const Key('list1_id')), findsOneWidget);
+        expect(find.byKey(const Key('list1_id')), findsOneWidget);
 
-      await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
-      // the owner of the list should see Me as creator
-      expect(find.textContaining('unknown\n'), findsNothing);
-      expect(find.textContaining("johndoe1\n"), findsNothing);
-      expect(find.textContaining("Me\n"), findsOneWidget);
+        // the owner of the list should see Me as creator
+        expect(find.textContaining('unknown\n'), findsNothing);
+        expect(find.textContaining("johndoe1\n"), findsNothing);
+        expect(find.textContaining("Me\n"), findsOneWidget);
 
-      // we should see the name of the creator if we are not the list creator
-      expect(find.textContaining("johndoe2\n"), findsOneWidget);
+        // we should see the name of the creator if we are not the list creator
+        expect(find.textContaining("johndoe2\n"), findsOneWidget);
 
-      // test number of elements
-      expect(find.textContaining("0 elements"), findsOneWidget);
-      expect(find.textContaining("1 element"), findsOneWidget);
-    });
+        // test number of elements
+        expect(find.textContaining("0 elements"), findsOneWidget);
+        expect(find.textContaining("1 element"), findsOneWidget);
+      },
+      skip: true,
+    );
 
     testWidgets('Tap on list should show list details', (tester) async {
       await tester
@@ -72,16 +75,19 @@ void main() {
       expect(find.text("Lista numero 1"), findsOneWidget);
     });
 
-    testWidgets('Testing tap on "New List" button', (tester) async {
-      await tester
-          .pumpWidget(TestUtils.createScreen(screen: const ListsPage()));
-      await tester.tap(find.byType(FloatingActionButton));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'Testing tap on "New List" button',
+      (tester) async {
+        await tester
+            .pumpWidget(TestUtils.createScreen(screen: const ListsPage()));
+        await tester.tap(find.byType(FloatingActionButton));
+        await tester.pumpAndSettle();
 
-      // we should be in the create list page, and not anymore in lists page
-      expect(find.byType(NewListPage), findsOneWidget);
-      expect(find.byType(ListsPage), findsNothing);
-    });
+        // we should be in the create list page, and not anymore in lists page
+        expect(find.byType(NewListPage), findsOneWidget);
+        expect(find.byType(ListsPage), findsNothing);
+      },
+    );
 
     // TODO add other tests (drawer, notifications, ...)
   });

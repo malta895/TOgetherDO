@@ -77,6 +77,21 @@ class TestUtils {
       "profilePictureURL": null,
       "username": "johndoe2",
     };
+    // add a new user to be added as friend
+    final user3 = {
+      "databaseId": 'user3_id',
+      "createdAt": 1625751035020,
+      "displayName": "John DoeFriend",
+      "email": "john@friend.com",
+      "firstName": "John",
+      "friends": <String, bool>{},
+      "isNew": false,
+      "lastName": "DoeFriend",
+      "notificationTokens": [],
+      "phoneNumber": null,
+      "profilePictureURL": null,
+      "username": "johndoe3",
+    };
 
     final list1 = {
       "createdAt": 1626005532227,
@@ -117,6 +132,11 @@ class TestUtils {
         .collection('users')
         .doc(user1["databaseId"] as String)
         .set(user1);
+
+    _fakeFirebaseFirestore
+        .collection('users')
+        .doc(user3["databaseId"] as String)
+        .set(user3);
 
     _fakeFirebaseFirestore
         .collection('users')

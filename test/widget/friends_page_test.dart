@@ -28,38 +28,19 @@ void main() {
   });
 
   group('Test friends page', () {
-    testWidgets('All friends should be shown', (tester) async {
+    testWidgets('Accepted friends should be shown', (tester) async {
       await tester
           .pumpWidget(TestUtils.createScreen(screen: const FriendsPage()));
       await tester.pumpAndSettle();
 
       expect(find.text("johndoe2"), findsOneWidget);
       expect(find.text("John DoeSecond"), findsOneWidget);
+      expect(find.text("Accepted"), findsOneWidget);
     });
 
     testWidgets(
       'Add a new friend by username and by email',
       (tester) async {
-        // add a new user to be added as friend
-        final user3 = {
-          "databaseId": 'user3_id',
-          "createdAt": 1625751035020,
-          "displayName": "John DoeFriend",
-          "email": "john@friend.com",
-          "firstName": "John",
-          "friends": <String, bool>{},
-          "isNew": false,
-          "lastName": "DoeFriend",
-          "notificationTokens": [],
-          "phoneNumber": null,
-          "profilePictureURL": null,
-          "username": "johndoe3",
-        };
-        fakeFirebaseFirestore
-            .collection('users')
-            .doc(user3["databaseId"] as String)
-            .set(user3);
-
         await tester
             .pumpWidget(TestUtils.createScreen(screen: const FriendsPage()));
         await tester.pumpAndSettle();
@@ -92,7 +73,20 @@ void main() {
         // add the email
         fakeFirebaseFunctions.mockResult(
           functionName: 'getUserByEmail-getUserByEmail',
-          json: jsonEncode(user3),
+          json: jsonEncode({
+            "databaseId": 'user3_id',
+            "createdAt": 1625751035020,
+            "displayName": "John DoeFriend",
+            "email": "john@friend.com",
+            "firstName": "John",
+            "friends": <String, bool>{},
+            "isNew": false,
+            "lastName": "DoeFriend",
+            "notificationTokens": [],
+            "phoneNumber": null,
+            "profilePictureURL": null,
+            "username": "johndoe3",
+          }),
           parameters: {"email": "john@friend.com"},
         );
 
@@ -117,5 +111,23 @@ void main() {
         expect(friendship2["requestedBy"], "email");
       },
     );
+  });
+
+  testWidgets('Pending friendship should be shown', (tester) async {
+    // add a pending friend to the database
+    await fakeFirebaseFirestore.collection('users').doc('user1_id').update({
+      'friends': <String, bool>{
+        "user2_id": true,
+        "johndoe2": true,
+        'user3_id': false,
+      }
+    });
+    await tester
+        .pumpWidget(TestUtils.createScreen(screen: const FriendsPage()));
+    await tester.pumpAndSettle();
+
+    expect(find.text("johndoe3"), findsOneWidget);
+    expect(find.text("John DoeFriend"), findsOneWidget);
+    expect(find.text("Request pending..."), findsOneWidget);
   });
 }

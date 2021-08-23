@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
-import 'package:mobile_applications/services/friendship_manager.dart';
 import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:provider/provider.dart';
@@ -217,7 +216,7 @@ class _NewListFormState extends State<_NewListForm> {
               flex: 0,
               child: _buildListTypeSelector(),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Flexible(

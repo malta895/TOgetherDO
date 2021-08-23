@@ -11,7 +11,7 @@ import 'package:intl/intl.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/list_item.dart';
 import 'package:mobile_applications/services/authentication.dart';
-import 'package:mobile_applications/services/friendship_manager.dart';
+
 import 'package:mobile_applications/services/item_manager.dart';
 import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';

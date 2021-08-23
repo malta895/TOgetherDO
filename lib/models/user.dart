@@ -1,5 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/base_model.dart';
+// ignore: unused_import
+import 'package:mobile_applications/models/utils.dart';
 
 // We need to specify which file the generated serialization code will be saved to
 part 'user.g.dart';

@@ -261,7 +261,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
         child: Column(children: <Widget>[
       Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
               border: Border(
                   bottom: BorderSide(
             //                   <--- left side

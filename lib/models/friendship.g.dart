@@ -16,6 +16,8 @@ ListAppFriendship _$ListAppFriendshipFromJson(Map<String, dynamic> json) {
           (v) => _$enumDecode(_$FriendshipRequestMethodEnumMap, v)),
       requestAccepted:
           $checkedConvert(json, 'requestAccepted', (v) => v as bool),
+      createdAt: $checkedConvert(
+          json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
     );
     return val;
   });
@@ -24,6 +26,7 @@ ListAppFriendship _$ListAppFriendshipFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$ListAppFriendshipToJson(ListAppFriendship instance) =>
     <String, dynamic>{
       'databaseId': instance.databaseId,
+      'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
       'userFrom': instance.userFrom,
       'userTo': instance.userTo,
       'requestedBy': _$FriendshipRequestMethodEnumMap[instance.requestedBy],

@@ -40,10 +40,13 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
             .collection(ListAppUser.collectionName)
             .doc(_userUid)
             .collection(ListAppList.collectionName)
-            .withConverter<ListAppList>(
-                fromFirestore: (snapshots, _) =>
-                    ListAppList.fromJson(snapshots.data()!),
-                toFirestore: (list, _) => list.toJson()));
+            .withConverter<ListAppList?>(
+                fromFirestore: (snapshots, _) {
+                  final snapshotsData = snapshots.data();
+                  if (snapshotsData == null) return null;
+                  return ListAppList.fromJson(snapshotsData);
+                },
+                toFirestore: (list, _) => list!.toJson()));
 
   static ListAppListManager instanceForUser(ListAppUser user) =>
       instanceForUserUid(user.databaseId!);

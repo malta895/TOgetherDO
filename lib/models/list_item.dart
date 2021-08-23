@@ -65,7 +65,10 @@ abstract class BaseItem extends BaseModel {
     required this.itemType,
     required this.creatorUid,
     DateTime? createdAt,
-  }) : super(databaseId: databaseId, createdAt: createdAt);
+  }) : super(
+          databaseId: databaseId,
+          createdAt: createdAt,
+        );
 
   int quantityFulfilledBy(ListAppUser member);
 

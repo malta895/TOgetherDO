@@ -89,6 +89,60 @@ void main() {
       },
     );
 
+    testWidgets('Delete lists', (tester) async {
+      await tester
+          .pumpWidget(TestUtils.createScreen(screen: const ListsPage()));
+      await tester.pumpAndSettle();
+
+      await tester.drag(
+        find.byKey(const Key("dismissible_list1_id")),
+        const Offset(500.0, .0),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.textContaining(
+            "Are you sure you wish to delete the Nuova lista list?"),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.byWidgetPredicate((widget) =>
+          widget is TextButton &&
+          widget.child is Text &&
+          (widget.child as Text).data == "DELETE"));
+      await tester.pumpAndSettle();
+
+      // the deleted list is not there anymore
+      expect(find.text("Nuova lista"), findsNothing);
+      // the other list is still there
+      expect(find.text("Fare la spesa"), findsOneWidget);
+
+      await tester.drag(
+        find.byKey(const Key("dismissible_list2_id")),
+        const Offset(500.0, .0),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.textContaining(
+            "Are you sure you wish to leave the Fare la spesa list?"),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.byWidgetPredicate((widget) =>
+          widget is TextButton &&
+          widget.child is Text &&
+          (widget.child as Text).data == "LEAVE"));
+      await tester.pumpAndSettle();
+
+      // the other list has been left, shouldn't be there anymore
+      expect(find.text("Fare la spesa"), findsNothing);
+
+      // we should see the no list message
+      expect(find.byType(AnimatedBuilder), findsNothing);
+      expect(find.text("You don't have any list."), findsOneWidget);
+    }, skip: true);
+
     // TODO add other tests (drawer, notifications, ...)
   });
 }

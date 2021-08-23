@@ -90,11 +90,11 @@ class ListAppList extends BaseModel {
     this.description,
     List<ListAppUser>? membersAsUsers,
   })  : this.membersAsUsers = membersAsUsers ?? [],
-        super(databaseId: databaseId) {
+        super(
+          databaseId: databaseId,
+          createdAt: createdAt,
+        ) {
     if (membersAsUsers != null)
-      /* for (var member in membersAsUsers) {
-        members[member.databaseId!] = false;
-      } */
       members = Map<String, bool>.fromIterable(membersAsUsers,
           key: (k) => k.databaseId, value: (_) => false);
   }

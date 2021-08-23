@@ -38,7 +38,11 @@ class ListAppFriendship extends BaseModel {
     required this.userTo,
     required this.requestedBy,
     this.requestAccepted = false,
-  }) : super(databaseId: databaseId);
+    DateTime? createdAt,
+  }) : super(
+          databaseId: databaseId,
+          createdAt: createdAt,
+        );
 
   factory ListAppFriendship.fromJson(Map<String, dynamic> json) =>
       _$ListAppFriendshipFromJson(json);

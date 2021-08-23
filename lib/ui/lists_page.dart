@@ -102,20 +102,23 @@ class _ListsPageState extends State<ListsPage>
     if (list.creatorUid == listAppUser.databaseId) {
       await ListAppListManager.instanceForUser(listAppUser)
           .deleteInstance(list);
-      setState(() {
-        final removeIndex = _listAppLists
-            .indexWhere((element) => element.databaseId == list.databaseId);
-
-        // returning an empty container avoids unnecessary animations
-        _animatedListKey.currentState
-            ?.removeItem(removeIndex, (_, __) => Container());
-
-        _listAppLists.removeAt(removeIndex);
-      });
     } else {
       await ListAppListManager.instanceForUser(listAppUser)
-          .leaveList(list.creatorUid ?? '', list);
+          .leaveList(list.creatorUid!, list);
     }
+
+    setState(() {
+      final removeIndex = _listAppLists
+          .indexWhere((element) => element.databaseId == list.databaseId);
+
+      // returning an empty container avoids unnecessary animations
+      _animatedListKey.currentState
+          ?.removeItem(removeIndex, (_, __) => Container());
+
+      _listAppLists.removeAt(removeIndex);
+
+      _listsFuture = _fetchLists();
+    });
   }
 
   // needed for the new list animation
@@ -148,10 +151,10 @@ class _ListsPageState extends State<ListsPage>
     if (_isAnimationRunningForwardsOrComplete)
       await _listsShowAnimationController.reverse();
     _isManuallyRefreshing = true;
-    final _newListsFuture = _fetchLists()
+    final newListsFuture = _fetchLists()
       ..then((value) => _listsShowAnimationController.forward());
     setState(() {
-      _listsFuture = _newListsFuture;
+      _listsFuture = newListsFuture;
     });
     _isManuallyRefreshing = false;
   }
@@ -208,6 +211,7 @@ class _ListsPageState extends State<ListsPage>
                   listAppList.creatorUid == currentListAppUser.databaseId;
 
               return Dismissible(
+                key: Key("dismissible_${listAppList.databaseId!}"),
                 confirmDismiss: (DismissDirection direction) async {
                   return await showDialog(
                     context: context,
@@ -255,7 +259,6 @@ class _ListsPageState extends State<ListsPage>
                       ),
                       alignment: Alignment.centerLeft,
                     )),
-                key: UniqueKey(),
                 onDismissed: (DismissDirection direction) async {
                   await _deleteOrAbandonList(listAppList);
                 },

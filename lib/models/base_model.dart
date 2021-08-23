@@ -13,7 +13,9 @@ abstract class BaseModel {
   String? databaseId;
 
   @JsonKey(
-      fromJson: ModelUtils.dateTimeFromJson, toJson: ModelUtils.dateTimeToJson)
+    fromJson: ModelUtils.dateTimeFromJson,
+    toJson: ModelUtils.dateTimeToJson,
+  )
   final DateTime createdAt;
 
   BaseModel({

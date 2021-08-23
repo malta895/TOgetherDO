@@ -192,8 +192,8 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                             children: [
                               Icon(
                                 Icons.person,
-                                color: _assignedColors[
-                                    aListItem.getFulfillers()[0]],
+                                /*color: _assignedColors[
+                                    aListItem.getFulfillers()[0]],*/
                               ),
                               Text(
                                 aListItem.getFulfillers()[0].firstName,
@@ -211,17 +211,16 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                 // TODO make async, make not selectable until the server has responded
                 setState(() {
                   if (value == true) {
+                    print(aListItem.isFulfilled());
                     aListItem.fulfill(member: _loggedInListAppUser);
-                    ListAppItemManager.instanceForList(
-                            widget.listAppList.databaseId!,
-                            _loggedInListAppUser.databaseId!)
-                        .fulfillItem(_loggedInListAppUser.databaseId!,
-                            aListItem.databaseId!, 1);
-                    print("ciao");
                   } else {
                     aListItem.unfulfill(
                         member: _loggedInListAppUser, quantityUnfulfilled: 1);
                   }
+                  ListAppItemManager.instanceForList(
+                          widget.listAppList.databaseId!,
+                          _loggedInListAppUser.databaseId!)
+                      .saveToFirestore(aListItem);
                 });
               },
             ),
@@ -423,6 +422,10 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                     aListItem.unfulfill(
                         member: _loggedInListAppUser, quantityUnfulfilled: 1);
                   }
+                  ListAppItemManager.instanceForList(
+                          widget.listAppList.databaseId!,
+                          _loggedInListAppUser.databaseId!)
+                      .saveToFirestore(aListItem);
                 });
               },
             ));
@@ -568,6 +571,10 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                 member: _loggedInListAppUser,
                                 quantityUnfulfilled: _difference);
                           }
+                          ListAppItemManager.instanceForList(
+                                  widget.listAppList.databaseId!,
+                                  _loggedInListAppUser.databaseId!)
+                              .saveToFirestore(aListItem);
                         });
                         print("fulfiller dopo" +
                             aListItem.getFulfillers().toString());

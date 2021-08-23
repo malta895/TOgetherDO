@@ -6,6 +6,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/base_model.dart';
 // ignore: unused_import
 import 'package:mobile_applications/models/utils.dart';
+import 'package:mobile_applications/services/user_manager.dart';
 
 import 'user.dart';
 
@@ -65,10 +66,8 @@ abstract class BaseItem extends BaseModel {
     required this.itemType,
     required this.creatorUid,
     DateTime? createdAt,
-  }) : super(
-          databaseId: databaseId,
-          createdAt: createdAt,
-        );
+  })  : this.usersCompletions = usersCompletions,
+        super(databaseId: databaseId, createdAt: createdAt);
 
   int quantityFulfilledBy(ListAppUser member);
 
@@ -146,13 +145,15 @@ class SimpleItem extends BaseItem {
 
   @override
   bool isFulfilled() {
-    return _fulfiller != null;
+    //TODO change it back to the general case
+    return usersCompletions!['9LUBLCszUrU4mukuRWhHFS2iexL2'] == 1;
   }
 
   @override
   bool fulfill({required ListAppUser member, int quantityFulfilled = 0}) {
     if (_fulfiller == null) {
       _fulfiller = member;
+      usersCompletions![member.databaseId!] = 1;
       return true;
     }
 
@@ -164,6 +165,7 @@ class SimpleItem extends BaseItem {
     //do not allow the unfulfillment of other members
     if (member == _fulfiller) {
       _fulfiller = null;
+      usersCompletions!.remove(member.databaseId!);
       return true;
     }
     return false;
@@ -172,8 +174,7 @@ class SimpleItem extends BaseItem {
   @override
   List<ListAppUser> getFulfillers() {
     if (_fulfiller == null) return UnmodifiableListView<ListAppUser>([]);
-
-    return UnmodifiableListView<ListAppUser>([_fulfiller!]);
+    return UnmodifiableListView<ListAppUser>([]);
   }
 
   @override
@@ -213,6 +214,7 @@ class MultiFulfillmentItem extends BaseItem {
 
   @override
   bool fulfill({required ListAppUser member, int quantityFulfilled = 1}) {
+    usersCompletions![member.databaseId!] = quantityFulfilled;
     return _fulfillers.add(member);
   }
 
@@ -233,6 +235,7 @@ class MultiFulfillmentItem extends BaseItem {
 
   @override
   bool unfulfill({required ListAppUser member, int quantityUnfulfilled = 1}) {
+    usersCompletions!.remove(member.databaseId!);
     return _fulfillers.remove(member);
   }
 
@@ -274,6 +277,10 @@ class MultiFulfillmentMemberItem extends BaseItem {
     _fulfillers[member] == null
         ? _fulfillers[member] = quantityFulfilled
         : _fulfillers[member] = _fulfillers[member]! + quantityFulfilled;
+    usersCompletions![member.databaseId!] == null
+        ? usersCompletions![member.databaseId!] = quantityFulfilled
+        : usersCompletions![member.databaseId!] =
+            usersCompletions![member.databaseId!]! + quantityFulfilled;
     return quantityFulfilled > 0;
   }
 
@@ -301,9 +308,12 @@ class MultiFulfillmentMemberItem extends BaseItem {
     bool removed;
     if (_fulfillers[member]! + quantityUnfulfilled <= 0) {
       _fulfillers.remove(member);
+      usersCompletions!.remove(member.databaseId!);
       removed = true;
     } else {
       _fulfillers[member] = _fulfillers[member]! + quantityUnfulfilled;
+      usersCompletions![member.databaseId!] =
+          usersCompletions![member.databaseId!]! + quantityUnfulfilled;
       removed = false;
     }
     return removed;

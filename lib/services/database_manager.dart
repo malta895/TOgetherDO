@@ -28,12 +28,13 @@ abstract class DatabaseManager<T extends BaseModel> {
   }
 
   /// Gets an instance from the database by Uid
-  Future<T?> getByUid(String uid) async {
+  Future<T?> getByUid(String uid, {throwJsonException: false}) async {
     try {
       final queryResult = await firebaseCollection.doc(uid).get();
       return queryResult.data();
     } on CheckedFromJsonException catch (e) {
       print(e.message);
+      if (throwJsonException) rethrow;
       return null;
     }
   }

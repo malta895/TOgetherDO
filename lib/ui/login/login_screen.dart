@@ -81,20 +81,18 @@ class LoginScreen extends StatelessWidget {
         }
         return null;
       },
-      onLogin: (loginData) {
+      onLogin: (loginData) async {
         print('Login info');
         print('Name: ${loginData.name}');
         print('Password: ${loginData.password}');
 
-        return context
+        String? error = await context
             .read<ListAppAuthProvider>()
             .loginViaEmailPassword(loginData.name, loginData.password);
+
+        return error;
       },
       onSignup: (SignupData signupData) async {
-        print('Signup info');
-        print('Name: ${signupData.name}');
-        print('Password: ${signupData.password}');
-
         String? error;
 
         if (signupData.name != null && signupData.password != null) {
@@ -110,12 +108,14 @@ class LoginScreen extends StatelessWidget {
 
         if (fields != null) {
           final username = fields['username'];
-          final firstName = fields['firstName'] ?? '';
-          final lastName = fields['lastName'] ?? '';
+          final firstName = fields['firstName']!;
+          final lastName = fields['lastName']!;
 
           try {
-            final currentUser =
-                context.read<ListAppAuthProvider>().loggedInListAppUser;
+            final currentUser = await context
+                .read<ListAppAuthProvider>()
+                .getLoggedInListAppUser();
+
             if (currentUser != null) {
               currentUser.firstName = firstName;
               currentUser.lastName = lastName;
@@ -124,6 +124,10 @@ class LoginScreen extends StatelessWidget {
 
               currentUser.isNew = false;
               await ListAppUserManager.instance.saveToFirestore(currentUser);
+            } else {
+              // await context.read<ListAppAuthProvider>().deleteCurrentAccount();
+
+              return "An error occurred. Please close the application and try again.";
             }
 
             // we get here only if everything goes well
@@ -134,7 +138,6 @@ class LoginScreen extends StatelessWidget {
         }
       },
       onSubmitAnimationCompleted: () {
-        for (int i = 0; i < 1000; i++) print("Login successful");
         Navigator.of(context).pushReplacement(FadePageRoute(
           builder: (context) => const ListsPage(),
         ));

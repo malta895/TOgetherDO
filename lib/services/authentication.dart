@@ -41,6 +41,12 @@ class ListAppAuthProvider with ChangeNotifier {
     }
   }
 
+  Future<void> deleteCurrentAccount() async {
+    await loggedInUser?.delete();
+    _loggedInListAppUser = null;
+    await logout();
+  }
+
   static int _initializationCounter = 0;
 
   ListAppAuthProvider(this.firebaseAuth) {
@@ -80,8 +86,10 @@ class ListAppAuthProvider with ChangeNotifier {
   ///sets the current list app user retrieving the data from database
   ///if not present, it also creates it
   Future<void> _createListAppUser(User firebaseUser) async {
-    ListAppUser? listAppUser =
-        await ListAppUserManager.instance.getByUid(firebaseUser.uid);
+    ListAppUser? listAppUser = await ListAppUserManager.instance.getByUid(
+      firebaseUser.uid,
+      throwJsonException: true,
+    );
 
     if (listAppUser == null) {
       final notificationToken =

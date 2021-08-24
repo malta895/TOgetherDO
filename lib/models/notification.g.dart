@@ -13,9 +13,14 @@ Map<String, dynamic> _$ListAppNotificationToJson(
       'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
       'userId': instance.userId,
       'userFrom': instance.userFrom,
-      'notificationType': instance.notificationType,
+      'notificationType': _$NotificationTypeEnumMap[instance.notificationType],
       'status': _$NotificationStatusEnumMap[instance.status],
     };
+
+const _$NotificationTypeEnumMap = {
+  NotificationType.friendship: 'friendship',
+  NotificationType.listInvite: 'listInvite',
+};
 
 const _$NotificationStatusEnumMap = {
   NotificationStatus.pending: 'pending',

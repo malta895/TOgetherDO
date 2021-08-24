@@ -93,6 +93,21 @@ class TestUtils {
       "username": "johndoe3",
     };
 
+    final user4 = {
+      "databaseId": 'user4_id',
+      "createdAt": 1625751035020,
+      "displayName": "John DoeFriend4",
+      "email": "john@friend.com",
+      "firstName": "John",
+      "friends": <String, bool>{},
+      "isNew": false,
+      "lastName": "DoeFriend4",
+      "notificationTokens": [],
+      "phoneNumber": null,
+      "profilePictureURL": null,
+      "username": "johndoe4",
+    };
+
     final list1 = {
       "createdAt": 1626005532227,
       "creatorUid": "user1_id",
@@ -137,6 +152,11 @@ class TestUtils {
         .collection('users')
         .doc(user3["databaseId"] as String)
         .set(user3);
+
+    _fakeFirebaseFirestore
+        .collection('users')
+        .doc(user4["databaseId"] as String)
+        .set(user4);
 
     _fakeFirebaseFirestore
         .collection('users')

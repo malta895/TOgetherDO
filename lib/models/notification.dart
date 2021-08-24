@@ -33,15 +33,17 @@ extension ParseToString on NotificationStatus {
   }
 }
 
+enum NotificationType { friendship, listInvite }
+
 @JsonSerializable(checked: true, createFactory: false)
 abstract class ListAppNotification extends BaseModel {
   static const String collectionName = 'notifications';
   final String userId;
   final String userFrom;
 
-  final String notificationType;
+  final NotificationType notificationType;
 
-  final NotificationStatus status;
+  NotificationStatus status;
 
   @JsonKey(ignore: true)
   ListAppUser? sender;
@@ -50,7 +52,7 @@ abstract class ListAppNotification extends BaseModel {
     String? databaseId,
     required this.userId,
     required this.userFrom,
-    required this.status,
+    this.status = NotificationStatus.pending,
     required this.notificationType,
     DateTime? createdAt,
   }) : super(
@@ -73,15 +75,12 @@ abstract class ListAppNotification extends BaseModel {
   Map<String, dynamic> toJson() {
     final baseNotificationToJson = _$ListAppNotificationToJson(this);
     switch (this.notificationType) {
-      case 'listInvite':
+      case NotificationType.listInvite:
         return _$ListInviteNotificationToJson(this as ListInviteNotification)
           ..addAll(baseNotificationToJson);
-      case 'friendship':
+      case NotificationType.friendship:
         return _$FriendshipNotificationToJson(this as FriendshipNotification)
           ..addAll(baseNotificationToJson);
-
-      default:
-        throw StateError("Item type not recognized");
     }
   }
 }
@@ -104,7 +103,7 @@ class ListInviteNotification extends ListAppNotification {
   }) : super(
             createdAt: createdAt,
             databaseId: databaseId,
-            notificationType: 'listInvite',
+            notificationType: NotificationType.listInvite,
             userId: userId,
             userFrom: userFrom,
             status: status);
@@ -122,14 +121,14 @@ class FriendshipNotification extends ListAppNotification {
   FriendshipNotification({
     required userId,
     required userFrom,
-    required NotificationStatus status,
+    NotificationStatus status = NotificationStatus.pending,
     required this.friendshipId,
     databaseId,
     DateTime? createdAt,
   }) : super(
             createdAt: createdAt,
             databaseId: databaseId,
-            notificationType: 'friendship',
+            notificationType: NotificationType.friendship,
             userId: userId,
             userFrom: userFrom,
             status: status);

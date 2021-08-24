@@ -13,8 +13,9 @@
   },
   "main": "index.js",
   "dependencies": {
+    "@google-cloud/debug-agent": "^5.2.8",
     "firebase-admin": "^9.8.0",
-    "firebase-functions": "^3.14.1"
+    "firebase-functions": "^3.15.4"
   },
   "devDependencies": {
     "firebase-functions-test": "^0.2.0"

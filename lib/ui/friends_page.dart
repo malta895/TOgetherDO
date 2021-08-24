@@ -57,6 +57,11 @@ class _FriendsListState extends State<FriendsPage> {
       value: (_) => false,
     ));
 
+    setState(() {
+      _loggedInListAppUser?.friends =
+          friends.map((key, value) => MapEntry(key.databaseId!, value));
+    });
+
     return friends;
   }
 
@@ -116,17 +121,21 @@ class _FriendsListState extends State<FriendsPage> {
                     }
                     try {
                       late final bool isUserFound;
+
                       if (EmailValidator.validate(_emailUsername)) {
                         // the user provided an email
                         isUserFound = await ListAppFriendshipManager.instance
-                            .addFriendByEmail(_emailUsername,
-                                _loggedInListAppUser!.databaseId!);
+                            .addFriendByEmail(
+                                _emailUsername, _loggedInListAppUser!);
                       } else {
                         // the user provided an username
                         isUserFound = await ListAppFriendshipManager.instance
-                            .addFriendByUsername(_emailUsername,
-                                _loggedInListAppUser!.databaseId!);
+                            .addFriendByUsername(
+                                _emailUsername, _loggedInListAppUser!);
                       }
+
+                      // update the state to show the new friend
+                      setState(() {});
 
                       if (isUserFound) {
                         // not awaited because we let the dialog pop in the meantime
@@ -139,6 +148,7 @@ class _FriendsListState extends State<FriendsPage> {
                           textColor: Colors.white,
                           fontSize: 16.0,
                         );
+
                         Navigator.pop(context, true);
                       } else {
                         // not awaited because we let the dialog pop in the meantime
@@ -191,14 +201,23 @@ class _FriendsListState extends State<FriendsPage> {
               case ConnectionState.none:
               case ConnectionState.waiting:
               case ConnectionState.active:
-                return Container();
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
               case ConnectionState.done:
                 final friends = snapshot.data!;
 
-                return ListView(
-                    children: friends.entries.map((entry) {
-                  return _buildRow(context, entry.key, entry.value);
-                }).toList());
+                return friends.isEmpty
+                    ? const Center(
+                        child: Text(
+                        "You don't have any friends.\nYou can add a new one with the button below.",
+                        style: TextStyle(fontSize: 22),
+                        textAlign: TextAlign.center,
+                      ))
+                    : ListView(
+                        children: friends.entries.map((entry) {
+                        return _buildRow(context, entry.key, entry.value);
+                      }).toList());
             }
           }),
     );

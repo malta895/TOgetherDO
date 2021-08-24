@@ -6,6 +6,7 @@ import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_applications/services/manager_config.dart';
+import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/friends_page.dart';
 
 import '../mock_database.dart';
@@ -65,6 +66,14 @@ void main() {
         expect(friendship["requestAccepted"], false);
         expect(friendship["requestedBy"], "username");
 
+        // we have the pending friend in the database
+        expect(
+            (await ListAppUserManager.instance.getByUid('user1_id'))!
+                .friends['user3_id'],
+            false);
+        expect(find.text('johndoe3'), findsOneWidget);
+        expect(find.textContaining('pending'), findsOneWidget);
+
         await fakeFirebaseFirestore
             .collection('friendships')
             .doc(queryResult.docs.first.id)
@@ -74,34 +83,34 @@ void main() {
         fakeFirebaseFunctions.mockResult(
           functionName: 'getUserByEmail-getUserByEmail',
           json: jsonEncode({
-            "databaseId": 'user3_id',
+            "databaseId": 'user4_id',
             "createdAt": 1625751035020,
-            "displayName": "John DoeFriend",
+            "displayName": "John DoeFriend4",
             "email": "john@friend.com",
             "firstName": "John",
             "friends": <String, bool>{},
             "isNew": false,
-            "lastName": "DoeFriend",
+            "lastName": "DoeFriend4",
             "notificationTokens": [],
             "phoneNumber": null,
             "profilePictureURL": null,
-            "username": "johndoe3",
+            "username": "johndoe4",
           }),
-          parameters: {"email": "john@friend.com"},
+          parameters: {"email": "john@friend4.com"},
         );
 
         await tester.tap(find.byType(FloatingActionButton));
         await tester.pumpAndSettle();
 
         expect(find.byType(AlertDialog), findsOneWidget);
-        await tester.enterText(find.byType(TextField), 'john@friend.com');
+        await tester.enterText(find.byType(TextField), 'john@friend4.com');
         await tester.tap(find.byKey(const Key("add_friend_button")));
         await tester.pumpAndSettle();
 
         queryResult = await fakeFirebaseFirestore
             .collection('friendships')
             .where('userFrom', isEqualTo: 'user1_id')
-            .where('userTo', isEqualTo: 'user3_id')
+            .where('userTo', isEqualTo: 'user4_id')
             .get();
 
         // the database should contain the new friendship
@@ -109,19 +118,27 @@ void main() {
         final friendship2 = queryResult.docs.first;
         expect(friendship2["requestAccepted"], false);
         expect(friendship2["requestedBy"], "email");
+
+        // we have the pending friend in the database
+        expect(
+            (await ListAppUserManager.instance.getByUid('user1_id'))!
+                .friends['user4_id'],
+            false);
+        expect(find.text('johndoe4'), findsOneWidget);
+        expect(find.textContaining('pending'), findsNWidgets(2));
       },
     );
   });
 
   testWidgets('Pending friendship should be shown', (tester) async {
     // add a pending friend to the database
-    await fakeFirebaseFirestore.collection('users').doc('user1_id').update({
-      'friends': <String, bool>{
-        "user2_id": true,
-        "johndoe2": true,
-        'user3_id': false,
-      }
-    });
+    final user1 = await ListAppUserManager.instance.getByUid("user1_id");
+    user1!.friends = <String, bool>{
+      "user2_id": true,
+      "johndoe2": true,
+      'user3_id': false,
+    };
+    ListAppUserManager.instance.saveToFirestore(user1);
     await tester
         .pumpWidget(TestUtils.createScreen(screen: const FriendsPage()));
     await tester.pumpAndSettle();
@@ -129,5 +146,21 @@ void main() {
     expect(find.text("johndoe3"), findsOneWidget);
     expect(find.text("John DoeFriend"), findsOneWidget);
     expect(find.text("Request pending"), findsOneWidget);
+  });
+
+  testWidgets('No friends implies a message on screen', (tester) async {
+    // remove all friends
+    final user1 = await ListAppUserManager.instance.getByUid("user1_id");
+    user1!.friends = <String, bool>{};
+    ListAppUserManager.instance.saveToFirestore(user1);
+
+    await tester
+        .pumpWidget(TestUtils.createScreen(screen: const FriendsPage()));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining("johndoe"), findsNothing);
+    expect(find.text("John DoeFriend"), findsNothing);
+    expect(find.text("Request pending"), findsNothing);
+    expect(find.textContaining("You don't have any friends."), findsOneWidget);
   });
 }

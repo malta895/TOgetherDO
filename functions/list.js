@@ -2,22 +2,6 @@ const functions = require('firebase-functions');
 
 const admin = require('firebase-admin');
 
-/*exports.setAdminAsMember = functions.region('europe-west6').firestore.document('users/{userId}/lists/{listId}').onCreate(
-    async (snapshot, context) => {
-        return admin.firestore().collection('users')
-            .doc(context.params.userId)
-            .collection('lists')
-            .doc(context.params.listId)
-            .members
-            .add(context.params.userId)
-            .then(() => {
-                console.log("Added admin as a member");
-            })
-            .catch((error) => {
-                console.error("Error while adding admin as member");
-                return null;
-            });
-    })*/
 
 exports.createNotification = functions.region('europe-west6').firestore.document('users/{userId}/lists/{listId}').onCreate(
     async (snapshot, context) => {
@@ -83,7 +67,7 @@ exports.updateNotification = functions.region('europe-west6').firestore.document
 
 exports.acceptInvite = functions.region('europe-west6').firestore.document('notifications/{notificationId}').onUpdate(
     async (change, context) => {
-        if (change.after.data().notificationType == "listInvite") {
+        if (change.after.data().notificationType === "listInvite") {
             const accepted = change.after.data().status;
             uid = change.after.data().userId;
 
@@ -93,12 +77,12 @@ exports.acceptInvite = functions.region('europe-west6').firestore.document('noti
             members = list.data().members;
             console.log(typeof (members));
 
-            if (accepted == "accepted") {
+            if (accepted === "accepted") {
                 members[uid] = true;
 
                 admin.firestore().collection('users').doc(change.after.data().listOwner).collection('lists').doc(change.after.data().listId).set({ members: members }, { merge: true });
 
-            } else if (accepted == "rejected") {
+            } else if (accepted === "rejected") {
                 delete members[uid];
 
                 console.log(members);

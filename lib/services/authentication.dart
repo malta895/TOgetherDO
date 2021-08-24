@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -53,7 +54,10 @@ class ListAppAuthProvider with ChangeNotifier {
     // Subscribe to login/logout events
     firebaseAuth.idTokenChanges().listen((User? user) async {
       if (user == null) {
-        // TODO  remove notification token
+        _loggedInListAppUser?.notificationTokens
+            .remove(FirebaseMessaging.instance.getToken());
+        if (_loggedInListAppUser != null)
+          ListAppUserManager.instance.saveToFirestore(_loggedInListAppUser!);
         _loggedInListAppUser = null;
       } else {
         await _createListAppUser(user);
@@ -80,7 +84,17 @@ class ListAppAuthProvider with ChangeNotifier {
   Future<bool> isSomeoneLoggedIn() => authState.isEmpty;
 
   Future<void> logout() async {
-    await firebaseAuth.signOut();
+    try {
+      final notificationToken = await FirebaseMessaging.instance.getToken();
+      _loggedInListAppUser?.notificationTokens.remove(notificationToken);
+      if (_loggedInListAppUser != null)
+        ListAppUserManager.instance.saveToFirestore(_loggedInListAppUser!);
+    } on Exception catch (e) {
+      print(e);
+    } finally {
+      // even if we encounter exceptions, always logout
+      await firebaseAuth.signOut();
+    }
   }
 
   ///sets the current list app user retrieving the data from database
@@ -91,10 +105,8 @@ class ListAppAuthProvider with ChangeNotifier {
       throwJsonException: true,
     );
 
+    final notificationToken = await ManagerConfig.firebaseMessaging?.getToken();
     if (listAppUser == null) {
-      final notificationToken =
-          await ManagerConfig.firebaseMessaging?.getToken();
-
       String? email = firebaseUser.email;
 
       listAppUser = ListAppUser(
@@ -105,16 +117,18 @@ class ListAppAuthProvider with ChangeNotifier {
         databaseId: firebaseUser.uid,
         displayName: firebaseUser.displayName,
         profilePictureURL: firebaseUser.photoURL,
-        notificationTokens:
-            notificationToken == null ? {} : {notificationToken},
       );
-
-      await ListAppUserManager.instance.saveToFirestore(listAppUser);
     }
     // inject email, because it is not retrieved from db
     listAppUser.email = firebaseUser.email;
     // inject the databaseId in case it is not provided
     listAppUser.databaseId ??= firebaseUser.uid;
+
+    if (notificationToken != null)
+      listAppUser.notificationTokens.add(notificationToken);
+
+    // save the instance to sync the db in case something has been modified
+    await ListAppUserManager.instance.saveToFirestore(listAppUser);
 
     _loggedInListAppUser = listAppUser;
   }

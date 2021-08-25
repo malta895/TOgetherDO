@@ -712,29 +712,34 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                           color: Theme.of(context).accentColor),
                       onPressed: () async {
                         if (aListItem.isFulfilled()) {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text("Item already fulfilled!"),
-                                  content: Text(
-                                      "This item has been alredy fulfilled by other users."),
-                                  actions: [
-                                    TextButton(
-                                      style: TextButton.styleFrom(
-                                          textStyle:
-                                              const TextStyle(fontSize: 16),
-                                          primary: Colors.white,
-                                          backgroundColor:
-                                              Theme.of(context).accentColor),
-                                      child: Text("Got it!"),
-                                      onPressed: () {
-                                        Navigator.of(context).pop(true);
-                                      },
-                                    ),
-                                  ],
-                                );
-                              });
+                          if (aListItem.usersCompletions.keys
+                              .contains(_loggedInListAppUser.databaseId)) {
+                            await _showNumberPickerDialog(context, aListItem);
+                          } else {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("Item already fulfilled!"),
+                                    content: Text(
+                                        "This item has been alredy fulfilled by other users."),
+                                    actions: [
+                                      TextButton(
+                                        style: TextButton.styleFrom(
+                                            textStyle:
+                                                const TextStyle(fontSize: 16),
+                                            primary: Colors.white,
+                                            backgroundColor:
+                                                Theme.of(context).accentColor),
+                                        child: Text("Got it!"),
+                                        onPressed: () {
+                                          Navigator.of(context).pop(true);
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                });
+                          }
                         } else {
                           await _showNumberPickerDialog(context, aListItem);
                         }
@@ -774,28 +779,34 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                       color: Theme.of(context).accentColor),
                   onPressed: () async {
                     if (aListItem.isFulfilled()) {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text("Item already fulfilled!"),
-                              content: Text(
-                                  "This item has been alredy fulfilled by other users."),
-                              actions: [
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                      textStyle: const TextStyle(fontSize: 16),
-                                      primary: Colors.white,
-                                      backgroundColor:
-                                          Theme.of(context).accentColor),
-                                  child: Text("Got it!"),
-                                  onPressed: () {
-                                    Navigator.of(context).pop(true);
-                                  },
-                                ),
-                              ],
-                            );
-                          });
+                      if (aListItem.usersCompletions.keys
+                          .contains(_loggedInListAppUser.databaseId)) {
+                        await _showNumberPickerDialog(context, aListItem);
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text("Item already fulfilled!"),
+                                content: Text(
+                                    "This item has been alredy fulfilled by other users."),
+                                actions: [
+                                  TextButton(
+                                    style: TextButton.styleFrom(
+                                        textStyle:
+                                            const TextStyle(fontSize: 16),
+                                        primary: Colors.white,
+                                        backgroundColor:
+                                            Theme.of(context).accentColor),
+                                    child: Text("Got it!"),
+                                    onPressed: () {
+                                      Navigator.of(context).pop(true);
+                                    },
+                                  ),
+                                ],
+                              );
+                            });
+                      }
                     } else {
                       await _showNumberPickerDialog(context, aListItem);
                     }
@@ -824,14 +835,23 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                     const Text("How many times have you completed this item?"),
                 content: NumberPicker(
                   minValue: 0,
-                  maxValue: (aListItem.maxQuantity -
-                              aListItem.usersCompletions.values
-                                  .reduce((value, element) => value + element) <
-                          aListItem.quantityPerMember)
+                  maxValue: (!aListItem.usersCompletions.keys
+                              .contains(_loggedInListAppUser.databaseId) &&
+                          aListItem.maxQuantity -
+                                  aListItem.usersCompletions.values.reduce(
+                                      (value, element) => value + element) <
+                              aListItem.quantityPerMember)
                       ? aListItem.maxQuantity -
                           aListItem.usersCompletions.values
                               .reduce((value, element) => value + element)
-                      : aListItem.quantityPerMember,
+                      : ((aListItem.usersCompletions.keys
+                                  .contains(_loggedInListAppUser.databaseId) &&
+                              aListItem.maxQuantity -
+                                      aListItem.usersCompletions.values.reduce(
+                                          (value, element) => value + element) <
+                                  aListItem.quantityPerMember)
+                          ? aListItem.usersCompletions[_loggedInListAppUser.databaseId]!
+                          : aListItem.quantityPerMember),
                   value: _currentValue,
                   onChanged: (value) => {
                     _previousValue < value ? _added = 1 : _added = 0,
@@ -845,13 +865,6 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                       style: TextButton.styleFrom(
                           primary: Theme.of(context).primaryColor),
                       onPressed: () async {
-                        print("quantity prima setstate");
-                        print(aListItem
-                            .quantityFulfilledBy(_loggedInListAppUser));
-                        print("fulfiller prima" +
-                            aListItem.getFulfillers().toString());
-                        print("difference" + _difference.toString());
-                        // TODO make async, make not selectable until the server has responded
                         if (_added == 1) {
                           await ListAppItemManager.instanceForList(
                                   widget.listAppList.databaseId!,
@@ -888,11 +901,6 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                   _loggedInListAppUser.databaseId!)
                               .saveToFirestore(aListItem);*/
                         });*/
-                        print("fulfiller dopo" +
-                            aListItem.getFulfillers().toString());
-                        print("quantity dopo setstate");
-                        print(aListItem
-                            .quantityFulfilledBy(_loggedInListAppUser));
                         Navigator.of(context).pop();
                       },
                       child: const Text("CHANGE")),

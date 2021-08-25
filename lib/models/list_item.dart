@@ -51,7 +51,7 @@ abstract class BaseItem extends BaseModel {
   final int quantityPerMember;
   final String creatorUid;
 
-  Map<String, int>? usersCompletions;
+  Map<String, int> usersCompletions;
 
   final ItemType itemType;
 
@@ -66,7 +66,7 @@ abstract class BaseItem extends BaseModel {
     required this.itemType,
     required this.creatorUid,
     DateTime? createdAt,
-  })  : this.usersCompletions = usersCompletions,
+  })  : this.usersCompletions = usersCompletions ?? <String, int>{},
         super(databaseId: databaseId, createdAt: createdAt);
 
   int quantityFulfilledBy(ListAppUser member);
@@ -78,7 +78,7 @@ abstract class BaseItem extends BaseModel {
 
   bool unfulfill({required ListAppUser member, int quantityUnfulfilled = 0});
 
-  List<ListAppUser> getFulfillers();
+  Set<ListAppUser> getFulfillers();
 
   factory BaseItem.fromJson(Map<String, dynamic> json) {
     switch (json['itemType'] as String) {
@@ -117,7 +117,11 @@ abstract class BaseItem extends BaseModel {
   checked: true,
 ) // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class SimpleItem extends BaseItem {
+  //TODO leva questo
   ListAppUser? _fulfiller;
+
+  @JsonKey(ignore: true)
+  ListAppUser? fulfiller;
 
   SimpleItem({
     String? databaseId,
@@ -137,23 +141,30 @@ class SimpleItem extends BaseItem {
           quantityPerMember: 1,
           createdAt: createdAt,
           creatorUid: creatorUid,
-        );
-
-  ListAppUser? get fulfiller {
-    return _fulfiller;
+        ) {
+    if (usersCompletions!.isNotEmpty) {
+      ListAppUserManager.instance
+          .getByUid(usersCompletions.keys.first)
+          .then((value) {
+        fulfiller = value;
+      });
+    }
   }
+
+  /*ListAppUser? get fulfiller {
+    return _fulfiller;
+  }*/
 
   @override
   bool isFulfilled() {
-    //TODO change it back to the general case
-    return usersCompletions!['9LUBLCszUrU4mukuRWhHFS2iexL2'] == 1;
+    return usersCompletions.isNotEmpty;
   }
 
   @override
   bool fulfill({required ListAppUser member, int quantityFulfilled = 0}) {
     if (_fulfiller == null) {
       _fulfiller = member;
-      usersCompletions![member.databaseId!] = 1;
+      usersCompletions[member.databaseId!] = 1;
       return true;
     }
 
@@ -165,16 +176,16 @@ class SimpleItem extends BaseItem {
     //do not allow the unfulfillment of other members
     if (member == _fulfiller) {
       _fulfiller = null;
-      usersCompletions!.remove(member.databaseId!);
+      usersCompletions.remove(member.databaseId!);
       return true;
     }
     return false;
   }
 
   @override
-  List<ListAppUser> getFulfillers() {
-    if (_fulfiller == null) return UnmodifiableListView<ListAppUser>([]);
-    return UnmodifiableListView<ListAppUser>([]);
+  Set<ListAppUser> getFulfillers() {
+    if (fulfiller == null) return Set<ListAppUser>();
+    return Set<ListAppUser>.from([fulfiller!]);
   }
 
   @override
@@ -193,6 +204,9 @@ class SimpleItem extends BaseItem {
 class MultiFulfillmentItem extends BaseItem {
   Set<ListAppUser> _fulfillers = Set<ListAppUser>();
 
+  @JsonKey(ignore: true)
+  Set<ListAppUser>? fulfillers = Set<ListAppUser>();
+
   MultiFulfillmentItem({
     String? databaseId,
     Map<String, int>? usersCompletions,
@@ -210,32 +224,46 @@ class MultiFulfillmentItem extends BaseItem {
             maxQuantity: maxQuantity,
             quantityPerMember: 1,
             createdAt: createdAt,
-            creatorUid: creatorUid);
+            creatorUid: creatorUid) {
+    if (usersCompletions!.isNotEmpty) {
+      usersCompletions.forEach((key, value) {
+        ListAppUserManager.instance
+            .getByUid(key)
+            .then((value) => fulfillers!.add(value!));
+      });
+    }
+  }
 
   @override
   bool fulfill({required ListAppUser member, int quantityFulfilled = 1}) {
-    usersCompletions![member.databaseId!] = quantityFulfilled;
+    usersCompletions[member.databaseId!] = quantityFulfilled;
     return _fulfillers.add(member);
   }
 
   @override
-  List<ListAppUser> getFulfillers() {
-    return UnmodifiableListView<ListAppUser>(_fulfillers);
+  Set<ListAppUser> getFulfillers() {
+    /*final members = Set<ListAppUser>();
+    fulfillers!.map((e) async {
+      final member = await ListAppUserManager.instance.getByUid(e);
+      members.add(member!);
+    });*/
+    if (fulfillers!.isEmpty) return Set<ListAppUser>();
+    return Set<ListAppUser>.from(fulfillers!);
   }
 
   @override
   bool isFulfilled() {
-    return _fulfillers.length == maxQuantity;
+    return usersCompletions.length == maxQuantity;
   }
 
   @override
   int quantityFulfilledBy(ListAppUser member) {
-    return _fulfillers.contains(member) ? 1 : 0;
+    return usersCompletions.keys.contains(member.databaseId) ? 1 : 0;
   }
 
   @override
   bool unfulfill({required ListAppUser member, int quantityUnfulfilled = 1}) {
-    usersCompletions!.remove(member.databaseId!);
+    usersCompletions.remove(member.databaseId!);
     return _fulfillers.remove(member);
   }
 
@@ -250,6 +278,9 @@ class MultiFulfillmentItem extends BaseItem {
 class MultiFulfillmentMemberItem extends BaseItem {
   //map each member with a number representing how many times they have fulfilled
   Map<ListAppUser, int> _fulfillers = Map<ListAppUser, int>();
+
+  @JsonKey(ignore: true)
+  Set<ListAppUser>? fulfillers = Set<ListAppUser>();
 
   MultiFulfillmentMemberItem({
     String? databaseId,
@@ -269,7 +300,15 @@ class MultiFulfillmentMemberItem extends BaseItem {
             maxQuantity: maxQuantity,
             quantityPerMember: quantityPerMember,
             createdAt: createdAt,
-            creatorUid: creatorUid);
+            creatorUid: creatorUid) {
+    if (usersCompletions!.isNotEmpty) {
+      usersCompletions.forEach((key, value) {
+        ListAppUserManager.instance
+            .getByUid(key)
+            .then((value) => fulfillers!.add(value!));
+      });
+    }
+  }
 
   @override
   bool fulfill({required ListAppUser member, int quantityFulfilled = 1}) {
@@ -277,16 +316,25 @@ class MultiFulfillmentMemberItem extends BaseItem {
     _fulfillers[member] == null
         ? _fulfillers[member] = quantityFulfilled
         : _fulfillers[member] = _fulfillers[member]! + quantityFulfilled;
-    usersCompletions![member.databaseId!] == null
-        ? usersCompletions![member.databaseId!] = quantityFulfilled
-        : usersCompletions![member.databaseId!] =
-            usersCompletions![member.databaseId!]! + quantityFulfilled;
+    usersCompletions[member.databaseId!] == null
+        ? usersCompletions[member.databaseId!] = quantityFulfilled
+        : usersCompletions[member.databaseId!] =
+            usersCompletions[member.databaseId!]! + quantityFulfilled;
     return quantityFulfilled > 0;
   }
 
   @override
-  List<ListAppUser> getFulfillers() {
-    return UnmodifiableListView<ListAppUser>(_fulfillers.keys);
+  Set<ListAppUser> getFulfillers() {
+    /*final members = Set<ListAppUser>();
+    fulfillers!.map((e) {
+      ListAppUserManager.instance.getByUid(e).then((value) {
+        print("MEMBER IN MULTIMEMBER GETFULFILLERS");
+        print(value!.firstName);
+        members.add(value);
+      });
+    });*/
+    if (fulfillers!.isEmpty) return Set<ListAppUser>();
+    return Set<ListAppUser>.from(fulfillers!);
   }
 
   @override
@@ -300,7 +348,9 @@ class MultiFulfillmentMemberItem extends BaseItem {
 
   @override
   int quantityFulfilledBy(ListAppUser member) {
-    return _fulfillers[member] == null ? 0 : _fulfillers[member]!;
+    return usersCompletions[member.databaseId] == null
+        ? 0
+        : usersCompletions[member.databaseId]!;
   }
 
   @override
@@ -308,12 +358,12 @@ class MultiFulfillmentMemberItem extends BaseItem {
     bool removed;
     if (_fulfillers[member]! + quantityUnfulfilled <= 0) {
       _fulfillers.remove(member);
-      usersCompletions!.remove(member.databaseId!);
+      usersCompletions.remove(member.databaseId!);
       removed = true;
     } else {
       _fulfillers[member] = _fulfillers[member]! + quantityUnfulfilled;
-      usersCompletions![member.databaseId!] =
-          usersCompletions![member.databaseId!]! + quantityUnfulfilled;
+      usersCompletions[member.databaseId!] =
+          usersCompletions[member.databaseId!]! + quantityUnfulfilled;
       removed = false;
     }
     return removed;

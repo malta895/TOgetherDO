@@ -192,11 +192,11 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                             children: [
                               Icon(
                                 Icons.person,
-                                /*color: _assignedColors[
-                                    aListItem.getFulfillers()[0]],*/
+                                color: _assignedColors[
+                                    aListItem.getFulfillers().first],
                               ),
                               Text(
-                                aListItem.getFulfillers()[0].firstName,
+                                aListItem.getFulfillers().first.firstName,
                                 textScaleFactor: 0.7,
                               )
                             ],
@@ -207,21 +207,23 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                   : Text(aListItem.name),
               value: aListItem.isFulfilled(),
               selected: aListItem.isFulfilled(),
-              onChanged: (bool? value) {
+              onChanged: (bool? value) async {
                 // TODO make async, make not selectable until the server has responded
-                setState(() {
-                  if (value == true) {
-                    print(aListItem.isFulfilled());
-                    aListItem.fulfill(member: _loggedInListAppUser);
-                  } else {
-                    aListItem.unfulfill(
-                        member: _loggedInListAppUser, quantityUnfulfilled: 1);
-                  }
-                  ListAppItemManager.instanceForList(
+                if (value == true) {
+                  await ListAppItemManager.instanceForList(
                           widget.listAppList.databaseId!,
                           _loggedInListAppUser.databaseId!)
-                      .saveToFirestore(aListItem);
-                });
+                      .fulfillItem(_loggedInListAppUser.databaseId!,
+                          widget.listAppList.databaseId!, aListItem, 1);
+                  print(aListItem.isFulfilled());
+                } else {
+                  await ListAppItemManager.instanceForList(
+                          widget.listAppList.databaseId!,
+                          _loggedInListAppUser.databaseId!)
+                      .unfulfillItem(_loggedInListAppUser.databaseId!,
+                          widget.listAppList.databaseId!, aListItem, 1);
+                }
+                setState(() {});
               },
             ),
           );
@@ -250,11 +252,12 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                           children: [
                             Icon(
                               Icons.person,
-                              color:
-                                  _assignedColors[aListItem.getFulfillers()[0]],
+                              /*color:
+                                  _assignedColors[aListItem.getFulfillers()[0]],*/
                             ),
                             Text(
-                              aListItem.getFulfillers()[0].firstName,
+                              "BOH",
+                              //aListItem.getFulfillers()[0].firstName,
                               textScaleFactor: 0.7,
                             )
                           ],
@@ -412,21 +415,21 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                         ]),
               value: aListItem.quantityFulfilledBy(_loggedInListAppUser).isOdd,
               selected: aListItem.isFulfilled(),
-              onChanged: (bool? value) {
-                // TODO make async, make not selectable until the server has responded
-
-                setState(() {
-                  if (value == true) {
-                    aListItem.fulfill(member: _loggedInListAppUser);
-                  } else {
-                    aListItem.unfulfill(
-                        member: _loggedInListAppUser, quantityUnfulfilled: 1);
-                  }
-                  ListAppItemManager.instanceForList(
+              onChanged: (bool? value) async {
+                if (value == true) {
+                  await ListAppItemManager.instanceForList(
                           widget.listAppList.databaseId!,
                           _loggedInListAppUser.databaseId!)
-                      .saveToFirestore(aListItem);
-                });
+                      .fulfillItem(_loggedInListAppUser.databaseId!,
+                          widget.listAppList.databaseId!, aListItem, 1);
+                } else {
+                  await ListAppItemManager.instanceForList(
+                          widget.listAppList.databaseId!,
+                          _loggedInListAppUser.databaseId!)
+                      .unfulfillItem(_loggedInListAppUser.databaseId!,
+                          widget.listAppList.databaseId!, aListItem, 1);
+                }
+                setState(() {});
               },
             ));
 
@@ -561,7 +564,29 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                         print("fulfiller prima" +
                             aListItem.getFulfillers().toString());
                         print("difference" + _difference.toString());
-                        setState(() {
+                        // TODO make async, make not selectable until the server has responded
+                        if (_added == 1) {
+                          await ListAppItemManager.instanceForList(
+                                  widget.listAppList.databaseId!,
+                                  _loggedInListAppUser.databaseId!)
+                              .fulfillItem(
+                                  _loggedInListAppUser.databaseId!,
+                                  widget.listAppList.databaseId!,
+                                  aListItem,
+                                  _difference);
+                          print(aListItem.isFulfilled());
+                        } else {
+                          await ListAppItemManager.instanceForList(
+                                  widget.listAppList.databaseId!,
+                                  _loggedInListAppUser.databaseId!)
+                              .unfulfillItem(
+                                  _loggedInListAppUser.databaseId!,
+                                  widget.listAppList.databaseId!,
+                                  aListItem,
+                                  _difference);
+                        }
+                        setState(() {});
+                        /*setState(() {
                           if (_added == 1) {
                             aListItem.fulfill(
                                 member: _loggedInListAppUser,
@@ -571,11 +596,11 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                 member: _loggedInListAppUser,
                                 quantityUnfulfilled: _difference);
                           }
-                          ListAppItemManager.instanceForList(
+                          /*ListAppItemManager.instanceForList(
                                   widget.listAppList.databaseId!,
                                   _loggedInListAppUser.databaseId!)
-                              .saveToFirestore(aListItem);
-                        });
+                              .saveToFirestore(aListItem);*/
+                        });*/
                         print("fulfiller dopo" +
                             aListItem.getFulfillers().toString());
                         print("quantity dopo setstate");

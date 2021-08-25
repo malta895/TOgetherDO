@@ -153,6 +153,40 @@ void main() {
     expect(find.text("Request pending"), findsOneWidget);
   });
 
+  testWidgets('Test Friend removal', (tester) async {
+    // add a pending friend to the database
+    await tester
+        .pumpWidget(TestUtils.createScreen(screen: const FriendsPage()));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.textContaining("You don't have any friends."),
+      findsNothing,
+    );
+
+    expect(find.text("johndoe2"), findsOneWidget);
+    expect(find.text("John DoeSecond"), findsOneWidget);
+    expect(find.text("Accepted"), findsOneWidget);
+
+    await tester.drag(
+      find.byKey(const Key("dismissible_friend_user2_id")),
+      const Offset(500.0, .0),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byWidgetPredicate(
+        (widget) => widget is Text && widget.data == "CONFIRM"));
+    await tester.pumpAndSettle();
+
+    final user1 = await ListAppUserManager.instance.getByUid("user1_id");
+    expect(user1!.friends.containsKey("user2_id"), false);
+    final user2 = await ListAppUserManager.instance.getByUid("user2_id");
+    expect(user2!.friends.containsKey("user1_id"), false);
+
+    expect(find.text("johndoe2"), findsNothing);
+    expect(find.text("John DoeSecond"), findsNothing);
+    expect(find.text("Accepted"), findsNothing);
+  });
+
   testWidgets('No friends implies a message on screen', (tester) async {
     // remove all friends
     final user1 = await ListAppUserManager.instance.getByUid("user1_id");

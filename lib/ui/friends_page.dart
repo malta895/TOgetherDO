@@ -254,7 +254,9 @@ class _FriendsListState extends State<FriendsPage> {
         dismissThresholds: {DismissDirection.startToEnd: 0.3},
         direction: DismissDirection.startToEnd,
         onDismissed: (_) async {
-          await ListAppFriendshipManager.instance.removeFriend();
+          await ListAppUserManager.instance
+              .removeFriend(_loggedInListAppUser!, friend);
+          await _refreshPage();
         },
         background: Container(
           color: Colors.red,

@@ -184,4 +184,11 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
         .map((e) => e!)
         .toList();
   }
+
+  Future<void> removeFriend(ListAppUser currentUser, ListAppUser friend) async {
+    currentUser.friends.remove(friend.databaseId!);
+    friend.friends.remove(currentUser.databaseId!);
+    saveToFirestore(currentUser);
+    saveToFirestore(friend);
+  }
 }

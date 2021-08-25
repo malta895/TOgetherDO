@@ -129,8 +129,4 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
       return false;
     }
   }
-
-  Future<bool> removeFriend() async {
-    return false;
-  }
 }

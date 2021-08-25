@@ -54,7 +54,11 @@ class TestUtils {
       "displayName": "John Doe",
       "email": "john@doe.com",
       "firstName": "John",
-      "friends": <String, bool>{"user2_id": true, "johndoe2": true},
+      "friends": <String, bool>{
+        "user2_id": true,
+        // this bad friend is here just to test for error checking:
+        "johndoe2": true,
+      },
       "isNew": false,
       "lastName": "Doe",
       "notificationTokens": [],

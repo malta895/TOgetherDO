@@ -6,6 +6,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/base_model.dart';
 // ignore: unused_import
 import 'package:mobile_applications/models/utils.dart';
+import 'package:mobile_applications/services/user_manager.dart';
 
 import 'user.dart';
 

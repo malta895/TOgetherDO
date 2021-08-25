@@ -287,16 +287,14 @@ class _ProfilePageState extends State<ProfilePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Stack(alignment: const Alignment(1.3, 1.3), children: [
-                _loggedInListAppUser.profilePictureURL == null
-                    ? const CircleAvatar(
-                        backgroundImage:
-                            AssetImage('assets/sample-profile.png'),
-                        radius: 70.0,
-                      )
-                    : CircleAvatar(
-                        backgroundImage: NetworkImage(
-                            _loggedInListAppUser.profilePictureURL!),
-                        radius: 70.0),
+                CircleAvatar(
+                  backgroundImage: _loggedInListAppUser.profilePictureURL ==
+                          null
+                      ? const AssetImage('assets/sample-profile.png')
+                          as ImageProvider
+                      : NetworkImage(_loggedInListAppUser.profilePictureURL!),
+                  radius: 70.0,
+                ),
                 IconButton(
                     icon: const Icon(Icons.add_a_photo),
                     color: Theme.of(context).accentColor,

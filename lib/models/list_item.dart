@@ -1,6 +1,4 @@
-// This model represents a list of our application
-import 'dart:collection';
-import 'dart:core';
+// This model represents a list of our applicationrt 'package:json_annotation/json_annotation.dart';
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/base_model.dart';
@@ -50,7 +48,7 @@ abstract class BaseItem extends BaseModel {
   final int quantityPerMember;
   final String creatorUid;
 
-  Map<String, int>? usersCompletions;
+  Map<String, int> usersCompletions = {};
 
   final ItemType itemType;
 
@@ -65,7 +63,7 @@ abstract class BaseItem extends BaseModel {
     required this.itemType,
     required this.creatorUid,
     DateTime? createdAt,
-  })  : this.usersCompletions = usersCompletions,
+  })  : this.usersCompletions = usersCompletions ?? <String, int>{},
         super(databaseId: databaseId, createdAt: createdAt);
 
   int quantityFulfilledBy(ListAppUser member);
@@ -145,14 +143,14 @@ class SimpleItem extends BaseItem {
   @override
   bool isFulfilled() {
     //TODO change it back to the general case
-    return usersCompletions!['9LUBLCszUrU4mukuRWhHFS2iexL2'] == 1;
+    return usersCompletions['9LUBLCszUrU4mukuRWhHFS2iexL2'] == 1;
   }
 
   @override
   bool fulfill({required ListAppUser member, int quantityFulfilled = 0}) {
     if (_fulfiller == null) {
       _fulfiller = member;
-      usersCompletions![member.databaseId!] = 1;
+      usersCompletions[member.databaseId!] = 1;
       return true;
     }
 
@@ -164,7 +162,7 @@ class SimpleItem extends BaseItem {
     //do not allow the unfulfillment of other members
     if (member == _fulfiller) {
       _fulfiller = null;
-      usersCompletions!.remove(member.databaseId!);
+      usersCompletions.remove(member.databaseId!);
       return true;
     }
     return false;
@@ -172,8 +170,8 @@ class SimpleItem extends BaseItem {
 
   @override
   List<ListAppUser> getFulfillers() {
-    if (_fulfiller == null) return UnmodifiableListView<ListAppUser>([]);
-    return UnmodifiableListView<ListAppUser>([]);
+    if (_fulfiller == null) [];
+    return [];
   }
 
   @override
@@ -213,13 +211,13 @@ class MultiFulfillmentItem extends BaseItem {
 
   @override
   bool fulfill({required ListAppUser member, int quantityFulfilled = 1}) {
-    usersCompletions![member.databaseId!] = quantityFulfilled;
+    usersCompletions[member.databaseId!] = quantityFulfilled;
     return _fulfillers.add(member);
   }
 
   @override
   List<ListAppUser> getFulfillers() {
-    return UnmodifiableListView<ListAppUser>(_fulfillers);
+    return _fulfillers.toList();
   }
 
   @override
@@ -234,7 +232,7 @@ class MultiFulfillmentItem extends BaseItem {
 
   @override
   bool unfulfill({required ListAppUser member, int quantityUnfulfilled = 1}) {
-    usersCompletions!.remove(member.databaseId!);
+    usersCompletions.remove(member.databaseId!);
     return _fulfillers.remove(member);
   }
 
@@ -276,16 +274,16 @@ class MultiFulfillmentMemberItem extends BaseItem {
     _fulfillers[member] == null
         ? _fulfillers[member] = quantityFulfilled
         : _fulfillers[member] = _fulfillers[member]! + quantityFulfilled;
-    usersCompletions![member.databaseId!] == null
-        ? usersCompletions![member.databaseId!] = quantityFulfilled
-        : usersCompletions![member.databaseId!] =
-            usersCompletions![member.databaseId!]! + quantityFulfilled;
+    usersCompletions[member.databaseId!] == null
+        ? usersCompletions[member.databaseId!] = quantityFulfilled
+        : usersCompletions[member.databaseId!] =
+            usersCompletions[member.databaseId!]! + quantityFulfilled;
     return quantityFulfilled > 0;
   }
 
   @override
   List<ListAppUser> getFulfillers() {
-    return UnmodifiableListView<ListAppUser>(_fulfillers.keys);
+    return _fulfillers.keys.toList();
   }
 
   @override
@@ -307,12 +305,12 @@ class MultiFulfillmentMemberItem extends BaseItem {
     bool removed;
     if (_fulfillers[member]! + quantityUnfulfilled <= 0) {
       _fulfillers.remove(member);
-      usersCompletions!.remove(member.databaseId!);
+      usersCompletions.remove(member.databaseId!);
       removed = true;
     } else {
       _fulfillers[member] = _fulfillers[member]! + quantityUnfulfilled;
-      usersCompletions![member.databaseId!] =
-          usersCompletions![member.databaseId!]! + quantityUnfulfilled;
+      usersCompletions[member.databaseId!] =
+          usersCompletions[member.databaseId!]! + quantityUnfulfilled;
       removed = false;
     }
     return removed;

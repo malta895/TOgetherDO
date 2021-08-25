@@ -1,6 +1,4 @@
-// This model represents a list of our application
-import 'dart:collection';
-import 'dart:core';
+// This model represents a list of our applicationrt 'package:json_annotation/json_annotation.dart';
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/base_model.dart';
@@ -51,7 +49,7 @@ abstract class BaseItem extends BaseModel {
   final int quantityPerMember;
   final String creatorUid;
 
-  Map<String, int> usersCompletions;
+  Map<String, int> usersCompletions = {};
 
   final ItemType itemType;
 

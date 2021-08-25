@@ -39,30 +39,19 @@ class _FriendsListState extends State<FriendsPage> {
   }
 
   Future<Map<ListAppUser, bool>> _fetchFriends() async {
-    final acceptedFriends =
-        await ListAppUserManager.instance.getFriends(_loggedInListAppUser!);
+    _loggedInListAppUser!.friends = (await ListAppUserManager.instance
+            .getByUid(_loggedInListAppUser!.databaseId!))!
+        .friends;
 
-    final friends = Map<ListAppUser, bool>.fromIterable(
-      acceptedFriends,
-      value: (_) => true,
-    );
+    Map<ListAppUser, bool> friendsAsUsers = {};
 
-    final pendingFriends = await ListAppUserManager.instance.getFriends(
-      _loggedInListAppUser!,
-      pendingRequests: true,
-    );
+    // synchronously await each user in the map
+    for (final friendUid in _loggedInListAppUser!.friends.keys) {
+      final friend = await ListAppUserManager.instance.getByUid(friendUid);
+      friendsAsUsers[friend!] = _loggedInListAppUser!.friends[friendUid]!;
+    }
 
-    friends.addAll(Map<ListAppUser, bool>.fromIterable(
-      pendingFriends,
-      value: (_) => false,
-    ));
-
-    setState(() {
-      _loggedInListAppUser?.friends =
-          friends.map((key, value) => MapEntry(key.databaseId!, value));
-    });
-
-    return friends;
+    return friendsAsUsers;
   }
 
   Future<void> _addNewFriend(BuildContext context) async {
@@ -216,15 +205,18 @@ class _FriendsListState extends State<FriendsPage> {
                       ))
                     : ListView(
                         children: friends.entries.map((entry) {
-                        return _buildRow(context, entry.key, entry.value);
+                        return _buildFriendRow(context, entry.key, entry.value);
                       }).toList());
             }
           }),
     );
   }
 
-  Widget _buildRow(
-      BuildContext context, ListAppUser friend, bool requestAccepted) {
+  Widget _buildFriendRow(
+    BuildContext context,
+    ListAppUser friend,
+    bool requestAccepted,
+  ) {
     return Container(
       decoration: const BoxDecoration(
           border: Border(
@@ -232,67 +224,114 @@ class _FriendsListState extends State<FriendsPage> {
         color: Colors.grey,
         width: 0.8,
       ))),
-      child: ListTile(
-        leading: friend.profilePictureURL == null
-            ? const CircleAvatar(
-                backgroundImage: AssetImage('assets/sample-profile.png'),
-                radius: 25.0,
-              )
-            : CircleAvatar(
-                backgroundImage: NetworkImage(friend.profilePictureURL!),
-                radius: 25.0,
-              ),
-        title: Text(
-          friend.fullName,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(friend.username ?? ''),
-        trailing: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: requestAccepted
-              ? const [
-                  Icon(Icons.supervisor_account_rounded),
-                  Padding(
-                    padding: EdgeInsets.only(left: 18.0, right: 18.0),
-                    child: Text(
-                      "Accepted",
-                      textScaleFactor: 0.9,
-                    ),
+      child: Dismissible(
+        key: Key("dismissible_friend_${friend.databaseId!}"),
+        confirmDismiss: (DismissDirection direction) async {
+          return await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text(
+                  "Are you sure you wish to remove ${friend.fullName} from your friends? "
+                  "You will automatically leave all him/hers lists, and he/she will be automatically removed from yours.",
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    style: TextButton.styleFrom(primary: Colors.red),
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: const Text('CONFIRM'),
                   ),
-                ]
-              : [
-                  Stack(
-                    children: [
-                      const Icon(Icons.person),
-                      Positioned(
-                        bottom: .0,
-                        right: .0,
-                        child: Stack(
-                          children: [
-                            Icon(
-                              Icons.brightness_1,
-                              color: Theme.of(context).backgroundColor,
-                              size: 13.0,
-                            ),
-                            const Icon(
-                              Icons.watch_later,
-                              size: 13.0,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Text(
-                    "Request pending",
-                    textScaleFactor: 0.9,
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: const Text("CANCEL"),
                   ),
                 ],
-        ),
-        onTap: () {
-          print(friend.fullName);
+              );
+            },
+          );
         },
+        dismissThresholds: {DismissDirection.startToEnd: 0.3},
+        direction: DismissDirection.startToEnd,
+        onDismissed: (_) async {
+          await ListAppFriendshipManager.instance.removeFriend();
+        },
+        background: Container(
+          color: Colors.red,
+          child: Align(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(
+                  width: 20,
+                ),
+                const Icon(
+                  Icons.person_remove_alt_1_rounded,
+                ),
+              ],
+            ),
+            alignment: Alignment.centerLeft,
+          ),
+        ),
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundImage: friend.profilePictureURL == null
+                ? const AssetImage('assets/sample-profile.png') as ImageProvider
+                : NetworkImage(friend.profilePictureURL!),
+            radius: 25.0,
+          ),
+          title: Text(
+            friend.fullName,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text(friend.username ?? ''),
+          trailing: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: requestAccepted
+                ? const [
+                    Icon(Icons.supervisor_account_rounded),
+                    Padding(
+                      padding: EdgeInsets.only(left: 18.0, right: 18.0),
+                      child: Text(
+                        "Accepted",
+                        textScaleFactor: 0.9,
+                      ),
+                    ),
+                  ]
+                : [
+                    Stack(
+                      children: [
+                        const Icon(Icons.person),
+                        Positioned(
+                          bottom: .0,
+                          right: .0,
+                          child: Stack(
+                            children: [
+                              Icon(
+                                Icons.brightness_1,
+                                color: Theme.of(context).backgroundColor,
+                                size: 13.0,
+                              ),
+                              const Icon(
+                                Icons.watch_later,
+                                size: 13.0,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Text(
+                      "Request pending",
+                      textScaleFactor: 0.9,
+                    ),
+                  ],
+          ),
+          onTap: () {
+            print(friend.fullName);
+            // TODO show friend modal
+          },
+        ),
       ),
     );
   }
@@ -309,7 +348,7 @@ class _FriendsListState extends State<FriendsPage> {
       body: _buildFriendsListView(context),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async => await _addNewFriend(context),
-        icon: const Icon(Icons.add),
+        icon: const Icon(Icons.person_add),
         label: const Text('ADD FRIEND'),
       ),
     );

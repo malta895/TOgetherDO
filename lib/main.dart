@@ -20,17 +20,9 @@ import 'package:provider/provider.dart';
 
 Future<void> _messageHandler(RemoteMessage message) async {
   FlutterAppBadger.updateBadgeCount(1);
-  print('background message ${message.notification!.body}');
 }
 
 Future<void> main() async {
-  // NOTE this stuff comes from login example, not sure if it is needed
-  // SystemChrome.setSystemUIOverlayStyle(
-  //     SystemUiOverlayStyle(
-  //     systemNavigationBarColor:
-  //         SystemUiOverlayStyle.dark.systemNavigationBarColor,
-  //   ),
-  // )
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp();

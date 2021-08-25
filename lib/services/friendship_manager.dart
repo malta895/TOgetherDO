@@ -15,16 +15,18 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
       ListAppFriendshipManager._privateConstructor();
 
   ListAppFriendshipManager._privateConstructor()
-      : super(ManagerConfig.firebaseFirestoreInstance
-            .collection(ListAppFriendship.collectionName)
-            .withConverter<ListAppFriendship?>(
-                fromFirestore: (snapshots, _) {
-                  final snapshotsData = snapshots.data();
-                  return snapshotsData == null
-                      ? null
-                      : ListAppFriendship.fromJson(snapshotsData);
-                },
-                toFirestore: (friendship, _) => friendship!.toJson()));
+      : super(
+          ManagerConfig.firebaseFirestoreInstance
+              .collection(ListAppFriendship.collectionName)
+              .withConverter<ListAppFriendship?>(
+                  fromFirestore: (snapshots, _) {
+                    final snapshotsData = snapshots.data();
+                    return snapshotsData == null
+                        ? null
+                        : ListAppFriendship.fromJson(snapshotsData);
+                  },
+                  toFirestore: (friendship, _) => friendship!.toJson()),
+        );
 
   static ListAppFriendshipManager get instance => _instance;
 
@@ -126,5 +128,9 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
     } on TypeError catch (_) {
       return false;
     }
+  }
+
+  Future<bool> removeFriend() async {
+    return false;
   }
 }

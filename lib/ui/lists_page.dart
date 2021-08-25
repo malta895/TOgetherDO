@@ -259,7 +259,7 @@ class _ListsPageState extends State<ListsPage>
                       ),
                       alignment: Alignment.centerLeft,
                     )),
-                onDismissed: (DismissDirection direction) async {
+                onDismissed: (_) async {
                   await _deleteOrAbandonList(listAppList);
                 },
                 child: Container(

@@ -48,7 +48,8 @@ class _FriendsListState extends State<FriendsPage> {
     // synchronously await each user in the map
     for (final friendUid in _loggedInListAppUser!.friends.keys) {
       final friend = await ListAppUserManager.instance.getByUid(friendUid);
-      friendsAsUsers[friend!] = _loggedInListAppUser!.friends[friendUid]!;
+      if (friend != null)
+        friendsAsUsers[friend] = _loggedInListAppUser!.friends[friendUid]!;
     }
 
     return friendsAsUsers;

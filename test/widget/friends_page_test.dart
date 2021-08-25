@@ -34,6 +34,11 @@ void main() {
           .pumpWidget(TestUtils.createScreen(screen: const FriendsPage()));
       await tester.pumpAndSettle();
 
+      expect(
+        find.textContaining("You don't have any friends."),
+        findsNothing,
+      );
+
       expect(find.text("johndoe2"), findsOneWidget);
       expect(find.text("John DoeSecond"), findsOneWidget);
       expect(find.text("Accepted"), findsOneWidget);

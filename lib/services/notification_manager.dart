@@ -77,48 +77,10 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
         }
       }
 
-      /*notificationList.map((e) {
-      if (e.status == NotificationStatus.undefined) {
-        print("una undefined trovata");
-        cont++;
-      }
-    });*/
-
       return cont;
     } on CheckedFromJsonException catch (e) {
       print(e.message);
       return 0;
     }
   }
-
-  /*Future<List<ListAppFriendship?>> getNotificationsByUid(String uid) async {
-    final queryResult =
-        await this.firebaseCollection.where('userId', isEqualTo: uid).get();
-
-    print("getNotificationsByUid");
-
-    return Future.wait(queryResult.docs.map((element) async {
-      return await ListAppFriendshipManager.instance
-          .getFriendshipById((element.data().objectId!));
-    }));*/
-
-  /*return Future.wait(queryResult.docs.map((e) async {
-      final notification = e.data();
-      notification.databaseId = e.id;
-      ListAppFriendship? friendship = await ListAppFriendshipManager.instance
-            .getFriendshipById(notification.databaseId!);
-        return friendship;
-
-      /* return Future.wait(queryResult.docs.map((e) async {
-      final notification = e.data();
-      notification.databaseId = e.id;
-      if (notification.notificationType == "friendship") {
-        ListAppFriendship? friendship = await ListAppFriendshipManager.instance
-            .getFriendshipById(notification.databaseId!);
-
-            
-      }
-      return notification; */
-    }));
-  }*/
 }

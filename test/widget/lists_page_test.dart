@@ -140,7 +140,7 @@ void main() {
 
       // we should see the no list message
       expect(find.byType(AnimatedBuilder), findsNothing);
-      expect(find.text("You don't have any list."), findsOneWidget);
+      expect(find.text("You don't have any lists."), findsOneWidget);
     }, skip: true);
 
     // TODO add other tests (drawer, notifications, ...)

@@ -11,9 +11,6 @@ import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/services/notification_manager.dart';
 import 'package:provider/provider.dart';
 
-//LUCA lGmqaAgJZqVIdqXt3GmQFNC9E3D3
-//LORENZO 9LUBLCszUrU4mukuRWhHFS2iexL2
-
 class NotificationPage extends StatefulWidget {
   static const String routeName = "/notifications";
 
@@ -160,10 +157,7 @@ class _NotificationPage extends State<NotificationPage> {
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
-              /*return Center(
-                child: Text("Loading"),
-              );*/
-              break;
+              return Container();
             case ConnectionState.done:
               switch (notification.status) {
                 case NotificationStatus.pending:
@@ -175,9 +169,15 @@ class _NotificationPage extends State<NotificationPage> {
                         width: 0.8,
                       ))),
                       child: ListTile(
-                        leading: CircleAvatar(
-                            backgroundImage: NetworkImage(
-                                notification.sender!.profilePictureURL!)),
+                        leading: notification.sender?.profilePictureURL == null
+                            ? const CircleAvatar(
+                                backgroundImage:
+                                    AssetImage('assets/sample-profile.png'),
+                                radius: 25.0,
+                              )
+                            : CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                    notification.sender!.profilePictureURL!)),
                         title: Text(
                           notification.sender!.displayName +
                               " sent you a friendship request",
@@ -189,23 +189,24 @@ class _NotificationPage extends State<NotificationPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             TextButton(
-                                style: TextButton.styleFrom(
-                                  side: const BorderSide(
-                                      color: Colors.green, width: 1),
-                                ),
-                                onPressed: () async {
-                                  await ListAppNotificationManager.instance
-                                      .acceptNotification(
-                                          notification.databaseId!);
-                                  setState(() {
-                                    _notificationsFuture =
-                                        _fetchNotifications();
-                                  });
-                                },
-                                child: const Icon(
-                                  Icons.done,
-                                  color: Colors.green,
-                                )),
+                              style: TextButton.styleFrom(
+                                side: const BorderSide(
+                                    color: Colors.green, width: 1),
+                              ),
+                              onPressed: () async {
+                                notification.status =
+                                    NotificationStatus.accepted;
+                                await ListAppNotificationManager.instance
+                                    .saveToFirestore(notification);
+                                setState(() {
+                                  _notificationsFuture = _fetchNotifications();
+                                });
+                              },
+                              child: const Icon(
+                                Icons.done,
+                                color: Colors.green,
+                              ),
+                            ),
                             const SizedBox(
                               width: 10,
                             ),
@@ -215,9 +216,10 @@ class _NotificationPage extends State<NotificationPage> {
                                       color: Colors.red, width: 1),
                                 ),
                                 onPressed: () async {
+                                  notification.status =
+                                      NotificationStatus.rejected;
                                   await ListAppNotificationManager.instance
-                                      .rejectNotification(
-                                          notification.databaseId!);
+                                      .saveToFirestore(notification);
                                   setState(() {
                                     _notificationsFuture =
                                         _fetchNotifications();
@@ -239,9 +241,15 @@ class _NotificationPage extends State<NotificationPage> {
                         width: 0.8,
                       ))),
                       child: ListTile(
-                        leading: CircleAvatar(
-                            backgroundImage: NetworkImage(
-                                notification.sender!.profilePictureURL!)),
+                        leading: notification.sender?.profilePictureURL == null
+                            ? const CircleAvatar(
+                                backgroundImage:
+                                    AssetImage('assets/sample-profile.png'),
+                                radius: 25.0,
+                              )
+                            : CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                    notification.sender!.profilePictureURL!)),
                         title: Text(
                           "You and " +
                               notification.sender!.displayName +
@@ -269,7 +277,6 @@ class _NotificationPage extends State<NotificationPage> {
                           )));
               }
           }
-          return Container();
         });
   }
 

@@ -191,7 +191,7 @@ class _ListsPageState extends State<ListsPage>
     // TODO make a nice image that points to new list button
     return const Center(
         child: Text(
-      "You don't have any list.",
+      "You don't have any lists.",
       style: TextStyle(fontSize: 22),
     ));
   }

@@ -33,12 +33,15 @@ exports.sendNotifications = functions.region('europe-west6').firestore.document(
         // Notification details.
         const sender = await admin.firestore().collection('users').doc(snapshot.data().userFrom).get();
         const receiver = await admin.firestore().collection('users').doc(snapshot.data().userId).get();
-        if (snapshot.data().notificationType == "friendship") {
-            const message = {
+
+        const tokens = receiver.data().notificationTokens;
+        tokens.forEach((token) => {
+            let message;
+        if (snapshot.data().notificationType === "friendship") {
+            message = {
                 'notification': {
                     'title': `${sender.data().displayName} sent you a friendship request!`,
-                    'body': `Accept or decline it, ${receiver.data().firstName}!`,
-                    'icon': `${sender.data().profilePictureURL}`,
+                    'body': `Accept or decline it, ${receiver.data().username}!`,
                 },
                 'data': {
                     'sender': snapshot.data().userFrom,
@@ -46,12 +49,11 @@ exports.sendNotifications = functions.region('europe-west6').firestore.document(
                     'click_action': `FLUTTER_NOTIFICATION_CLICK`,
                 }
             };
-        } else if (snapshot.data().notificationType == "listInvite") {
-            const message = {
+        } else if (snapshot.data().notificationType === "listInvite") {
+            message = {
                 'notification': {
                     'title': `${sender.data().displayName} added you to a list!`,
-                    'body': `Accept or decline the invitation, ${receiver.data().firstName}!`,
-                    'icon': `${sender.data().profilePictureURL}`,
+                    'body': `Accept or decline the invitation, ${receiver.data().username}!`,
                 },
                 'data': {
                     'sender': snapshot.data().userFrom,
@@ -61,32 +63,15 @@ exports.sendNotifications = functions.region('europe-west6').firestore.document(
             };
         }
 
-        const tokens = receiver.data().notificationTokens;
-
-        // Get the list of device tokens.
-        /*const allTokens = await admin.firestore().collection('users').doc('9LUBLCszUrU4mukuRWhHFS2iexL2').get();
-        console.log(allTokens.data().notificationTokens[0]);*/
-        //console.log(allTokens.notificationTokens[0]);
-        /*const tokens = [];
-        allTokens.forEach((tokenDoc) => {
-            tokens.push(tokenDoc.id);
-        });*/
-
-        /*if (tokens.length > 0) {
-            // Send notifications to all tokens.
-            const response = await admin.messaging().sendToDevice(tokens, message);
-            await cleanupTokens(response, tokens);
-            console.log('Notifications have been sent and tokens cleaned up.');
-        }*/
-        /*const response = await admin.messaging().sendToDevice(allTokens.notificationTokens[0], message);*/
-        //token = allTokens.data().notificationTokens[0];
-        //const response2 = await admin.messaging().sendToDevice("ey9cH1ogTqymzMzyaN_oMa:APA91bExTyp3U7YXUImjZQkrroD8OzIGji_cq40FwCNbEvpFeKVU_WHUAf5do2TJrY9sMnQLv0JohuSgHhm8Bn4-eCmY-LXO1GrtZxe6WGD-5-S3_vXkq86uFR71vK3WFKc3D5RCs73T", message);
-        tokens.forEach(async (token) => {
-            const response2 = await admin.messaging().sendToDevice(token, message);
+            admin.messaging().sendToDevice(token, message).then((response) => {
+                 console.log(response);
+            }).catch((error) => {
+               console.log(error);
+            });
         });
-        //await cleanupTokens(response, allTokens.notificationTokens[0]);
+
     });
-// Cleans up the tokens that are no longer valid.
+//Cleans up the tokens that are no longer valid.
 function cleanupTokens(response, tokens) {
     // For each notification we check if there was an error.
     const tokensDelete = [];

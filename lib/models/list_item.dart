@@ -338,9 +338,9 @@ class MultiFulfillmentMemberItem extends BaseItem {
   @override
   bool isFulfilled() {
     // the item is complete when the max quantity has been reached.
-    return _fulfillers.isEmpty
+    return usersCompletions.isEmpty
         ? false
-        : _fulfillers.values.reduce((total, element) => total + element) >=
+        : usersCompletions.values.reduce((total, element) => total + element) >=
             maxQuantity;
   }
 

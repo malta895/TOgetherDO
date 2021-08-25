@@ -140,7 +140,7 @@ class SimpleItem extends BaseItem {
           createdAt: createdAt,
           creatorUid: creatorUid,
         ) {
-    if (usersCompletions!.isNotEmpty) {
+    if (usersCompletions != null && usersCompletions.isNotEmpty) {
       ListAppUserManager.instance
           .getByUid(usersCompletions.keys.first)
           .then((value) {
@@ -223,7 +223,7 @@ class MultiFulfillmentItem extends BaseItem {
             quantityPerMember: 1,
             createdAt: createdAt,
             creatorUid: creatorUid) {
-    if (usersCompletions!.isNotEmpty) {
+    if (usersCompletions != null && usersCompletions.isNotEmpty) {
       usersCompletions.forEach((key, value) {
         ListAppUserManager.instance
             .getByUid(key)
@@ -299,7 +299,7 @@ class MultiFulfillmentMemberItem extends BaseItem {
             quantityPerMember: quantityPerMember,
             createdAt: createdAt,
             creatorUid: creatorUid) {
-    if (usersCompletions!.isNotEmpty) {
+    if (usersCompletions != null && usersCompletions.isNotEmpty) {
       usersCompletions.forEach((key, value) {
         ListAppUserManager.instance
             .getByUid(key)

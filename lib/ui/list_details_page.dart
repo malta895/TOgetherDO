@@ -42,8 +42,7 @@ class ListDetailsPage extends StatefulWidget {
 
 class _ListDetailsPageState extends State<ListDetailsPage> {
   late ListAppUser _loggedInListAppUser;
-  late final HashMap<ListAppUser, Color> _assignedColors =
-      HashMap<ListAppUser, Color>();
+  late final HashMap<String, Color> _assignedColors = HashMap<String, Color>();
 
   @override
   void initState() {
@@ -55,17 +54,17 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
       var it = allUsers.iterator;
       int index = 0;
       while (index <= Colors.primaries.length && it.moveNext()) {
-        _assignedColors[it.current] = Colors.primaries[index];
+        _assignedColors[it.current.databaseId!] = Colors.primaries[index];
         ++index;
       }
       index = 0;
       while (index <= Colors.accents.length && it.moveNext()) {
-        _assignedColors[it.current] = Colors.accents[index];
+        _assignedColors[it.current.databaseId!] = Colors.accents[index];
         ++index;
       }
       // if at this point we still have members just take random colors
       while (it.moveNext()) {
-        _assignedColors[it.current] =
+        _assignedColors[it.current.databaseId!] =
             Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
                 .withOpacity(1.0);
       }
@@ -193,7 +192,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                               Icon(
                                 Icons.person,
                                 color: _assignedColors[
-                                    aListItem.getFulfillers().first],
+                                    aListItem.getFulfillers().first.databaseId],
                               ),
                               Text(
                                 aListItem.getFulfillers().first.firstName,
@@ -208,7 +207,6 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
               value: aListItem.isFulfilled(),
               selected: aListItem.isFulfilled(),
               onChanged: (bool? value) async {
-                // TODO make async, make not selectable until the server has responded
                 if (value == true) {
                   await ListAppItemManager.instanceForList(
                           widget.listAppList.databaseId!,
@@ -252,12 +250,11 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                           children: [
                             Icon(
                               Icons.person,
-                              /*color:
-                                  _assignedColors[aListItem.getFulfillers()[0]],*/
+                              color: _assignedColors[
+                                  aListItem.getFulfillers().first.databaseId],
                             ),
                             Text(
-                              "BOH",
-                              //aListItem.getFulfillers()[0].firstName,
+                              aListItem.getFulfillers().first.firstName,
                               textScaleFactor: 0.7,
                             )
                           ],
@@ -268,261 +265,408 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                 : Text(aListItem.name),
             value: aListItem.isFulfilled(),
             selected: aListItem.isFulfilled(),
-            onChanged: (bool? value) {
-              // TODO make async, make not selectable until the server has responded
-              setState(() {
-                if (value == true) {
-                  aListItem.fulfill(member: _loggedInListAppUser);
-                } else {
-                  aListItem.unfulfill(
-                      member: _loggedInListAppUser, quantityUnfulfilled: 1);
-                }
-              });
+            onChanged: (bool? value) async {
+              if (value == true) {
+                await ListAppItemManager.instanceForList(
+                        widget.listAppList.databaseId!,
+                        _loggedInListAppUser.databaseId!)
+                    .fulfillItem(_loggedInListAppUser.databaseId!,
+                        widget.listAppList.databaseId!, aListItem, 1);
+                print(aListItem.isFulfilled());
+              } else {
+                await ListAppItemManager.instanceForList(
+                        widget.listAppList.databaseId!,
+                        _loggedInListAppUser.databaseId!)
+                    .unfulfillItem(_loggedInListAppUser.databaseId!,
+                        widget.listAppList.databaseId!, aListItem, 1);
+              }
+              setState(() {});
             },
           );
         }
       case ItemType.multiFulfillment:
-        return Dismissible(
-            confirmDismiss: (DismissDirection direction) async {
-              return await showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text(
-                        "Are you sure you wish to delete this item?"),
-                    actions: <Widget>[
-                      TextButton(
-                          style: TextButton.styleFrom(primary: Colors.red),
-                          onPressed: () => Navigator.of(context).pop(true),
-                          child: const Text("DELETE")),
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(false),
-                        child: const Text("CANCEL"),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            dismissThresholds: {DismissDirection.endToStart: 0.3},
-            direction: DismissDirection.startToEnd,
-            background: Container(
-                color: Colors.red,
-                child: Align(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      const Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
-                    ],
-                  ),
-                  alignment: Alignment.centerLeft,
-                )),
-            key: UniqueKey(),
-            onDismissed: (DismissDirection direction) async {
-              final itemManagerInstance = ListAppItemManager.instanceForList(
-                widget.listAppList.databaseId!,
-                widget.listAppList.creator!.databaseId!,
-              );
-
-              await itemManagerInstance.deleteInstance(aListItem);
-              setState(() {
-                widget.listAppList.items
-                    .removeWhere((element) => element == aListItem);
-              });
-            },
-            child: CheckboxListTile(
-              activeColor: Theme.of(context).accentColor,
-              title: aListItem.isFulfilled()
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                          Expanded(
-                              flex: 5,
-                              child: Text(aListItem.name,
-                                  style: const TextStyle(
-                                      color: Colors.grey,
-                                      decoration: TextDecoration.lineThrough))),
-                          Expanded(
-                              flex: 2,
-                              child: TextButton(
-                                  style: TextButton.styleFrom(
-                                    side: BorderSide(
-                                        color: Theme.of(context).accentColor,
-                                        width: 1),
-                                  ),
-                                  onPressed: () => showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          title: Text(aListItem.name),
-                                          content: _buildAlertDialogMembers(
-                                              aListItem.getFulfillers().length,
-                                              aListItem
-                                                  .getFulfillers()
-                                                  .toSet()),
-                                        );
-                                      }),
-                                  child: Text(
-                                    "${aListItem.getFulfillers().length}" +
-                                        " / " +
-                                        "${aListItem.maxQuantity}",
-                                    style: TextStyle(
-                                        color: Theme.of(context).primaryColor),
-                                    textScaleFactor: 1.2,
-                                  ))
-                              /*],
-                        ),*/
-                              )
-                        ])
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                          Expanded(flex: 5, child: Text(aListItem.name)),
-                          Expanded(
-                              flex: 2,
-                              child: TextButton(
-                                  style: TextButton.styleFrom(
-                                    side: BorderSide(
-                                        color: Theme.of(context).accentColor,
-                                        width: 1),
-                                  ),
-                                  onPressed: () => showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          title: Text(aListItem.name),
-                                          content: _buildAlertDialogMembers(
-                                              aListItem.getFulfillers().length,
-                                              aListItem
-                                                  .getFulfillers()
-                                                  .toSet()),
-                                        );
-                                      }),
-                                  child: Text(
-                                    "${aListItem.getFulfillers().length}" +
-                                        " / " +
-                                        "${aListItem.maxQuantity}",
-                                    style: TextStyle(
-                                        color: Theme.of(context).primaryColor),
-                                    textScaleFactor: 1.2,
-                                  )))
-                        ]),
-              value: aListItem.quantityFulfilledBy(_loggedInListAppUser).isOdd,
-              selected: aListItem.isFulfilled(),
-              onChanged: (bool? value) async {
-                if (value == true) {
-                  await ListAppItemManager.instanceForList(
-                          widget.listAppList.databaseId!,
-                          _loggedInListAppUser.databaseId!)
-                      .fulfillItem(_loggedInListAppUser.databaseId!,
-                          widget.listAppList.databaseId!, aListItem, 1);
-                } else {
-                  await ListAppItemManager.instanceForList(
-                          widget.listAppList.databaseId!,
-                          _loggedInListAppUser.databaseId!)
-                      .unfulfillItem(_loggedInListAppUser.databaseId!,
-                          widget.listAppList.databaseId!, aListItem, 1);
-                }
-                setState(() {});
+        if (aListItem.creatorUid == _loggedInListAppUser.databaseId) {
+          return Dismissible(
+              confirmDismiss: (DismissDirection direction) async {
+                return await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text(
+                          "Are you sure you wish to delete this item?"),
+                      actions: <Widget>[
+                        TextButton(
+                            style: TextButton.styleFrom(primary: Colors.red),
+                            onPressed: () => Navigator.of(context).pop(true),
+                            child: const Text("DELETE")),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: const Text("CANCEL"),
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
-            ));
+              dismissThresholds: {DismissDirection.endToStart: 0.3},
+              direction: DismissDirection.startToEnd,
+              background: Container(
+                  color: Colors.red,
+                  child: Align(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        const Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                    alignment: Alignment.centerLeft,
+                  )),
+              key: UniqueKey(),
+              onDismissed: (DismissDirection direction) async {
+                final itemManagerInstance = ListAppItemManager.instanceForList(
+                  widget.listAppList.databaseId!,
+                  widget.listAppList.creator!.databaseId!,
+                );
+
+                await itemManagerInstance.deleteInstance(aListItem);
+                setState(() {
+                  widget.listAppList.items
+                      .removeWhere((element) => element == aListItem);
+                });
+              },
+              child: CheckboxListTile(
+                activeColor: Theme.of(context).accentColor,
+                title: aListItem.isFulfilled()
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                            Expanded(
+                                flex: 5,
+                                child: Text(aListItem.name,
+                                    style: const TextStyle(
+                                        color: Colors.grey,
+                                        decoration:
+                                            TextDecoration.lineThrough))),
+                            Expanded(
+                                flex: 2,
+                                child: TextButton(
+                                    style: TextButton.styleFrom(
+                                      side: BorderSide(
+                                          color: Theme.of(context).accentColor,
+                                          width: 1),
+                                    ),
+                                    onPressed: () => showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text(aListItem.name),
+                                            content: _buildAlertDialogMembers(
+                                                aListItem
+                                                    .getFulfillers()
+                                                    .length,
+                                                aListItem
+                                                    .getFulfillers()
+                                                    .toSet()),
+                                          );
+                                        }),
+                                    child: Text(
+                                      "${aListItem.getFulfillers().length}" +
+                                          " / " +
+                                          "${aListItem.maxQuantity}",
+                                      style: TextStyle(
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                      textScaleFactor: 1.2,
+                                    ))
+                                /*],
+                        ),*/
+                                )
+                          ])
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                            Expanded(flex: 5, child: Text(aListItem.name)),
+                            Expanded(
+                                flex: 2,
+                                child: TextButton(
+                                    style: TextButton.styleFrom(
+                                      side: BorderSide(
+                                          color: Theme.of(context).accentColor,
+                                          width: 1),
+                                    ),
+                                    onPressed: () => showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text(aListItem.name),
+                                            content: _buildAlertDialogMembers(
+                                                aListItem
+                                                    .getFulfillers()
+                                                    .length,
+                                                aListItem
+                                                    .getFulfillers()
+                                                    .toSet()),
+                                          );
+                                        }),
+                                    child: Text(
+                                      "${aListItem.getFulfillers().length}" +
+                                          " / " +
+                                          "${aListItem.maxQuantity}",
+                                      style: TextStyle(
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                      textScaleFactor: 1.2,
+                                    )))
+                          ]),
+                value:
+                    aListItem.quantityFulfilledBy(_loggedInListAppUser).isOdd,
+                selected: aListItem.isFulfilled(),
+                onChanged: (bool? value) async {
+                  if (value == true) {
+                    await ListAppItemManager.instanceForList(
+                            widget.listAppList.databaseId!,
+                            _loggedInListAppUser.databaseId!)
+                        .fulfillItem(_loggedInListAppUser.databaseId!,
+                            widget.listAppList.databaseId!, aListItem, 1);
+                  } else {
+                    await ListAppItemManager.instanceForList(
+                            widget.listAppList.databaseId!,
+                            _loggedInListAppUser.databaseId!)
+                        .unfulfillItem(_loggedInListAppUser.databaseId!,
+                            widget.listAppList.databaseId!, aListItem, 1);
+                  }
+                  setState(() {});
+                },
+              ));
+        } else {
+          return CheckboxListTile(
+            activeColor: Theme.of(context).accentColor,
+            title: aListItem.isFulfilled()
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                        Expanded(
+                            flex: 5,
+                            child: Text(aListItem.name,
+                                style: const TextStyle(
+                                    color: Colors.grey,
+                                    decoration: TextDecoration.lineThrough))),
+                        Expanded(
+                            flex: 2,
+                            child: TextButton(
+                                style: TextButton.styleFrom(
+                                  side: BorderSide(
+                                      color: Theme.of(context).accentColor,
+                                      width: 1),
+                                ),
+                                onPressed: () => showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text(aListItem.name),
+                                        content: _buildAlertDialogMembers(
+                                            aListItem.getFulfillers().length,
+                                            aListItem.getFulfillers().toSet()),
+                                      );
+                                    }),
+                                child: Text(
+                                  "${aListItem.getFulfillers().length}" +
+                                      " / " +
+                                      "${aListItem.maxQuantity}",
+                                  style: TextStyle(
+                                      color: Theme.of(context).primaryColor),
+                                  textScaleFactor: 1.2,
+                                ))
+                            /*],
+                        ),*/
+                            )
+                      ])
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                        Expanded(flex: 5, child: Text(aListItem.name)),
+                        Expanded(
+                            flex: 2,
+                            child: TextButton(
+                                style: TextButton.styleFrom(
+                                  side: BorderSide(
+                                      color: Theme.of(context).accentColor,
+                                      width: 1),
+                                ),
+                                onPressed: () => showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text(aListItem.name),
+                                        content: _buildAlertDialogMembers(
+                                            aListItem.getFulfillers().length,
+                                            aListItem.getFulfillers().toSet()),
+                                      );
+                                    }),
+                                child: Text(
+                                  "${aListItem.getFulfillers().length}" +
+                                      " / " +
+                                      "${aListItem.maxQuantity}",
+                                  style: TextStyle(
+                                      color: Theme.of(context).primaryColor),
+                                  textScaleFactor: 1.2,
+                                )))
+                      ]),
+            value: aListItem.quantityFulfilledBy(_loggedInListAppUser).isOdd,
+            selected: aListItem.isFulfilled(),
+            onChanged: (bool? value) async {
+              if (value == true) {
+                await ListAppItemManager.instanceForList(
+                        widget.listAppList.databaseId!,
+                        _loggedInListAppUser.databaseId!)
+                    .fulfillItem(_loggedInListAppUser.databaseId!,
+                        widget.listAppList.databaseId!, aListItem, 1);
+              } else {
+                await ListAppItemManager.instanceForList(
+                        widget.listAppList.databaseId!,
+                        _loggedInListAppUser.databaseId!)
+                    .unfulfillItem(_loggedInListAppUser.databaseId!,
+                        widget.listAppList.databaseId!, aListItem, 1);
+              }
+              setState(() {});
+            },
+          );
+        }
 
       case ItemType.multiFulfillmentMember:
-        return Dismissible(
-            confirmDismiss: (DismissDirection direction) async {
-              return await showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text(
-                        "Are you sure you wish to delete this item?"),
-                    actions: <Widget>[
-                      TextButton(
-                          style: TextButton.styleFrom(primary: Colors.red),
-                          onPressed: () => Navigator.of(context).pop(true),
-                          child: const Text("DELETE")),
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(false),
-                        child: const Text("CANCEL"),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            dismissThresholds: {DismissDirection.endToStart: 0.3},
-            direction: DismissDirection.startToEnd,
-            background: Container(
-                color: Colors.red,
-                child: Align(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      const Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
-                    ],
-                  ),
-                  alignment: Alignment.centerLeft,
-                )),
-            key: UniqueKey(),
-            onDismissed: (DismissDirection direction) async {
-              final itemManagerInstance = ListAppItemManager.instanceForList(
-                widget.listAppList.databaseId!,
-                widget.listAppList.creator!.databaseId!,
-              );
+        if (aListItem.creatorUid == _loggedInListAppUser.databaseId) {
+          return Dismissible(
+              confirmDismiss: (DismissDirection direction) async {
+                return await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text(
+                          "Are you sure you wish to delete this item?"),
+                      actions: <Widget>[
+                        TextButton(
+                            style: TextButton.styleFrom(primary: Colors.red),
+                            onPressed: () => Navigator.of(context).pop(true),
+                            child: const Text("DELETE")),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: const Text("CANCEL"),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              dismissThresholds: {DismissDirection.endToStart: 0.3},
+              direction: DismissDirection.startToEnd,
+              background: Container(
+                  color: Colors.red,
+                  child: Align(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        const SizedBox(
+                          width: 20,
+                        ),
+                        const Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                    alignment: Alignment.centerLeft,
+                  )),
+              key: UniqueKey(),
+              onDismissed: (DismissDirection direction) async {
+                final itemManagerInstance = ListAppItemManager.instanceForList(
+                  widget.listAppList.databaseId!,
+                  widget.listAppList.creator!.databaseId!,
+                );
 
-              await itemManagerInstance.deleteInstance(aListItem);
-              setState(() {
-                widget.listAppList.items
-                    .removeWhere((element) => element == aListItem);
-              });
-            },
-            child: ListTile(
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    flex: 5,
-                    child: Text(aListItem.name,
-                        style: aListItem.isFulfilled()
-                            ? const TextStyle(
-                                color: Colors.grey,
-                                decoration: TextDecoration.lineThrough)
-                            : TextStyle(
-                                color: Theme.of(context)
-                                    .textTheme
-                                    .headline1!
-                                    .color)),
-                  ),
-                  Expanded(
-                      flex: 2,
-                      child: _buildMultiFulfillmentMemberItemButton(
-                          context, aListItem)),
-                ],
-              ),
-              selected: aListItem.isFulfilled(),
-              trailing: Container(
-                width: 40,
-                child: IconButton(
-                  padding: const EdgeInsets.all(0),
-                  icon: Icon(Icons.add_circle,
-                      color: Theme.of(context).accentColor),
-                  onPressed: () async =>
-                      await _showNumberPickerDialog(context, aListItem),
+                await itemManagerInstance.deleteInstance(aListItem);
+                setState(() {
+                  widget.listAppList.items
+                      .removeWhere((element) => element == aListItem);
+                });
+              },
+              child: ListTile(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      flex: 5,
+                      child: Text(aListItem.name,
+                          style: aListItem.isFulfilled()
+                              ? const TextStyle(
+                                  color: Colors.grey,
+                                  decoration: TextDecoration.lineThrough)
+                              : TextStyle(
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .headline1!
+                                      .color)),
+                    ),
+                    Expanded(
+                        flex: 2,
+                        child: _buildMultiFulfillmentMemberItemButton(
+                            context, aListItem)),
+                  ],
                 ),
+                selected: aListItem.isFulfilled(),
+                trailing: Container(
+                  width: 40,
+                  child: IconButton(
+                    padding: const EdgeInsets.all(0),
+                    icon: Icon(Icons.add_circle,
+                        color: Theme.of(context).accentColor),
+                    onPressed: () async =>
+                        await _showNumberPickerDialog(context, aListItem),
+                  ),
+                ),
+              ));
+        } else {
+          return ListTile(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 5,
+                  child: Text(aListItem.name,
+                      style: aListItem.isFulfilled()
+                          ? const TextStyle(
+                              color: Colors.grey,
+                              decoration: TextDecoration.lineThrough)
+                          : TextStyle(
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .headline1!
+                                  .color)),
+                ),
+                Expanded(
+                    flex: 2,
+                    child: _buildMultiFulfillmentMemberItemButton(
+                        context, aListItem)),
+              ],
+            ),
+            selected: aListItem.isFulfilled(),
+            trailing: Container(
+              width: 40,
+              child: IconButton(
+                padding: const EdgeInsets.all(0),
+                icon: Icon(Icons.add_circle,
+                    color: Theme.of(context).accentColor),
+                onPressed: () async =>
+                    await _showNumberPickerDialog(context, aListItem),
               ),
-            ));
+            ),
+          );
+        }
     }
   }
 
@@ -624,12 +768,13 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
               width: 0.8,
             ))),
             child: ListTile(
-                leading: Icon(Icons.person, color: _assignedColors[member]),
+                leading: Icon(Icons.person,
+                    color: _assignedColors[member.databaseId]),
                 title: Text(
                   member.firstName + ' ' + member.lastName,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: _assignedColors[member]),
+                      color: _assignedColors[member.databaseId]),
                 )))
         : Container(
             decoration: const BoxDecoration(
@@ -639,12 +784,13 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
               width: 0.8,
             ))),
             child: ListTile(
-              leading: Icon(Icons.person, color: _assignedColors[member]),
+              leading:
+                  Icon(Icons.person, color: _assignedColors[member.databaseId]),
               title: Text(
                 member.firstName + ' ' + member.lastName,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: _assignedColors[member]),
+                    color: _assignedColors[member.databaseId]),
               ),
               trailing: member.databaseId == _loggedInListAppUser.databaseId
                   ? IconButton(
@@ -707,11 +853,13 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
           width: 0.8,
         ))),
         child: ListTile(
-            leading: Icon(Icons.person, color: _assignedColors[member]),
+            leading:
+                Icon(Icons.person, color: _assignedColors[member.databaseId]),
             title: Text(
               member.firstName + ' ' + member.lastName,
               style: TextStyle(
-                  fontWeight: FontWeight.bold, color: _assignedColors[member]),
+                  fontWeight: FontWeight.bold,
+                  color: _assignedColors[member.databaseId]),
             ),
             trailing: Text(
               quantity.toString(),

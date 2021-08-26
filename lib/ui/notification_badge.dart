@@ -11,7 +11,7 @@ class NotificationBadge extends StatefulWidget {
 }
 
 class _NotificationBadge extends State<NotificationBadge> {
-  late Future<int> _unansweredNotificationsFuture;
+  late Future<int> _unansweredNotificationsCountFuture;
 
   Future<int> getNotificationNumber() async {
     final listAppUser =
@@ -29,13 +29,13 @@ class _NotificationBadge extends State<NotificationBadge> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    _unansweredNotificationsFuture = getNotificationNumber();
+    _unansweredNotificationsCountFuture = getNotificationNumber();
   }
 
   Widget _buildIcon(BuildContext context) {
     return FutureBuilder<int>(
         initialData: 0,
-        future: _unansweredNotificationsFuture,
+        future: _unansweredNotificationsCountFuture,
         builder: (context, AsyncSnapshot<int> snapshot) {
           if (snapshot.data != null) {
             if (snapshot.data! > 0)

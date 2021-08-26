@@ -161,46 +161,45 @@ class _NotificationPage extends State<NotificationPage> {
             ));
       case NotificationStatus.accepted:
         return Container(
-            decoration: const BoxDecoration(
-                border: Border(
-                    bottom: BorderSide(
-              color: Colors.grey,
-              width: 0.8,
-            ))),
-            child: ListTile(
-              leading: notification.userFrom?.profilePictureURL == null
-                  ? const CircleAvatar(
-                      backgroundImage: AssetImage('assets/sample-profile.png'),
-                      radius: 25.0,
-                    )
-                  : CircleAvatar(
-                      backgroundImage: NetworkImage(
-                          notification.userFrom!.profilePictureURL!)),
-              title: Text(
-                "You and " +
-                    notification.userFrom!.displayName +
-                    " are now friends!",
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ));
-      case NotificationStatus.rejected:
-        return Container(
-            decoration: const BoxDecoration(
-                border: Border(
-                    bottom: BorderSide(
-              color: Colors.grey,
-              width: 0.8,
-            ))),
-            child: ListTile(
-                leading: CircleAvatar(
+          decoration: const BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+            color: Colors.grey,
+            width: 0.8,
+          ))),
+          child: ListTile(
+            leading: notification.userFrom?.profilePictureURL == null
+                ? const CircleAvatar(
+                    backgroundImage: AssetImage('assets/sample-profile.png'),
+                    radius: 25.0,
+                  )
+                : CircleAvatar(
                     backgroundImage: NetworkImage(
                         notification.userFrom!.profilePictureURL!)),
-                title: Text(
-                  "You rejected " +
-                      notification.userFrom!.displayName +
-                      "'s friendship request",
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                )));
+            title: Text(
+              "You and ${notification.userFrom!.displayName} are now friends!",
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        );
+      case NotificationStatus.rejected:
+        return Container(
+          decoration: const BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+            color: Colors.grey,
+            width: 0.8,
+          ))),
+          child: ListTile(
+            leading: CircleAvatar(
+                backgroundImage:
+                    NetworkImage(notification.userFrom!.profilePictureURL!)),
+            title: Text(
+              "You rejected ${notification.userFrom!.displayName}'s friendship request.",
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        );
     }
   }
 

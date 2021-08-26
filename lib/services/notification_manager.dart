@@ -30,7 +30,7 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
       String? userUid, String? orderBy) async {
     final queryResult = await this
         .firebaseCollection
-        .where('userId', isEqualTo: userUid!)
+        .where('userToId', isEqualTo: userUid!)
         .get();
 
     var docs = queryResult.docs;

@@ -133,8 +133,6 @@ class _UserDetailsInkWellState extends State<_UserDetailsInkWell> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    print('BUILD NAVIGATION DRAWER');
-
     _userFuture =
         Provider.of<ListAppAuthProvider>(context).getLoggedInListAppUser();
   }

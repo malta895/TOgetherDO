@@ -82,24 +82,25 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
   }
 
   Future<bool> acceptNotification(String id) async {
-    await this.firebaseCollection.doc(id).update({"status": "accepted"});
+    await firebaseCollection.doc(id).update({"status": "accepted"});
     return true;
   }
 
   Future<bool> rejectNotification(String id) async {
-    await this.firebaseCollection.doc(id).update({"status": "rejected"});
+    await firebaseCollection.doc(id).update({"status": "rejected"});
     return true;
   }
 
-  Future<int> getUnansweredNotifications(String uid, String orderBy) async {
+  Future<int> getUnreadNotificationCount(String uid, String orderBy) async {
     try {
-      final notificationList = await getNotificationsByUserId(uid, orderBy);
-
-      return notificationList
+      final queryResult = await firebaseCollection
           .where(
-            (notification) => notification.status == NotificationStatus.pending,
+            "status",
+            isEqualTo: "pending",
           )
-          .length;
+          .get();
+
+      return queryResult.docs.length;
     } on CheckedFromJsonException catch (e) {
       print(e.message);
       return 0;

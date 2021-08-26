@@ -19,10 +19,10 @@ class _NotificationBadge extends State<NotificationBadge> {
 
     if (listAppUser != null) {
       return ListAppNotificationManager.instance
-          .getUnansweredNotifications(listAppUser.databaseId!, "createdAt");
+          .getUnreadNotificationCount(listAppUser.databaseId!, "createdAt");
     }
 
-    return Future.value(0);
+    return 0;
   }
 
   @override

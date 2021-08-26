@@ -15,6 +15,7 @@ Map<String, dynamic> _$ListAppNotificationToJson(
       'userFromId': instance.userFromId,
       'notificationType': _$NotificationTypeEnumMap[instance.notificationType],
       'status': _$NotificationStatusEnumMap[instance.status],
+      'isRead': instance.isRead,
     };
 
 const _$NotificationTypeEnumMap = {
@@ -36,8 +37,9 @@ ListInviteNotification _$ListInviteNotificationFromJson(
       userFromId: $checkedConvert(json, 'userFromId', (v) => v),
       status: $checkedConvert(
           json, 'status', (v) => _$enumDecode(_$NotificationStatusEnumMap, v)),
-      listOwner: $checkedConvert(json, 'listOwner', (v) => v as String),
+      listOwnerId: $checkedConvert(json, 'listOwnerId', (v) => v as String),
       listId: $checkedConvert(json, 'listId', (v) => v as String),
+      isRead: $checkedConvert(json, 'isRead', (v) => v),
       databaseId: $checkedConvert(json, 'databaseId', (v) => v),
       createdAt: $checkedConvert(
           json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
@@ -54,8 +56,9 @@ Map<String, dynamic> _$ListInviteNotificationToJson(
       'userToId': instance.userToId,
       'userFromId': instance.userFromId,
       'status': _$NotificationStatusEnumMap[instance.status],
+      'isRead': instance.isRead,
       'listId': instance.listId,
-      'listOwner': instance.listOwner,
+      'listOwnerId': instance.listOwnerId,
     };
 
 K _$enumDecode<K, V>(
@@ -97,6 +100,7 @@ FriendshipNotification _$FriendshipNotificationFromJson(
       databaseId: $checkedConvert(json, 'databaseId', (v) => v as String?),
       createdAt: $checkedConvert(
           json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
+      isRead: $checkedConvert(json, 'isRead', (v) => v),
     );
     return val;
   });
@@ -110,6 +114,7 @@ Map<String, dynamic> _$FriendshipNotificationToJson(
       'userToId': instance.userToId,
       'userFromId': instance.userFromId,
       'status': _$NotificationStatusEnumMap[instance.status],
+      'isRead': instance.isRead,
       'friendshipRequestMethod':
           _$FriendshipRequestMethodEnumMap[instance.friendshipRequestMethod],
     };

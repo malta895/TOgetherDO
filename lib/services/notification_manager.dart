@@ -28,48 +28,57 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
 
   Future<List<ListAppNotification>> getNotificationsByUserId(
       String? userUid, String? orderBy) async {
-    final queryResult = await this
-        .firebaseCollection
-        .where('userToId', isEqualTo: userUid!)
-        .get();
+    try {
+      final queryResult = await this
+          .firebaseCollection
+          .where('userToId', isEqualTo: userUid!)
+          .get();
 
-    var docs = queryResult.docs;
+      var docs = queryResult.docs;
 
-    switch (orderBy) {
-      case 'createdAt':
-        docs.sort((a, b) {
-          return b.data()!.createdAt.compareTo(a.data()!.createdAt);
-        });
-        break;
-    }
-
-    // find and inject the values not already objects in database
-    return Future.wait(docs.map((e) async {
-      final notification = e.data()!;
-
-      final userFrom =
-          await ListAppUserManager.instance.getByUid(notification.userFromId);
-
-      final userTo =
-          await ListAppUserManager.instance.getByUid(notification.userToId);
-
-      notification.userFrom = userFrom;
-      notification.userTo = userTo;
-
-      switch (notification.notificationType) {
-        case NotificationType.friendship:
-          // NOTE nothing to inject here for now
-          break;
-        case NotificationType.listInvite:
-          final listNotification = notification as ListInviteNotification;
-          listNotification.list =
-              await ListAppListManager.instanceForUser(userFrom!)
-                  .getByUid(notification.listId);
+      switch (orderBy) {
+        case 'createdAt':
+          docs.sort((a, b) {
+            return b.data()!.createdAt.compareTo(a.data()!.createdAt);
+          });
           break;
       }
+      final data = docs.first.data();
 
-      return notification;
-    }));
+      // find and inject the values not already objects in database
+      return Future.wait(
+        docs.map(
+          (e) async {
+            final notification = e.data()!;
+
+            final userFrom = await ListAppUserManager.instance
+                .getByUid(notification.userFromId);
+
+            final userTo = await ListAppUserManager.instance
+                .getByUid(notification.userToId);
+
+            notification.userFrom = userFrom;
+            notification.userTo = userTo;
+
+            switch (notification.notificationType) {
+              case NotificationType.friendship:
+                // NOTE nothing to inject here for now
+                return notification as FriendshipNotification;
+              case NotificationType.listInvite:
+                final listInviteNotification =
+                    notification as ListInviteNotification;
+                listInviteNotification.list =
+                    await ListAppListManager.instanceForUser(userFrom!)
+                        .getByUid(listInviteNotification.listId);
+                return listInviteNotification;
+            }
+          },
+        ),
+      );
+    } on CheckedFromJsonException catch (e) {
+      print(e);
+      return [];
+    }
   }
 
   Future<bool> acceptNotification(String id) async {

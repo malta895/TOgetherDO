@@ -170,7 +170,7 @@ void main() {
       userToId: '123',
       userFromId: '456',
       status: NotificationStatus.pending,
-      listOwner: '123',
+      listOwnerId: '123',
       listId: '5',
       databaseId: '123',
     );

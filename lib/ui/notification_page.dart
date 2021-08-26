@@ -3,7 +3,9 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/services/authentication.dart';
+import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/services/notification_manager.dart';
+import 'package:mobile_applications/ui/list_details_page.dart';
 import 'package:provider/provider.dart';
 
 class NotificationPage extends StatefulWidget {
@@ -97,11 +99,13 @@ class _NotificationPage extends State<NotificationPage> {
       case NotificationStatus.pending:
         return Container(
             decoration: const BoxDecoration(
-                border: Border(
-                    bottom: BorderSide(
-              color: Colors.grey,
-              width: 0.8,
-            ))),
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.grey,
+                  width: 0.8,
+                ),
+              ),
+            ),
             child: ListTile(
               leading: CircleAvatar(
                 backgroundImage: notification.userFrom?.profilePictureURL ==
@@ -211,21 +215,20 @@ class _NotificationPage extends State<NotificationPage> {
       case NotificationStatus.pending:
         return Container(
           decoration: const BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(
-            color: Colors.grey,
-            width: 0.8,
-          ))),
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.grey,
+                width: 0.8,
+              ),
+            ),
+          ),
           child: ListTile(
             leading: const Icon(
               Icons.list,
               size: 30,
             ),
             title: Text(
-              notification.userFrom!.displayName +
-                  " added you to the list \"" +
-                  notification.list!.name +
-                  "\"",
+              "${notification.userFrom!.displayName} added you to the list ${notification.list!.name}",
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: const Text("You can accept or decline the invitation"),
@@ -251,20 +254,21 @@ class _NotificationPage extends State<NotificationPage> {
                   width: 10,
                 ),
                 TextButton(
-                    style: TextButton.styleFrom(
-                      side: const BorderSide(color: Colors.red, width: 1),
-                    ),
-                    onPressed: () async {
-                      await ListAppNotificationManager.instance
-                          .rejectNotification(notification.databaseId!);
-                      setState(() {
-                        _notificationsFuture = _fetchNotifications();
-                      });
-                    },
-                    child: const Icon(
-                      Icons.close,
-                      color: Colors.red,
-                    ))
+                  style: TextButton.styleFrom(
+                    side: const BorderSide(color: Colors.red, width: 1),
+                  ),
+                  onPressed: () async {
+                    await ListAppNotificationManager.instance
+                        .rejectNotification(notification.databaseId!);
+                    setState(() {
+                      _notificationsFuture = _fetchNotifications();
+                    });
+                  },
+                  child: const Icon(
+                    Icons.close,
+                    color: Colors.red,
+                  ),
+                )
               ],
             ),
           ),
@@ -284,12 +288,26 @@ class _NotificationPage extends State<NotificationPage> {
               size: 30,
             ),
             title: Text(
-              "You are now in the \"" + notification.list!.name + " list \"",
+              "You are now in the ${notification.list!.name} list!",
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: const Text("Click on this tile to explore the list!"),
-            //TODO make the onTap redirect to the list page
-            onTap: () => print("Redirect to the list page"),
+            onTap: () async {
+              await ListAppListManager.instanceForUserUid(
+                      notification.userFromId)
+                  .injectData(notification.list!);
+
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => ListDetailsPage(
+                    notification.list!,
+                    // the list comes from the invitation from someone else, so the current user is not the owner for sure
+                    canAddNewMembers: false,
+                  ),
+                ),
+              );
+            },
           ),
         );
 
@@ -307,9 +325,7 @@ class _NotificationPage extends State<NotificationPage> {
               size: 30,
             ),
             title: Text(
-              "You rejected the invitation to the \"" +
-                  notification.list!.name +
-                  "\" list",
+              "You rejected the invitation to the ${notification.list!.name} list",
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),

@@ -30,13 +30,15 @@ jobs:
     - run: flutter analyze --no-fatal-infos
 
   test:
-    - needs: analyze
-    
+    needs: analyze
+    steps:
+
     # Run widget tests for our flutter project.
     - run: flutter test -r expanded
 
   build:
-    - needs: analyze
+    needs: analyze
+    steps:
 
     - uses: actions/setup-java@v1
       with:

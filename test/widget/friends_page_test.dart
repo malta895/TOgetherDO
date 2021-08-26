@@ -134,6 +134,31 @@ void main() {
       },
     );
   });
+  testWidgets(
+    'Cannot add themselves/already friends',
+    (tester) async {
+      await tester
+          .pumpWidget(TestUtils.createScreen(screen: const FriendsPage()));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+      await tester.enterText(find.byType(TextField), 'johndoe2');
+      await tester.tap(find.byKey(const Key("add_friend_button")));
+      await tester.pumpAndSettle();
+
+      // unfortunately we cannot test the text of the toast, but we can ensure the dialog is still there
+      expect(find.byType(AlertDialog), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField), 'johndoe1');
+      await tester.tap(find.byKey(const Key("add_friend_button")));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+    },
+  );
 
   testWidgets('Pending friendship should be shown', (tester) async {
     // add a pending friend to the database

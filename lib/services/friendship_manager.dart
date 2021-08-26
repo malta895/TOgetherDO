@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/models/friendship.dart';
 import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/models/user.dart';
@@ -61,12 +62,22 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
     }));
   }
 
-  Future<bool> _addFriend(
+  Future<void> _addFriend(
     ListAppUser userFrom,
     String userToId,
     FriendshipRequestMethod friendshipRequestMethod,
   ) async {
     try {
+      if (userFrom.databaseId! == userToId)
+        throw ListAppException(
+          "You can't add yourself to your friends :/",
+        );
+
+      if (userFrom.friends.containsKey(userToId))
+        throw ListAppException(
+          "You are already friend with this user, or an invitation has already been sent.",
+        );
+
       final newFriendship = ListAppFriendship(
         userFrom: userFrom.databaseId!,
         userTo: userToId,
@@ -88,14 +99,13 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
       // add a new friend with pending request
       userFrom.friends[userToId] = false;
       await ListAppUserManager.instance.saveToFirestore(userFrom);
-
-      return true;
     } on StateError catch (_) {
-      return false;
+      throw ListAppException(
+          "An error occurred while trying to retrieve the user");
     }
   }
 
-  Future<bool> addFriendByEmail(
+  Future<void> addFriendByEmail(
     String email,
     ListAppUser userFrom,
   ) async {
@@ -107,10 +117,11 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
         FriendshipRequestMethod.email,
       );
     } else
-      return false;
+      throw ListAppException(
+          "An error occurred while trying to retrieve the user");
   }
 
-  Future<bool> addFriendByUsername(
+  Future<void> addFriendByUsername(
     String username,
     ListAppUser userFrom,
   ) async {
@@ -124,9 +135,10 @@ class ListAppFriendshipManager extends DatabaseManager<ListAppFriendship>
           FriendshipRequestMethod.username,
         );
       } else
-        return false;
+        throw ListAppException("The user has not been found");
     } on TypeError catch (_) {
-      return false;
+      throw ListAppException(
+          "An error occurred while trying to retrieve the user");
     }
   }
 }

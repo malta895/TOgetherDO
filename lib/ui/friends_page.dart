@@ -110,16 +110,14 @@ class _FriendsListState extends State<FriendsPage> {
                       return;
                     }
                     try {
-                      late final bool isUserFound;
-
                       if (EmailValidator.validate(_emailUsername)) {
                         // the user provided an email
-                        isUserFound = await ListAppFriendshipManager.instance
+                        await ListAppFriendshipManager.instance
                             .addFriendByEmail(
                                 _emailUsername, _loggedInListAppUser!);
                       } else {
                         // the user provided an username
-                        isUserFound = await ListAppFriendshipManager.instance
+                        await ListAppFriendshipManager.instance
                             .addFriendByUsername(
                                 _emailUsername, _loggedInListAppUser!);
                       }
@@ -127,35 +125,22 @@ class _FriendsListState extends State<FriendsPage> {
                       // update the state to show the new friend
                       setState(() {});
 
-                      if (isUserFound) {
-                        // not awaited because we let the dialog pop in the meantime
-                        Fluttertoast.showToast(
-                          msg: "Friend request sent!",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.CENTER,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.green,
-                          textColor: Colors.white,
-                          fontSize: 16.0,
-                        );
+                      // not awaited because we let the dialog pop in the meantime
+                      Fluttertoast.showToast(
+                        msg: "Friend request sent!",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.green,
+                        textColor: Colors.white,
+                        fontSize: 16.0,
+                      );
 
-                        Navigator.pop(context, true);
-                      } else {
-                        // not awaited because we let the dialog pop in the meantime
-                        Fluttertoast.showToast(
-                          msg: "The user has not been found.",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.CENTER,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.red,
-                          textColor: Colors.white,
-                          fontSize: 16.0,
-                        );
-                      }
+                      Navigator.pop(context, true);
                     } on ListAppException catch (e) {
                       await Fluttertoast.showToast(
                         msg: e.message,
-                        toastLength: Toast.LENGTH_SHORT,
+                        toastLength: Toast.LENGTH_LONG,
                         gravity: ToastGravity.CENTER,
                         timeInSecForIosWeb: 1,
                         backgroundColor: Colors.red,

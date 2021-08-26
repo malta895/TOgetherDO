@@ -11,14 +11,13 @@ class NotificationBadge extends StatefulWidget {
 }
 
 class _NotificationBadge extends State<NotificationBadge> {
-  late Future<int> unansweredNotifications;
+  late Future<int> _unansweredNotificationsFuture;
 
   Future<int> getNotificationNumber() async {
     final listAppUser =
         await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
 
     if (listAppUser != null) {
-      print("GETNOTIFICATIONNUMBER" + listAppUser.databaseId!);
       return ListAppNotificationManager.instance
           .getUnansweredNotifications(listAppUser.databaseId!, "createdAt");
     }
@@ -30,14 +29,13 @@ class _NotificationBadge extends State<NotificationBadge> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    unansweredNotifications = getNotificationNumber();
-    getNotificationNumber().then((value) => print(value));
+    _unansweredNotificationsFuture = getNotificationNumber();
   }
 
   Widget _buildIcon(BuildContext context) {
     return FutureBuilder<int>(
         initialData: 0,
-        future: unansweredNotifications,
+        future: _unansweredNotificationsFuture,
         builder: (context, AsyncSnapshot<int> snapshot) {
           if (snapshot.data != null) {
             if (snapshot.data! > 0)

@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
@@ -33,7 +32,6 @@ class _NotificationPage extends State<NotificationPage> {
     SchedulerBinding.instance?.addPostFrameCallback((_) {
       if (!_isManuallyRefreshing) _refreshIndicatorKey.currentState?.show();
     });
-    FirebaseMessaging.instance.getToken().then((value) => print(value));
   }
 
   Future<List<ListAppNotification>> _fetchNotifications() async {
@@ -56,11 +54,6 @@ class _NotificationPage extends State<NotificationPage> {
         final notificationList = snapshot.data ?? [];
         switch (snapshot.connectionState) {
           case ConnectionState.none:
-            return const Center(
-                child: Text(
-              "There are no notifications",
-              style: TextStyle(fontSize: 22),
-            ));
           case ConnectionState.waiting:
           case ConnectionState.active:
             return const Center(
@@ -88,6 +81,7 @@ class _NotificationPage extends State<NotificationPage> {
                     child: Text(
                       "There are no notifications.\nCome back again!",
                       style: TextStyle(fontSize: 22),
+                      textAlign: TextAlign.center,
                     ),
                   );
         }

@@ -107,13 +107,10 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
 
       // inject users
       listAppList.members.forEach((memberUserUid, accepted) async {
-        print(memberUserUid);
-        print(accepted);
         final listAppUser =
             await ListAppUserManager.instance.getByUid(memberUserUid);
 
         if (listAppUser != null && accepted == true) {
-          print("ciao1");
           listAppList.membersAsUsers.add(listAppUser);
         }
       });

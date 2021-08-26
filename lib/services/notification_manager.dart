@@ -85,7 +85,6 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
   Future<int> getUnansweredNotifications(String uid, String orderBy) async {
     try {
       var cont = 0;
-      print("Inizio getunanswered");
       var notificationList = await getNotificationsByUserId(uid, orderBy);
 
       for (var item in notificationList) {

@@ -195,7 +195,6 @@ class ListAppAuthProvider with ChangeNotifier {
           .signInWithEmailAndPassword(email: email, password: password);
 
       log(userCredential.toString());
-      print(userCredential);
 
       return null;
     } on FirebaseAuthException catch (e) {

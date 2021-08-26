@@ -9,7 +9,7 @@ on:
     - feat-*
 
 jobs:
-  test:
+  analyze:
     runs-on: ubuntu-latest
     steps:
 
@@ -28,16 +28,16 @@ jobs:
     
     # Statically analyze the Dart code for any errors.
     - run: flutter analyze --no-fatal-infos
+
+  test:
+    - needs: analyze
     
     # Run widget tests for our flutter project.
     - run: flutter test -r expanded
 
   build:
-    runs-on: ubuntu-latest
-    steps:
-    
-    # Setup Java environment in order to build the Android app.
-    - uses: actions/checkout@v2
+    - needs: analyze
+
     - uses: actions/setup-java@v1
       with:
         java-version: '12.x'

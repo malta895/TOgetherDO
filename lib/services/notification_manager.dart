@@ -93,16 +93,13 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
 
   Future<int> getUnansweredNotifications(String uid, String orderBy) async {
     try {
-      var cont = 0;
-      var notificationList = await getNotificationsByUserId(uid, orderBy);
+      final notificationList = await getNotificationsByUserId(uid, orderBy);
 
-      for (var item in notificationList) {
-        if (item.status == NotificationStatus.pending) {
-          cont++;
-        }
-      }
-
-      return cont;
+      return notificationList
+          .where(
+            (notification) => notification.status == NotificationStatus.pending,
+          )
+          .length;
     } on CheckedFromJsonException catch (e) {
       print(e.message);
       return 0;

@@ -79,47 +79,12 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
     final combinedQueryResult =
         queryResultMemberLists.docs.followedBy(queryResultOwnedLists.docs);
 
-    // TODO remove lists that the user hasn't already accepted
-    // probabilmente basta non mettere in members finchè non si accetta
-    // LEVA FOREACH
-    // notEqualTo con indice
-    // FALLO IN USER MANAGERRRR
-    // awaitedLists.forEach((element) async {
-    //   final notificationQuery = await _notificationsCollection
-    //       .where('notificationType', isEqualTo: "listInvite")
-    //       .where('listId', isEqualTo: element.databaseId)
-    //       .where('userId', isEqualTo: _userUid)
-    //       .where('status', whereIn: ["undefined", "rejected"]).get();
-    //   if (notificationQuery.docs.length == 0) {
-    //     awaitedLists
-    //         .removeWhere((list) => list.databaseId == element.databaseId);
-    //   }
-    // });
-
     final listAppLists = combinedQueryResult
         .where((element) => ManagerUtils.doesElementConvertFromJson(element))
         .map((listDocumentSnapshot) async {
       final ListAppList listAppList = listDocumentSnapshot.data()!;
 
-      // inject creator
-      listAppList.creator =
-          await ListAppUserManager.instance.getByUid(listAppList.creatorUid!);
-
-      // inject users
-      listAppList.members.forEach((memberUserUid, accepted) async {
-        final listAppUser =
-            await ListAppUserManager.instance.getByUid(memberUserUid);
-
-        if (listAppUser != null && accepted == true) {
-          listAppList.membersAsUsers.add(listAppUser);
-        }
-      });
-
-      //inject items
-      // TODO we can remove it if we fetch them at need
-      listAppList.items = await ListAppItemManager.instanceForList(
-              listDocumentSnapshot.id, listAppList.creatorUid!)
-          .getItems();
+      await injectData(listAppList);
 
       return listAppList;
     }).toList();
@@ -135,6 +100,30 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
     }
 
     return awaitedLists;
+  }
+
+  /// Retrieves and injects objects by id in the list
+  Future<void> injectData(ListAppList listAppList) async {
+    // inject creator
+    listAppList.creator =
+        await ListAppUserManager.instance.getByUid(listAppList.creatorUid!);
+
+    // inject users
+    listAppList.members.forEach((memberUserUid, accepted) async {
+      final listAppUser =
+          await ListAppUserManager.instance.getByUid(memberUserUid);
+
+      if (listAppUser != null && accepted == true) {
+        listAppList.membersAsUsers.add(listAppUser);
+      }
+    });
+
+    //inject items
+    // TODO we can remove it if we fetch them at need
+    listAppList.items = await ListAppItemManager.instanceForList(
+      listAppList.databaseId!,
+      listAppList.creatorUid!,
+    ).getItems();
   }
 
   Future<bool> addMemberToList(String listId, String userId) async {

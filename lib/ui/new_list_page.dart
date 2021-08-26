@@ -157,6 +157,8 @@ class _NewListFormState extends State<_NewListForm> {
             try {
               await ListAppListManager.instanceForUserUid(user.uid)
                   .saveToFirestore(newList);
+              await ListAppListManager.instanceForUserUid(user.uid)
+                  .injectData(newList);
               snackBar.close();
               Navigator.of(context).pop<ListAppList?>(newList);
               isUploading = false;

@@ -41,7 +41,7 @@ jobs:
       with:
         channel: 'stable'
 
-    - flutter format -n --set-exit-if-changed .
+    - run: flutter format -n --set-exit-if-changed .
 
   test:
     runs-on: ubuntu-latest

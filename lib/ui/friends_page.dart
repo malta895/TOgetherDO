@@ -5,7 +5,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
-import 'package:mobile_applications/services/friendship_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/notification_badge.dart';
@@ -112,14 +111,12 @@ class _FriendsListState extends State<FriendsPage> {
                     try {
                       if (EmailValidator.validate(_emailUsername)) {
                         // the user provided an email
-                        await ListAppFriendshipManager.instance
-                            .addFriendByEmail(
-                                _emailUsername, _loggedInListAppUser!);
+                        await ListAppUserManager.instance.addFriendByEmail(
+                            _emailUsername, _loggedInListAppUser!);
                       } else {
                         // the user provided an username
-                        await ListAppFriendshipManager.instance
-                            .addFriendByUsername(
-                                _emailUsername, _loggedInListAppUser!);
+                        await ListAppUserManager.instance.addFriendByUsername(
+                            _emailUsername, _loggedInListAppUser!);
                       }
 
                       // update the state to show the new friend

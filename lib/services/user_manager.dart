@@ -5,9 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/exception.dart';
+import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/database_manager.dart';
 import 'package:mobile_applications/services/manager_config.dart';
+import 'package:mobile_applications/services/notification_manager.dart';
 import 'package:mobile_applications/services/utils.dart' show ManagerUtils;
 
 class ListAppUserManager extends DatabaseManager<ListAppUser>
@@ -190,5 +192,76 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
     friend.friends.remove(currentUser.databaseId!);
     saveToFirestore(currentUser);
     saveToFirestore(friend);
+  }
+
+  Future<void> _addFriend(
+    ListAppUser userFrom,
+    String userToId,
+    FriendshipRequestMethod friendshipRequestMethod,
+  ) async {
+    try {
+      if (userFrom.databaseId! == userToId)
+        throw ListAppException(
+          "You can't add yourself to your friends :/",
+        );
+
+      if (userFrom.friends.containsKey(userToId))
+        throw ListAppException(
+          "You are already friend with this user, or an invitation has already been sent.",
+        );
+
+      final newNotification = FriendshipNotification(
+        userFromId: userFrom.databaseId!,
+        userToId: userToId,
+        friendshipRequestMethod: friendshipRequestMethod,
+      );
+
+      await ListAppNotificationManager.instance
+          .saveToFirestore(newNotification);
+
+      // add a new friend with pending request
+      userFrom.friends[userToId] = false;
+      await ListAppUserManager.instance.saveToFirestore(userFrom);
+    } on StateError catch (_) {
+      throw ListAppException(
+          "An error occurred while trying to retrieve the user");
+    }
+  }
+
+  Future<void> addFriendByEmail(
+    String email,
+    ListAppUser userFrom,
+  ) async {
+    ListAppUser? userTo = await ListAppUserManager.instance.getByEmail(email);
+    if (userTo != null) {
+      return _addFriend(
+        userFrom,
+        userTo.databaseId!,
+        FriendshipRequestMethod.email,
+      );
+    } else
+      throw ListAppException(
+          "An error occurred while trying to retrieve the user");
+  }
+
+  Future<void> addFriendByUsername(
+    String username,
+    ListAppUser userFrom,
+  ) async {
+    try {
+      ListAppUser? userTo =
+          await ListAppUserManager.instance.getByUsername(username);
+      if (userTo != null) {
+        return _addFriend(
+          userFrom,
+          userTo.databaseId!,
+          FriendshipRequestMethod.username,
+        );
+      } else
+        throw ListAppException("The user has not been found");
+    } on TypeError catch (_) {
+      throw ListAppException(
+          "An error occurred while trying to retrieve the user");
+    }
   }
 }

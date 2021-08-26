@@ -167,8 +167,8 @@ void main() {
     });
 
     final ListAppNotification listInviteNotification = ListInviteNotification(
-      userId: '123',
-      userFrom: '456',
+      userToId: '123',
+      userFromId: '456',
       status: NotificationStatus.pending,
       listOwner: '123',
       listId: '5',
@@ -181,7 +181,7 @@ void main() {
       });
 
       test('list invite type consinstency', () {
-        expect(listInviteNotificationToJson['userId'], '123');
+        expect(listInviteNotificationToJson['userToId'], '123');
       });
 
       test('list invite type consinstency', () {
@@ -204,10 +204,10 @@ void main() {
     });
 
     final ListAppNotification friendshipNotification = FriendshipNotification(
-      userId: '123',
-      userFrom: '456',
+      userToId: '123',
+      userFromId: '456',
       status: NotificationStatus.pending,
-      friendshipId: 'abc',
+      friendshipRequestMethod: FriendshipRequestMethod.email,
     );
     final friendshipNotificationToJson = friendshipNotification.toJson();
     group('Test list invite notification', () {
@@ -216,7 +216,7 @@ void main() {
       });
 
       test('list invite type consinstency', () {
-        expect(friendshipNotificationToJson['userId'], '123');
+        expect(friendshipNotificationToJson['userToId'], '123');
       });
 
       final ListAppNotification friendshipNotificationFromJson =
@@ -227,9 +227,9 @@ void main() {
 
       test('list invite has correct id', () {
         expect(
-            (friendshipNotificationFromJson as FriendshipNotification)
-                .friendshipId,
-            'abc');
+            (friendshipNotificationFromJson as FriendshipNotification).userToId,
+            '123');
+        expect((friendshipNotificationFromJson).userFromId, '456');
       });
     });
   });

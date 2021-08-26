@@ -59,18 +59,6 @@ void main() {
         await tester.tap(find.byKey(const Key("add_friend_button")));
         await tester.pumpAndSettle();
 
-        var queryResult = await fakeFirebaseFirestore
-            .collection('friendships')
-            .where('userFrom', isEqualTo: 'user1_id')
-            .where('userTo', isEqualTo: 'user3_id')
-            .get();
-
-        // the database should contain the new friendship
-        expect(queryResult.docs.length, 1);
-        final friendship = queryResult.docs.first;
-        expect(friendship["requestAccepted"], false);
-        expect(friendship["requestedBy"], "username");
-
         // we have the pending friend in the database
         expect(
             (await ListAppUserManager.instance.getByUid('user1_id'))!
@@ -78,11 +66,6 @@ void main() {
             false);
         expect(find.text('johndoe3'), findsOneWidget);
         expect(find.textContaining('pending'), findsOneWidget);
-
-        await fakeFirebaseFirestore
-            .collection('friendships')
-            .doc(queryResult.docs.first.id)
-            .delete();
 
         // add the email
         fakeFirebaseFunctions.mockResult(
@@ -111,18 +94,6 @@ void main() {
         await tester.enterText(find.byType(TextField), 'john@friend4.com');
         await tester.tap(find.byKey(const Key("add_friend_button")));
         await tester.pumpAndSettle();
-
-        queryResult = await fakeFirebaseFirestore
-            .collection('friendships')
-            .where('userFrom', isEqualTo: 'user1_id')
-            .where('userTo', isEqualTo: 'user4_id')
-            .get();
-
-        // the database should contain the new friendship
-        expect(queryResult.docs.length, 1);
-        final friendship2 = queryResult.docs.first;
-        expect(friendship2["requestAccepted"], false);
-        expect(friendship2["requestedBy"], "email");
 
         // we have the pending friend in the database
         expect(

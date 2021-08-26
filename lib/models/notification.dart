@@ -2,6 +2,7 @@ import 'dart:core';
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/base_model.dart';
+import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/user.dart';
 // ignore: unused_import
 import 'package:mobile_applications/models/utils.dart';
@@ -33,25 +34,43 @@ extension ParseToString on NotificationStatus {
   }
 }
 
-enum NotificationType { friendship, listInvite }
+enum NotificationType {
+  /// A friendship request notification
+  friendship,
+
+  /// A notification sent after being invited to a list
+  listInvite,
+}
+
+enum FriendshipRequestMethod {
+  /// the friendship has been requested by username
+  username,
+
+  /// the friendship has been requested by email
+  email
+}
 
 @JsonSerializable(checked: true, createFactory: false)
 abstract class ListAppNotification extends BaseModel {
   static const String collectionName = 'notifications';
-  final String userId;
-  final String userFrom;
+  final String userToId;
+  final String userFromId;
 
   final NotificationType notificationType;
 
   NotificationStatus status;
 
+  //fields to be injected
   @JsonKey(ignore: true)
-  ListAppUser? sender;
+  ListAppUser? userTo;
+
+  @JsonKey(ignore: true)
+  ListAppUser? userFrom;
 
   ListAppNotification({
     String? databaseId,
-    required this.userId,
-    required this.userFrom,
+    required this.userToId,
+    required this.userFromId,
     this.status = NotificationStatus.pending,
     required this.notificationType,
     DateTime? createdAt,
@@ -92,21 +111,25 @@ class ListInviteNotification extends ListAppNotification {
   String listId;
   String listOwner;
 
+  @JsonKey(ignore: true)
+  ListAppList? list;
+
   ListInviteNotification({
-    required userId,
-    required userFrom,
+    required userToId,
+    required userFromId,
     required NotificationStatus status,
     required this.listOwner,
     required this.listId,
     databaseId,
     createdAt,
   }) : super(
-            createdAt: createdAt,
-            databaseId: databaseId,
-            notificationType: NotificationType.listInvite,
-            userId: userId,
-            userFrom: userFrom,
-            status: status);
+          createdAt: createdAt,
+          databaseId: databaseId,
+          notificationType: NotificationType.listInvite,
+          userToId: userToId,
+          userFromId: userFromId,
+          status: status,
+        );
 
   factory ListInviteNotification.fromJson(Map<String, dynamic> json) =>
       _$ListInviteNotificationFromJson(json);
@@ -114,24 +137,25 @@ class ListInviteNotification extends ListAppNotification {
 
 @JsonSerializable(
   checked: true,
-) // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
+)
 class FriendshipNotification extends ListAppNotification {
-  String friendshipId;
+  FriendshipRequestMethod friendshipRequestMethod;
 
   FriendshipNotification({
-    required userId,
-    required userFrom,
+    required userToId,
+    required userFromId,
+    required this.friendshipRequestMethod,
     NotificationStatus status = NotificationStatus.pending,
-    required this.friendshipId,
-    databaseId,
+    String? databaseId,
     DateTime? createdAt,
   }) : super(
-            createdAt: createdAt,
-            databaseId: databaseId,
-            notificationType: NotificationType.friendship,
-            userId: userId,
-            userFrom: userFrom,
-            status: status);
+          createdAt: createdAt,
+          databaseId: databaseId,
+          notificationType: NotificationType.friendship,
+          userToId: userToId,
+          userFromId: userFromId,
+          status: status,
+        );
 
   factory FriendshipNotification.fromJson(Map<String, dynamic> json) =>
       _$FriendshipNotificationFromJson(json);

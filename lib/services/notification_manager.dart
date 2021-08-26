@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/services/database_manager.dart';
+import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/services/manager_config.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 
@@ -42,15 +43,31 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
         break;
     }
 
+    // find and inject the values not already objects in database
     return Future.wait(docs.map((e) async {
       final notification = e.data()!;
-      print("STATUS");
-      print(notification.status);
-      final sender =
-          await ListAppUserManager.instance.getByUid(notification.userFrom);
 
-      notification.databaseId = e.id;
-      notification.sender = sender;
+      final userFrom =
+          await ListAppUserManager.instance.getByUid(notification.userFromId);
+
+      final userTo =
+          await ListAppUserManager.instance.getByUid(notification.userToId);
+
+      notification.userFrom = userFrom;
+      notification.userTo = userTo;
+
+      switch (notification.notificationType) {
+        case NotificationType.friendship:
+          // NOTE nothing to inject here for now
+          break;
+        case NotificationType.listInvite:
+          final listNotification = notification as ListInviteNotification;
+          listNotification.list =
+              await ListAppListManager.instanceForUser(userFrom!)
+                  .getByUid(notification.listId);
+          break;
+      }
+
       return notification;
     }));
   }

@@ -140,42 +140,25 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
     return awaitedLists;
   }
 
-  Future<bool?> addMemberToList(String lid, String uid) async {
-    this
-        .firebaseCollection
-        .doc(lid)
-        .update({"members.$uid": false})
-        .then((value) => true)
-        .catchError((e) => false);
+  Future<bool> addMemberToList(String listId, String userId) async {
+    firebaseCollection.doc(listId).update({"members.$userId": false});
+
+    return true;
   }
 
-  Future<bool?> removeMemberFromList(String lid, String uid) async {
-    this
-        .firebaseCollection
-        .doc(lid)
-        .update({"members.$uid": FieldValue.delete()})
-        .then((value) => true)
-        .catchError((e) => false);
+  Future<bool> removeMemberFromList(ListAppList list, String userId) async {
+    list.members.remove(userId);
+    ListAppListManager.instanceForUser(
+            (await ListAppUserManager.instance.getByUid(list.creatorUid!))!)
+        .saveToFirestore(list);
+
+    return true;
   }
 
-  Future<bool> leaveList(String ownerUid, ListAppList list) async {
+  /// The current user leaves the passed list
+  Future<bool> leaveList(ListAppList list) async {
     try {
-      final ownerListCollectionRef = ManagerConfig.firebaseFirestoreInstance
-          .collection(ListAppUser.collectionName)
-          .doc(ownerUid)
-          .collection(ListAppList.collectionName);
-
-      final queryResultDocRef = ownerListCollectionRef.doc(list.databaseId);
-
-      final queryResult = await queryResultDocRef.get();
-
-      final membersUids = queryResult.get('members');
-
-      if (membersUids.remove(_userUid)) {
-        queryResultDocRef.update({'members': membersUids});
-        return true;
-      }
-      return false;
+      return removeMemberFromList(list, _userUid);
     } on CheckedFromJsonException catch (_) {
       return false;
     }

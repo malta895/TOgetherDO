@@ -103,8 +103,7 @@ class _ListsPageState extends State<ListsPage>
       await ListAppListManager.instanceForUser(listAppUser)
           .deleteInstance(list);
     } else {
-      await ListAppListManager.instanceForUser(listAppUser)
-          .leaveList(list.creatorUid!, list);
+      await ListAppListManager.instanceForUser(listAppUser).leaveList(list);
     }
 
     setState(() {

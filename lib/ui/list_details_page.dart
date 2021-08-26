@@ -11,7 +11,6 @@ import 'package:intl/intl.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/list_item.dart';
 import 'package:mobile_applications/services/authentication.dart';
-
 import 'package:mobile_applications/services/item_manager.dart';
 import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
@@ -969,7 +968,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                                 _loggedInListAppUser
                                                     .databaseId!)
                                             .removeMemberFromList(
-                                                widget.listAppList.databaseId!,
+                                                widget.listAppList,
                                                 member.databaseId!);
 
                                         setState(() {
@@ -1060,8 +1059,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
           .deleteInstance(list);
       Navigator.of(context).pop();
     } else {
-      await ListAppListManager.instanceForUser(listAppUser)
-          .leaveList(list.creatorUid ?? '', list);
+      await ListAppListManager.instanceForUser(listAppUser).leaveList(list);
       Navigator.of(context).pop();
     }
   }

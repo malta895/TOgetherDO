@@ -115,8 +115,6 @@ class _ListsPageState extends State<ListsPage>
           ?.removeItem(removeIndex, (_, __) => Container());
 
       _listAppLists.removeAt(removeIndex);
-
-      _listsFuture = _fetchLists();
     });
   }
 
@@ -192,6 +190,7 @@ class _ListsPageState extends State<ListsPage>
         child: Text(
       "You don't have any lists.\nYou can create a new one with the button below.",
       style: TextStyle(fontSize: 22),
+      textAlign: TextAlign.center,
     ));
   }
 

@@ -232,7 +232,9 @@ class _ListsPageState extends State<ListsPage>
                                 : const Text('LEAVE'),
                           ),
                           TextButton(
-                            onPressed: () => Navigator.of(context).pop(false),
+                            onPressed: () {
+                              Navigator.of(context).pop(false);
+                            },
                             child: const Text("CANCEL"),
                           ),
                         ],

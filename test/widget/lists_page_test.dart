@@ -136,7 +136,8 @@ void main() {
         expect(find.text("Fare la spesa"), findsNothing);
 
         // we should see the no list message
-        expect(find.text("You don't have any lists."), findsOneWidget);
+        expect(
+            find.textContaining("You don't have any lists."), findsOneWidget);
       },
     );
 

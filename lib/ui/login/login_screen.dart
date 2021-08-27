@@ -107,7 +107,7 @@ class LoginScreen extends StatelessWidget {
         final fields = signupData.additionalSignupData;
 
         if (fields != null) {
-          final username = fields['username'];
+          final username = fields['username']!;
           final firstName = fields['firstName']!;
           final lastName = fields['lastName']!;
 

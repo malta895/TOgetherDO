@@ -129,7 +129,7 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
           multiFulfillmentItem.usersCompletions[uid] = 1;
           final fulfiller = await ListAppUserManager.instance.getByUid(uid);
           if (fulfiller != null) {
-            multiFulfillmentItem.fulfillers!.add(fulfiller);
+            multiFulfillmentItem.fulfillers.add(fulfiller);
           }
 
           await ListAppItemManager.instanceForList(lid, uid)
@@ -144,9 +144,9 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
           multiFulfillmentMemberItem.usersCompletions[uid] = completions;
           final fulfiller = await ListAppUserManager.instance.getByUid(uid);
           if (fulfiller != null) {
-            multiFulfillmentMemberItem.fulfillers!.add(fulfiller);
+            multiFulfillmentMemberItem.fulfillers.add(fulfiller);
           }
-          print(multiFulfillmentMemberItem.fulfillers!);
+          print(multiFulfillmentMemberItem.fulfillers);
           await ListAppItemManager.instanceForList(lid, uid)
               .saveToFirestore(multiFulfillmentMemberItem);
           return true;
@@ -182,7 +182,7 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
           multiFulfillmentItem.usersCompletions.remove(uid);
           final fulfiller = await ListAppUserManager.instance.getByUid(uid);
           if (fulfiller != null) {
-            multiFulfillmentItem.fulfillers!.removeWhere(
+            multiFulfillmentItem.fulfillers.removeWhere(
                 (element) => element.databaseId == fulfiller.databaseId);
           }
           await ListAppItemManager.instanceForList(lid, uid)
@@ -200,7 +200,7 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
             multiFulfillmentMemberItem.usersCompletions.remove(uid);
             final fulfiller = await ListAppUserManager.instance.getByUid(uid);
             if (fulfiller != null) {
-              multiFulfillmentMemberItem.fulfillers!.removeWhere(
+              multiFulfillmentMemberItem.fulfillers.removeWhere(
                   (element) => element.databaseId == fulfiller.databaseId);
             }
           } else {

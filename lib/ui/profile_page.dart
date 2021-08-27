@@ -35,7 +35,7 @@ class _ProfilePageState extends State<ProfilePage> {
     _loggedInListAppUser =
         context.read<ListAppAuthProvider>().loggedInListAppUser!;
 
-    _currentUsername = _loggedInListAppUser.username!;
+    _currentUsername = _loggedInListAppUser.username;
     _currentFirstName = _loggedInListAppUser.firstName;
     _currentLastName = _loggedInListAppUser.lastName;
   }

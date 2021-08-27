@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -55,7 +54,7 @@ class ListAppAuthProvider with ChangeNotifier {
     firebaseAuth.idTokenChanges().listen((User? user) async {
       if (user == null) {
         _loggedInListAppUser?.notificationTokens
-            .remove(FirebaseMessaging.instance.getToken());
+            .remove(ManagerConfig.firebaseMessaging?.getToken());
         if (_loggedInListAppUser != null)
           ListAppUserManager.instance.saveToFirestore(_loggedInListAppUser!);
         _loggedInListAppUser = null;
@@ -85,7 +84,8 @@ class ListAppAuthProvider with ChangeNotifier {
 
   Future<void> logout() async {
     try {
-      final notificationToken = await FirebaseMessaging.instance.getToken();
+      final notificationToken =
+          await ManagerConfig.firebaseMessaging?.getToken();
       _loggedInListAppUser?.notificationTokens.remove(notificationToken);
       if (_loggedInListAppUser != null)
         ListAppUserManager.instance.saveToFirestore(_loggedInListAppUser!);

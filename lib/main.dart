@@ -14,6 +14,7 @@ import 'package:mobile_applications/ui/friends_page.dart';
 import 'package:mobile_applications/ui/lists_page.dart';
 import 'package:mobile_applications/ui/login/login_screen.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
+import 'package:mobile_applications/ui/notification_page.dart';
 import 'package:mobile_applications/ui/settings_page.dart';
 import 'package:mobile_applications/ui/theme.dart';
 import 'package:provider/provider.dart';
@@ -65,15 +66,18 @@ class _MultiProviderApp extends StatelessWidget {
 }
 
 class _MaterialAppWithTheme extends StatelessWidget {
+  final _materialAppKey = GlobalKey<NavigatorState>();
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeChanger>(
+    final consumer = Consumer<ThemeChanger>(
         builder: (context, ThemeChanger notifier, child) {
       return StreamBuilder<User?>(
-        initialData: context.read<ListAppAuthProvider>().loggedInUser,
-        stream: context.read<ListAppAuthProvider>().authState,
-        builder: (context, snapshot) {
-          return MaterialApp(
+          initialData: context.read<ListAppAuthProvider>().loggedInUser,
+          stream: context.read<ListAppAuthProvider>().authState,
+          builder: (context, snapshot) {
+            return MaterialApp(
+              navigatorKey: _materialAppKey,
               debugShowCheckedModeBanner: false,
               initialRoute: snapshot.hasData
                   ? ListsPage.routeName
@@ -84,9 +88,40 @@ class _MaterialAppWithTheme extends StatelessWidget {
                 ListsPage.routeName: (context) => const ListsPage(),
                 FriendsPage.routeName: (context) => const FriendsPage(),
                 SettingsScreen.routeName: (context) => SettingsScreen(),
-              });
-        },
-      );
+                NotificationPage.routeName: (context) =>
+                    const NotificationPage(),
+              },
+            );
+          });
     });
+
+    // when the app is closed the notification is shown
+    ManagerConfig.firebaseMessaging
+        ?.getInitialMessage()
+        .then((RemoteMessage? message) {
+      Future.doWhile(() {
+        final materialAppCurrentState = _materialAppKey.currentState;
+        if (materialAppCurrentState == null) return true;
+        if (message == null || message.notification == null) return false;
+        Navigator.of(materialAppCurrentState.context)
+            .pushNamed(NotificationPage.routeName);
+        return false;
+      });
+    });
+
+    // when we open the app from a notification show the notifications page directly
+    FirebaseMessaging.onMessageOpenedApp.listen(
+      (RemoteMessage message) {
+        Future.doWhile(() {
+          final materialAppCurrentState = _materialAppKey.currentState;
+          if (materialAppCurrentState == null) return true;
+          if (message.notification == null) return false;
+          Navigator.of(materialAppCurrentState.context)
+              .pushNamed(NotificationPage.routeName);
+          return false;
+        });
+      },
+    );
+    return consumer;
   }
 }

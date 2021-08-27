@@ -19,7 +19,7 @@ class ListAppUser extends BaseModel {
   String? _displayName;
 
   ///The username. By default is equal to the first part of the email, but can be changed
-  String? username;
+  String username;
 
   String? profilePictureURL;
 

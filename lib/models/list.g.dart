@@ -11,14 +11,16 @@ ListAppList _$ListAppListFromJson(Map<String, dynamic> json) {
     final val = ListAppList(
       databaseId: $checkedConvert(json, 'databaseId', (v) => v as String?),
       name: $checkedConvert(json, 'name', (v) => v as String),
-      createdAt: $checkedConvert(
-          json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
       expiryDate: $checkedConvert(json, 'expiryDate',
           (v) => ModelUtils.nullableDateTimeFromJson(v as int?)),
       creatorUid: $checkedConvert(json, 'creatorUid', (v) => v as String?),
       listType: $checkedConvert(
           json, 'listType', (v) => _$enumDecode(_$ListTypeEnumMap, v)),
       description: $checkedConvert(json, 'description', (v) => v as String?),
+      createdAt: $checkedConvert(
+          json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
+      updatedAt: $checkedConvert(json, 'updatedAt',
+          (v) => ModelUtils.nullableDateTimeFromJson(v as int?)),
     );
     $checkedConvert(
         json,
@@ -35,6 +37,7 @@ Map<String, dynamic> _$ListAppListToJson(ListAppList instance) =>
     <String, dynamic>{
       'databaseId': instance.databaseId,
       'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
+      'updatedAt': ModelUtils.nullableDateTimeToJson(instance.updatedAt),
       'name': instance.name,
       'description': instance.description,
       'expiryDate': ModelUtils.nullableDateTimeToJson(instance.expiryDate),

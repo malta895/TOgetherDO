@@ -295,7 +295,7 @@ class _NotificationPage extends State<NotificationPage> {
             onTap: () async {
               await ListAppListManager.instanceForUserUid(
                       notification.userFromId)
-                  .injectData(notification.list!);
+                  .populateObjects(notification.list!);
 
               await Navigator.push(
                 context,

@@ -23,6 +23,8 @@ ListAppUser _$ListAppUserFromJson(Map<String, dynamic> json) {
       isNew: $checkedConvert(json, 'isNew', (v) => v as bool),
       createdAt: $checkedConvert(
           json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
+      updatedAt: $checkedConvert(json, 'updatedAt',
+          (v) => ModelUtils.nullableDateTimeFromJson(v as int?)),
     );
     return val;
   });
@@ -32,6 +34,7 @@ Map<String, dynamic> _$ListAppUserToJson(ListAppUser instance) =>
     <String, dynamic>{
       'databaseId': instance.databaseId,
       'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
+      'updatedAt': ModelUtils.nullableDateTimeToJson(instance.updatedAt),
       'firstName': instance.firstName,
       'lastName': instance.lastName,
       'username': instance.username,

@@ -17,9 +17,16 @@ abstract class BaseModel {
     toJson: ModelUtils.dateTimeToJson,
   )
   final DateTime createdAt;
+  @JsonKey(
+    fromJson: ModelUtils.nullableDateTimeFromJson,
+    toJson: ModelUtils.nullableDateTimeToJson,
+  )
+  DateTime? updatedAt;
 
   BaseModel({
     this.databaseId,
     DateTime? createdAt,
-  }) : this.createdAt = createdAt ?? DateTime.now();
+    DateTime? updatedAt,
+  })  : this.createdAt = createdAt ?? DateTime.now(),
+        this.updatedAt = updatedAt ?? DateTime.now();
 }

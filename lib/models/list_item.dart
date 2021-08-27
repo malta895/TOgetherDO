@@ -66,8 +66,13 @@ abstract class BaseItem extends BaseModel {
     required this.itemType,
     required this.creatorUid,
     DateTime? createdAt,
+    DateTime? updatedAt,
   })  : this.usersCompletions = usersCompletions ?? <String, int>{},
-        super(databaseId: databaseId, createdAt: createdAt);
+        super(
+          databaseId: databaseId,
+          createdAt: createdAt,
+          updatedAt: updatedAt,
+        );
 
   int quantityFulfilledBy(ListAppUser member);
 
@@ -132,6 +137,7 @@ class SimpleItem extends BaseItem {
     String? link,
     required String creatorUid,
     createdAt,
+    DateTime? updatedAt,
   }) : super(
           itemType: ItemType.simple,
           databaseId: databaseId,
@@ -142,6 +148,7 @@ class SimpleItem extends BaseItem {
           maxQuantity: 1,
           quantityPerMember: 1,
           createdAt: createdAt,
+          updatedAt: updatedAt,
           creatorUid: creatorUid,
         ) {
     if (usersCompletions != null && usersCompletions.isNotEmpty) {
@@ -218,17 +225,20 @@ class MultiFulfillmentItem extends BaseItem {
     required int maxQuantity,
     required String creatorUid,
     createdAt,
+    DateTime? updatedAt,
   }) : super(
-            itemType: ItemType.multiFulfillment,
-            databaseId: databaseId,
-            usersCompletions: usersCompletions,
-            name: name,
-            description: description,
-            link: link,
-            maxQuantity: maxQuantity,
-            quantityPerMember: 1,
-            createdAt: createdAt,
-            creatorUid: creatorUid) {
+          itemType: ItemType.multiFulfillment,
+          databaseId: databaseId,
+          usersCompletions: usersCompletions,
+          name: name,
+          description: description,
+          link: link,
+          maxQuantity: maxQuantity,
+          quantityPerMember: 1,
+          createdAt: createdAt,
+          creatorUid: creatorUid,
+          updatedAt: updatedAt,
+        ) {
     if (usersCompletions != null && usersCompletions.isNotEmpty) {
       usersCompletions.forEach((key, value) {
         ListAppUserManager.instance
@@ -296,17 +306,20 @@ class MultiFulfillmentMemberItem extends BaseItem {
     required int quantityPerMember,
     required String creatorUid,
     createdAt,
+    DateTime? updatedAt,
   }) : super(
-            itemType: ItemType.multiFulfillmentMember,
-            databaseId: databaseId,
-            usersCompletions: usersCompletions,
-            name: name,
-            description: description,
-            link: link,
-            maxQuantity: maxQuantity,
-            quantityPerMember: quantityPerMember,
-            createdAt: createdAt,
-            creatorUid: creatorUid) {
+          itemType: ItemType.multiFulfillmentMember,
+          databaseId: databaseId,
+          usersCompletions: usersCompletions,
+          name: name,
+          description: description,
+          link: link,
+          maxQuantity: maxQuantity,
+          quantityPerMember: quantityPerMember,
+          createdAt: createdAt,
+          updatedAt: updatedAt,
+          creatorUid: creatorUid,
+        ) {
     if (usersCompletions != null && usersCompletions.isNotEmpty) {
       usersCompletions.forEach((key, value) {
         ListAppUserManager.instance

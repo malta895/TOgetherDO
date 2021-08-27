@@ -81,23 +81,24 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
     }
   }
 
-  Future<bool> acceptNotification(String id) async {
-    await firebaseCollection.doc(id).update({"status": "accepted"});
+  Future<bool> acceptNotification(String notificationId) async {
+    await firebaseCollection.doc(notificationId).update({"status": "accepted"});
     return true;
   }
 
-  Future<bool> rejectNotification(String id) async {
-    await firebaseCollection.doc(id).update({"status": "rejected"});
+  Future<bool> rejectNotification(String notificationId) async {
+    await firebaseCollection.doc(notificationId).update({"status": "rejected"});
     return true;
   }
 
-  Future<int> getUnreadNotificationCount(String uid) async {
+  Future<int> getUnreadNotificationCount(String userId) async {
     try {
       final queryResult = await firebaseCollection
           .where(
             "status",
             isEqualTo: "pending",
           )
+          .where("userToId", isEqualTo: userId)
           .get();
 
       return queryResult.docs.length;

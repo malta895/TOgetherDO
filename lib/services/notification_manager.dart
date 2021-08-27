@@ -91,7 +91,7 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
     return true;
   }
 
-  Future<int> getUnreadNotificationCount(String uid, String orderBy) async {
+  Future<int> getUnreadNotificationCount(String uid) async {
     try {
       final queryResult = await firebaseCollection
           .where(

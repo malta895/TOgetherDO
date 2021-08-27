@@ -19,7 +19,7 @@ class _NotificationBadge extends State<NotificationBadge> {
 
     if (listAppUser != null) {
       return ListAppNotificationManager.instance
-          .getUnreadNotificationCount(listAppUser.databaseId!, "createdAt");
+          .getUnreadNotificationCount(listAppUser.databaseId!);
     }
 
     return 0;
@@ -32,7 +32,7 @@ class _NotificationBadge extends State<NotificationBadge> {
     _unansweredNotificationsCountFuture = _fetchNotificationCount();
   }
 
-  Widget _buildBellOnly() {
+  Widget _buildBell() {
     return Stack(children: <Widget>[
       Container(height: 56),
       IconButton(
@@ -56,22 +56,12 @@ class _NotificationBadge extends State<NotificationBadge> {
             case ConnectionState.none:
             case ConnectionState.waiting:
             case ConnectionState.active:
-              return _buildBellOnly();
+              return _buildBell();
             case ConnectionState.done:
-              final notificationCount = snapshot.data!;
+              var notificationCount = snapshot.data!;
               return notificationCount > 0
                   ? Stack(children: <Widget>[
-                      Container(height: 56),
-                      IconButton(
-                        icon: const Icon(Icons.notifications),
-                        onPressed: () => {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const NotificationPage()),
-                          )
-                        },
-                      ),
+                      _buildBell(),
                       Positioned(
                         // draw a red marble
                         top: 7.0,
@@ -81,21 +71,27 @@ class _NotificationBadge extends State<NotificationBadge> {
                           children: [
                             const Icon(
                               Icons.brightness_1,
-                              size: 15.0,
+                              size: 18.0,
                               color: Colors.redAccent,
                             ),
-                            Text(
-                              notificationCount.toString(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textScaleFactor: 0.7,
-                            ),
+                            notificationCount < 100
+                                ? Text(
+                                    notificationCount.toString(),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textScaleFactor:
+                                        notificationCount < 10 ? 0.8 : 0.7,
+                                  )
+                                : const Text(
+                                    "99+",
+                                    textScaleFactor: 0.6,
+                                  ),
                           ],
                         ),
                       ),
                     ])
-                  : _buildBellOnly();
+                  : _buildBell();
           }
         });
   }

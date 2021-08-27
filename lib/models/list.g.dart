@@ -21,6 +21,8 @@ ListAppList _$ListAppListFromJson(Map<String, dynamic> json) {
           json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
       updatedAt: $checkedConvert(json, 'updatedAt',
           (v) => ModelUtils.nullableDateTimeFromJson(v as int?)),
+      listStatus: $checkedConvert(
+          json, 'listStatus', (v) => _$enumDecode(_$ListStatusEnumMap, v)),
     );
     $checkedConvert(
         json,
@@ -42,6 +44,7 @@ Map<String, dynamic> _$ListAppListToJson(ListAppList instance) =>
       'description': instance.description,
       'expiryDate': ModelUtils.nullableDateTimeToJson(instance.expiryDate),
       'listType': _$ListTypeEnumMap[instance.listType],
+      'listStatus': _$ListStatusEnumMap[instance.listStatus],
       'members': instance.members,
       'creatorUid': instance.creatorUid,
     };
@@ -75,4 +78,9 @@ K _$enumDecode<K, V>(
 const _$ListTypeEnumMap = {
   ListType.public: 'public',
   ListType.private: 'private',
+};
+
+const _$ListStatusEnumMap = {
+  ListStatus.draft: 'draft',
+  ListStatus.saved: 'saved',
 };

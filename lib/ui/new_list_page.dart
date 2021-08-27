@@ -144,7 +144,10 @@ class _NewListFormState extends State<_NewListForm> {
                 description: _listDescriptionController.text,
                 listType: _listTypeValue,
                 creatorUid: currentUser!.databaseId,
-                membersAsUsers: members);
+                membersAsUsers: members,
+                listStatus: _listTypeValue == ListType.public
+                    ? ListStatus.saved
+                    : ListStatus.draft);
 
             // If the form is valid, display a Snackbar.
             // TODO se abbiamo tempo sarebbe carino mettere l'animazione che c'é

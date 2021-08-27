@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/list_manager.dart';
@@ -301,10 +302,13 @@ class _NotificationPage extends State<NotificationPage> {
                 context,
                 MaterialPageRoute(
                   builder: (BuildContext context) => ListDetailsPage(
-                    notification.list!,
-                    // the list comes from the invitation from someone else, so the current user is not the owner for sure
-                    canAddNewMembers: false,
-                  ),
+                      notification.list!,
+                      // the list comes from the invitation from someone else, so the current user is not the owner for sure
+                      canAddNewMembers: false,
+                      canAddNewItems:
+                          (notification.list!.listType == ListType.private)
+                              ? false
+                              : true),
                 ),
               );
             },

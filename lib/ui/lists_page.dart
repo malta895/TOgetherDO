@@ -303,9 +303,20 @@ class _ListsPageState extends State<ListsPage>
                         context,
                         MaterialPageRoute(
                           builder: (BuildContext context) => ListDetailsPage(
-                            listAppList,
-                            canAddNewMembers: doesUserOwnList,
-                          ),
+                              listAppList,
+                              canAddNewMembers: doesUserOwnList,
+                              canAddNewItems:
+                                  ((listAppList.listType == ListType.private &&
+                                              currentListAppUser.databaseId !=
+                                                  listAppList.creatorUid) ||
+                                          (listAppList.listType ==
+                                                  ListType.private &&
+                                              listAppList.listStatus ==
+                                                  ListStatus.saved &&
+                                              currentListAppUser.databaseId ==
+                                                  listAppList.creatorUid))
+                                      ? false
+                                      : true),
                         ),
                       );
 

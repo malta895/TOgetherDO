@@ -31,7 +31,7 @@ class ListDetailsPage extends StatefulWidget {
   final bool canAddNewItems;
 
   const ListDetailsPage(this.listAppList,
-      {required this.canAddNewMembers, this.canAddNewItems = true});
+      {required this.canAddNewMembers, required this.canAddNewItems});
 
   @override
   _ListDetailsPageState createState() => _ListDetailsPageState();
@@ -261,14 +261,18 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                     subtitle: Text("Name"),
-                    trailing: _loggedInListAppUser.databaseId == item.creatorUid
+                    trailing: ((widget.listAppList.listStatus ==
+                                    ListStatus.draft ||
+                                widget.listAppList.listType ==
+                                    ListType.public) &&
+                            _loggedInListAppUser.databaseId == item.creatorUid)
                         ? IconButton(
                             onPressed: () async {
                               await _changeItemName(context, item);
                               Navigator.pop(context);
                             },
                             icon: Icon(Icons.edit))
-                        : Icon(Icons.edit_off)),
+                        : null),
               ),
               (item.description != null && item.description != "")
                   ? Card(
@@ -277,30 +281,38 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                           title: Text(item.description!,
                               style: TextStyle(fontWeight: FontWeight.w600)),
                           subtitle: Text("Description"),
-                          trailing: _loggedInListAppUser.databaseId ==
-                                  item.creatorUid
+                          trailing: ((widget.listAppList.listStatus ==
+                                          ListStatus.draft ||
+                                      widget.listAppList.listType ==
+                                          ListType.public) &&
+                                  _loggedInListAppUser.databaseId ==
+                                      item.creatorUid)
                               ? IconButton(
                                   onPressed: () async {
                                     await _changeItemDescription(context, item);
                                     Navigator.pop(context);
                                   },
                                   icon: Icon(Icons.edit))
-                              : Icon(Icons.edit_off)),
+                              : null),
                     )
                   : Card(
                       color: Theme.of(context).primaryColor.withAlpha(50),
                       child: ListTile(
                           title: Text("This item has no description available",
                               style: TextStyle(fontStyle: FontStyle.italic)),
-                          trailing: _loggedInListAppUser.databaseId ==
-                                  item.creatorUid
+                          trailing: ((widget.listAppList.listStatus ==
+                                          ListStatus.draft ||
+                                      widget.listAppList.listType ==
+                                          ListType.public) &&
+                                  _loggedInListAppUser.databaseId ==
+                                      item.creatorUid)
                               ? IconButton(
                                   onPressed: () async {
                                     await _changeItemDescription(context, item);
                                     Navigator.pop(context);
                                   },
                                   icon: Icon(Icons.edit))
-                              : Icon(Icons.edit_off))),
+                              : null)),
               Card(
                 color: Theme.of(context).primaryColor.withAlpha(50),
                 child: ListTile(
@@ -309,21 +321,69 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                   subtitle: Text("Creator"),
                 ),
               ),
-              _loggedInListAppUser.databaseId == item.creatorUid
+              ((widget.listAppList.listStatus == ListStatus.draft ||
+                          widget.listAppList.listType == ListType.public) &&
+                      _loggedInListAppUser.databaseId == item.creatorUid)
                   ? TextButton(
                       style: TextButton.styleFrom(
                           backgroundColor: Colors.red, primary: Colors.white),
                       child: const Text('DELETE'),
-                      onPressed: () {
-                        Navigator.pop(context, false);
-                      },
-                    )
-                  : TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Colors.grey, primary: Colors.white),
-                      child: const Text('Only the creator can delete the item'),
-                      onPressed: null,
-                    ),
+                      onPressed: () async {
+                        return await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text(
+                                  "Are you sure you wish to delete this item?"),
+                              actions: <Widget>[
+                                TextButton(
+                                    style: TextButton.styleFrom(
+                                        primary: Colors.red),
+                                    onPressed: () async {
+                                      final itemManagerInstance =
+                                          ListAppItemManager.instanceForList(
+                                        widget.listAppList.databaseId!,
+                                        widget.listAppList.creator!.databaseId!,
+                                      );
+
+                                      await itemManagerInstance
+                                          .deleteInstance(item);
+                                      setState(() {
+                                        widget.listAppList.items.removeWhere(
+                                            (element) => element == item);
+                                      });
+
+                                      Navigator.pop(context);
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text("DELETE")),
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(false),
+                                  child: const Text("CANCEL"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      })
+                  : (_loggedInListAppUser.databaseId != item.creatorUid)
+                      ? TextButton(
+                          style: TextButton.styleFrom(
+                              backgroundColor: Colors.grey,
+                              primary: Colors.white),
+                          child: const Text(
+                              'Only the creator can delete the item'),
+                          onPressed: null,
+                        )
+                      : TextButton(
+                          style: TextButton.styleFrom(
+                              backgroundColor: Colors.grey,
+                              primary: Colors.white),
+                          child:
+                              const Text('You can no longer delete this item'),
+                          onPressed: null,
+                        ),
               item.link != null
                   ? TextButton(
                       style: TextButton.styleFrom(
@@ -353,7 +413,8 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
     });
     if (widget.listAppList.listType == ListType.public ||
         (widget.listAppList.listType == ListType.private &&
-            _loggedInListAppUser.databaseId != aListItem.creatorUid)) {
+            _loggedInListAppUser.databaseId != aListItem.creatorUid &&
+            widget.listAppList.listStatus == ListStatus.saved)) {
       switch (aListItem.itemType) {
         case ItemType.simple:
           if (aListItem.creatorUid == _loggedInListAppUser.databaseId) {
@@ -1160,6 +1221,19 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
             );
           }
       }
+    } else if (widget.listAppList.listStatus == ListStatus.draft &&
+        _loggedInListAppUser.databaseId == widget.listAppList.creatorUid) {
+      return ListTile(
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return itemDetailsAlertDialog(context, aListItem, creator!);
+              },
+            );
+          },
+          title: Text(aListItem.name),
+          trailing: Icon(Icons.edit));
     } else {
       return ListTile(
           onTap: () {
@@ -1171,64 +1245,6 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
             );
           },
           title: Text(aListItem.name));
-      /*return Dismissible(
-            confirmDismiss: (DismissDirection direction) async {
-              return await showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text(
-                        "Are you sure you wish to delete this item?"),
-                    actions: <Widget>[
-                      TextButton(
-                          style: TextButton.styleFrom(primary: Colors.red),
-                          onPressed: () => Navigator.of(context).pop(true),
-                          child: const Text("DELETE")),
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(false),
-                        child: const Text("CANCEL"),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            dismissThresholds: {DismissDirection.endToStart: 0.3},
-            direction: DismissDirection.startToEnd,
-            background: Container(
-                color: Colors.red,
-                child: Align(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      const Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
-                    ],
-                  ),
-                  alignment: Alignment.centerLeft,
-                )),
-            key: UniqueKey(),
-            onDismissed: (DismissDirection direction) async {
-              final itemManagerInstance = ListAppItemManager.instanceForList(
-                widget.listAppList.databaseId!,
-                widget.listAppList.creator!.databaseId!,
-              );
-
-              await itemManagerInstance.deleteInstance(aListItem);
-              setState(() {
-                widget.listAppList.items
-                    .removeWhere((element) => element == aListItem);
-              });
-            },
-            child: ListTile(
-              title: Text(aListItem.name),
-            ),
-          );*/
     }
   }
 
@@ -1480,6 +1496,17 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
     }
   }
 
+  Future<void> _saveDraftList(ListAppList list) async {
+    final listAppUser =
+        await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
+
+    if (listAppUser == null) return;
+
+    list.listStatus = ListStatus.saved;
+
+    await ListAppListManager.instanceForUser(listAppUser).saveToFirestore(list);
+  }
+
   void popupMenuFunction(String option) {
     final currentListAppUser =
         context.read<ListAppAuthProvider>().loggedInListAppUser!;
@@ -1491,23 +1518,40 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(
-                "Are you sure you wish to ${doesUserOwnList ? 'delete' : 'leave'} the " +
-                    widget.listAppList.name +
-                    " list?"),
-            content: doesUserOwnList
-                ? const Text(
-                    "You and all the other participants will not see this list anymore")
-                : const Text(
-                    "If you push LEAVE, you will abandon this list and you won't be able to join it unless someone invites you again"),
+            title: option == "save"
+                ? Text("Do you want to save and publish this list?")
+                : Text(
+                    "Are you sure you wish to ${doesUserOwnList ? 'delete' : 'leave'} the " +
+                        widget.listAppList.name +
+                        " list?"),
+            content: option == "save"
+                ? Text(
+                    "You will not be able to add new items or modify existing ones")
+                : (doesUserOwnList
+                    ? const Text(
+                        "You and all the other participants will not see this list anymore")
+                    : const Text(
+                        "If you push LEAVE, you will abandon this list and you won't be able to join it unless someone invites you again")),
             actions: <Widget>[
-              TextButton(
-                  style: TextButton.styleFrom(primary: Colors.red),
-                  onPressed: () {
-                    _deleteOrAbandonList(widget.listAppList);
-                    Navigator.of(context).pop(true);
-                  },
-                  child: Text(doesUserOwnList ? 'DELETE' : 'LEAVE')),
+              option == "save"
+                  ? TextButton(
+                      style: TextButton.styleFrom(primary: Colors.green),
+                      onPressed: () async {
+                        await _saveDraftList(widget.listAppList);
+                        setState(() {
+                          widget.listAppList.listStatus = ListStatus.saved;
+                        });
+                        Navigator.of(context).pop(true);
+                        Navigator.of(context).pop(true);
+                      },
+                      child: Text('OK'))
+                  : TextButton(
+                      style: TextButton.styleFrom(primary: Colors.red),
+                      onPressed: () {
+                        _deleteOrAbandonList(widget.listAppList);
+                        Navigator.of(context).pop(true);
+                      },
+                      child: Text(doesUserOwnList ? 'DELETE' : 'LEAVE')),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
                 child: const Text("CANCEL"),
@@ -1535,9 +1579,10 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
               itemBuilder: (BuildContext context) {
                 return [
                   PopupMenuItem<String>(
-                    value: "leave",
+                    value:
+                        "${(widget.listAppList.listStatus == ListStatus.draft && _loggedInListAppUser.databaseId == widget.listAppList.creatorUid) ? 'save' : (doesUserOwnList ? 'delete' : 'leave')}",
                     child: Text(
-                        "${doesUserOwnList ? 'Delete list' : 'Leave list'}"),
+                        "${(widget.listAppList.listStatus == ListStatus.draft && _loggedInListAppUser.databaseId == widget.listAppList.creatorUid) ? 'Save list' : (doesUserOwnList ? 'Delete list' : 'Leave list')}"),
                   )
                 ];
               },
@@ -1750,15 +1795,31 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                   subtitle: Text(
                       DateFormat.jm().format(widget.listAppList.createdAt)),
                 ),
-                ListTile(
-                  dense: true,
-                  horizontalTitleGap: 0.5,
-                  leading: const Icon(Icons.person_pin_rounded),
-                  title: Text(
-                      widget.listAppList.creator?.displayName ?? 'John Smith'),
-                  subtitle:
-                      Text(widget.listAppList.creator?.username ?? 'john21'),
-                ),
+                widget.listAppList.listStatus == ListStatus.saved
+                    ? ListTile(
+                        dense: true,
+                        horizontalTitleGap: 0.5,
+                        leading: const Icon(Icons.person_pin_rounded),
+                        title: Text(widget.listAppList.creator?.displayName ??
+                            'John Smith'),
+                        subtitle: Text(
+                            widget.listAppList.creator?.username ?? 'john21'),
+                      )
+                    : ListTile(
+                        dense: true,
+                        horizontalTitleGap: 0.5,
+                        leading: const Icon(Icons.mode_edit),
+                        title: Text(
+                          'This list is in draft mode',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        subtitle: _loggedInListAppUser.databaseId ==
+                                widget.listAppList.creatorUid
+                            ? Text(
+                                'Click on the three dots on the top in order to save and publish it')
+                            : Text(
+                                'Wait until the creator saves and publishes it in order to complete items'),
+                      ),
               ],
             ),
           ),

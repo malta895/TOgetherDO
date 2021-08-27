@@ -68,6 +68,9 @@ class ListAppList extends BaseModel {
   /// The type of this list
   final ListType listType;
 
+  /// The status of the list
+  ListStatus listStatus;
+
   /// The members of the list
   @JsonKey(defaultValue: {})
   Map<String, bool> members = {};
@@ -85,18 +88,18 @@ class ListAppList extends BaseModel {
   @JsonKey(ignore: true)
   ListAppUser? creator;
 
-  ListAppList({
-    String? databaseId,
-    required this.name,
-    this.expiryDate,
-    this.creatorUid,
-    this.listType = ListType
-        .public, // NOTE maybe better to make it required and remove the default value
-    this.description,
-    List<ListAppUser>? membersAsUsers,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  })  : this.membersAsUsers = membersAsUsers ?? [],
+  ListAppList(
+      {String? databaseId,
+      required this.name,
+      this.expiryDate,
+      this.creatorUid,
+      required this.listType, // NOTE maybe better to make it required and remove the default value
+      this.description,
+      List<ListAppUser>? membersAsUsers,
+      DateTime? createdAt,
+      DateTime? updatedAt,
+      required this.listStatus})
+      : this.membersAsUsers = membersAsUsers ?? [],
         super(
           databaseId: databaseId,
           createdAt: createdAt,

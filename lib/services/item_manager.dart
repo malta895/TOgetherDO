@@ -99,7 +99,6 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
           .firebaseCollection
           .doc(aListItem.databaseId)
           .update({'description': itemDescription});
-      //notifyListeners();
     } on FirebaseException catch (e) {
       print(e.message);
       throw ListAppException('An error occurred. Please try again later.');

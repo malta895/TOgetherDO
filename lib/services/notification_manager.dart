@@ -81,12 +81,16 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
   }
 
   Future<bool> acceptNotification(String notificationId) async {
-    await firebaseCollection.doc(notificationId).update({"status": "accepted"});
+    await firebaseCollection
+        .doc(notificationId)
+        .update({"status": "accepted", "isRead": true});
     return true;
   }
 
   Future<bool> rejectNotification(String notificationId) async {
-    await firebaseCollection.doc(notificationId).update({"status": "rejected"});
+    await firebaseCollection
+        .doc(notificationId)
+        .update({"status": "rejected", "isRead": true});
     return true;
   }
 
@@ -95,6 +99,7 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
         .where("isRead", isEqualTo: false)
         .where("userToId", isEqualTo: userId)
         .snapshots();
+
     await for (final querySnapshot in snapshotStream) yield querySnapshot.size;
   }
 }

@@ -5,13 +5,8 @@ import 'package:mobile_applications/services/notification_manager.dart';
 import 'package:mobile_applications/ui/notification_page.dart';
 import 'package:provider/provider.dart';
 
-class NotificationBadge extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => _NotificationBadge();
-}
-
-class _NotificationBadge extends State<NotificationBadge> {
-  Widget _buildBell() {
+class NotificationBadge extends StatelessWidget {
+  Widget _buildBell(BuildContext context) {
     return Stack(
       alignment: AlignmentDirectional.center,
       children: <Widget>[
@@ -42,13 +37,13 @@ class _NotificationBadge extends State<NotificationBadge> {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
             case ConnectionState.waiting:
-              return _buildBell();
+              return _buildBell(context);
             case ConnectionState.active:
             case ConnectionState.done:
               final notificationCount = snapshot.data ?? 0;
               return notificationCount > 0
                   ? Stack(children: <Widget>[
-                      _buildBell(),
+                      _buildBell(context),
                       Positioned(
                         // draw a red marble
                         top: 9.0,
@@ -78,7 +73,7 @@ class _NotificationBadge extends State<NotificationBadge> {
                         ),
                       ),
                     ])
-                  : _buildBell();
+                  : _buildBell(context);
           }
         });
   }

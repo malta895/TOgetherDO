@@ -42,12 +42,9 @@ exports.sendNotifications = functions.region('europe-west6').firestore.document(
             message = {
                 'notification': {
                     'title': `${userFromId.data().displayName} sent you a friendship request!`,
-                    'body': `Accept or decline it, ${userToId.data().username}!`,
+                    'body': `Tap here to accept or decline!`,
                 },
                 'data': {
-                    'userFromId': notification.userFromId,
-                    'userToId': notification.userToId,
-                    'type': 'friendship',
                     'notificationId': notificationId,
                     'click_action': `FLUTTER_NOTIFICATION_CLICK`,
                 }
@@ -56,12 +53,9 @@ exports.sendNotifications = functions.region('europe-west6').firestore.document(
             message = {
                 'notification': {
                     'title': `${userFromId.data().displayName} added you to a list!`,
-                    'body': `Accept or decline the invitation, ${userToId.data().username}!`,
+                    'body': `Tap here to accept or decline!`,
                 },
                 'data': {
-                    'userFromId': notification.userFromId,
-                    'userToId': notification.userToId,
-                    'type': 'listInvite',
                     'notificationId': notificationId,
                     'click_action': `FLUTTER_NOTIFICATION_CLICK`,
                 }

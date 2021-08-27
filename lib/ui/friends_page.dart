@@ -268,7 +268,7 @@ class _FriendsListState extends State<FriendsPage> {
             friend.fullName,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          subtitle: Text(friend.username ?? ''),
+          subtitle: Text(friend.username),
           trailing: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,

@@ -122,9 +122,6 @@ abstract class BaseItem extends BaseModel {
   checked: true,
 ) // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class SimpleItem extends BaseItem {
-  //TODO leva questo
-  ListAppUser? _fulfiller;
-
   @JsonKey(ignore: true)
   ListAppUser? fulfiller;
 
@@ -160,10 +157,6 @@ class SimpleItem extends BaseItem {
     }
   }
 
-  /*ListAppUser? get fulfiller {
-    return _fulfiller;
-  }*/
-
   @override
   bool isFulfilled() {
     return usersCompletions.isNotEmpty;
@@ -171,8 +164,8 @@ class SimpleItem extends BaseItem {
 
   @override
   bool fulfill({required ListAppUser member, int quantityFulfilled = 0}) {
-    if (_fulfiller == null) {
-      _fulfiller = member;
+    if (fulfiller == null) {
+      fulfiller = member;
       usersCompletions[member.databaseId!] = 1;
       return true;
     }
@@ -183,8 +176,8 @@ class SimpleItem extends BaseItem {
   @override
   bool unfulfill({required ListAppUser member, int quantityUnfulfilled = 1}) {
     //do not allow the unfulfillment of other members
-    if (member == _fulfiller) {
-      _fulfiller = null;
+    if (member == fulfiller) {
+      fulfiller = null;
       usersCompletions.remove(member.databaseId!);
       return true;
     }
@@ -192,18 +185,18 @@ class SimpleItem extends BaseItem {
   }
 
   @override
-  Set<ListAppUser> getFulfillers() {
-    if (fulfiller == null) return Set<ListAppUser>();
-    return Set<ListAppUser>.from([fulfiller!]);
-  }
-
-  @override
   int quantityFulfilledBy(ListAppUser member) {
-    return member == _fulfiller ? 1 : 0;
+    return member == fulfiller ? 1 : 0;
   }
 
   factory SimpleItem.fromJson(Map<String, dynamic> json) =>
       _$SimpleItemFromJson(json);
+
+  @override
+  Set<ListAppUser> getFulfillers() {
+    if (fulfiller == null) return {};
+    return Set.from([fulfiller]);
+  }
 }
 
 /// List item with multiple fulfillments, members can fulfill once
@@ -211,10 +204,8 @@ class SimpleItem extends BaseItem {
   checked: true,
 ) // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class MultiFulfillmentItem extends BaseItem {
-  Set<ListAppUser> _fulfillers = Set<ListAppUser>();
-
   @JsonKey(ignore: true)
-  Set<ListAppUser>? fulfillers = Set<ListAppUser>();
+  Set<ListAppUser> fulfillers = Set<ListAppUser>();
 
   MultiFulfillmentItem({
     String? databaseId,
@@ -243,7 +234,7 @@ class MultiFulfillmentItem extends BaseItem {
       usersCompletions.forEach((key, value) {
         ListAppUserManager.instance
             .getByUid(key)
-            .then((value) => fulfillers!.add(value!));
+            .then((value) => fulfillers.add(value!));
       });
     }
   }
@@ -251,7 +242,7 @@ class MultiFulfillmentItem extends BaseItem {
   @override
   bool fulfill({required ListAppUser member, int quantityFulfilled = 1}) {
     usersCompletions[member.databaseId!] = quantityFulfilled;
-    return _fulfillers.add(member);
+    return fulfillers.add(member);
   }
 
   @override
@@ -261,8 +252,8 @@ class MultiFulfillmentItem extends BaseItem {
       final member = await ListAppUserManager.instance.getByUid(e);
       members.add(member!);
     });*/
-    if (fulfillers!.isEmpty) return Set<ListAppUser>();
-    return Set<ListAppUser>.from(fulfillers!);
+    if (fulfillers.isEmpty) return Set<ListAppUser>();
+    return Set<ListAppUser>.from(fulfillers);
   }
 
   @override
@@ -278,7 +269,7 @@ class MultiFulfillmentItem extends BaseItem {
   @override
   bool unfulfill({required ListAppUser member, int quantityUnfulfilled = 1}) {
     usersCompletions.remove(member.databaseId!);
-    return _fulfillers.remove(member);
+    return fulfillers.remove(member);
   }
 
   factory MultiFulfillmentItem.fromJson(Map<String, dynamic> json) =>
@@ -294,7 +285,7 @@ class MultiFulfillmentMemberItem extends BaseItem {
   Map<ListAppUser, int> _fulfillers = Map<ListAppUser, int>();
 
   @JsonKey(ignore: true)
-  Set<ListAppUser>? fulfillers = Set<ListAppUser>();
+  Set<ListAppUser> fulfillers = Set<ListAppUser>();
 
   MultiFulfillmentMemberItem({
     String? databaseId,
@@ -324,7 +315,7 @@ class MultiFulfillmentMemberItem extends BaseItem {
       usersCompletions.forEach((key, value) {
         ListAppUserManager.instance
             .getByUid(key)
-            .then((value) => fulfillers!.add(value!));
+            .then((value) => fulfillers.add(value!));
       });
     }
   }
@@ -344,16 +335,8 @@ class MultiFulfillmentMemberItem extends BaseItem {
 
   @override
   Set<ListAppUser> getFulfillers() {
-    /*final members = Set<ListAppUser>();
-    fulfillers!.map((e) {
-      ListAppUserManager.instance.getByUid(e).then((value) {
-        print("MEMBER IN MULTIMEMBER GETFULFILLERS");
-        print(value!.firstName);
-        members.add(value);
-      });
-    });*/
-    if (fulfillers!.isEmpty) return Set<ListAppUser>();
-    return Set<ListAppUser>.from(fulfillers!);
+    if (fulfillers.isEmpty) return Set<ListAppUser>();
+    return Set<ListAppUser>.from(fulfillers);
   }
 
   @override

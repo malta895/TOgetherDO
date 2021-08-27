@@ -97,10 +97,8 @@ class _MaterialAppWithTheme extends StatelessWidget {
     FirebaseMessaging.onMessageOpenedApp.listen(
       (RemoteMessage message) {
         final materialAppCurrentState = _materialAppKey.currentState;
-        if (materialAppCurrentState != null) {
-          Navigator.of(materialAppCurrentState.context)
-              .pushNamed(NotificationPage.routeName);
-        }
+        Navigator.of(materialAppCurrentState!.context)
+            .pushNamed(NotificationPage.routeName);
       },
     );
     return consumer;

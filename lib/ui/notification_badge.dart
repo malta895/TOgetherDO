@@ -11,27 +11,6 @@ class NotificationBadge extends StatefulWidget {
 }
 
 class _NotificationBadge extends State<NotificationBadge> {
-  late Future<int> _unansweredNotificationsCountFuture;
-
-  Future<int> _fetchNotificationCount() async {
-    final listAppUser =
-        await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
-
-    if (listAppUser != null) {
-      return ListAppNotificationManager.instance
-          .getUnreadNotificationCount(listAppUser.databaseId!);
-    }
-
-    return 0;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    _unansweredNotificationsCountFuture = _fetchNotificationCount();
-  }
-
   Widget _buildBell() {
     return Stack(
       alignment: AlignmentDirectional.center,
@@ -51,17 +30,22 @@ class _NotificationBadge extends State<NotificationBadge> {
   }
 
   Widget _buildIcon(BuildContext context) {
-    return FutureBuilder<int>(
+    return StreamBuilder<int>(
         initialData: 0,
-        future: _unansweredNotificationsCountFuture,
+        stream: ListAppNotificationManager.instance
+            .getUnreadNotificationCountStream(context
+                    .read<ListAppAuthProvider>()
+                    .loggedInListAppUser
+                    ?.databaseId ??
+                ''),
         builder: (context, AsyncSnapshot<int> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
             case ConnectionState.waiting:
-            case ConnectionState.active:
               return _buildBell();
+            case ConnectionState.active:
             case ConnectionState.done:
-              var notificationCount = snapshot.data!;
+              final notificationCount = snapshot.data ?? 0;
               return notificationCount > 0
                   ? Stack(children: <Widget>[
                       _buildBell(),

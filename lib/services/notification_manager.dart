@@ -43,7 +43,6 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
           });
           break;
       }
-      final data = docs.first.data();
 
       // find and inject the values not already objects in database
       return Future.wait(
@@ -91,20 +90,11 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
     return true;
   }
 
-  Future<int> getUnreadNotificationCount(String userId) async {
-    try {
-      final queryResult = await firebaseCollection
-          .where(
-            "status",
-            isEqualTo: "pending",
-          )
-          .where("userToId", isEqualTo: userId)
-          .get();
-
-      return queryResult.docs.length;
-    } on CheckedFromJsonException catch (e) {
-      print(e.message);
-      return 0;
-    }
+  Stream<int> getUnreadNotificationCountStream(String userId) async* {
+    final snapshotStream = firebaseCollection
+        .where("isRead", isEqualTo: false)
+        .where("userToId", isEqualTo: userId)
+        .snapshots();
+    await for (final querySnapshot in snapshotStream) yield querySnapshot.size;
   }
 }

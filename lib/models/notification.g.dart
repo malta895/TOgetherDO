@@ -44,9 +44,9 @@ ListInviteNotification _$ListInviteNotificationFromJson(
       databaseId: $checkedConvert(json, 'databaseId', (v) => v),
       createdAt: $checkedConvert(
           json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
+      updatedAt: $checkedConvert(json, 'updatedAt',
+          (v) => ModelUtils.nullableDateTimeFromJson(v as int?)),
     );
-    $checkedConvert(json, 'updatedAt',
-        (v) => val.updatedAt = ModelUtils.nullableDateTimeFromJson(v as int?));
     return val;
   });
 }
@@ -102,12 +102,12 @@ FriendshipNotification _$FriendshipNotificationFromJson(
       status: $checkedConvert(
           json, 'status', (v) => _$enumDecode(_$NotificationStatusEnumMap, v)),
       databaseId: $checkedConvert(json, 'databaseId', (v) => v as String?),
+      isRead: $checkedConvert(json, 'isRead', (v) => v),
       createdAt: $checkedConvert(
           json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
-      isRead: $checkedConvert(json, 'isRead', (v) => v),
+      updatedAt: $checkedConvert(json, 'updatedAt',
+          (v) => ModelUtils.nullableDateTimeFromJson(v as int?)),
     );
-    $checkedConvert(json, 'updatedAt',
-        (v) => val.updatedAt = ModelUtils.nullableDateTimeFromJson(v as int?));
     return val;
   });
 }

@@ -79,9 +79,11 @@ abstract class ListAppNotification extends BaseModel {
     required this.notificationType,
     this.isRead = false,
     DateTime? createdAt,
+    DateTime? updatedAt,
   }) : super(
           databaseId: databaseId,
           createdAt: createdAt,
+          updatedAt: updatedAt,
         );
 
   factory ListAppNotification.fromJson(Map<String, dynamic> json) {
@@ -128,14 +130,16 @@ class ListInviteNotification extends ListAppNotification {
     isRead = false,
     databaseId,
     createdAt,
+    updatedAt,
   }) : super(
-          createdAt: createdAt,
           databaseId: databaseId,
           notificationType: NotificationType.listInvite,
           userToId: userToId,
           userFromId: userFromId,
           status: status,
           isRead: isRead,
+          createdAt: createdAt,
+          updatedAt: updatedAt,
         );
 
   factory ListInviteNotification.fromJson(Map<String, dynamic> json) =>
@@ -154,8 +158,9 @@ class FriendshipNotification extends ListAppNotification {
     required this.friendshipRequestMethod,
     NotificationStatus status = NotificationStatus.pending,
     String? databaseId,
-    DateTime? createdAt,
     isRead = false,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) : super(
           createdAt: createdAt,
           databaseId: databaseId,
@@ -164,6 +169,7 @@ class FriendshipNotification extends ListAppNotification {
           userFromId: userFromId,
           status: status,
           isRead: isRead,
+          updatedAt: updatedAt,
         );
 
   factory FriendshipNotification.fromJson(Map<String, dynamic> json) =>

@@ -17,7 +17,7 @@ abstract class DatabaseManager<T extends BaseModel> {
   Future<void> saveToFirestore(T instance) async {
     final docRef = firebaseCollection.doc(instance.databaseId);
     instance.databaseId = docRef.id;
-    // TODO put also createdAt (?)
+    instance.updatedAt = DateTime.now();
     await docRef.set(instance);
   }
 
@@ -28,11 +28,23 @@ abstract class DatabaseManager<T extends BaseModel> {
     }
   }
 
+  /// populates the objects that cannot be retrieved directly from database, resolving their ids
+  Future<void> populateObjects(T instance);
+
   /// Gets an instance from the database by Uid
-  Future<T?> getByUid(String uid, {throwJsonException: false}) async {
+  Future<T?> getByUid(
+    String uid, {
+    throwJsonException: false,
+
+    /// call populateObject to have all the fields of the objects populated
+    callPopulateObjects: true,
+  }) async {
     try {
       final queryResult = await firebaseCollection.doc(uid).get();
-      return queryResult.data();
+      final instance = queryResult.data();
+      if (instance != null && callPopulateObjects)
+        await populateObjects(instance);
+      return instance;
     } on CheckedFromJsonException catch (e) {
       print(e.message);
       if (throwJsonException) rethrow;

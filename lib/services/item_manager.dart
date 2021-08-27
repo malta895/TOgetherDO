@@ -192,6 +192,11 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
     return members;
   }
 
+  @override
+  Future<void> populateObjects(BaseItem item) async {
+    // nothing to do here
+  }
+
   /*Future<bool> checkCompletionsForItem(String itemId) async {
     final queryResult = await ManagerConfig.firebaseFirestoreInstance
         .collection(ListAppUser.collectionName)

@@ -84,7 +84,7 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
         .map((listDocumentSnapshot) async {
       final ListAppList listAppList = listDocumentSnapshot.data()!;
 
-      await injectData(listAppList);
+      await populateObjects(listAppList);
 
       return listAppList;
     }).toList();
@@ -103,7 +103,8 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
   }
 
   /// Retrieves and injects objects by id in the list
-  Future<void> injectData(ListAppList listAppList) async {
+  @override
+  Future<void> populateObjects(ListAppList listAppList) async {
     // inject creator
     listAppList.creator =
         await ListAppUserManager.instance.getByUid(listAppList.creatorUid!);

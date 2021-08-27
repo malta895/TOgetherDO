@@ -82,17 +82,19 @@ class ListAppList extends BaseModel {
   ListAppList({
     String? databaseId,
     required this.name,
-    DateTime? createdAt,
     this.expiryDate,
     this.creatorUid,
     this.listType = ListType
         .public, // NOTE maybe better to make it required and remove the default value
     this.description,
     List<ListAppUser>? membersAsUsers,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   })  : this.membersAsUsers = membersAsUsers ?? [],
         super(
           databaseId: databaseId,
           createdAt: createdAt,
+          updatedAt: updatedAt,
         ) {
     if (membersAsUsers != null)
       members = Map<String, bool>.fromIterable(membersAsUsers,

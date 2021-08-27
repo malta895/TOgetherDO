@@ -49,28 +49,8 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
         docs.map(
           (e) async {
             final notification = e.data()!;
-
-            final userFrom = await ListAppUserManager.instance
-                .getByUid(notification.userFromId);
-
-            final userTo = await ListAppUserManager.instance
-                .getByUid(notification.userToId);
-
-            notification.userFrom = userFrom;
-            notification.userTo = userTo;
-
-            switch (notification.notificationType) {
-              case NotificationType.friendship:
-                // NOTE nothing to inject here for now
-                return notification as FriendshipNotification;
-              case NotificationType.listInvite:
-                final listInviteNotification =
-                    notification as ListInviteNotification;
-                listInviteNotification.list =
-                    await ListAppListManager.instanceForUser(userFrom!)
-                        .getByUid(listInviteNotification.listId);
-                return listInviteNotification;
-            }
+            await populateObjects(notification);
+            return notification;
           },
         ),
       );
@@ -101,5 +81,31 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
         .snapshots();
 
     await for (final querySnapshot in snapshotStream) yield querySnapshot.size;
+  }
+
+  @override
+  Future<void> populateObjects(ListAppNotification notification) async {
+    final userFrom = await ListAppUserManager.instance
+        .getByUid(notification.userFromId);
+
+    final userTo = await ListAppUserManager.instance
+        .getByUid(notification.userToId);
+
+    notification.userFrom = userFrom;
+    notification.userTo = userTo;
+
+    switch (notification.notificationType) {
+      case NotificationType.friendship:
+      // NOTE nothing to inject here for now
+        break;
+      case NotificationType.listInvite:
+        final listInviteNotification =
+        notification as ListInviteNotification;
+        listInviteNotification.list =
+        await ListAppListManager.instanceForUser(userFrom!)
+            .getByUid(listInviteNotification.listId);
+        notification = listInviteNotification;
+        break;
+    }
   }
 }

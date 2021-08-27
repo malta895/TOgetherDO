@@ -264,4 +264,9 @@ class ListAppUserManager extends DatabaseManager<ListAppUser>
           "An error occurred while trying to retrieve the user");
     }
   }
+
+  @override
+  Future<void> populateObjects(ListAppUser user) async {
+    // nothing to do here
+  }
 }

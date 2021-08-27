@@ -11,6 +11,7 @@ Map<String, dynamic> _$ListAppNotificationToJson(
     <String, dynamic>{
       'databaseId': instance.databaseId,
       'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
+      'updatedAt': ModelUtils.nullableDateTimeToJson(instance.updatedAt),
       'userToId': instance.userToId,
       'userFromId': instance.userFromId,
       'notificationType': _$NotificationTypeEnumMap[instance.notificationType],
@@ -44,6 +45,8 @@ ListInviteNotification _$ListInviteNotificationFromJson(
       createdAt: $checkedConvert(
           json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
     );
+    $checkedConvert(json, 'updatedAt',
+        (v) => val.updatedAt = ModelUtils.nullableDateTimeFromJson(v as int?));
     return val;
   });
 }
@@ -53,6 +56,7 @@ Map<String, dynamic> _$ListInviteNotificationToJson(
     <String, dynamic>{
       'databaseId': instance.databaseId,
       'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
+      'updatedAt': ModelUtils.nullableDateTimeToJson(instance.updatedAt),
       'userToId': instance.userToId,
       'userFromId': instance.userFromId,
       'status': _$NotificationStatusEnumMap[instance.status],
@@ -102,6 +106,8 @@ FriendshipNotification _$FriendshipNotificationFromJson(
           json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
       isRead: $checkedConvert(json, 'isRead', (v) => v),
     );
+    $checkedConvert(json, 'updatedAt',
+        (v) => val.updatedAt = ModelUtils.nullableDateTimeFromJson(v as int?));
     return val;
   });
 }
@@ -111,6 +117,7 @@ Map<String, dynamic> _$FriendshipNotificationToJson(
     <String, dynamic>{
       'databaseId': instance.databaseId,
       'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
+      'updatedAt': ModelUtils.nullableDateTimeToJson(instance.updatedAt),
       'userToId': instance.userToId,
       'userFromId': instance.userFromId,
       'status': _$NotificationStatusEnumMap[instance.status],

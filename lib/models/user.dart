@@ -47,11 +47,13 @@ class ListAppUser extends BaseModel {
     this.friends = const <String, bool>{},
     this.isNew = false,
     DateTime? createdAt,
+    DateTime? updatedAt,
   })  : this._displayName = displayName,
         this.username = username ?? '',
         super(
           databaseId: databaseId,
           createdAt: createdAt,
+          updatedAt: updatedAt,
         );
 
   String get fullName => firstName + ' ' + lastName;

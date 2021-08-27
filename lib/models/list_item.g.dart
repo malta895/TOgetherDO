@@ -9,6 +9,7 @@ part of 'list_item.dart';
 Map<String, dynamic> _$BaseItemToJson(BaseItem instance) => <String, dynamic>{
       'databaseId': instance.databaseId,
       'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
+      'updatedAt': ModelUtils.nullableDateTimeToJson(instance.updatedAt),
       'name': instance.name,
       'description': instance.description,
       'link': instance.link,
@@ -41,6 +42,8 @@ SimpleItem _$SimpleItemFromJson(Map<String, dynamic> json) {
       creatorUid: $checkedConvert(json, 'creatorUid', (v) => v as String),
       createdAt: $checkedConvert(
           json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
+      updatedAt: $checkedConvert(json, 'updatedAt',
+          (v) => ModelUtils.nullableDateTimeFromJson(v as int?)),
     );
     return val;
   });
@@ -50,6 +53,7 @@ Map<String, dynamic> _$SimpleItemToJson(SimpleItem instance) =>
     <String, dynamic>{
       'databaseId': instance.databaseId,
       'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
+      'updatedAt': ModelUtils.nullableDateTimeToJson(instance.updatedAt),
       'name': instance.name,
       'description': instance.description,
       'link': instance.link,
@@ -74,6 +78,8 @@ MultiFulfillmentItem _$MultiFulfillmentItemFromJson(Map<String, dynamic> json) {
       creatorUid: $checkedConvert(json, 'creatorUid', (v) => v as String),
       createdAt: $checkedConvert(
           json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
+      updatedAt: $checkedConvert(json, 'updatedAt',
+          (v) => ModelUtils.nullableDateTimeFromJson(v as int?)),
     );
     return val;
   });
@@ -84,6 +90,7 @@ Map<String, dynamic> _$MultiFulfillmentItemToJson(
     <String, dynamic>{
       'databaseId': instance.databaseId,
       'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
+      'updatedAt': ModelUtils.nullableDateTimeToJson(instance.updatedAt),
       'name': instance.name,
       'description': instance.description,
       'link': instance.link,
@@ -112,6 +119,8 @@ MultiFulfillmentMemberItem _$MultiFulfillmentMemberItemFromJson(
       creatorUid: $checkedConvert(json, 'creatorUid', (v) => v as String),
       createdAt: $checkedConvert(
           json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
+      updatedAt: $checkedConvert(json, 'updatedAt',
+          (v) => ModelUtils.nullableDateTimeFromJson(v as int?)),
     );
     return val;
   });
@@ -122,6 +131,7 @@ Map<String, dynamic> _$MultiFulfillmentMemberItemToJson(
     <String, dynamic>{
       'databaseId': instance.databaseId,
       'createdAt': ModelUtils.dateTimeToJson(instance.createdAt),
+      'updatedAt': ModelUtils.nullableDateTimeToJson(instance.updatedAt),
       'name': instance.name,
       'description': instance.description,
       'link': instance.link,

@@ -6,6 +6,10 @@ import 'package:mobile_applications/services/database_manager.dart';
 import 'package:mobile_applications/services/manager_config.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mobile_applications/models/exception.dart';
+
 /// The item manager. This is not a singleton as a new instance is created for each subcollection
 class ListAppItemManager extends DatabaseManager<BaseItem> {
   final String listUid;
@@ -70,6 +74,39 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
         await this.firebaseCollection.where("name", isEqualTo: name).get();
     //print(queryResult.docs.first.data());
     return queryResult.docs.isNotEmpty;
+  }
+
+  Future<void> updateItemName(String itemName, BaseItem aListItem) async {
+    try {
+      await this
+          .firebaseCollection
+          .doc(aListItem.databaseId)
+          .update({'name': itemName});
+      //notifyListeners();
+    } on FirebaseException catch (e) {
+      print(e.message);
+      throw ListAppException('An error occurred. Please try again later.');
+    } on CheckedFromJsonException catch (e) {
+      print(e.message);
+      throw ListAppException('An error occurred. Please try again later.');
+    }
+  }
+
+  Future<void> updateItemDescription(
+      String itemDescription, BaseItem aListItem) async {
+    try {
+      await this
+          .firebaseCollection
+          .doc(aListItem.databaseId)
+          .update({'description': itemDescription});
+      //notifyListeners();
+    } on FirebaseException catch (e) {
+      print(e.message);
+      throw ListAppException('An error occurred. Please try again later.');
+    } on CheckedFromJsonException catch (e) {
+      print(e.message);
+      throw ListAppException('An error occurred. Please try again later.');
+    }
   }
 
   Future<bool> fulfillItem(

@@ -19,6 +19,12 @@ enum ListType {
   private
 }
 
+enum ListStatus {
+  draft,
+  saved,
+  //TODO add completed?
+}
+
 extension ParseToString on ListType {
   String toReadableString() {
     switch (this) {

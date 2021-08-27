@@ -43,8 +43,8 @@ extension ParseToString on ItemType {
 )
 abstract class BaseItem extends BaseModel {
   static const String collectionName = 'items';
-  final String name;
-  final String? description;
+  String name;
+  String? description;
   final String? link;
   final int maxQuantity;
   final int quantityPerMember;

@@ -17,6 +17,7 @@ import 'package:mobile_applications/services/user_manager.dart';
 import 'package:mobile_applications/ui/new_item_page.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../models/user.dart';
 
@@ -29,11 +30,8 @@ class ListDetailsPage extends StatefulWidget {
   /// If `true`, the button to add new list items will be shown
   final bool canAddNewItems;
 
-  const ListDetailsPage(
-    this.listAppList, {
-    required this.canAddNewMembers,
-    this.canAddNewItems = true,
-  });
+  const ListDetailsPage(this.listAppList,
+      {required this.canAddNewMembers, this.canAddNewItems = true});
 
   @override
   _ListDetailsPageState createState() => _ListDetailsPageState();
@@ -108,8 +106,147 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
     );
   }
 
+  Future<void> _changeItemName(BuildContext context, BaseItem aListItem) async {
+    final textFieldController = TextEditingController(text: aListItem.name);
+    final oldItemName = aListItem.name;
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          String _newItemName = '';
+          // The stateful widget is necessary to keep updated the OK button enabled or disabled based on the current username value
+          return StatefulBuilder(builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Enter a new name for this item'),
+              content: TextField(
+                controller: textFieldController,
+                decoration: const InputDecoration(hintText: "New name"),
+                onChanged: (value) {
+                  setDialogState(() {
+                    _newItemName = value;
+                  });
+                },
+              ),
+              actions: <Widget>[
+                TextButton(
+                  style: TextButton.styleFrom(
+                      backgroundColor: Colors.red, primary: Colors.white),
+                  child: const Text('CANCEL'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                      backgroundColor:
+                          (_newItemName.isEmpty || _newItemName == oldItemName)
+                              ? Colors.grey
+                              : Colors.green,
+                      primary: Colors.white),
+                  child: const Text('OK'),
+                  onPressed: () async {
+                    if (_newItemName.isEmpty || _newItemName == oldItemName) {
+                      return;
+                    }
+
+                    {
+                      await ListAppItemManager.instanceForList(
+                              widget.listAppList.databaseId!,
+                              _loggedInListAppUser.databaseId!)
+                          .updateItemName(_newItemName, aListItem);
+
+                      setState(() {
+                        aListItem.name = _newItemName;
+                      });
+
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
+              ],
+            );
+          });
+        });
+  }
+
+  Future<void> _changeItemDescription(
+      BuildContext context, BaseItem aListItem) async {
+    final textFieldController =
+        TextEditingController(text: aListItem.description);
+    final oldItemDescription = aListItem.description;
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          String _newItemDescription = '';
+          return StatefulBuilder(builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Enter a new Description for this item'),
+              content: TextField(
+                controller: textFieldController,
+                decoration: const InputDecoration(hintText: "New Description"),
+                onChanged: (value) {
+                  setDialogState(() {
+                    _newItemDescription = value;
+                  });
+                },
+              ),
+              actions: <Widget>[
+                TextButton(
+                  style: TextButton.styleFrom(
+                      backgroundColor: Colors.red, primary: Colors.white),
+                  child: const Text('CANCEL'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                      backgroundColor:
+                          (_newItemDescription == oldItemDescription)
+                              ? Colors.grey
+                              : Colors.green,
+                      primary: Colors.white),
+                  child: const Text('OK'),
+                  onPressed: () async {
+                    if (_newItemDescription == oldItemDescription) {
+                      return;
+                    }
+
+                    {
+                      await ListAppItemManager.instanceForList(
+                              widget.listAppList.databaseId!,
+                              _loggedInListAppUser.databaseId!)
+                          .updateItemDescription(
+                              _newItemDescription, aListItem);
+
+                      setState(() {
+                        aListItem.description = _newItemDescription;
+                      });
+
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
+              ],
+            );
+          });
+        });
+  }
+
+  Future<void> _launchInBrowser(String url) async {
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceSafariVC: false,
+        forceWebView: false,
+        headers: <String, String>{'my_header_key': 'my_header_value'},
+      );
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   Widget itemDetailsAlertDialog(
-      BuildContext context, BaseItem aListItem, ListAppUser creator) {
+      BuildContext context, BaseItem item, ListAppUser creator) {
     return AlertDialog(
         scrollable: true,
         title: Text("Item details"),
@@ -120,31 +257,32 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                 color: Theme.of(context).primaryColor.withAlpha(50),
                 child: ListTile(
                     title: Text(
-                      aListItem.name,
+                      item.name,
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                     subtitle: Text("Name"),
-                    trailing:
-                        _loggedInListAppUser.databaseId == aListItem.creatorUid
-                            ? IconButton(
-                                onPressed: () {
-                                  print("update");
-                                },
-                                icon: Icon(Icons.edit))
-                            : Icon(Icons.edit_off)),
+                    trailing: _loggedInListAppUser.databaseId == item.creatorUid
+                        ? IconButton(
+                            onPressed: () async {
+                              await _changeItemName(context, item);
+                              Navigator.pop(context);
+                            },
+                            icon: Icon(Icons.edit))
+                        : Icon(Icons.edit_off)),
               ),
-              aListItem.description != null
+              (item.description != null && item.description != "")
                   ? Card(
                       color: Theme.of(context).primaryColor.withAlpha(50),
                       child: ListTile(
-                          title: Text(aListItem.description!,
+                          title: Text(item.description!,
                               style: TextStyle(fontWeight: FontWeight.w600)),
                           subtitle: Text("Description"),
                           trailing: _loggedInListAppUser.databaseId ==
-                                  aListItem.creatorUid
+                                  item.creatorUid
                               ? IconButton(
-                                  onPressed: () {
-                                    print("update");
+                                  onPressed: () async {
+                                    await _changeItemDescription(context, item);
+                                    Navigator.pop(context);
                                   },
                                   icon: Icon(Icons.edit))
                               : Icon(Icons.edit_off)),
@@ -152,9 +290,17 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                   : Card(
                       color: Theme.of(context).primaryColor.withAlpha(50),
                       child: ListTile(
-                        title: Text("This item has no description available",
-                            style: TextStyle(fontWeight: FontWeight.w600)),
-                      )),
+                          title: Text("This item has no description available",
+                              style: TextStyle(fontStyle: FontStyle.italic)),
+                          trailing: _loggedInListAppUser.databaseId ==
+                                  item.creatorUid
+                              ? IconButton(
+                                  onPressed: () async {
+                                    await _changeItemDescription(context, item);
+                                    Navigator.pop(context);
+                                  },
+                                  icon: Icon(Icons.edit))
+                              : Icon(Icons.edit_off))),
               Card(
                 color: Theme.of(context).primaryColor.withAlpha(50),
                 child: ListTile(
@@ -163,7 +309,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                   subtitle: Text("Creator"),
                 ),
               ),
-              _loggedInListAppUser.databaseId == aListItem.creatorUid
+              _loggedInListAppUser.databaseId == item.creatorUid
                   ? TextButton(
                       style: TextButton.styleFrom(
                           backgroundColor: Colors.red, primary: Colors.white),
@@ -178,13 +324,17 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                       child: const Text('Only the creator can delete the item'),
                       onPressed: null,
                     ),
-              aListItem.link != null
+              item.link != null
                   ? TextButton(
                       style: TextButton.styleFrom(
                           backgroundColor: Colors.cyan, primary: Colors.white),
-                      child: const Text('Link'),
-                      onPressed: () {
-                        Navigator.pop(context, false);
+                      child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [Icon(Icons.attach_file), Text('Link')]),
+                      onPressed: () async {
+                        if (item.link != null) {
+                          _launchInBrowser(item.link!);
+                        }
                       },
                     )
                   : TextButton(

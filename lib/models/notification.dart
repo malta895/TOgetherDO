@@ -58,7 +58,11 @@ abstract class ListAppNotification extends BaseModel {
 
   final NotificationType notificationType;
 
+  /// The status of the notification regarding its acceptance
   NotificationStatus status;
+
+  /// A read notification shouldn't be counted
+  bool isRead;
 
   //fields to be injected
   @JsonKey(ignore: true)
@@ -73,6 +77,7 @@ abstract class ListAppNotification extends BaseModel {
     required this.userFromId,
     this.status = NotificationStatus.pending,
     required this.notificationType,
+    this.isRead = false,
     DateTime? createdAt,
   }) : super(
           databaseId: databaseId,
@@ -109,7 +114,7 @@ abstract class ListAppNotification extends BaseModel {
 ) // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class ListInviteNotification extends ListAppNotification {
   String listId;
-  String listOwner;
+  String listOwnerId;
 
   @JsonKey(ignore: true)
   ListAppList? list;
@@ -118,8 +123,9 @@ class ListInviteNotification extends ListAppNotification {
     required userToId,
     required userFromId,
     required NotificationStatus status,
-    required this.listOwner,
+    required this.listOwnerId,
     required this.listId,
+    isRead = false,
     databaseId,
     createdAt,
   }) : super(
@@ -129,6 +135,7 @@ class ListInviteNotification extends ListAppNotification {
           userToId: userToId,
           userFromId: userFromId,
           status: status,
+          isRead: isRead,
         );
 
   factory ListInviteNotification.fromJson(Map<String, dynamic> json) =>
@@ -148,6 +155,7 @@ class FriendshipNotification extends ListAppNotification {
     NotificationStatus status = NotificationStatus.pending,
     String? databaseId,
     DateTime? createdAt,
+    isRead = false,
   }) : super(
           createdAt: createdAt,
           databaseId: databaseId,
@@ -155,6 +163,7 @@ class FriendshipNotification extends ListAppNotification {
           userToId: userToId,
           userFromId: userFromId,
           status: status,
+          isRead: isRead,
         );
 
   factory FriendshipNotification.fromJson(Map<String, dynamic> json) =>

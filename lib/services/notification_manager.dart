@@ -28,75 +28,78 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
 
   Future<List<ListAppNotification>> getNotificationsByUserId(
       String? userUid, String? orderBy) async {
-    final queryResult = await this
-        .firebaseCollection
-        .where('userToId', isEqualTo: userUid!)
-        .get();
-
-    var docs = queryResult.docs;
-
-    switch (orderBy) {
-      case 'createdAt':
-        docs.sort((a, b) {
-          return b.data()!.createdAt.compareTo(a.data()!.createdAt);
-        });
-        break;
-    }
-
-    // find and inject the values not already objects in database
-    return Future.wait(docs.map((e) async {
-      final notification = e.data()!;
-
-      final userFrom =
-          await ListAppUserManager.instance.getByUid(notification.userFromId);
-
-      final userTo =
-          await ListAppUserManager.instance.getByUid(notification.userToId);
-
-      notification.userFrom = userFrom;
-      notification.userTo = userTo;
-
-      switch (notification.notificationType) {
-        case NotificationType.friendship:
-          // NOTE nothing to inject here for now
-          break;
-        case NotificationType.listInvite:
-          final listNotification = notification as ListInviteNotification;
-          listNotification.list =
-              await ListAppListManager.instanceForUser(userFrom!)
-                  .getByUid(notification.listId);
-          break;
-      }
-
-      return notification;
-    }));
-  }
-
-  Future<bool> acceptNotification(String id) async {
-    await this.firebaseCollection.doc(id).update({"status": "accepted"});
-    return true;
-  }
-
-  Future<bool> rejectNotification(String id) async {
-    await this.firebaseCollection.doc(id).update({"status": "rejected"});
-    return true;
-  }
-
-  Future<int> getUnansweredNotifications(String uid, String orderBy) async {
     try {
-      var cont = 0;
-      var notificationList = await getNotificationsByUserId(uid, orderBy);
+      final queryResult = await this
+          .firebaseCollection
+          .where('userToId', isEqualTo: userUid!)
+          .get();
 
-      for (var item in notificationList) {
-        if (item.status == NotificationStatus.pending) {
-          cont++;
-        }
+      var docs = queryResult.docs;
+
+      switch (orderBy) {
+        case 'createdAt':
+          docs.sort((a, b) {
+            return b.data()!.createdAt.compareTo(a.data()!.createdAt);
+          });
+          break;
       }
 
-      return cont;
+      // find and inject the values not already objects in database
+      return Future.wait(
+        docs.map(
+          (e) async {
+            final notification = e.data()!;
+
+            final userFrom = await ListAppUserManager.instance
+                .getByUid(notification.userFromId);
+
+            final userTo = await ListAppUserManager.instance
+                .getByUid(notification.userToId);
+
+            notification.userFrom = userFrom;
+            notification.userTo = userTo;
+
+            switch (notification.notificationType) {
+              case NotificationType.friendship:
+                // NOTE nothing to inject here for now
+                return notification as FriendshipNotification;
+              case NotificationType.listInvite:
+                final listInviteNotification =
+                    notification as ListInviteNotification;
+                listInviteNotification.list =
+                    await ListAppListManager.instanceForUser(userFrom!)
+                        .getByUid(listInviteNotification.listId);
+                return listInviteNotification;
+            }
+          },
+        ),
+      );
     } on CheckedFromJsonException catch (e) {
-      print(e.message);
-      return 0;
+      print(e);
+      return [];
     }
+  }
+
+  Future<bool> acceptNotification(String notificationId) async {
+    await firebaseCollection
+        .doc(notificationId)
+        .update({"status": "accepted", "isRead": true});
+    return true;
+  }
+
+  Future<bool> rejectNotification(String notificationId) async {
+    await firebaseCollection
+        .doc(notificationId)
+        .update({"status": "rejected", "isRead": true});
+    return true;
+  }
+
+  Stream<int> getUnreadNotificationCountStream(String userId) async* {
+    final snapshotStream = firebaseCollection
+        .where("isRead", isEqualTo: false)
+        .where("userToId", isEqualTo: userId)
+        .snapshots();
+
+    await for (final querySnapshot in snapshotStream) yield querySnapshot.size;
   }
 }

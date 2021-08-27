@@ -170,7 +170,7 @@ void main() {
       userToId: '123',
       userFromId: '456',
       status: NotificationStatus.pending,
-      listOwner: '123',
+      listOwnerId: '123',
       listId: '5',
       databaseId: '123',
     );
@@ -188,7 +188,7 @@ void main() {
         expect(listInviteNotificationToJson['databaseId'], '123');
       });
       test('list invite type consinstency', () {
-        expect(listInviteNotificationToJson['listOwner'], '123');
+        expect(listInviteNotificationToJson['listOwnerId'], '123');
       });
 
       final ListAppNotification listInviteNotificationFromJson =

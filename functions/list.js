@@ -13,22 +13,23 @@ exports.createNotification = functions.region('europe-west6').firestore.document
         for (const [key, value] of Object.entries(receivers)) {
             console.log(`${key} ${value}`);
             let newNotification = {
-                userFrom: context.params.userId,
-                listOwner: context.params.userId,
-                userId: key,
+                userFromId: context.params.userId,
+                listOwnerId: context.params.userId,
+                userToId: key,
                 notificationType: 'listInvite',
                 status: 'pending',
                 listId: context.params.listId,
-                databaseId: ''
+                databaseId: '',
+                isRead: false,
             };
             admin.firestore().collection('notifications').add(newNotification).then((ok) => console.log(ok)).catch((e) => console.log(e));
         }
 
         /*receivers.forEach(element => {
             let newNotification = {
-                userFrom: sender.data().databaseId,
-                listOwner: context.params.userId,
-                userId: element,
+                userFromId: sender.data().databaseId,
+                listOwnerId: context.params.userId,
+                userToId: element,
                 notificationType: 'listInvite',
                 status: 'pending',
                 listId: context.params.listId,
@@ -51,13 +52,14 @@ exports.updateNotification = functions.region('europe-west6').firestore.document
             console.log(`${key} ${value}`);
             if (!oldMembers.hasOwnProperty(key)) {
                 let newNotification = {
-                    userFrom: context.params.userId,
-                    listOwner: context.params.userId,
-                    userId: key,
+                    userFromId: context.params.userId,
+                    listOwnerId: context.params.userId,
+                    userToId: key,
                     notificationType: 'listInvite',
                     status: 'pending',
                     listId: context.params.listId,
-                    databaseId: ''
+                    databaseId: '',
+                    isRead: false,
                 };
                 admin.firestore().collection('notifications').add(newNotification).then((ok) => console.log(ok)).catch((e) => console.log(e));
             }
@@ -69,9 +71,9 @@ exports.acceptInvite = functions.region('europe-west6').firestore.document('noti
     async (change, context) => {
         if (change.after.data().notificationType === "listInvite") {
             const accepted = change.after.data().status;
-            uid = change.after.data().userId;
+            uid = change.after.data().userToId;
 
-            list = await admin.firestore().collection('users').doc(change.after.data().listOwner).collection('lists').doc(change.after.data().listId).get();
+            list = await admin.firestore().collection('users').doc(change.after.data().listOwnerId).collection('lists').doc(change.after.data().listId).get();
 
             console.log(list.data().members);
             members = list.data().members;
@@ -80,14 +82,14 @@ exports.acceptInvite = functions.region('europe-west6').firestore.document('noti
             if (accepted === "accepted") {
                 members[uid] = true;
 
-                admin.firestore().collection('users').doc(change.after.data().listOwner).collection('lists').doc(change.after.data().listId).set({ members: members }, { merge: true });
+                admin.firestore().collection('users').doc(change.after.data().listOwnerId).collection('lists').doc(change.after.data().listId).set({ members: members }, { merge: true });
 
             } else if (accepted === "rejected") {
                 delete members[uid];
 
                 console.log(members);
 
-                admin.firestore().collection('users').doc(change.after.data().listOwner).collection('lists').doc(change.after.data().listId).update({ members: members }, { merge: true });
+                admin.firestore().collection('users').doc(change.after.data().listOwnerId).collection('lists').doc(change.after.data().listId).update({ members: members }, { merge: true });
             }
         }
     }

@@ -108,524 +108,106 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
     );
   }
 
-  Widget _buildItemRow(BuildContext context, BaseItem aListItem) {
-    switch (aListItem.itemType) {
-      case ItemType.simple:
-        if (aListItem.creatorUid == _loggedInListAppUser.databaseId) {
-          return Dismissible(
-            confirmDismiss: (DismissDirection direction) async {
-              return await showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text(
-                        "Are you sure you wish to delete this item?"),
-                    actions: <Widget>[
-                      TextButton(
-                          style: TextButton.styleFrom(primary: Colors.red),
-                          onPressed: () => Navigator.of(context).pop(true),
-                          child: const Text("DELETE")),
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(false),
-                        child: const Text("CANCEL"),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            dismissThresholds: {DismissDirection.endToStart: 0.3},
-            direction: DismissDirection.startToEnd,
-            background: Container(
-                color: Colors.red,
-                child: Align(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      const Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
-                    ],
-                  ),
-                  alignment: Alignment.centerLeft,
-                )),
-            key: UniqueKey(),
-            onDismissed: (DismissDirection direction) async {
-              final itemManagerInstance = ListAppItemManager.instanceForList(
-                widget.listAppList.databaseId!,
-                widget.listAppList.creator!.databaseId!,
-              );
-
-              await itemManagerInstance.deleteInstance(aListItem);
-              setState(() {
-                widget.listAppList.items
-                    .removeWhere((element) => element == aListItem);
-              });
-            },
-            child: CheckboxListTile(
-              activeColor: Theme.of(context).accentColor,
-              title: aListItem.isFulfilled()
-                  ? Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          flex: 5,
-                          child: Text(
-                            aListItem.name,
-                            style: const TextStyle(
-                                color: Colors.grey,
-                                decoration: TextDecoration.lineThrough),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.person,
-                                color: _assignedColors[
-                                    aListItem.getFulfillers().first.databaseId],
-                              ),
-                              Text(
-                                aListItem.getFulfillers().first.firstName,
-                                textScaleFactor: 0.7,
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    )
-                  : Text(aListItem.name),
-              value: aListItem.isFulfilled(),
-              selected: aListItem.isFulfilled(),
-              onChanged: (bool? value) async {
-                if (value == true) {
-                  await ListAppItemManager.instanceForList(
-                          widget.listAppList.databaseId!,
-                          _loggedInListAppUser.databaseId!)
-                      .fulfillItem(_loggedInListAppUser.databaseId!,
-                          widget.listAppList.databaseId!, aListItem, 1);
-                  print(aListItem.isFulfilled());
-                } else {
-                  await ListAppItemManager.instanceForList(
-                          widget.listAppList.databaseId!,
-                          _loggedInListAppUser.databaseId!)
-                      .unfulfillItem(_loggedInListAppUser.databaseId!,
-                          widget.listAppList.databaseId!, aListItem, 1);
-                }
-                setState(() {});
-              },
-            ),
-          );
-        } else {
-          return CheckboxListTile(
-            activeColor: Theme.of(context).accentColor,
-            title: aListItem.isFulfilled()
-                ? Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        flex: 5,
-                        child: Text(
-                          aListItem.name,
-                          style: const TextStyle(
-                              color: Colors.grey,
-                              decoration: TextDecoration.lineThrough),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.person,
-                              color: _assignedColors[
-                                  aListItem.getFulfillers().first.databaseId],
-                            ),
-                            Text(
-                              aListItem.getFulfillers().first.firstName,
-                              textScaleFactor: 0.7,
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
-                  )
-                : Text(aListItem.name),
-            value: aListItem.isFulfilled(),
-            selected: aListItem.isFulfilled(),
-            onChanged: (bool? value) async {
-              if (value == true) {
-                await ListAppItemManager.instanceForList(
-                        widget.listAppList.databaseId!,
-                        _loggedInListAppUser.databaseId!)
-                    .fulfillItem(_loggedInListAppUser.databaseId!,
-                        widget.listAppList.databaseId!, aListItem, 1);
-              } else {
-                await ListAppItemManager.instanceForList(
-                        widget.listAppList.databaseId!,
-                        _loggedInListAppUser.databaseId!)
-                    .unfulfillItem(_loggedInListAppUser.databaseId!,
-                        widget.listAppList.databaseId!, aListItem, 1);
-              }
-              setState(() {});
-            },
-          );
-        }
-      case ItemType.multiFulfillment:
-        if (aListItem.creatorUid == _loggedInListAppUser.databaseId) {
-          return Dismissible(
-              confirmDismiss: (DismissDirection direction) async {
-                return await showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text(
-                          "Are you sure you wish to delete this item?"),
-                      actions: <Widget>[
-                        TextButton(
-                            style: TextButton.styleFrom(primary: Colors.red),
-                            onPressed: () => Navigator.of(context).pop(true),
-                            child: const Text("DELETE")),
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(false),
-                          child: const Text("CANCEL"),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              dismissThresholds: {DismissDirection.endToStart: 0.3},
-              direction: DismissDirection.startToEnd,
-              background: Container(
-                  color: Colors.red,
-                  child: Align(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        const Icon(
-                          Icons.delete,
-                          color: Colors.white,
-                        ),
-                      ],
+  Widget itemDetailsAlertDialog(
+      BuildContext context, BaseItem aListItem, ListAppUser creator) {
+    return AlertDialog(
+        scrollable: true,
+        title: Text("Item details"),
+        content: Container(
+            height: 350,
+            child: Column(children: [
+              Card(
+                color: Theme.of(context).primaryColor.withAlpha(50),
+                child: ListTile(
+                    title: Text(
+                      aListItem.name,
+                      style: TextStyle(fontWeight: FontWeight.w600),
                     ),
-                    alignment: Alignment.centerLeft,
-                  )),
-              key: UniqueKey(),
-              onDismissed: (DismissDirection direction) async {
-                final itemManagerInstance = ListAppItemManager.instanceForList(
-                  widget.listAppList.databaseId!,
-                  widget.listAppList.creator!.databaseId!,
-                );
-
-                await itemManagerInstance.deleteInstance(aListItem);
-                setState(() {
-                  widget.listAppList.items
-                      .removeWhere((element) => element == aListItem);
-                });
-              },
-              child: CheckboxListTile(
-                activeColor: Theme.of(context).accentColor,
-                title: aListItem.isFulfilled()
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                            Expanded(
-                                flex: 5,
-                                child: Text(aListItem.name,
-                                    style: const TextStyle(
-                                        color: Colors.grey,
-                                        decoration:
-                                            TextDecoration.lineThrough))),
-                            Expanded(
-                                flex: 2,
-                                child: TextButton(
-                                    style: TextButton.styleFrom(
-                                      side: BorderSide(
-                                          color: Theme.of(context).accentColor,
-                                          width: 1),
-                                    ),
-                                    onPressed: () => showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: Text(aListItem.name),
-                                            content: _buildAlertDialogMembers(
-                                                aListItem
-                                                    .getFulfillers()
-                                                    .length,
-                                                aListItem
-                                                    .getFulfillers()
-                                                    .toSet()),
-                                          );
-                                        }),
-                                    child: Text(
-                                      "${aListItem.getFulfillers().length}" +
-                                          " / " +
-                                          "${aListItem.maxQuantity}",
-                                      style: TextStyle(
-                                          color:
-                                              Theme.of(context).primaryColor),
-                                      textScaleFactor: 1.2,
-                                    ))
-                                /*],
-                        ),*/
-                                )
-                          ])
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                            Expanded(flex: 5, child: Text(aListItem.name)),
-                            Expanded(
-                                flex: 2,
-                                child: TextButton(
-                                    style: TextButton.styleFrom(
-                                      side: BorderSide(
-                                          color: Theme.of(context).accentColor,
-                                          width: 1),
-                                    ),
-                                    onPressed: () => showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: Text(aListItem.name),
-                                            content: _buildAlertDialogMembers(
-                                                aListItem
-                                                    .getFulfillers()
-                                                    .length,
-                                                aListItem
-                                                    .getFulfillers()
-                                                    .toSet()),
-                                          );
-                                        }),
-                                    child: Text(
-                                      "${aListItem.getFulfillers().length}" +
-                                          " / " +
-                                          "${aListItem.maxQuantity}",
-                                      style: TextStyle(
-                                          color:
-                                              Theme.of(context).primaryColor),
-                                      textScaleFactor: 1.2,
-                                    )))
-                          ]),
-                value:
-                    aListItem.quantityFulfilledBy(_loggedInListAppUser).isOdd,
-                selected: aListItem.isFulfilled(),
-                onChanged: (bool? value) async {
-                  if (aListItem.isFulfilled()) {
-                    if (aListItem.usersCompletions.keys
-                        .contains(_loggedInListAppUser.databaseId)) {
-                      if (value == true) {
-                        await ListAppItemManager.instanceForList(
-                                widget.listAppList.databaseId!,
-                                _loggedInListAppUser.databaseId!)
-                            .fulfillItem(_loggedInListAppUser.databaseId!,
-                                widget.listAppList.databaseId!, aListItem, 1);
-                      } else {
-                        await ListAppItemManager.instanceForList(
-                                widget.listAppList.databaseId!,
-                                _loggedInListAppUser.databaseId!)
-                            .unfulfillItem(_loggedInListAppUser.databaseId!,
-                                widget.listAppList.databaseId!, aListItem, 1);
-                      }
-                      setState(() {});
-                    } else {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text("Item already fulfilled!"),
-                              content: Text(
-                                  "This item has been alredy fulfilled by other users."),
-                              actions: [
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                      textStyle: const TextStyle(fontSize: 16),
-                                      primary: Colors.white,
-                                      backgroundColor:
-                                          Theme.of(context).accentColor),
-                                  child: Text("Got it!"),
+                    subtitle: Text("Name"),
+                    trailing:
+                        _loggedInListAppUser.databaseId == aListItem.creatorUid
+                            ? IconButton(
+                                onPressed: () {
+                                  print("update");
+                                },
+                                icon: Icon(Icons.edit))
+                            : Icon(Icons.edit_off)),
+              ),
+              aListItem.description != null
+                  ? Card(
+                      color: Theme.of(context).primaryColor.withAlpha(50),
+                      child: ListTile(
+                          title: Text(aListItem.description!,
+                              style: TextStyle(fontWeight: FontWeight.w600)),
+                          subtitle: Text("Description"),
+                          trailing: _loggedInListAppUser.databaseId ==
+                                  aListItem.creatorUid
+                              ? IconButton(
                                   onPressed: () {
-                                    Navigator.of(context).pop(true);
+                                    print("update");
                                   },
-                                ),
-                              ],
-                            );
-                          });
-                    }
-                  } else {
-                    if (value == true) {
-                      await ListAppItemManager.instanceForList(
-                              widget.listAppList.databaseId!,
-                              _loggedInListAppUser.databaseId!)
-                          .fulfillItem(_loggedInListAppUser.databaseId!,
-                              widget.listAppList.databaseId!, aListItem, 1);
-                    } else {
-                      await ListAppItemManager.instanceForList(
-                              widget.listAppList.databaseId!,
-                              _loggedInListAppUser.databaseId!)
-                          .unfulfillItem(_loggedInListAppUser.databaseId!,
-                              widget.listAppList.databaseId!, aListItem, 1);
-                    }
-                    setState(() {});
-                  }
-                },
-              ));
-        } else {
-          return CheckboxListTile(
-            activeColor: Theme.of(context).accentColor,
-            title: aListItem.isFulfilled()
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                        Expanded(
-                            flex: 5,
-                            child: Text(aListItem.name,
-                                style: const TextStyle(
-                                    color: Colors.grey,
-                                    decoration: TextDecoration.lineThrough))),
-                        Expanded(
-                            flex: 2,
-                            child: TextButton(
-                                style: TextButton.styleFrom(
-                                  side: BorderSide(
-                                      color: Theme.of(context).accentColor,
-                                      width: 1),
-                                ),
-                                onPressed: () => showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Text(aListItem.name),
-                                        content: _buildAlertDialogMembers(
-                                            aListItem.getFulfillers().length,
-                                            aListItem.getFulfillers().toSet()),
-                                      );
-                                    }),
-                                child: Text(
-                                  "${aListItem.getFulfillers().length}" +
-                                      " / " +
-                                      "${aListItem.maxQuantity}",
-                                  style: TextStyle(
-                                      color: Theme.of(context).primaryColor),
-                                  textScaleFactor: 1.2,
-                                ))
-                            /*],
-                        ),*/
-                            )
-                      ])
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                        Expanded(flex: 5, child: Text(aListItem.name)),
-                        Expanded(
-                            flex: 2,
-                            child: TextButton(
-                                style: TextButton.styleFrom(
-                                  side: BorderSide(
-                                      color: Theme.of(context).accentColor,
-                                      width: 1),
-                                ),
-                                onPressed: () => showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Text(aListItem.name),
-                                        content: _buildAlertDialogMembers(
-                                            aListItem.getFulfillers().length,
-                                            aListItem.getFulfillers().toSet()),
-                                      );
-                                    }),
-                                child: Text(
-                                  "${aListItem.getFulfillers().length}" +
-                                      " / " +
-                                      "${aListItem.maxQuantity}",
-                                  style: TextStyle(
-                                      color: Theme.of(context).primaryColor),
-                                  textScaleFactor: 1.2,
-                                )))
-                      ]),
-            value: aListItem.quantityFulfilledBy(_loggedInListAppUser).isOdd,
-            selected: aListItem.isFulfilled(),
-            onChanged: (bool? value) async {
-              if (aListItem.isFulfilled()) {
-                if (aListItem.usersCompletions.keys
-                    .contains(_loggedInListAppUser.databaseId)) {
-                  if (value == true) {
-                    await ListAppItemManager.instanceForList(
-                            widget.listAppList.databaseId!,
-                            _loggedInListAppUser.databaseId!)
-                        .fulfillItem(_loggedInListAppUser.databaseId!,
-                            widget.listAppList.databaseId!, aListItem, 1);
-                  } else {
-                    await ListAppItemManager.instanceForList(
-                            widget.listAppList.databaseId!,
-                            _loggedInListAppUser.databaseId!)
-                        .unfulfillItem(_loggedInListAppUser.databaseId!,
-                            widget.listAppList.databaseId!, aListItem, 1);
-                  }
-                  setState(() {});
-                } else {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text("Item already fulfilled!"),
-                          content: Text(
-                              "This item has been alredy fulfilled by other users."),
-                          actions: [
-                            TextButton(
-                              style: TextButton.styleFrom(
-                                  textStyle: const TextStyle(fontSize: 16),
-                                  primary: Colors.white,
-                                  backgroundColor:
-                                      Theme.of(context).accentColor),
-                              child: Text("Got it!"),
-                              onPressed: () {
-                                Navigator.of(context).pop(true);
-                              },
-                            ),
-                          ],
-                        );
-                      });
-                }
-              } else {
-                if (value == true) {
-                  await ListAppItemManager.instanceForList(
-                          widget.listAppList.databaseId!,
-                          _loggedInListAppUser.databaseId!)
-                      .fulfillItem(_loggedInListAppUser.databaseId!,
-                          widget.listAppList.databaseId!, aListItem, 1);
-                } else {
-                  await ListAppItemManager.instanceForList(
-                          widget.listAppList.databaseId!,
-                          _loggedInListAppUser.databaseId!)
-                      .unfulfillItem(_loggedInListAppUser.databaseId!,
-                          widget.listAppList.databaseId!, aListItem, 1);
-                }
-                setState(() {});
-              }
-            },
-          );
-        }
+                                  icon: Icon(Icons.edit))
+                              : Icon(Icons.edit_off)),
+                    )
+                  : Card(
+                      color: Theme.of(context).primaryColor.withAlpha(50),
+                      child: ListTile(
+                        title: Text("This item has no description available",
+                            style: TextStyle(fontWeight: FontWeight.w600)),
+                      )),
+              Card(
+                color: Theme.of(context).primaryColor.withAlpha(50),
+                child: ListTile(
+                  title: Text(creator.firstName + " " + creator.lastName,
+                      style: TextStyle(fontWeight: FontWeight.w600)),
+                  subtitle: Text("Creator"),
+                ),
+              ),
+              _loggedInListAppUser.databaseId == aListItem.creatorUid
+                  ? TextButton(
+                      style: TextButton.styleFrom(
+                          backgroundColor: Colors.red, primary: Colors.white),
+                      child: const Text('DELETE'),
+                      onPressed: () {
+                        Navigator.pop(context, false);
+                      },
+                    )
+                  : TextButton(
+                      style: TextButton.styleFrom(
+                          backgroundColor: Colors.grey, primary: Colors.white),
+                      child: const Text('Only the creator can delete the item'),
+                      onPressed: null,
+                    ),
+              aListItem.link != null
+                  ? TextButton(
+                      style: TextButton.styleFrom(
+                          backgroundColor: Colors.cyan, primary: Colors.white),
+                      child: const Text('Link'),
+                      onPressed: () {
+                        Navigator.pop(context, false);
+                      },
+                    )
+                  : TextButton(
+                      style: TextButton.styleFrom(
+                          backgroundColor: Colors.grey, primary: Colors.white),
+                      child: const Text('There is no link for this item'),
+                      onPressed: null,
+                    ),
+            ])));
+  }
 
-      case ItemType.multiFulfillmentMember:
-        if (aListItem.creatorUid == _loggedInListAppUser.databaseId) {
-          return Dismissible(
+  Widget _buildItemRow(BuildContext context, BaseItem aListItem) {
+    ListAppUser? creator;
+    ListAppUserManager.instance.getByUid(aListItem.creatorUid).then((value) {
+      creator = value;
+    });
+    if (widget.listAppList.listType == ListType.public ||
+        (widget.listAppList.listType == ListType.private &&
+            _loggedInListAppUser.databaseId != aListItem.creatorUid)) {
+      switch (aListItem.itemType) {
+        case ItemType.simple:
+          if (aListItem.creatorUid == _loggedInListAppUser.databaseId) {
+            return Dismissible(
               confirmDismiss: (DismissDirection direction) async {
                 return await showDialog(
                   context: context,
@@ -680,139 +262,823 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                 });
               },
               child: ListTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      flex: 5,
-                      child: Text(aListItem.name,
-                          style: aListItem.isFulfilled()
-                              ? const TextStyle(
-                                  color: Colors.grey,
-                                  decoration: TextDecoration.lineThrough)
-                              : TextStyle(
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .headline1!
-                                      .color)),
-                    ),
-                    Expanded(
-                        flex: 2,
-                        child: _buildMultiFulfillmentMemberItemButton(
-                            context, aListItem)),
-                  ],
-                ),
-                selected: aListItem.isFulfilled(),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return itemDetailsAlertDialog(
+                          context, aListItem, creator!);
+                    },
+                  );
+                },
                 trailing: Container(
                   width: 40,
-                  child: IconButton(
-                      padding: const EdgeInsets.all(0),
-                      icon: Icon(Icons.add_circle,
-                          color: Theme.of(context).accentColor),
-                      onPressed: () async {
-                        if (aListItem.isFulfilled()) {
-                          if (aListItem.usersCompletions.keys
-                              .contains(_loggedInListAppUser.databaseId)) {
-                            await _showNumberPickerDialog(context, aListItem);
-                          } else {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text("Item already fulfilled!"),
-                                    content: Text(
-                                        "This item has been alredy fulfilled by other users."),
-                                    actions: [
-                                      TextButton(
-                                        style: TextButton.styleFrom(
-                                            textStyle:
-                                                const TextStyle(fontSize: 16),
-                                            primary: Colors.white,
-                                            backgroundColor:
-                                                Theme.of(context).accentColor),
-                                        child: Text("Got it!"),
-                                        onPressed: () {
-                                          Navigator.of(context).pop(true);
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                });
-                          }
-                        } else {
-                          await _showNumberPickerDialog(context, aListItem);
-                        }
-                      }),
-                ),
-              ));
-        } else {
-          return ListTile(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  flex: 5,
-                  child: Text(aListItem.name,
-                      style: aListItem.isFulfilled()
-                          ? const TextStyle(
-                              color: Colors.grey,
-                              decoration: TextDecoration.lineThrough)
-                          : TextStyle(
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .headline1!
-                                  .color)),
-                ),
-                Expanded(
-                    flex: 2,
-                    child: _buildMultiFulfillmentMemberItemButton(
-                        context, aListItem)),
-              ],
-            ),
-            selected: aListItem.isFulfilled(),
-            trailing: Container(
-              width: 40,
-              child: IconButton(
-                  padding: const EdgeInsets.all(0),
-                  icon: Icon(Icons.add_circle,
-                      color: Theme.of(context).accentColor),
-                  onPressed: () async {
-                    if (aListItem.isFulfilled()) {
-                      if (aListItem.usersCompletions.keys
-                          .contains(_loggedInListAppUser.databaseId)) {
-                        await _showNumberPickerDialog(context, aListItem);
+                  child: Checkbox(
+                    activeColor: Theme.of(context).accentColor,
+                    value: aListItem.isFulfilled(),
+                    onChanged: (bool? value) async {
+                      if (value == true) {
+                        await ListAppItemManager.instanceForList(
+                                widget.listAppList.databaseId!,
+                                _loggedInListAppUser.databaseId!)
+                            .fulfillItem(_loggedInListAppUser.databaseId!,
+                                widget.listAppList.databaseId!, aListItem, 1);
+                        print(aListItem.isFulfilled());
                       } else {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text("Item already fulfilled!"),
-                                content: Text(
-                                    "This item has been alredy fulfilled by other users."),
-                                actions: [
-                                  TextButton(
-                                    style: TextButton.styleFrom(
-                                        textStyle:
-                                            const TextStyle(fontSize: 16),
-                                        primary: Colors.white,
-                                        backgroundColor:
-                                            Theme.of(context).accentColor),
-                                    child: Text("Got it!"),
-                                    onPressed: () {
-                                      Navigator.of(context).pop(true);
-                                    },
-                                  ),
-                                ],
-                              );
-                            });
+                        await ListAppItemManager.instanceForList(
+                                widget.listAppList.databaseId!,
+                                _loggedInListAppUser.databaseId!)
+                            .unfulfillItem(_loggedInListAppUser.databaseId!,
+                                widget.listAppList.databaseId!, aListItem, 1);
                       }
-                    } else {
-                      await _showNumberPickerDialog(context, aListItem);
-                    }
-                  }),
+                      setState(() {});
+                    },
+                  ),
+                ),
+                title: aListItem.isFulfilled()
+                    ? Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            flex: 5,
+                            child: Text(
+                              aListItem.name,
+                              style: const TextStyle(
+                                  color: Colors.grey,
+                                  decoration: TextDecoration.lineThrough),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.person,
+                                  color: _assignedColors[aListItem
+                                      .getFulfillers()
+                                      .first
+                                      .databaseId],
+                                ),
+                                Text(
+                                  aListItem.getFulfillers().first.firstName,
+                                  textScaleFactor: 0.7,
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
+                    : Text(aListItem.name),
+                selected: aListItem.isFulfilled(),
+              ),
+            );
+          } else {
+            return ListTile(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return itemDetailsAlertDialog(context, aListItem, creator!);
+                  },
+                );
+              },
+              trailing: Container(
+                  width: 40,
+                  child: Checkbox(
+                    activeColor: Theme.of(context).accentColor,
+                    value: aListItem.isFulfilled(),
+                    onChanged: (bool? value) async {
+                      if (value == true) {
+                        await ListAppItemManager.instanceForList(
+                                widget.listAppList.databaseId!,
+                                _loggedInListAppUser.databaseId!)
+                            .fulfillItem(_loggedInListAppUser.databaseId!,
+                                widget.listAppList.databaseId!, aListItem, 1);
+                      } else {
+                        await ListAppItemManager.instanceForList(
+                                widget.listAppList.databaseId!,
+                                _loggedInListAppUser.databaseId!)
+                            .unfulfillItem(_loggedInListAppUser.databaseId!,
+                                widget.listAppList.databaseId!, aListItem, 1);
+                      }
+                      setState(() {});
+                    },
+                  )),
+              title: aListItem.isFulfilled()
+                  ? Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Text(
+                            aListItem.name,
+                            style: const TextStyle(
+                                color: Colors.grey,
+                                decoration: TextDecoration.lineThrough),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.person,
+                                color: _assignedColors[
+                                    aListItem.getFulfillers().first.databaseId],
+                              ),
+                              Text(
+                                aListItem.getFulfillers().first.firstName,
+                                textScaleFactor: 0.7,
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  : Text(aListItem.name),
+              selected: aListItem.isFulfilled(),
+            );
+          }
+        case ItemType.multiFulfillment:
+          if (aListItem.creatorUid == _loggedInListAppUser.databaseId) {
+            return Dismissible(
+                confirmDismiss: (DismissDirection direction) async {
+                  return await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text(
+                            "Are you sure you wish to delete this item?"),
+                        actions: <Widget>[
+                          TextButton(
+                              style: TextButton.styleFrom(primary: Colors.red),
+                              onPressed: () => Navigator.of(context).pop(true),
+                              child: const Text("DELETE")),
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(false),
+                            child: const Text("CANCEL"),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                dismissThresholds: {DismissDirection.endToStart: 0.3},
+                direction: DismissDirection.startToEnd,
+                background: Container(
+                    color: Colors.red,
+                    child: Align(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          const Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                      alignment: Alignment.centerLeft,
+                    )),
+                key: UniqueKey(),
+                onDismissed: (DismissDirection direction) async {
+                  final itemManagerInstance =
+                      ListAppItemManager.instanceForList(
+                    widget.listAppList.databaseId!,
+                    widget.listAppList.creator!.databaseId!,
+                  );
+
+                  await itemManagerInstance.deleteInstance(aListItem);
+                  setState(() {
+                    widget.listAppList.items
+                        .removeWhere((element) => element == aListItem);
+                  });
+                },
+                child: ListTile(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return itemDetailsAlertDialog(
+                            context, aListItem, creator!);
+                      },
+                    );
+                  },
+                  trailing: Container(
+                      width: 40,
+                      child: Checkbox(
+                        activeColor: Theme.of(context).accentColor,
+                        value: aListItem
+                            .quantityFulfilledBy(_loggedInListAppUser)
+                            .isOdd,
+                        onChanged: (bool? value) async {
+                          if (aListItem.isFulfilled()) {
+                            if (aListItem.usersCompletions.keys
+                                .contains(_loggedInListAppUser.databaseId)) {
+                              if (value == true) {
+                                await ListAppItemManager.instanceForList(
+                                        widget.listAppList.databaseId!,
+                                        _loggedInListAppUser.databaseId!)
+                                    .fulfillItem(
+                                        _loggedInListAppUser.databaseId!,
+                                        widget.listAppList.databaseId!,
+                                        aListItem,
+                                        1);
+                              } else {
+                                await ListAppItemManager.instanceForList(
+                                        widget.listAppList.databaseId!,
+                                        _loggedInListAppUser.databaseId!)
+                                    .unfulfillItem(
+                                        _loggedInListAppUser.databaseId!,
+                                        widget.listAppList.databaseId!,
+                                        aListItem,
+                                        1);
+                              }
+                              setState(() {});
+                            } else {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text("Item already fulfilled!"),
+                                      content: Text(
+                                          "This item has been alredy fulfilled by other users."),
+                                      actions: [
+                                        TextButton(
+                                          style: TextButton.styleFrom(
+                                              textStyle:
+                                                  const TextStyle(fontSize: 16),
+                                              primary: Colors.white,
+                                              backgroundColor: Theme.of(context)
+                                                  .accentColor),
+                                          child: Text("Got it!"),
+                                          onPressed: () {
+                                            Navigator.of(context).pop(true);
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  });
+                            }
+                          } else {
+                            if (value == true) {
+                              await ListAppItemManager.instanceForList(
+                                      widget.listAppList.databaseId!,
+                                      _loggedInListAppUser.databaseId!)
+                                  .fulfillItem(
+                                      _loggedInListAppUser.databaseId!,
+                                      widget.listAppList.databaseId!,
+                                      aListItem,
+                                      1);
+                            } else {
+                              await ListAppItemManager.instanceForList(
+                                      widget.listAppList.databaseId!,
+                                      _loggedInListAppUser.databaseId!)
+                                  .unfulfillItem(
+                                      _loggedInListAppUser.databaseId!,
+                                      widget.listAppList.databaseId!,
+                                      aListItem,
+                                      1);
+                            }
+                            setState(() {});
+                          }
+                        },
+                      )),
+                  title: aListItem.isFulfilled()
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                              Expanded(
+                                  flex: 5,
+                                  child: Text(aListItem.name,
+                                      style: const TextStyle(
+                                          color: Colors.grey,
+                                          decoration:
+                                              TextDecoration.lineThrough))),
+                              Expanded(
+                                  flex: 2,
+                                  child: TextButton(
+                                      style: TextButton.styleFrom(
+                                        side: BorderSide(
+                                            color:
+                                                Theme.of(context).accentColor,
+                                            width: 1),
+                                      ),
+                                      onPressed: () => showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text(aListItem.name),
+                                              content: _buildAlertDialogMembers(
+                                                  aListItem
+                                                      .getFulfillers()
+                                                      .length,
+                                                  aListItem
+                                                      .getFulfillers()
+                                                      .toSet()),
+                                            );
+                                          }),
+                                      child: Text(
+                                        "${aListItem.getFulfillers().length}" +
+                                            " / " +
+                                            "${aListItem.maxQuantity}",
+                                        style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor),
+                                        textScaleFactor: 1.2,
+                                      ))
+                                  /*],
+                        ),*/
+                                  )
+                            ])
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                              Expanded(flex: 5, child: Text(aListItem.name)),
+                              Expanded(
+                                  flex: 2,
+                                  child: TextButton(
+                                      style: TextButton.styleFrom(
+                                        side: BorderSide(
+                                            color:
+                                                Theme.of(context).accentColor,
+                                            width: 1),
+                                      ),
+                                      onPressed: () => showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text(aListItem.name),
+                                              content: _buildAlertDialogMembers(
+                                                  aListItem
+                                                      .getFulfillers()
+                                                      .length,
+                                                  aListItem
+                                                      .getFulfillers()
+                                                      .toSet()),
+                                            );
+                                          }),
+                                      child: Text(
+                                        "${aListItem.getFulfillers().length}" +
+                                            " / " +
+                                            "${aListItem.maxQuantity}",
+                                        style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor),
+                                        textScaleFactor: 1.2,
+                                      )))
+                            ]),
+                  selected: aListItem.isFulfilled(),
+                ));
+          } else {
+            return ListTile(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return itemDetailsAlertDialog(context, aListItem, creator!);
+                  },
+                );
+              },
+              trailing: Container(
+                  width: 40,
+                  child: Checkbox(
+                    activeColor: Theme.of(context).accentColor,
+                    value: aListItem
+                        .quantityFulfilledBy(_loggedInListAppUser)
+                        .isOdd,
+                    onChanged: (bool? value) async {
+                      if (aListItem.isFulfilled()) {
+                        if (aListItem.usersCompletions.keys
+                            .contains(_loggedInListAppUser.databaseId)) {
+                          if (value == true) {
+                            await ListAppItemManager.instanceForList(
+                                    widget.listAppList.databaseId!,
+                                    _loggedInListAppUser.databaseId!)
+                                .fulfillItem(
+                                    _loggedInListAppUser.databaseId!,
+                                    widget.listAppList.databaseId!,
+                                    aListItem,
+                                    1);
+                          } else {
+                            await ListAppItemManager.instanceForList(
+                                    widget.listAppList.databaseId!,
+                                    _loggedInListAppUser.databaseId!)
+                                .unfulfillItem(
+                                    _loggedInListAppUser.databaseId!,
+                                    widget.listAppList.databaseId!,
+                                    aListItem,
+                                    1);
+                          }
+                          setState(() {});
+                        } else {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text("Item already fulfilled!"),
+                                  content: Text(
+                                      "This item has been alredy fulfilled by other users."),
+                                  actions: [
+                                    TextButton(
+                                      style: TextButton.styleFrom(
+                                          textStyle:
+                                              const TextStyle(fontSize: 16),
+                                          primary: Colors.white,
+                                          backgroundColor:
+                                              Theme.of(context).accentColor),
+                                      child: Text("Got it!"),
+                                      onPressed: () {
+                                        Navigator.of(context).pop(true);
+                                      },
+                                    ),
+                                  ],
+                                );
+                              });
+                        }
+                      } else {
+                        if (value == true) {
+                          await ListAppItemManager.instanceForList(
+                                  widget.listAppList.databaseId!,
+                                  _loggedInListAppUser.databaseId!)
+                              .fulfillItem(_loggedInListAppUser.databaseId!,
+                                  widget.listAppList.databaseId!, aListItem, 1);
+                        } else {
+                          await ListAppItemManager.instanceForList(
+                                  widget.listAppList.databaseId!,
+                                  _loggedInListAppUser.databaseId!)
+                              .unfulfillItem(_loggedInListAppUser.databaseId!,
+                                  widget.listAppList.databaseId!, aListItem, 1);
+                        }
+                        setState(() {});
+                      }
+                    },
+                  )),
+              title: aListItem.isFulfilled()
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                          Expanded(
+                              flex: 5,
+                              child: Text(aListItem.name,
+                                  style: const TextStyle(
+                                      color: Colors.grey,
+                                      decoration: TextDecoration.lineThrough))),
+                          Expanded(
+                              flex: 2,
+                              child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    side: BorderSide(
+                                        color: Theme.of(context).accentColor,
+                                        width: 1),
+                                  ),
+                                  onPressed: () => showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text(aListItem.name),
+                                          content: _buildAlertDialogMembers(
+                                              aListItem.getFulfillers().length,
+                                              aListItem
+                                                  .getFulfillers()
+                                                  .toSet()),
+                                        );
+                                      }),
+                                  child: Text(
+                                    "${aListItem.getFulfillers().length}" +
+                                        " / " +
+                                        "${aListItem.maxQuantity}",
+                                    style: TextStyle(
+                                        color: Theme.of(context).primaryColor),
+                                    textScaleFactor: 1.2,
+                                  ))
+                              /*],
+                        ),*/
+                              )
+                        ])
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                          Expanded(flex: 5, child: Text(aListItem.name)),
+                          Expanded(
+                              flex: 2,
+                              child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    side: BorderSide(
+                                        color: Theme.of(context).accentColor,
+                                        width: 1),
+                                  ),
+                                  onPressed: () => showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text(aListItem.name),
+                                          content: _buildAlertDialogMembers(
+                                              aListItem.getFulfillers().length,
+                                              aListItem
+                                                  .getFulfillers()
+                                                  .toSet()),
+                                        );
+                                      }),
+                                  child: Text(
+                                    "${aListItem.getFulfillers().length}" +
+                                        " / " +
+                                        "${aListItem.maxQuantity}",
+                                    style: TextStyle(
+                                        color: Theme.of(context).primaryColor),
+                                    textScaleFactor: 1.2,
+                                  )))
+                        ]),
+              selected: aListItem.isFulfilled(),
+            );
+          }
+
+        case ItemType.multiFulfillmentMember:
+          if (aListItem.creatorUid == _loggedInListAppUser.databaseId) {
+            return Dismissible(
+                confirmDismiss: (DismissDirection direction) async {
+                  return await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text(
+                            "Are you sure you wish to delete this item?"),
+                        actions: <Widget>[
+                          TextButton(
+                              style: TextButton.styleFrom(primary: Colors.red),
+                              onPressed: () => Navigator.of(context).pop(true),
+                              child: const Text("DELETE")),
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(false),
+                            child: const Text("CANCEL"),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                dismissThresholds: {DismissDirection.endToStart: 0.3},
+                direction: DismissDirection.startToEnd,
+                background: Container(
+                    color: Colors.red,
+                    child: Align(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          const Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
+                      alignment: Alignment.centerLeft,
+                    )),
+                key: UniqueKey(),
+                onDismissed: (DismissDirection direction) async {
+                  final itemManagerInstance =
+                      ListAppItemManager.instanceForList(
+                    widget.listAppList.databaseId!,
+                    widget.listAppList.creator!.databaseId!,
+                  );
+
+                  await itemManagerInstance.deleteInstance(aListItem);
+                  setState(() {
+                    widget.listAppList.items
+                        .removeWhere((element) => element == aListItem);
+                  });
+                },
+                child: ListTile(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return itemDetailsAlertDialog(
+                            context, aListItem, creator!);
+                      },
+                    );
+                  },
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        flex: 5,
+                        child: Text(aListItem.name,
+                            style: aListItem.isFulfilled()
+                                ? const TextStyle(
+                                    color: Colors.grey,
+                                    decoration: TextDecoration.lineThrough)
+                                : TextStyle(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .headline1!
+                                        .color)),
+                      ),
+                      Expanded(
+                          flex: 2,
+                          child: _buildMultiFulfillmentMemberItemButton(
+                              context, aListItem)),
+                    ],
+                  ),
+                  selected: aListItem.isFulfilled(),
+                  trailing: Container(
+                    width: 40,
+                    child: IconButton(
+                        padding: const EdgeInsets.all(0),
+                        icon: Icon(Icons.add_circle,
+                            color: Theme.of(context).accentColor),
+                        onPressed: () async {
+                          if (aListItem.isFulfilled()) {
+                            if (aListItem.usersCompletions.keys
+                                .contains(_loggedInListAppUser.databaseId)) {
+                              await _showNumberPickerDialog(context, aListItem);
+                            } else {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text("Item already fulfilled!"),
+                                      content: Text(
+                                          "This item has been alredy fulfilled by other users."),
+                                      actions: [
+                                        TextButton(
+                                          style: TextButton.styleFrom(
+                                              textStyle:
+                                                  const TextStyle(fontSize: 16),
+                                              primary: Colors.white,
+                                              backgroundColor: Theme.of(context)
+                                                  .accentColor),
+                                          child: Text("Got it!"),
+                                          onPressed: () {
+                                            Navigator.of(context).pop(true);
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  });
+                            }
+                          } else {
+                            await _showNumberPickerDialog(context, aListItem);
+                          }
+                        }),
+                  ),
+                ));
+          } else {
+            return ListTile(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return itemDetailsAlertDialog(context, aListItem, creator!);
+                  },
+                );
+              },
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    flex: 5,
+                    child: Text(aListItem.name,
+                        style: aListItem.isFulfilled()
+                            ? const TextStyle(
+                                color: Colors.grey,
+                                decoration: TextDecoration.lineThrough)
+                            : TextStyle(
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .headline1!
+                                    .color)),
+                  ),
+                  Expanded(
+                      flex: 2,
+                      child: _buildMultiFulfillmentMemberItemButton(
+                          context, aListItem)),
+                ],
+              ),
+              selected: aListItem.isFulfilled(),
+              trailing: Container(
+                width: 40,
+                child: IconButton(
+                    padding: const EdgeInsets.all(0),
+                    icon: Icon(Icons.add_circle,
+                        color: Theme.of(context).accentColor),
+                    onPressed: () async {
+                      if (aListItem.isFulfilled()) {
+                        if (aListItem.usersCompletions.keys
+                            .contains(_loggedInListAppUser.databaseId)) {
+                          await _showNumberPickerDialog(context, aListItem);
+                        } else {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text("Item already fulfilled!"),
+                                  content: Text(
+                                      "This item has been alredy fulfilled by other users."),
+                                  actions: [
+                                    TextButton(
+                                      style: TextButton.styleFrom(
+                                          textStyle:
+                                              const TextStyle(fontSize: 16),
+                                          primary: Colors.white,
+                                          backgroundColor:
+                                              Theme.of(context).accentColor),
+                                      child: Text("Got it!"),
+                                      onPressed: () {
+                                        Navigator.of(context).pop(true);
+                                      },
+                                    ),
+                                  ],
+                                );
+                              });
+                        }
+                      } else {
+                        await _showNumberPickerDialog(context, aListItem);
+                      }
+                    }),
+              ),
+            );
+          }
+      }
+    } else {
+      return ListTile(
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return itemDetailsAlertDialog(context, aListItem, creator!);
+              },
+            );
+          },
+          title: Text(aListItem.name));
+      /*return Dismissible(
+            confirmDismiss: (DismissDirection direction) async {
+              return await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text(
+                        "Are you sure you wish to delete this item?"),
+                    actions: <Widget>[
+                      TextButton(
+                          style: TextButton.styleFrom(primary: Colors.red),
+                          onPressed: () => Navigator.of(context).pop(true),
+                          child: const Text("DELETE")),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text("CANCEL"),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            dismissThresholds: {DismissDirection.endToStart: 0.3},
+            direction: DismissDirection.startToEnd,
+            background: Container(
+                color: Colors.red,
+                child: Align(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      const Icon(
+                        Icons.delete,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                  alignment: Alignment.centerLeft,
+                )),
+            key: UniqueKey(),
+            onDismissed: (DismissDirection direction) async {
+              final itemManagerInstance = ListAppItemManager.instanceForList(
+                widget.listAppList.databaseId!,
+                widget.listAppList.creator!.databaseId!,
+              );
+
+              await itemManagerInstance.deleteInstance(aListItem);
+              setState(() {
+                widget.listAppList.items
+                    .removeWhere((element) => element == aListItem);
+              });
+            },
+            child: ListTile(
+              title: Text(aListItem.name),
             ),
-          );
-        }
+          );*/
     }
   }
 

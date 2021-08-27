@@ -45,6 +45,7 @@ abstract class BaseItem extends BaseModel {
   static const String collectionName = 'items';
   final String name;
   final String? description;
+  final String? link;
   final int maxQuantity;
   final int quantityPerMember;
   final String creatorUid;
@@ -59,6 +60,7 @@ abstract class BaseItem extends BaseModel {
     Map<String, int>? usersCompletions,
     required this.name,
     this.description,
+    this.link,
     required this.maxQuantity,
     required this.quantityPerMember,
     required this.itemType,
@@ -127,6 +129,7 @@ class SimpleItem extends BaseItem {
     Map<String, int>? usersCompletions,
     required String name,
     String? description,
+    String? link,
     required String creatorUid,
     createdAt,
   }) : super(
@@ -135,6 +138,7 @@ class SimpleItem extends BaseItem {
           usersCompletions: usersCompletions,
           name: name,
           description: description,
+          link: link,
           maxQuantity: 1,
           quantityPerMember: 1,
           createdAt: createdAt,
@@ -210,6 +214,7 @@ class MultiFulfillmentItem extends BaseItem {
     Map<String, int>? usersCompletions,
     required String name,
     String? description,
+    String? link,
     required int maxQuantity,
     required String creatorUid,
     createdAt,
@@ -219,6 +224,7 @@ class MultiFulfillmentItem extends BaseItem {
             usersCompletions: usersCompletions,
             name: name,
             description: description,
+            link: link,
             maxQuantity: maxQuantity,
             quantityPerMember: 1,
             createdAt: createdAt,
@@ -285,6 +291,7 @@ class MultiFulfillmentMemberItem extends BaseItem {
     Map<String, int>? usersCompletions,
     required String name,
     String? description,
+    String? link,
     required int maxQuantity,
     required int quantityPerMember,
     required String creatorUid,
@@ -295,6 +302,7 @@ class MultiFulfillmentMemberItem extends BaseItem {
             usersCompletions: usersCompletions,
             name: name,
             description: description,
+            link: link,
             maxQuantity: maxQuantity,
             quantityPerMember: quantityPerMember,
             createdAt: createdAt,

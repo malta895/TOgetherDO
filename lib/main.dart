@@ -32,7 +32,7 @@ Future<void> main() async {
     firebaseFirestore: FirebaseFirestore.instance,
     firebaseStorage: FirebaseStorage.instance,
     firebaseFunctions: FirebaseFunctions.instanceFor(region: 'europe-west6'),
-    firebaseMessaging: ManagerConfig.firebaseMessaging,
+    firebaseMessaging: FirebaseMessaging.instance,
   );
 
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
@@ -96,8 +96,8 @@ class _MaterialAppWithTheme extends StatelessWidget {
     });
 
     // when the app is closed the notification is shown
-    FirebaseMessaging.instance
-        .getInitialMessage()
+    ManagerConfig.firebaseMessaging
+        ?.getInitialMessage()
         .then((RemoteMessage? message) {
       Future.doWhile(() {
         final materialAppCurrentState = _materialAppKey.currentState;

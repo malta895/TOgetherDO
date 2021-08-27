@@ -58,20 +58,20 @@ jobs:
     # Run widget tests for our flutter project.
     - run: flutter test -r expanded
 
-  test-skipped:
-    runs-on: ubuntu-latest
-    needs: analyze
-    continue-on-error: true
-    steps:
-    - uses: actions/checkout@v2
-    
-    # Setup the flutter environment.
-    - uses: subosito/flutter-action@v1.5.3
-      with:
-        channel: 'stable'
-
-    # Run widget tests for our flutter project.
-    - run: flutter test --run-skipped -r expanded
+#  skipped-test:
+#    runs-on: ubuntu-latest
+#    needs: analyze
+#    continue-on-error: true
+#    steps:
+#    - uses: actions/checkout@v2
+#
+#    # Setup the flutter environment.
+#    - uses: subosito/flutter-action@v1.5.3
+#      with:
+#        channel: 'stable'
+#
+#    # Run widget tests for our flutter project.
+#    - run: flutter test --run-skipped -r expanded
 
 
   build:

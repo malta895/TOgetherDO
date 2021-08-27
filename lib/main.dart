@@ -32,7 +32,7 @@ Future<void> main() async {
     firebaseFirestore: FirebaseFirestore.instance,
     firebaseStorage: FirebaseStorage.instance,
     firebaseFunctions: FirebaseFunctions.instanceFor(region: 'europe-west6'),
-    firebaseMessaging: FirebaseMessaging.instance,
+    firebaseMessaging: ManagerConfig.firebaseMessaging,
   );
 
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
@@ -67,6 +67,7 @@ class _MultiProviderApp extends StatelessWidget {
 
 class _MaterialAppWithTheme extends StatelessWidget {
   final _materialAppKey = GlobalKey<NavigatorState>();
+
   @override
   Widget build(BuildContext context) {
     final consumer = Consumer<ThemeChanger>(
@@ -93,12 +94,32 @@ class _MaterialAppWithTheme extends StatelessWidget {
             );
           });
     });
+
+    // when the app is closed the notification is shown
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage? message) {
+      Future.doWhile(() {
+        final materialAppCurrentState = _materialAppKey.currentState;
+        if (materialAppCurrentState == null) return true;
+        if (message == null || message.notification == null) return false;
+        Navigator.of(materialAppCurrentState.context)
+            .pushNamed(NotificationPage.routeName);
+        return false;
+      });
+    });
+
     // when we open the app from a notification show the notifications page directly
     FirebaseMessaging.onMessageOpenedApp.listen(
       (RemoteMessage message) {
-        final materialAppCurrentState = _materialAppKey.currentState;
-        Navigator.of(materialAppCurrentState!.context)
-            .pushNamed(NotificationPage.routeName);
+        Future.doWhile(() {
+          final materialAppCurrentState = _materialAppKey.currentState;
+          if (materialAppCurrentState == null) return true;
+          if (message.notification == null) return false;
+          Navigator.of(materialAppCurrentState.context)
+              .pushNamed(NotificationPage.routeName);
+          return false;
+        });
       },
     );
     return consumer;

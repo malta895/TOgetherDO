@@ -52,15 +52,7 @@ class ListAppAuthProvider with ChangeNotifier {
   ListAppAuthProvider(this.firebaseAuth) {
     // Subscribe to login/logout events
     firebaseAuth.idTokenChanges().listen((User? user) async {
-      if (user == null) {
-        _loggedInListAppUser?.notificationTokens
-            .remove(ManagerConfig.firebaseMessaging?.getToken());
-        if (_loggedInListAppUser != null)
-          ListAppUserManager.instance.saveToFirestore(_loggedInListAppUser!);
-        _loggedInListAppUser = null;
-      } else {
-        await _createListAppUser(user);
-      }
+      if (user != null) await _createListAppUser(user);
       notifyListeners();
     });
 
@@ -88,7 +80,8 @@ class ListAppAuthProvider with ChangeNotifier {
           await ManagerConfig.firebaseMessaging?.getToken();
       _loggedInListAppUser?.notificationTokens.remove(notificationToken);
       if (_loggedInListAppUser != null)
-        ListAppUserManager.instance.saveToFirestore(_loggedInListAppUser!);
+        await ListAppUserManager.instance
+            .saveToFirestore(_loggedInListAppUser!);
     } on Exception catch (e) {
       print(e);
     } finally {

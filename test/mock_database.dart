@@ -122,6 +122,7 @@ class TestUtils {
       "listType": "public",
       "members": <String, bool>{"user2_id": true},
       "name": "Nuova lista",
+      "listStatus": "saved",
     };
 
     final list2 = {
@@ -134,6 +135,7 @@ class TestUtils {
       "listType": "public",
       "members": <String, bool>{"user1_id": true},
       "name": "Fare la spesa",
+      "listStatus": "saved",
     };
 
     final item1 = {

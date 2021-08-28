@@ -29,7 +29,7 @@ class ListAppUser extends BaseModel {
   bool isNew;
 
   /// The FCM tokens of the devices used by the user
-  Set<String> notificationTokens;
+  Set<String> notificationTokens = Set<String>();
 
   /// The email is ignored because not needed outside of the app, it is populated only for current user
   @JsonKey(ignore: true)
@@ -38,7 +38,7 @@ class ListAppUser extends BaseModel {
   ListAppUser({
     this.email,
     String? databaseId,
-    this.notificationTokens = const {},
+    Set<String>? notificationTokens,
     this.firstName = '',
     this.lastName = '',
     String? displayName,
@@ -50,6 +50,7 @@ class ListAppUser extends BaseModel {
     DateTime? updatedAt,
   })  : this._displayName = displayName,
         this.username = username ?? '',
+        this.notificationTokens = notificationTokens ?? Set<String>(),
         super(
           databaseId: databaseId,
           createdAt: createdAt,

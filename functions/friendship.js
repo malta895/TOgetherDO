@@ -12,8 +12,8 @@ exports.addFriendAfterAccepted = functions.region('europe-west6').firestore.docu
         if(before.notificationType !== 'friendship') return;
 
         const requestAccepted = after.status === "accepted" && before.status !== after.status;
-        const userFrom = after.userFrom;
-        const userTo = after.userId;
+        const userFromId = after.userFromId;
+        const userToId = after.userToId;
 
 
         console.log("requestAccepted:");
@@ -23,24 +23,24 @@ exports.addFriendAfterAccepted = functions.region('europe-west6').firestore.docu
 
         if (requestAccepted === true) {
 
-            const userFromRef = admin.firestore().collection('users').doc(userFrom);
+            const userFromRef = admin.firestore().collection('users').doc(userFromId);
 
             const userFromDoc = await userFromRef.get();
             
             let userFromFriends  = userFromDoc.data().friends;
-            userFromFriends[userTo] = true;
+            userFromFriends[userToId] = true;
 
 
             await userFromRef.update({
                 friends: userFromFriends
             });
 
-            const userToRef = admin.firestore().collection('users').doc(userTo);
+            const userToRef = admin.firestore().collection('users').doc(userToId);
 
             const userToDoc = await userToRef.get();
             const userToFriends = userToDoc.data().friends;
 
-            userToFriends[userFrom] = true;
+            userToFriends[userFromId] = true;
             await userToRef.update({
                 friends: userToFriends
             });

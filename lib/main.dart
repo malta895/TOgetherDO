@@ -101,8 +101,8 @@ class _MaterialAppWithTheme extends StatelessWidget {
         .then((RemoteMessage? message) {
       Future.doWhile(() {
         final materialAppCurrentState = _materialAppKey.currentState;
-        if (materialAppCurrentState == null) return true;
         if (message == null || message.notification == null) return false;
+        if (materialAppCurrentState == null) return true;
         Navigator.of(materialAppCurrentState.context)
             .pushNamed(NotificationPage.routeName);
         return false;
@@ -114,8 +114,8 @@ class _MaterialAppWithTheme extends StatelessWidget {
       (RemoteMessage message) {
         Future.doWhile(() {
           final materialAppCurrentState = _materialAppKey.currentState;
-          if (materialAppCurrentState == null) return true;
           if (message.notification == null) return false;
+          if (materialAppCurrentState == null) return true;
           Navigator.of(materialAppCurrentState.context)
               .pushNamed(NotificationPage.routeName);
           return false;

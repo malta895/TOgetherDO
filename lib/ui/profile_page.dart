@@ -411,10 +411,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: Colors.pinkAccent[700]),
           ),
           subtitle: text,
-          trailing: IconButton(
-            icon: const Icon(Icons.create),
-            onPressed: onModify,
-          ),
+          trailing: title != "Email"
+              ? IconButton(
+                  icon: const Icon(Icons.create),
+                  onPressed: onModify,
+                )
+              : null,
         ));
   }
 

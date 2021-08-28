@@ -80,7 +80,10 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
       final snapshotStream = firebaseCollection
           .where("isRead", isEqualTo: false)
           .where("userToId", isEqualTo: userId)
-          .snapshots();
+          .snapshots()
+          .handleError((_) {
+        return;
+      });
 
       await for (final querySnapshot in snapshotStream) {
         yield querySnapshot.size;

@@ -37,7 +37,7 @@ void main() {
         expect(find.text("Nuova lista"), findsOneWidget);
 
         //the list in which the user is member should be shown
-        expect(find.text("Fare la spesa"), findsOneWidget);
+        expect(find.text("Famiglia"), findsOneWidget);
 
         expect(find.byKey(const Key('list1_id')), findsOneWidget);
 
@@ -46,10 +46,10 @@ void main() {
         // the owner of the list should see Me as creator
         expect(find.textContaining('unknown\n'), findsNothing);
         expect(find.textContaining("johndoe1\n"), findsNothing);
-        expect(find.textContaining("Me\n"), findsOneWidget);
+        expect(find.textContaining("Me\n"), findsNWidgets(3));
 
         // we should see the name of the creator if we are not the list creator
-        expect(find.textContaining("johndoe2\n"), findsOneWidget);
+        expect(find.textContaining("johndoe2\n"), findsNWidgets(2));
 
         // test number of elements
         expect(find.textContaining("0 elements"), findsOneWidget);
@@ -114,7 +114,7 @@ void main() {
         // the deleted list is not there anymore
         expect(find.text("Nuova lista"), findsNothing);
         // the other list is still there
-        expect(find.text("Fare la spesa"), findsOneWidget);
+        expect(find.text("Famiglia"), findsOneWidget);
 
         await tester.drag(
           find.byKey(const Key("dismissible_list2_id")),
@@ -124,7 +124,7 @@ void main() {
 
         expect(
           find.textContaining(
-              "Are you sure you wish to leave the Fare la spesa list?"),
+              "Are you sure you wish to leave the Famiglia list?"),
           findsOneWidget,
         );
 
@@ -133,7 +133,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // the other list has been left, shouldn't be there anymore
-        expect(find.text("Fare la spesa"), findsNothing);
+        expect(find.text("Famiglia"), findsNothing);
 
         // we should see the no list message
         expect(

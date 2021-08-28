@@ -16,7 +16,7 @@ void main() {
   late final FirebaseFirestore fakeFirebaseFirestore;
   late final fakeFirebaseFunctions;
 
-  setUpAll(() {
+  setUpAll(() async {
     fakeFirebaseFirestore = TestUtils.createMockDatabase();
     final fakeFirebaseStorage = MockFirebaseStorage();
     fakeFirebaseFunctions = MockCloudFunctions();
@@ -41,7 +41,7 @@ void main() {
 
       expect(find.text("johndoe2"), findsOneWidget);
       expect(find.text("John DoeSecond"), findsOneWidget);
-      expect(find.text("Accepted"), findsOneWidget);
+      expect(find.text("Accepted"), findsNWidgets(2));
     });
 
     testWidgets(
@@ -55,43 +55,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.byType(AlertDialog), findsOneWidget);
-        await tester.enterText(find.byType(TextField), 'johndoe3');
-        await tester.tap(find.byKey(const Key("add_friend_button")));
-        await tester.pumpAndSettle();
-
-        // we have the pending friend in the database
-        expect(
-            (await ListAppUserManager.instance.getByUid('user1_id'))!
-                .friends['user3_id'],
-            false);
-        expect(find.text('johndoe3'), findsOneWidget);
-        expect(find.textContaining('pending'), findsOneWidget);
-
-        // add the email
-        fakeFirebaseFunctions.mockResult(
-          functionName: 'getUserByEmail-getUserByEmail',
-          json: jsonEncode({
-            "databaseId": 'user4_id',
-            "createdAt": 1625751035020,
-            "displayName": "John DoeFriend4",
-            "email": "john@friend.com",
-            "firstName": "John",
-            "friends": <String, bool>{},
-            "isNew": false,
-            "lastName": "DoeFriend4",
-            "notificationTokens": [],
-            "phoneNumber": null,
-            "profilePictureURL": null,
-            "username": "johndoe4",
-          }),
-          parameters: {"email": "john@friend4.com"},
-        );
-
-        await tester.tap(find.byType(FloatingActionButton));
-        await tester.pumpAndSettle();
-
-        expect(find.byType(AlertDialog), findsOneWidget);
-        await tester.enterText(find.byType(TextField), 'john@friend4.com');
+        await tester.enterText(find.byType(TextField), 'johndoe4');
         await tester.tap(find.byKey(const Key("add_friend_button")));
         await tester.pumpAndSettle();
 
@@ -101,6 +65,42 @@ void main() {
                 .friends['user4_id'],
             false);
         expect(find.text('johndoe4'), findsOneWidget);
+        expect(find.textContaining('pending'), findsOneWidget);
+
+        // add the email
+        fakeFirebaseFunctions.mockResult(
+          functionName: 'getUserByEmail-getUserByEmail',
+          json: jsonEncode({
+            "databaseId": 'user5_id',
+            "createdAt": 1625751035020,
+            "displayName": "John DoeFriend5",
+            "email": "john@friend.com",
+            "firstName": "John",
+            "friends": <String, bool>{},
+            "isNew": false,
+            "lastName": "DoeFriend5",
+            "notificationTokens": [],
+            "phoneNumber": null,
+            "profilePictureURL": null,
+            "username": "johndoe5",
+          }),
+          parameters: {"email": "john@friend5.com"},
+        );
+
+        await tester.tap(find.byType(FloatingActionButton));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AlertDialog), findsOneWidget);
+        await tester.enterText(find.byType(TextField), 'john@friend5.com');
+        await tester.tap(find.byKey(const Key("add_friend_button")));
+        await tester.pumpAndSettle();
+
+        // we have the pending friend in the database
+        expect(
+            (await ListAppUserManager.instance.getByUid('user1_id'))!
+                .friends['user5_id'],
+            false);
+        expect(find.text('johndoe5'), findsOneWidget);
         expect(find.textContaining('pending'), findsNWidgets(2));
       },
     );

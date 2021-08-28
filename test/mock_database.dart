@@ -42,6 +42,10 @@ class TestUtils {
     );
   }
 
+  static Future<void> clearDatabase() {
+    return _fakeFirebaseFirestore.clearPersistence();
+  }
+
   /// create an instance of a mock database with pre-filled data and returns the FakeFirebaseFirestore instance
   static FirebaseFirestore createMockDatabase() {
     if (_isDatabaseSet) return _fakeFirebaseFirestore;
@@ -111,6 +115,21 @@ class TestUtils {
       "phoneNumber": null,
       "profilePictureURL": null,
       "username": "johndoe4",
+    };
+
+    final user5 = {
+      "databaseId": 'user5_id',
+      "createdAt": 1625751035020,
+      "displayName": "John DoeFriend5",
+      "email": "john@friend.com",
+      "firstName": "John",
+      "friends": <String, bool>{},
+      "isNew": false,
+      "lastName": "DoeFriend5",
+      "notificationTokens": [],
+      "phoneNumber": null,
+      "profilePictureURL": null,
+      "username": "johndoe5",
     };
 
     final list1 = {
@@ -220,6 +239,11 @@ class TestUtils {
         .collection('users')
         .doc(user4["databaseId"] as String)
         .set(user4);
+
+    _fakeFirebaseFirestore
+        .collection('users')
+        .doc(user5["databaseId"] as String)
+        .set(user5);
 
     _fakeFirebaseFirestore
         .collection('users')

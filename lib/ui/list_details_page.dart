@@ -1906,10 +1906,17 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                                             ))),
                                             child: ListTile(
                                                 leading: CircleAvatar(
-                                                  backgroundImage: NetworkImage(
-                                                      onlyNonPresentFriends
-                                                          .elementAt(i)!
-                                                          .profilePictureURL!),
+                                                  backgroundImage: onlyNonPresentFriends
+                                                              .elementAt(i)!
+                                                              .profilePictureURL ==
+                                                          null
+                                                      ? const AssetImage(
+                                                              'assets/sample-profile.png')
+                                                          as ImageProvider
+                                                      : NetworkImage(
+                                                          onlyNonPresentFriends
+                                                              .elementAt(i)!
+                                                              .profilePictureURL!),
                                                 ),
                                                 onTap: () {},
                                                 title: Text(
@@ -1929,8 +1936,8 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                                                       Icons
                                                           .person_add_alt_rounded,
                                                     ),
-                                                    onPressed: () {
-                                                      ListAppListManager
+                                                    onPressed: () async {
+                                                      await ListAppListManager
                                                               .instanceForUserUid(
                                                                   currentUser
                                                                       .databaseId!)
@@ -1941,6 +1948,7 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                                                                   .elementAt(i)!
                                                                   .databaseId!);
 
+                                                      Navigator.pop(context);
                                                       // not awaited because we let the dialog pop in the meantime
                                                       Fluttertoast.showToast(
                                                         msg: onlyNonPresentFriends
@@ -1957,6 +1965,9 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                                                         textColor: Colors.white,
                                                         fontSize: 16.0,
                                                       );
+
+                                                      onlyNonPresentFriends
+                                                          .removeAt(i);
                                                     })));
                                       },
                                     ));

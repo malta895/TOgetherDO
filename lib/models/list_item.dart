@@ -79,9 +79,9 @@ abstract class BaseItem extends BaseModel {
   bool isFulfilled();
 
   //fulfill, aka complete, this list item, with a quantity. returns false if the item was fulfilled already
-  bool fulfill({required ListAppUser member, int quantityFulfilled = 0});
+  /*bool fulfill({required ListAppUser member, int quantityFulfilled = 0});
 
-  bool unfulfill({required ListAppUser member, int quantityUnfulfilled = 0});
+  bool unfulfill({required ListAppUser member, int quantityUnfulfilled = 0});*/
 
   Set<ListAppUser> getFulfillers();
 
@@ -163,28 +163,6 @@ class SimpleItem extends BaseItem {
   }
 
   @override
-  bool fulfill({required ListAppUser member, int quantityFulfilled = 0}) {
-    if (fulfiller == null) {
-      fulfiller = member;
-      usersCompletions[member.databaseId!] = 1;
-      return true;
-    }
-
-    return false;
-  }
-
-  @override
-  bool unfulfill({required ListAppUser member, int quantityUnfulfilled = 1}) {
-    //do not allow the unfulfillment of other members
-    if (member == fulfiller) {
-      fulfiller = null;
-      usersCompletions.remove(member.databaseId!);
-      return true;
-    }
-    return false;
-  }
-
-  @override
   int quantityFulfilledBy(ListAppUser member) {
     return member == fulfiller ? 1 : 0;
   }
@@ -240,12 +218,6 @@ class MultiFulfillmentItem extends BaseItem {
   }
 
   @override
-  bool fulfill({required ListAppUser member, int quantityFulfilled = 1}) {
-    usersCompletions[member.databaseId!] = quantityFulfilled;
-    return fulfillers.add(member);
-  }
-
-  @override
   Set<ListAppUser> getFulfillers() {
     /*final members = Set<ListAppUser>();
     fulfillers!.map((e) async {
@@ -264,12 +236,6 @@ class MultiFulfillmentItem extends BaseItem {
   @override
   int quantityFulfilledBy(ListAppUser member) {
     return usersCompletions.keys.contains(member.databaseId) ? 1 : 0;
-  }
-
-  @override
-  bool unfulfill({required ListAppUser member, int quantityUnfulfilled = 1}) {
-    usersCompletions.remove(member.databaseId!);
-    return fulfillers.remove(member);
   }
 
   factory MultiFulfillmentItem.fromJson(Map<String, dynamic> json) =>
@@ -321,19 +287,6 @@ class MultiFulfillmentMemberItem extends BaseItem {
   }
 
   @override
-  bool fulfill({required ListAppUser member, int quantityFulfilled = 1}) {
-    // TODO control all constraints of this item and list
-    _fulfillers[member] == null
-        ? _fulfillers[member] = quantityFulfilled
-        : _fulfillers[member] = _fulfillers[member]! + quantityFulfilled;
-    usersCompletions[member.databaseId!] == null
-        ? usersCompletions[member.databaseId!] = quantityFulfilled
-        : usersCompletions[member.databaseId!] =
-            usersCompletions[member.databaseId!]! + quantityFulfilled;
-    return quantityFulfilled > 0;
-  }
-
-  @override
   Set<ListAppUser> getFulfillers() {
     if (fulfillers.isEmpty) return Set<ListAppUser>();
     return Set<ListAppUser>.from(fulfillers);
@@ -353,22 +306,6 @@ class MultiFulfillmentMemberItem extends BaseItem {
     return usersCompletions[member.databaseId] == null
         ? 0
         : usersCompletions[member.databaseId]!;
-  }
-
-  @override
-  bool unfulfill({required ListAppUser member, int quantityUnfulfilled = 1}) {
-    bool removed;
-    if (_fulfillers[member]! + quantityUnfulfilled <= 0) {
-      _fulfillers.remove(member);
-      usersCompletions.remove(member.databaseId!);
-      removed = true;
-    } else {
-      _fulfillers[member] = _fulfillers[member]! + quantityUnfulfilled;
-      usersCompletions[member.databaseId!] =
-          usersCompletions[member.databaseId!]! + quantityUnfulfilled;
-      removed = false;
-    }
-    return removed;
   }
 
   factory MultiFulfillmentMemberItem.fromJson(Map<String, dynamic> json) =>

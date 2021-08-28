@@ -110,14 +110,13 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
         await ListAppUserManager.instance.getByUid(listAppList.creatorUid!);
 
     // inject users
-    listAppList.members.forEach((memberUserUid, accepted) async {
-      final listAppUser =
-          await ListAppUserManager.instance.getByUid(memberUserUid);
+    for (final entry in listAppList.members.entries) {
+      final listAppUser = await ListAppUserManager.instance.getByUid(entry.key);
 
-      if (listAppUser != null && accepted == true) {
+      if (listAppUser != null && entry.value == true) {
         listAppList.membersAsUsers.add(listAppUser);
       }
-    });
+    }
 
     //inject items
     // TODO we can remove it if we fetch them at need

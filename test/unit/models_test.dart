@@ -1,6 +1,7 @@
 import 'package:mobile_applications/models/list_item.dart';
 import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/models/user.dart';
+import 'package:mobile_applications/services/item_manager.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -8,14 +9,15 @@ void main() {
       databaseId: "123abdd",
       firstName: "testFirstName",
       lastName: "testLastName");
-  group('Testing SimpleItem', () {
+  /*group('Testing SimpleItem', () {
     var simpleTestItem =
         SimpleItem(name: "testing item", creatorUid: userTest.databaseId!);
 
     test(
       'The item should be fulfilled',
-      () {
-        simpleTestItem.fulfill(member: userTest);
+      () async {
+        await ListAppItemManager.instanceForList(listUid, userUid)
+        
         expect(simpleTestItem.fulfiller!.databaseId!, userTest.databaseId!);
       },
       skip: "TODO restore when item fulfillment is fixed",
@@ -73,7 +75,7 @@ void main() {
       },
       skip: "TODO restore when item fulfillment is fixed",
     );
-  });
+  });*/
   group('Testing User functions', () {
     test('The full name should be returned', () {
       expect(userTest.fullName, "testFirstName testLastName");

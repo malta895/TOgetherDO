@@ -56,6 +56,7 @@ class TestUtils {
       "firstName": "John",
       "friends": <String, bool>{
         "user2_id": true,
+        "user3_id": true,
         // this bad friend is here just to test for error checking:
         "johndoe2": true,
       },
@@ -116,7 +117,7 @@ class TestUtils {
       "createdAt": 1626005532227,
       "creatorUid": "user1_id",
       "databaseId": "list1_id",
-      "items": [],
+      "items": ["item1_id"],
       "description": "Lista numero 1",
       "expiryDate": null,
       "listType": "public",
@@ -129,23 +130,74 @@ class TestUtils {
       "createdAt": 1625160623927,
       "creatorUid": "user2_id",
       "databaseId": "list2_id",
-      "items": [],
+      "items": ["item2_id"],
       "description": "Lista numero 2",
       "expiryDate": null,
       "listType": "public",
       "members": <String, bool>{"user1_id": true},
-      "name": "Fare la spesa",
+      "name": "Famiglia",
       "listStatus": "saved",
+    };
+
+    final list3 = {
+      "createdAt": 1625160623929,
+      "creatorUid": "user1_id",
+      "databaseId": "list3_id",
+      "items": ["item1_id"],
+      "description": "Lista numero 3",
+      "expiryDate": null,
+      "listType": "private",
+      "members": <String, bool>{"user2_id": true},
+      "name": "Regali",
+      "listStatus": "saved",
+    };
+
+    final list4 = {
+      "createdAt": 1625160623929,
+      "creatorUid": "user2_id",
+      "databaseId": "list4_id",
+      "items": ["item1_id"],
+      "description": "Lista numero 4",
+      "expiryDate": null,
+      "listType": "private",
+      "members": <String, bool>{"user1_id": true},
+      "name": "Natale",
+      "listStatus": "saved",
+    };
+
+    //list to test save list from draft
+    final list5 = {
+      "createdAt": 1625160623929,
+      "creatorUid": "user1_id",
+      "databaseId": "list5_id",
+      "items": ["item1_id"],
+      "description": "Lista numero 5",
+      "expiryDate": null,
+      "listType": "private",
+      "members": <String, bool>{},
+      "name": "Natale",
+      "listStatus": "draft",
     };
 
     final item1 = {
       "createdAt": 1625838181902,
-      "creatorUid": "lGmqaAgJZqVIdqXt3GmQFNC9E3D3",
+      "creatorUid": "user1_id",
       "databaseId": "item1_id",
-      "description": null,
+      "description": "item1 description",
       "itemType": "simple",
       "maxQuantity": 1,
       "name": "prova",
+      "quantityPerMember": 1,
+    };
+
+    final item2 = {
+      "createdAt": 1625838181903,
+      "creatorUid": "user2_id",
+      "databaseId": "item2_id",
+      "description": "item2 description",
+      "itemType": "multiFulfillment",
+      "maxQuantity": 3,
+      "name": "multiFulfillment",
       "quantityPerMember": 1,
     };
 
@@ -153,6 +205,11 @@ class TestUtils {
         .collection('users')
         .doc(user1["databaseId"] as String)
         .set(user1);
+
+    _fakeFirebaseFirestore
+        .collection('users')
+        .doc(user2["databaseId"] as String)
+        .set(user2);
 
     _fakeFirebaseFirestore
         .collection('users')
@@ -175,7 +232,34 @@ class TestUtils {
     _fakeFirebaseFirestore
         .collection('users')
         .doc(user2["databaseId"] as String)
-        .set(user2);
+        .collection('lists')
+        .doc(list2['databaseId'] as String)
+          ..set(list2)
+          ..collection('items').doc(item2["databaseId"] as String).set(item2);
+
+    _fakeFirebaseFirestore
+        .collection('users')
+        .doc(user1["databaseId"] as String)
+        .collection('lists')
+        .doc(list3['databaseId'] as String)
+          ..set(list3)
+          ..collection('items').doc(item1["databaseId"] as String).set(item1);
+
+    _fakeFirebaseFirestore
+        .collection('users')
+        .doc(user2["databaseId"] as String)
+        .collection('lists')
+        .doc(list4['databaseId'] as String)
+          ..set(list4)
+          ..collection('items').doc(item2["databaseId"] as String).set(item2);
+
+    _fakeFirebaseFirestore
+        .collection('users')
+        .doc(user1["databaseId"] as String)
+        .collection('lists')
+        .doc(list5['databaseId'] as String)
+          ..set(list5)
+          ..collection('items').doc(item1["databaseId"] as String).set(item1);
 
     _fakeFirebaseFirestore
         .collection('users')
@@ -183,6 +267,27 @@ class TestUtils {
         .collection('lists')
         .doc(list2['databaseId'] as String)
         .set(list2);
+
+    _fakeFirebaseFirestore
+        .collection('users')
+        .doc(user1["databaseId"] as String)
+        .collection('lists')
+        .doc(list3['databaseId'] as String)
+        .set(list3);
+
+    _fakeFirebaseFirestore
+        .collection('users')
+        .doc(user2["databaseId"] as String)
+        .collection('lists')
+        .doc(list4['databaseId'] as String)
+        .set(list4);
+
+    _fakeFirebaseFirestore
+        .collection('users')
+        .doc(user1["databaseId"] as String)
+        .collection('lists')
+        .doc(list5['databaseId'] as String)
+        .set(list5);
 
     return _fakeFirebaseFirestore;
   }

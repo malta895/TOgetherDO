@@ -28,11 +28,13 @@ class NotificationBadge extends StatelessWidget {
     return StreamBuilder<int>(
         initialData: 0,
         stream: ListAppNotificationManager.instance
-            .getUnreadNotificationCountStream(context
-                    .read<ListAppAuthProvider>()
-                    .loggedInListAppUser
-                    ?.databaseId ??
-                ''),
+            .getUnreadNotificationCountStream(
+                context
+                        .read<ListAppAuthProvider>()
+                        .loggedInListAppUser
+                        ?.databaseId ??
+                    '',
+                context.read<ListAppAuthProvider>().loggedInUser == null),
         builder: (context, AsyncSnapshot<int> snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:

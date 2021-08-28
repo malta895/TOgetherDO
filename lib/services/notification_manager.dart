@@ -27,7 +27,9 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
       ManagerConfig.firebaseFirestoreInstance;
 
   Future<List<ListAppNotification>> getNotificationsByUserId(
-      String? userUid, String? orderBy) async {
+    String? userUid,
+    String? orderBy,
+  ) async {
     try {
       final queryResult = await this
           .firebaseCollection
@@ -61,23 +63,20 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
   }
 
   Future<bool> acceptNotification(String notificationId) async {
-    await firebaseCollection
-        .doc(notificationId)
-        .update({"status": "accepted", "isRead": true});
+    await firebaseCollection.doc(notificationId).update({"status": "accepted"});
     return true;
   }
 
   Future<bool> rejectNotification(String notificationId) async {
-    await firebaseCollection
-        .doc(notificationId)
-        .update({"status": "rejected", "isRead": true});
+    await firebaseCollection.doc(notificationId).update({"status": "rejected"});
     return true;
   }
 
+  /// This streams emits the number of unread notifications of the current user.
   Stream<int> getUnreadNotificationCountStream(
       String userId, bool isLoggedOut) async* {
     final snapshotStream = firebaseCollection
-        .where("isRead", isEqualTo: false)
+        .where("status", isEqualTo: "pending")
         .where("userToId", isEqualTo: userId)
         .snapshots();
 

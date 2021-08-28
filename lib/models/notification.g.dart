@@ -16,7 +16,6 @@ Map<String, dynamic> _$ListAppNotificationToJson(
       'userFromId': instance.userFromId,
       'notificationType': _$NotificationTypeEnumMap[instance.notificationType],
       'status': _$NotificationStatusEnumMap[instance.status],
-      'isRead': instance.isRead,
     };
 
 const _$NotificationTypeEnumMap = {
@@ -40,7 +39,6 @@ ListInviteNotification _$ListInviteNotificationFromJson(
           json, 'status', (v) => _$enumDecode(_$NotificationStatusEnumMap, v)),
       listOwnerId: $checkedConvert(json, 'listOwnerId', (v) => v as String),
       listId: $checkedConvert(json, 'listId', (v) => v as String),
-      isRead: $checkedConvert(json, 'isRead', (v) => v),
       databaseId: $checkedConvert(json, 'databaseId', (v) => v),
       createdAt: $checkedConvert(
           json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
@@ -60,7 +58,6 @@ Map<String, dynamic> _$ListInviteNotificationToJson(
       'userToId': instance.userToId,
       'userFromId': instance.userFromId,
       'status': _$NotificationStatusEnumMap[instance.status],
-      'isRead': instance.isRead,
       'listId': instance.listId,
       'listOwnerId': instance.listOwnerId,
     };
@@ -102,7 +99,6 @@ FriendshipNotification _$FriendshipNotificationFromJson(
       status: $checkedConvert(
           json, 'status', (v) => _$enumDecode(_$NotificationStatusEnumMap, v)),
       databaseId: $checkedConvert(json, 'databaseId', (v) => v as String?),
-      isRead: $checkedConvert(json, 'isRead', (v) => v),
       createdAt: $checkedConvert(
           json, 'createdAt', (v) => ModelUtils.dateTimeFromJson(v as int)),
       updatedAt: $checkedConvert(json, 'updatedAt',
@@ -121,7 +117,6 @@ Map<String, dynamic> _$FriendshipNotificationToJson(
       'userToId': instance.userToId,
       'userFromId': instance.userFromId,
       'status': _$NotificationStatusEnumMap[instance.status],
-      'isRead': instance.isRead,
       'friendshipRequestMethod':
           _$FriendshipRequestMethodEnumMap[instance.friendshipRequestMethod],
     };

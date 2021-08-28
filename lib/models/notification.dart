@@ -61,9 +61,6 @@ abstract class ListAppNotification extends BaseModel {
   /// The status of the notification regarding its acceptance
   NotificationStatus status;
 
-  /// A read notification shouldn't be counted
-  bool isRead;
-
   //fields to be injected
   @JsonKey(ignore: true)
   ListAppUser? userTo;
@@ -77,7 +74,6 @@ abstract class ListAppNotification extends BaseModel {
     required this.userFromId,
     this.status = NotificationStatus.pending,
     required this.notificationType,
-    this.isRead = false,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : super(
@@ -127,7 +123,6 @@ class ListInviteNotification extends ListAppNotification {
     required NotificationStatus status,
     required this.listOwnerId,
     required this.listId,
-    isRead = false,
     databaseId,
     createdAt,
     updatedAt,
@@ -137,7 +132,6 @@ class ListInviteNotification extends ListAppNotification {
           userToId: userToId,
           userFromId: userFromId,
           status: status,
-          isRead: isRead,
           createdAt: createdAt,
           updatedAt: updatedAt,
         );
@@ -158,7 +152,6 @@ class FriendshipNotification extends ListAppNotification {
     required this.friendshipRequestMethod,
     NotificationStatus status = NotificationStatus.pending,
     String? databaseId,
-    isRead = false,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : super(
@@ -168,7 +161,6 @@ class FriendshipNotification extends ListAppNotification {
           userToId: userToId,
           userFromId: userFromId,
           status: status,
-          isRead: isRead,
           updatedAt: updatedAt,
         );
 

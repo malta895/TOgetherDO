@@ -6,6 +6,7 @@ import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/user_manager.dart';
+import 'package:mobile_applications/ui/widgets/empty_list_widget.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/notification_badge.dart';
 import 'package:provider/provider.dart';
@@ -180,12 +181,9 @@ class _FriendsListState extends State<FriendsPage> {
                 final friends = snapshot.data!;
 
                 return friends.isEmpty
-                    ? const Center(
-                        child: Text(
+                    ? const EmptyListRefreshable(
                         "You don't have any friends.\nYou can add a new one with the button below.",
-                        style: TextStyle(fontSize: 22),
-                        textAlign: TextAlign.center,
-                      ))
+                      )
                     : ListView(
                         children: friends.entries.map((entry) {
                         return _buildFriendRow(context, entry.key, entry.value);

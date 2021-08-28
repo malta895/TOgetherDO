@@ -26,58 +26,59 @@ class NotificationBadge extends StatelessWidget {
 
   Widget _buildIcon(BuildContext context) {
     return StreamBuilder<int>(
-        initialData: 0,
-        stream: ListAppNotificationManager.instance
-            .getUnreadNotificationCountStream(
-                context
-                        .read<ListAppAuthProvider>()
-                        .loggedInListAppUser
-                        ?.databaseId ??
-                    '',
-                context.read<ListAppAuthProvider>().loggedInUser == null),
-        builder: (context, AsyncSnapshot<int> snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-            case ConnectionState.waiting:
-              return _buildBell(context);
-            case ConnectionState.active:
-            case ConnectionState.done:
-              final notificationCount = snapshot.data ?? 0;
-              return notificationCount > 0
-                  ? Stack(children: <Widget>[
-                      _buildBell(context),
-                      Positioned(
-                        // draw a red marble
-                        top: 9.0,
-                        right: 7.0,
-                        child: Stack(
-                          alignment: AlignmentDirectional.center,
-                          children: [
-                            const Icon(
-                              Icons.brightness_1,
-                              size: 18.0,
-                              color: Colors.redAccent,
-                            ),
-                            notificationCount < 100
-                                ? Text(
-                                    notificationCount.toString(),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    textScaleFactor:
-                                        notificationCount < 10 ? 0.8 : 0.7,
-                                  )
-                                : const Text(
-                                    "99+",
-                                    textScaleFactor: 0.6,
+      initialData: 0,
+      stream: ListAppNotificationManager.instance
+          .getUnreadNotificationCountStream(
+              context
+                      .read<ListAppAuthProvider>()
+                      .loggedInListAppUser
+                      ?.databaseId ??
+                  '',
+              context.read<ListAppAuthProvider>().loggedInUser == null),
+      builder: (context, AsyncSnapshot<int> snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.none:
+          case ConnectionState.waiting:
+            return _buildBell(context);
+          case ConnectionState.active:
+          case ConnectionState.done:
+            final notificationCount = snapshot.data ?? 0;
+            return notificationCount > 0
+                ? Stack(children: <Widget>[
+                    _buildBell(context),
+                    Positioned(
+                      // draw a red marble
+                      top: 9.0,
+                      right: 7.0,
+                      child: Stack(
+                        alignment: AlignmentDirectional.center,
+                        children: [
+                          const Icon(
+                            Icons.brightness_1,
+                            size: 18.0,
+                            color: Colors.redAccent,
+                          ),
+                          notificationCount < 100
+                              ? Text(
+                                  notificationCount.toString(),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
                                   ),
-                          ],
-                        ),
+                                  textScaleFactor:
+                                      notificationCount < 10 ? 0.8 : 0.7,
+                                )
+                              : const Text(
+                                  "99+",
+                                  textScaleFactor: 0.6,
+                                ),
+                        ],
                       ),
-                    ])
-                  : _buildBell(context);
-          }
-        });
+                    ),
+                  ])
+                : _buildBell(context);
+        }
+      },
+    );
   }
 
   @override

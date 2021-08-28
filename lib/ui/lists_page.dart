@@ -10,9 +10,10 @@ import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/ui/list_details_page.dart';
-import 'package:mobile_applications/ui/navigation_drawer.dart';
+import 'package:mobile_appliscations/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/new_list_page.dart';
 import 'package:mobile_applications/ui/notification_badge.dart';
+import 'package:mobile_applications/ui/widgets/empty_list_widget.dart';
 import 'package:provider/provider.dart';
 
 class ListsPage extends StatefulWidget {
@@ -185,13 +186,9 @@ class _ListsPageState extends State<ListsPage>
   }
 
   Widget _buildNoLists() {
-    // TODO make a nice image that points to new list button
-    return const Center(
-        child: Text(
+    return const EmptyListRefreshable(
       "You don't have any lists.\nYou can create a new one with the button below.",
-      style: TextStyle(fontSize: 22),
-      textAlign: TextAlign.center,
-    ));
+    );
   }
 
   Widget _buildRow(BuildContext context, ListAppList listAppList) {

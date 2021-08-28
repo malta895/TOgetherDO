@@ -6,6 +6,7 @@ import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/services/notification_manager.dart';
+import 'package:mobile_applications/ui/widgets/empty_list_widget.dart';
 import 'package:mobile_applications/ui/list_details_page.dart';
 import 'package:provider/provider.dart';
 
@@ -80,12 +81,8 @@ class _NotificationPage extends State<NotificationPage> {
                           );
                       }
                     })
-                : const Center(
-                    child: Text(
-                      "There are no notifications.\nCome back again!",
-                      style: TextStyle(fontSize: 22),
-                      textAlign: TextAlign.center,
-                    ),
+                : const EmptyListRefreshable(
+                    "There are no notifications.\nCome back again!",
                   );
         }
       },
@@ -344,15 +341,16 @@ class _NotificationPage extends State<NotificationPage> {
         title: Text(title),
       ),
       body: RefreshIndicator(
-          key: _refreshIndicatorKey,
-          onRefresh: () async {
-            _isManuallyRefreshing = true;
-            setState(() {
-              _notificationsFuture = _fetchNotifications();
-            });
-            _isManuallyRefreshing = false;
-          },
-          child: _buildNotificationItems(context)),
+        key: _refreshIndicatorKey,
+        onRefresh: () async {
+          _isManuallyRefreshing = true;
+          setState(() {
+            _notificationsFuture = _fetchNotifications();
+          });
+          _isManuallyRefreshing = false;
+        },
+        child: _buildNotificationItems(context),
+      ),
     );
   }
 }

@@ -76,18 +76,17 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
 
   Stream<int> getUnreadNotificationCountStream(
       String userId, bool isLoggedOut) async* {
-    if (!isLoggedOut) {
-      final snapshotStream = firebaseCollection
-          .where("isRead", isEqualTo: false)
-          .where("userToId", isEqualTo: userId)
-          .snapshots()
-          .handleError((_) {
-        return;
-      });
+    final snapshotStream = firebaseCollection
+        .where("isRead", isEqualTo: false)
+        .where("userToId", isEqualTo: userId)
+        .snapshots();
 
+    try {
       await for (final querySnapshot in snapshotStream) {
         yield querySnapshot.size;
       }
+    } catch (e) {
+      yield* const Stream.empty();
     }
   }
 

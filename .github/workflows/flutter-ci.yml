@@ -56,7 +56,11 @@ jobs:
         channel: 'stable'
 
     # Run widget tests for our flutter project.
-    - run: flutter test -r expanded
+    - run: flutter test -r expanded --coverage
+    - name: Upload coverage to codecov
+      run: curl -s https://codecov.io/bash
+      shell: bash
+
 
 #  skipped-test:
 #    runs-on: ubuntu-latest

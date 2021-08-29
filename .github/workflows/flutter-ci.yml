@@ -57,11 +57,11 @@ jobs:
 
     # Run widget tests for our flutter project.
     - run: flutter test -r expanded --coverage
-    - name: Upload coverage to codecov
-      env:
-        CODECOV_TOKEN: '6042553e-1e1a-4187-b87e-fb9c093b4b57'
-      run: curl -s https://codecov.io/bash -t $CODECOV_TOKEN | bash
-      shell: bash
+    - name: Upload coverage to Codecov 
+      uses: codecov/codecov-action@v1 
+      with: 
+        token: ${{ secrets.CODECOV_TOKEN }} 
+        file: coverage/lcov.info
 
 
 #  skipped-test:

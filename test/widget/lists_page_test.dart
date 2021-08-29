@@ -52,8 +52,8 @@ void main() {
         expect(find.textContaining("johndoe2\n"), findsNWidgets(2));
 
         // test number of elements
-        expect(find.textContaining("0 elements"), findsOneWidget);
-        expect(find.textContaining("1 element"), findsOneWidget);
+        expect(find.textContaining("0 elements"), findsNothing);
+        expect(find.textContaining("1 element"), findsNWidgets(4));
       },
     );
 
@@ -113,7 +113,7 @@ void main() {
 
         // the deleted list is not there anymore
         expect(find.text("Nuova lista"), findsNothing);
-        // the other list is still there
+        // the other lists are still there
         expect(find.text("Famiglia"), findsOneWidget);
 
         await tester.drag(
@@ -134,6 +134,33 @@ void main() {
 
         // the other list has been left, shouldn't be there anymore
         expect(find.text("Famiglia"), findsNothing);
+
+        await tester.drag(
+          find.byKey(const Key("dismissible_list4_id")),
+          const Offset(500.0, .0),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.byWidgetPredicate(
+            (widget) => widget is Text && widget.data == "LEAVE"));
+        await tester.pumpAndSettle();
+
+        await tester.drag(
+          find.byKey(const Key("dismissible_list3_id")),
+          const Offset(500.0, .0),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.byWidgetPredicate(
+            (widget) => widget is Text && widget.data == "DELETE"));
+        await tester.pumpAndSettle();
+
+        await tester.drag(
+          find.byKey(const Key("dismissible_list5_id")),
+          const Offset(500.0, .0),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.byWidgetPredicate(
+            (widget) => widget is Text && widget.data == "DELETE"));
+        await tester.pumpAndSettle();
 
         // we should see the no list message
         expect(

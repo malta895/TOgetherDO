@@ -1257,6 +1257,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
               aListItem.quantityFulfilledBy(_loggedInListAppUser);
           int _previousValue =
               aListItem.quantityFulfilledBy(_loggedInListAppUser);
+          print("previous " + _previousValue.toString());
           int _added = 0;
           int _difference = 0;
           return StatefulBuilder(builder: (context, setPickerState) {
@@ -1265,8 +1266,10 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                 title:
                     const Text("How many times have you completed this item?"),
                 content: NumberPicker(
+                  key: Key("numberPickerKey"),
                   minValue: 0,
-                  maxValue: (!aListItem.usersCompletions.keys
+                  maxValue: (aListItem.usersCompletions.isNotEmpty &&
+                          !aListItem.usersCompletions.keys
                               .contains(_loggedInListAppUser.databaseId) &&
                           aListItem.maxQuantity -
                                   aListItem.usersCompletions.values.reduce(
@@ -1275,19 +1278,21 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                       ? aListItem.maxQuantity -
                           aListItem.usersCompletions.values
                               .reduce((value, element) => value + element)
-                      : ((aListItem.usersCompletions.keys
+                      : ((aListItem.usersCompletions.isNotEmpty &&
+                              aListItem.usersCompletions.keys
                                   .contains(_loggedInListAppUser.databaseId) &&
                               aListItem.maxQuantity -
                                       aListItem.usersCompletions.values.reduce(
                                           (value, element) => value + element) <
                                   aListItem.quantityPerMember)
-                          ? aListItem.usersCompletions[_loggedInListAppUser.databaseId]!
+                          ? aListItem.usersCompletions[
+                              _loggedInListAppUser.databaseId]!
                           : aListItem.quantityPerMember),
                   value: _currentValue,
                   onChanged: (value) => {
                     _previousValue < value ? _added = 1 : _added = 0,
                     _difference = value - _previousValue,
-                    print(_difference),
+                    print("differenza " + _difference.toString()),
                     setPickerState(() => _currentValue = value)
                   },
                 ),

@@ -6,10 +6,12 @@ import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_applications/models/list.dart';
+import 'package:mobile_applications/services/item_manager.dart';
 import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/services/manager_config.dart';
 import 'package:mobile_applications/ui/lists_page.dart';
 import 'package:mobile_applications/ui/new_item_page.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 import '../mock_database.dart';
 
@@ -54,6 +56,7 @@ void main() {
 
         //I have to see the item of the list
         expect(find.text("prova"), findsOneWidget);
+        expect(find.text("multiFulfillmentMember"), findsOneWidget);
         //expect(find.byType(Checkbox), findsOneWidget);
 
         final checkboxFinder = find.byType(Checkbox);
@@ -126,6 +129,37 @@ void main() {
     );
 
     testWidgets(
+      'Testing delete member button',
+      (tester) async {
+        await tester
+            .pumpWidget(TestUtils.createScreen(screen: const ListsPage()));
+        await tester.pumpAndSettle();
+
+        //click on list1
+        await tester.tap(find.byKey(const Key("list1_id")));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text("MEMBERS"));
+        await tester.pumpAndSettle();
+
+        //click on add new member
+        await tester.tap(find.byIcon(Icons.person_remove_alt_1_rounded));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AlertDialog), findsOneWidget);
+        expect(
+            find.text(
+                "Are you sure you want to remove John Doe from this list?"),
+            findsOneWidget);
+
+        await tester.tap(find.text("REMOVE"));
+        await tester.pumpAndSettle();
+
+        expect(find.byIcon(Icons.person_remove_alt_1_rounded), findsNothing);
+      },
+    );
+
+    testWidgets(
       'Testing details of an item',
       (tester) async {
         await tester
@@ -155,7 +189,7 @@ void main() {
     );
 
     testWidgets(
-      'Testing completion of an item',
+      'Testing completion of a simple item',
       (tester) async {
         await tester
             .pumpWidget(TestUtils.createScreen(screen: const ListsPage()));
@@ -173,6 +207,38 @@ void main() {
 
         var checkbox = tester.firstWidget(checkboxFinder) as Checkbox;
         expect(checkbox.value, true);
+      },
+    );
+
+    testWidgets(
+      'Testing completion of a multiFulfillmentMember item',
+      (tester) async {
+        await tester
+            .pumpWidget(TestUtils.createScreen(screen: const ListsPage()));
+        await tester.pumpAndSettle();
+
+        //click on list1
+        await tester.tap(find.byKey(const Key("list1_id")));
+        await tester.pumpAndSettle();
+
+        //await tester.tap(find.byIcon(Icons.add_circle));
+        //await tester.pumpAndSettle();
+
+        final item =
+            await ListAppItemManager.instanceForList("list1_id", "user1_id")
+                .getByUid("item3_id");
+
+        await ListAppItemManager.instanceForList("list1_id", "user1_id")
+            .fulfillItem("user1_id", "list1_id", item!, 2);
+        await tester.pumpAndSettle();
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+        expect(find.byType(ListsPage), findsOneWidget);
+        //click again on list1
+        await tester.tap(find.byKey(const Key("list1_id")));
+        await tester.pumpAndSettle();
+
+        expect(find.text("2 / 6"), findsOneWidget);
       },
     );
 

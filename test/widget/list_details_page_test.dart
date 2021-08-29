@@ -287,6 +287,21 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text("2 / 6"), findsOneWidget);
+        await tester.tap(find.text("2 / 6"));
+        await tester.pumpAndSettle();
+
+        expect(
+            find.ancestor(
+                of: find.text("John Doe"),
+                matching:
+                    find.byWidgetPredicate((widget) => widget is ListTile)),
+            findsNWidgets(2));
+        expect(
+            find.ancestor(
+                of: find.text("2"),
+                matching:
+                    find.byWidgetPredicate((widget) => widget is ListTile)),
+            findsOneWidget);
       },
     );
 
@@ -450,7 +465,7 @@ void main() {
     );
 
     testWidgets(
-      'Testing completion of an item',
+      'Testing completion of a multiFulfillment item',
       (tester) async {
         await tester
             .pumpWidget(TestUtils.createScreen(screen: const ListsPage()));

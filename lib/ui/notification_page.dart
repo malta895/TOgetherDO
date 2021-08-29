@@ -7,7 +7,7 @@ import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/services/notification_manager.dart';
 import 'package:mobile_applications/ui/widgets/empty_list_widget.dart';
-import 'package:mobile_applications/ui/list_details_page.dart';
+import 'package:mobile_applications/ui/lists_details_page/list_details_page.dart';
 import 'package:provider/provider.dart';
 
 class NotificationPage extends StatefulWidget {

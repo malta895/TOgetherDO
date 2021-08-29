@@ -459,7 +459,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                     ),
                     alignment: Alignment.centerLeft,
                   )),
-              key: UniqueKey(),
+              key: Key("dismissible_${aListItem.databaseId!}"),
               onDismissed: (DismissDirection direction) async {
                 final itemManagerInstance = ListAppItemManager.instanceForList(
                   widget.listAppList.databaseId!,
@@ -659,7 +659,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                       ),
                       alignment: Alignment.centerLeft,
                     )),
-                key: UniqueKey(),
+                key: Key("dismissible_${aListItem.databaseId!}"),
                 onDismissed: (DismissDirection direction) async {
                   final itemManagerInstance =
                       ListAppItemManager.instanceForList(
@@ -1049,7 +1049,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                       ),
                       alignment: Alignment.centerLeft,
                     )),
-                key: UniqueKey(),
+                key: Key("dismissible_${aListItem.databaseId!}"),
                 onDismissed: (DismissDirection direction) async {
                   final itemManagerInstance =
                       ListAppItemManager.instanceForList(
@@ -1278,8 +1278,9 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                       aListItem.usersCompletions.values.reduce(
                                           (value, element) => value + element) <
                                   aListItem.quantityPerMember)
-                          ? aListItem.usersCompletions[
-                              _loggedInListAppUser.databaseId]!
+                          ? aListItem.maxQuantity -
+                              aListItem.usersCompletions.values.reduce((value, element) => value + element) +
+                              aListItem.usersCompletions[_loggedInListAppUser.databaseId]!
                           : aListItem.quantityPerMember),
                   value: _currentValue,
                   onChanged: (value) => {

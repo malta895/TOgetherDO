@@ -251,10 +251,10 @@ void main() {
         await tester.pumpAndSettle();
 
         //complete an item
-        await tester.tap(find.byType(Checkbox));
+        await tester.tap(find.byType(Checkbox).first);
         await tester.pumpAndSettle();
 
-        final checkboxFinder = find.byType(Checkbox);
+        final checkboxFinder = find.byType(Checkbox).first;
 
         var checkbox = tester.firstWidget(checkboxFinder) as Checkbox;
         expect(checkbox.value, true);
@@ -287,6 +287,64 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text("2 / 6"), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'Testing deletion of items with dismissible',
+      (tester) async {
+        await tester
+            .pumpWidget(TestUtils.createScreen(screen: const ListsPage()));
+        await tester.pumpAndSettle();
+
+        //click on list1
+        await tester.tap(find.byKey(const Key("list1_id")));
+        await tester.pumpAndSettle();
+
+        //delete one item at the time
+        await tester.drag(
+          find.byKey(const Key("dismissible_item1_id")),
+          const Offset(500.0, .0),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text("Are you sure you wish to delete this item?"),
+            findsOneWidget);
+        await tester.tap(find.byWidgetPredicate(
+            (widget) => widget is Text && widget.data == "DELETE"));
+        await tester.pumpAndSettle();
+
+        expect(find.text("prova"), findsNothing);
+
+        await tester.drag(
+          find.byKey(const Key("dismissible_item4_id")),
+          const Offset(500.0, .0),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text("Are you sure you wish to delete this item?"),
+            findsOneWidget);
+        await tester.tap(find.byWidgetPredicate(
+            (widget) => widget is Text && widget.data == "DELETE"));
+        await tester.pumpAndSettle();
+
+        expect(find.text("multiFulfillment1"), findsNothing);
+
+        await tester.drag(
+          find.byKey(const Key("dismissible_item5_id")),
+          const Offset(500.0, .0),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text("Are you sure you wish to delete this item?"),
+            findsOneWidget);
+        await tester.tap(find.byWidgetPredicate(
+            (widget) => widget is Text && widget.data == "DELETE"));
+        await tester.pumpAndSettle();
+
+        expect(find.text("multiFulfillmentMember1"), findsNothing);
+
+        expect(find.byKey(const Key("dismissible_item3_id")), findsNothing);
       },
     );
 

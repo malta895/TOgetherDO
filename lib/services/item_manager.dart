@@ -24,10 +24,13 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
             .collection(ListAppList.collectionName)
             .doc(listUid)
             .collection(BaseItem.collectionName)
-            .withConverter<BaseItem>(
-                fromFirestore: (snapshots, _) =>
-                    BaseItem.fromJson(snapshots.data()!),
-                toFirestore: (instance, _) => instance.toJson()));
+            .withConverter<BaseItem?>(
+                fromFirestore: (snapshots, _) {
+                  final snapshotsData = snapshots.data();
+                  if (snapshotsData == null) return null;
+                  return BaseItem.fromJson(snapshotsData);
+                },
+                toFirestore: (instance, _) => instance!.toJson()));
 
   static ListAppItemManager instanceForList(String listUid, String userUid) {
     if (_cachedInstances.containsKey(listUid)) {

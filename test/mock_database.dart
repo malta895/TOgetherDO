@@ -136,7 +136,7 @@ class TestUtils {
       "createdAt": 1626005532227,
       "creatorUid": "user1_id",
       "databaseId": "list1_id",
-      "items": ["item1_id", "item2_id"],
+      "items": ["item1_id", "item2_id", "item3_id"],
       "description": "Lista numero 1",
       "expiryDate": null,
       "listType": "public",
@@ -232,6 +232,29 @@ class TestUtils {
       "usersCompletions": <String, int>{}
     };
 
+    final item4 = {
+      "createdAt": 1625838181903,
+      "creatorUid": "user1_id",
+      "databaseId": "item4_id",
+      "description": "item4 description",
+      "itemType": "multiFulfillment",
+      "maxQuantity": 3,
+      "name": "multiFulfillment1",
+      "quantityPerMember": 1,
+    };
+
+    final item5 = {
+      "createdAt": 1625838181903,
+      "creatorUid": "user1_id",
+      "databaseId": "item5_id",
+      "description": "item5 description",
+      "itemType": "multiFulfillmentMember",
+      "maxQuantity": 6,
+      "name": "multiFulfillmentMember1",
+      "quantityPerMember": 2,
+      "usersCompletions": <String, int>{}
+    };
+
     _fakeFirebaseFirestore
         .collection('users')
         .doc(user1["databaseId"] as String)
@@ -272,6 +295,22 @@ class TestUtils {
         .doc(list1['databaseId'] as String)
           ..set(list1)
           ..collection('items').doc(item3["databaseId"] as String).set(item3);
+
+    _fakeFirebaseFirestore
+        .collection('users')
+        .doc(user1["databaseId"] as String)
+        .collection('lists')
+        .doc(list1['databaseId'] as String)
+          ..set(list1)
+          ..collection('items').doc(item4["databaseId"] as String).set(item4);
+
+    _fakeFirebaseFirestore
+        .collection('users')
+        .doc(user1["databaseId"] as String)
+        .collection('lists')
+        .doc(list1['databaseId'] as String)
+          ..set(list1)
+          ..collection('items').doc(item5["databaseId"] as String).set(item5);
 
     _fakeFirebaseFirestore
         .collection('users')

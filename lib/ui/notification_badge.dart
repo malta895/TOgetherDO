@@ -6,7 +6,12 @@ import 'package:mobile_applications/ui/notification_page.dart';
 import 'package:provider/provider.dart';
 
 class NotificationBadge extends StatelessWidget {
-  const NotificationBadge({Key? key}) : super(key: key);
+  final bool showNotificationPageWhenPressed;
+
+  const NotificationBadge({
+    Key? key,
+    this.showNotificationPageWhenPressed: true,
+  }) : super(key: key);
 
   Widget _buildBadge(BuildContext context) {
     return StreamBuilder<int>(
@@ -69,10 +74,12 @@ class NotificationBadge extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.notifications),
           onPressed: () => {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const NotificationPage()),
-            )
+            if (showNotificationPageWhenPressed)
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const NotificationPage()),
+              )
           },
         ),
         _buildBadge(context),

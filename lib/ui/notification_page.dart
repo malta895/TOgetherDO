@@ -47,7 +47,7 @@ class _NotificationPage extends State<NotificationPage> {
     _readNotificationsStreamController.addStream(_readNotificationsStream);
   }
 
-  StreamBuilder<List<ListAppNotification>> _buildNotificationItems(
+  Widget _buildNotificationItems(
     BuildContext context,
     bool showUnread,
   ) {
@@ -326,11 +326,6 @@ class _NotificationPage extends State<NotificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    final StreamBuilder<List<ListAppNotification>> unreadNotificationItems =
-        _buildNotificationItems(context, true);
-    final StreamBuilder<List<ListAppNotification>> readNotificationItems =
-        _buildNotificationItems(context, false);
-
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -348,7 +343,9 @@ class _NotificationPage extends State<NotificationPage> {
                       maxWidth: 56,
                       maxHeight: 30,
                     ),
-                    child: const NotificationBadge(),
+                    child: const NotificationBadge(
+                      showNotificationPageWhenPressed: false,
+                    ),
                   ),
                 ),
               ),
@@ -358,8 +355,8 @@ class _NotificationPage extends State<NotificationPage> {
         ),
         body: TabBarView(
           children: [
-            unreadNotificationItems,
-            readNotificationItems,
+            _buildNotificationItems(context, true),
+            _buildNotificationItems(context, false),
           ],
         ),
       ),

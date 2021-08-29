@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_cloud_functions_mock/firebase_cloud_functions_mock.dart';
 import 'package:firebase_storage_mocks/firebase_storage_mocks.dart';
@@ -9,9 +7,8 @@ import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/services/item_manager.dart';
 import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/services/manager_config.dart';
+import 'package:mobile_applications/ui/lists_details_page/new_item_page.dart';
 import 'package:mobile_applications/ui/lists_page.dart';
-import 'package:mobile_applications/ui/new_item_page.dart';
-import 'package:numberpicker/numberpicker.dart';
 
 import '../mock_database.dart';
 

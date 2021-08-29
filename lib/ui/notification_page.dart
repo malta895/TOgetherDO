@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/notification.dart';
@@ -10,6 +11,7 @@ import 'package:mobile_applications/ui/lists_details_page/list_details_page.dart
 import 'package:mobile_applications/ui/notification_badge.dart';
 import 'package:mobile_applications/ui/widgets/empty_list_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:rxdart/rxdart.dart';
 
 class NotificationPage extends StatefulWidget {
   static const String routeName = "/notifications";
@@ -22,46 +24,38 @@ class NotificationPage extends StatefulWidget {
 class _NotificationPage extends State<NotificationPage> {
   static const String title = 'Notifications';
 
-  late Future<List<ListAppNotification>> _notificationsFuture;
-
-  final GlobalKey<RefreshIndicatorState> _newNotificationsRefreshIndicatorKey =
-      new GlobalKey<RefreshIndicatorState>();
-  final GlobalKey<RefreshIndicatorState> _readNotificationsRefreshIndicatorKey =
-      new GlobalKey<RefreshIndicatorState>();
-  bool _isManuallyRefreshing = false;
+  late final Stream<List<ListAppNotification>> _unreadNotificationsStream;
+  late final Stream<List<ListAppNotification>> _readNotificationsStream;
+  final StreamController<List<ListAppNotification>>
+      _unreadNotificationsStreamController = BehaviorSubject();
+  final StreamController<List<ListAppNotification>>
+      _readNotificationsStreamController = BehaviorSubject();
 
   @override
   void initState() {
     super.initState();
 
-    _notificationsFuture = _fetchNotifications();
+    _unreadNotificationsStream = ListAppNotificationManager.instance
+        .getNotificationsStream(
+            context.read<ListAppAuthProvider>().getLoggedInListAppUser(), true);
+    _unreadNotificationsStreamController.addStream(_unreadNotificationsStream);
 
-    SchedulerBinding.instance?.addPostFrameCallback((_) {
-      if (!_isManuallyRefreshing) {
-        _newNotificationsRefreshIndicatorKey.currentState?.show();
-        _readNotificationsRefreshIndicatorKey.currentState?.show();
-      }
-    });
+    _readNotificationsStream = ListAppNotificationManager.instance
+        .getNotificationsStream(
+            context.read<ListAppAuthProvider>().getLoggedInListAppUser(),
+            false);
+    _readNotificationsStreamController.addStream(_readNotificationsStream);
   }
 
-  Future<List<ListAppNotification>> _fetchNotifications() async {
-    final listAppUser =
-        await context.read<ListAppAuthProvider>().getLoggedInListAppUser();
-
-    if (listAppUser != null) {
-      return ListAppNotificationManager.instance
-          .getNotificationsByUserId(listAppUser.databaseId, "createdAt");
-    }
-
-    return [];
-  }
-
-  Widget _buildNotificationItems(BuildContext context) {
+  StreamBuilder<List<ListAppNotification>> _buildNotificationItems(
+    BuildContext context,
+    bool showUnread,
+  ) {
     return StreamBuilder<List<ListAppNotification>>(
       initialData: [],
-      stream: ListAppNotificationManager.instance.getUnreadNotificationsStream(
-        context.read<ListAppAuthProvider>().getLoggedInListAppUser(),
-      ),
+      stream: showUnread
+          ? _unreadNotificationsStreamController.stream
+          : _readNotificationsStreamController.stream,
       builder: (context, AsyncSnapshot<List<ListAppNotification>> snapshot) {
         final notificationList = snapshot.data ?? [];
         switch (snapshot.connectionState) {
@@ -138,9 +132,6 @@ class _NotificationPage extends State<NotificationPage> {
                       notification.status = NotificationStatus.accepted;
                       await ListAppNotificationManager.instance
                           .saveToFirestore(notification);
-                      setState(() {
-                        _notificationsFuture = _fetchNotifications();
-                      });
                     },
                     child: const Icon(
                       Icons.done,
@@ -158,9 +149,6 @@ class _NotificationPage extends State<NotificationPage> {
                         notification.status = NotificationStatus.rejected;
                         await ListAppNotificationManager.instance
                             .saveToFirestore(notification);
-                        setState(() {
-                          _notificationsFuture = _fetchNotifications();
-                        });
                       },
                       child: const Icon(
                         Icons.close,
@@ -248,9 +236,6 @@ class _NotificationPage extends State<NotificationPage> {
                     onPressed: () async {
                       await ListAppNotificationManager.instance
                           .acceptNotification(notification.databaseId!);
-                      setState(() {
-                        _notificationsFuture = _fetchNotifications();
-                      });
                     },
                     child: const Icon(
                       Icons.done,
@@ -266,9 +251,6 @@ class _NotificationPage extends State<NotificationPage> {
                   onPressed: () async {
                     await ListAppNotificationManager.instance
                         .rejectNotification(notification.databaseId!);
-                    setState(() {
-                      _notificationsFuture = _fetchNotifications();
-                    });
                   },
                   child: const Icon(
                     Icons.close,
@@ -344,6 +326,11 @@ class _NotificationPage extends State<NotificationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final StreamBuilder<List<ListAppNotification>> unreadNotificationItems =
+        _buildNotificationItems(context, true);
+    final StreamBuilder<List<ListAppNotification>> readNotificationItems =
+        _buildNotificationItems(context, false);
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -371,28 +358,8 @@ class _NotificationPage extends State<NotificationPage> {
         ),
         body: TabBarView(
           children: [
-            RefreshIndicator(
-              key: _newNotificationsRefreshIndicatorKey,
-              onRefresh: () async {
-                _isManuallyRefreshing = true;
-                setState(() {
-                  _notificationsFuture = _fetchNotifications();
-                });
-                _isManuallyRefreshing = false;
-              },
-              child: _buildNotificationItems(context),
-            ),
-            RefreshIndicator(
-              key: _readNotificationsRefreshIndicatorKey,
-              onRefresh: () async {
-                _isManuallyRefreshing = true;
-                setState(() {
-                  _notificationsFuture = _fetchNotifications();
-                });
-                _isManuallyRefreshing = false;
-              },
-              child: _buildNotificationItems(context),
-            ),
+            unreadNotificationItems,
+            readNotificationItems,
           ],
         ),
       ),

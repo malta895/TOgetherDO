@@ -248,8 +248,6 @@ class MultiFulfillmentItem extends BaseItem {
 ) // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
 class MultiFulfillmentMemberItem extends BaseItem {
   //map each member with a number representing how many times they have fulfilled
-  Map<ListAppUser, int> _fulfillers = Map<ListAppUser, int>();
-
   @JsonKey(ignore: true)
   Set<ListAppUser> fulfillers = Set<ListAppUser>();
 

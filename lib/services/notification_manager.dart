@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/notification.dart';
@@ -92,8 +94,9 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
   }
 
   /// Stream that returns the unread notifications
-  Stream<List<ListAppNotification>> getUnreadNotificationsStream(
+  Stream<List<ListAppNotification>> getNotificationsStream(
     Future<ListAppUser?> listAppUserFuture,
+    bool unread,
   ) async* {
     final listAppUser = await listAppUserFuture;
     final userId = listAppUser?.databaseId!;
@@ -102,14 +105,19 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
       return;
     }
 
-    final snapshotStream = firebaseCollection
-        .where("status", isEqualTo: "pending")
-        .where("userToId", isEqualTo: userId)
-        .snapshots();
+    final snapshotStream = unread
+        ? firebaseCollection
+            .where("status", isEqualTo: "pending")
+            .where("userToId", isEqualTo: userId)
+            .snapshots()
+        : firebaseCollection
+            .where("status", isNotEqualTo: "pending")
+            .where("userToId", isEqualTo: userId)
+            .snapshots();
 
     try {
       await for (final querySnapshot in snapshotStream) {
-        final notifications = (await Future.wait(
+        yield (await Future.wait(
           querySnapshot.docs.map(
             (e) async {
               final notification = e.data()!;
@@ -119,8 +127,6 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
           ),
         ))
             .toList();
-
-        yield notifications;
       }
     } catch (_) {
       yield* const Stream.empty();

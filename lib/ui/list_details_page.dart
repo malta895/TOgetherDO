@@ -805,10 +805,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                             color:
                                                 Theme.of(context).primaryColor),
                                         textScaleFactor: 1.2,
-                                      ))
-                                  /*],
-                        ),*/
-                                  )
+                                      )))
                             ])
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -970,10 +967,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                     style: TextStyle(
                                         color: Theme.of(context).primaryColor),
                                     textScaleFactor: 1.2,
-                                  ))
-                              /*],
-                        ),*/
-                              )
+                                  )))
                         ])
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1261,7 +1255,6 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
           int _added = 0;
           int _difference = 0;
           return StatefulBuilder(builder: (context, setPickerState) {
-            //we need it to be stateful because the widget state can change while the dialog is opened
             return AlertDialog(
                 title:
                     const Text("How many times have you completed this item?"),
@@ -1322,21 +1315,6 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                   _difference);
                         }
                         setState(() {});
-                        /*setState(() {
-                          if (_added == 1) {
-                            aListItem.fulfill(
-                                member: _loggedInListAppUser,
-                                quantityFulfilled: _difference);
-                          } else {
-                            aListItem.unfulfill(
-                                member: _loggedInListAppUser,
-                                quantityUnfulfilled: _difference);
-                          }
-                          /*ListAppItemManager.instanceForList(
-                                  widget.listAppList.databaseId!,
-                                  _loggedInListAppUser.databaseId!)
-                              .saveToFirestore(aListItem);*/
-                        });*/
                         Navigator.of(context).pop();
                       },
                       child: const Text("CHANGE")),
@@ -1602,10 +1580,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
   Widget _buildScaffoldBody(BuildContext context) {
     return Column(
       children: [
-        // list details, in the higher part of the page
         _buildListDetails(context),
-
-        // here begins the tab bar at the middle, to switch between items and members
         Stack(
           children: [
             Container(
@@ -1627,8 +1602,6 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
               height:
                   74, //this is to remove the space of the title, we dont need it
               child: AppBar(
-                // in order to have a TabBar, we need to have an AppBar
-                // the sizedBox is needed to remove the title space
                 elevation: 0,
                 automaticallyImplyLeading: false,
                 bottom: const TabBar(
@@ -1642,15 +1615,10 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
             ),
           ],
         ),
-
-        // tab bar contents
         Expanded(
           child: TabBarView(
             children: [
-              // list of items
               _buildItemsListView(context),
-
-              // list of members
               _buildMembersListView(context),
             ],
           ),
@@ -1658,16 +1626,6 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
       ],
     );
   }
-
-  // Future<void> _showAddMemberRoute(BuildContext context) async {
-  //   final result = await Navigator.push(
-  //     context,
-  //     MaterialPageRoute(builder: (context) {}),
-  //   );
-  //   if (result != null) {
-  //     _addListItem(result);
-  //   }
-  // }
 
   Widget _buildMembersListView(BuildContext context) {
     bool isAdmin;
@@ -1677,11 +1635,6 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
       isAdmin = true;
 
     final allMembers = widget.listAppList.membersAsUsers;
-    // insert the creator as first member
-    /*if (allMembers.length == widget.listAppList.membersAsUsers.length) {
-      allMembers.insert(0, widget.listAppList.creator!);
-    }*/
-    // put the add element at first, then followed by the list members
     final membersListView = ListView.builder(
       itemCount: allMembers.length,
       itemBuilder: (context, i) {
@@ -1845,14 +1798,6 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
   @override
   Widget build(BuildContext context) {
     final currentUser = context.read<ListAppAuthProvider>().loggedInListAppUser;
-
-    /* final Future<List<ListAppUser?>> friendsFrom = ListAppFriendshipManager
-        .instance
-        .getFriendsFromByUid(currentUser!.databaseId!);
-
-    final Future<List<ListAppUser?>> friendsTo = ListAppFriendshipManager
-        .instance
-        .getFriendsToByUid(currentUser.databaseId!); */
 
     final Future<List<ListAppUser?>> friends =
         ListAppUserManager.instance.getFriends(currentUser!);

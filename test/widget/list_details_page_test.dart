@@ -189,6 +189,60 @@ void main() {
     );
 
     testWidgets(
+      'Update of an item',
+      (tester) async {
+        await tester
+            .pumpWidget(TestUtils.createScreen(screen: const ListsPage()));
+        await tester.pumpAndSettle();
+
+        //click on list1
+        await tester.tap(find.byKey(const Key("list1_id")));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text("prova"));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AlertDialog), findsOneWidget);
+
+        await tester.tap(find.byIcon(Icons.edit).first);
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AlertDialog), findsNWidgets(2));
+        expect(find.text("prova"), findsNWidgets(3));
+        await tester.enterText(find.byType(TextField).first, "prova 1");
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text("OK"));
+        await tester.pumpAndSettle();
+
+        expect(find.text("prova"), findsNothing);
+        expect(find.text("prova 1"), findsOneWidget);
+
+        await tester.tap(find.text("prova 1"));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AlertDialog), findsOneWidget);
+
+        await tester.tap(find.byIcon(Icons.edit).at(1));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AlertDialog), findsNWidgets(2));
+        expect(find.text("item1 description"), findsNWidgets(2));
+        await tester.enterText(
+            find.byType(TextField).first, "item1 new description");
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text("OK"));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text("prova 1"));
+        await tester.pumpAndSettle();
+        expect(find.text("item1 description"), findsNothing);
+        expect(find.text("item1 new description"), findsOneWidget);
+      },
+    );
+
+    testWidgets(
       'Testing completion of a simple item',
       (tester) async {
         await tester
@@ -220,9 +274,6 @@ void main() {
         //click on list1
         await tester.tap(find.byKey(const Key("list1_id")));
         await tester.pumpAndSettle();
-
-        //await tester.tap(find.byIcon(Icons.add_circle));
-        //await tester.pumpAndSettle();
 
         final item =
             await ListAppItemManager.instanceForList("list1_id", "user1_id")

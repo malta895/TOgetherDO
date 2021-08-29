@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mobile_applications/models/notification.dart';
+import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/database_manager.dart';
 import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/services/manager_config.dart';
@@ -74,7 +75,8 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
 
   /// This streams emits the number of unread notifications of the current user.
   Stream<int> getUnreadNotificationCountStream(
-      String userId, bool isLoggedOut) async* {
+    String userId,
+  ) async* {
     final snapshotStream = firebaseCollection
         .where("status", isEqualTo: "pending")
         .where("userToId", isEqualTo: userId)
@@ -84,7 +86,43 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
       await for (final querySnapshot in snapshotStream) {
         yield querySnapshot.size;
       }
-    } catch (e) {
+    } catch (_) {
+      yield* const Stream.empty();
+    }
+  }
+
+  /// Stream that returns the unread notifications
+  Stream<List<ListAppNotification>> getUnreadNotificationsStream(
+    Future<ListAppUser?> listAppUserFuture,
+  ) async* {
+    final listAppUser = await listAppUserFuture;
+    final userId = listAppUser?.databaseId!;
+    if (userId == null) {
+      yield* const Stream.empty();
+      return;
+    }
+
+    final snapshotStream = firebaseCollection
+        .where("status", isEqualTo: "pending")
+        .where("userToId", isEqualTo: userId)
+        .snapshots();
+
+    try {
+      await for (final querySnapshot in snapshotStream) {
+        final notifications = (await Future.wait(
+          querySnapshot.docs.map(
+            (e) async {
+              final notification = e.data()!;
+              await populateObjects(notification);
+              return notification;
+            },
+          ),
+        ))
+            .toList();
+
+        yield notifications;
+      }
+    } catch (_) {
       yield* const Stream.empty();
     }
   }

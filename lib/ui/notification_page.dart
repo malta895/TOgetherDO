@@ -6,8 +6,9 @@ import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/services/notification_manager.dart';
-import 'package:mobile_applications/ui/widgets/empty_list_widget.dart';
 import 'package:mobile_applications/ui/lists_details_page/list_details_page.dart';
+import 'package:mobile_applications/ui/notification_badge.dart';
+import 'package:mobile_applications/ui/widgets/empty_list_widget.dart';
 import 'package:provider/provider.dart';
 
 class NotificationPage extends StatefulWidget {
@@ -19,11 +20,13 @@ class NotificationPage extends StatefulWidget {
 }
 
 class _NotificationPage extends State<NotificationPage> {
-  final String title = 'Notifications';
+  static const String title = 'Notifications';
 
   late Future<List<ListAppNotification>> _notificationsFuture;
 
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+  final GlobalKey<RefreshIndicatorState> _newNotificationsRefreshIndicatorKey =
+      new GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<RefreshIndicatorState> _readNotificationsRefreshIndicatorKey =
       new GlobalKey<RefreshIndicatorState>();
   bool _isManuallyRefreshing = false;
 
@@ -34,7 +37,10 @@ class _NotificationPage extends State<NotificationPage> {
     _notificationsFuture = _fetchNotifications();
 
     SchedulerBinding.instance?.addPostFrameCallback((_) {
-      if (!_isManuallyRefreshing) _refreshIndicatorKey.currentState?.show();
+      if (!_isManuallyRefreshing) {
+        _newNotificationsRefreshIndicatorKey.currentState?.show();
+        _readNotificationsRefreshIndicatorKey.currentState?.show();
+      }
     });
   }
 
@@ -51,18 +57,20 @@ class _NotificationPage extends State<NotificationPage> {
   }
 
   Widget _buildNotificationItems(BuildContext context) {
-    return FutureBuilder<List<ListAppNotification>>(
+    return StreamBuilder<List<ListAppNotification>>(
       initialData: [],
-      future: _notificationsFuture,
+      stream: ListAppNotificationManager.instance.getUnreadNotificationsStream(
+        context.read<ListAppAuthProvider>().getLoggedInListAppUser(),
+      ),
       builder: (context, AsyncSnapshot<List<ListAppNotification>> snapshot) {
         final notificationList = snapshot.data ?? [];
         switch (snapshot.connectionState) {
           case ConnectionState.none:
           case ConnectionState.waiting:
-          case ConnectionState.active:
             return const Center(
               child: CircularProgressIndicator(),
             );
+          case ConnectionState.active:
           case ConnectionState.done:
             return notificationList.isNotEmpty
                 ? ListView.builder(
@@ -336,20 +344,57 @@ class _NotificationPage extends State<NotificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: RefreshIndicator(
-        key: _refreshIndicatorKey,
-        onRefresh: () async {
-          _isManuallyRefreshing = true;
-          setState(() {
-            _notificationsFuture = _fetchNotifications();
-          });
-          _isManuallyRefreshing = false;
-        },
-        child: _buildNotificationItems(context),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(title),
+          bottom: TabBar(
+            indicatorColor: Colors.white,
+            tabs: [
+              Tab(
+                text: "NEW",
+                icon: Padding(
+                  padding: const EdgeInsets.only(bottom: 6.3),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: 56,
+                      maxHeight: 30,
+                    ),
+                    child: const NotificationBadge(),
+                  ),
+                ),
+              ),
+              const Tab(text: "READ", icon: Icon(Icons.notifications_none)),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            RefreshIndicator(
+              key: _newNotificationsRefreshIndicatorKey,
+              onRefresh: () async {
+                _isManuallyRefreshing = true;
+                setState(() {
+                  _notificationsFuture = _fetchNotifications();
+                });
+                _isManuallyRefreshing = false;
+              },
+              child: _buildNotificationItems(context),
+            ),
+            RefreshIndicator(
+              key: _readNotificationsRefreshIndicatorKey,
+              onRefresh: () async {
+                _isManuallyRefreshing = true;
+                setState(() {
+                  _notificationsFuture = _fetchNotifications();
+                });
+                _isManuallyRefreshing = false;
+              },
+              child: _buildNotificationItems(context),
+            ),
+          ],
+        ),
       ),
     );
   }

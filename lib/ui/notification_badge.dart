@@ -71,17 +71,17 @@ class NotificationBadge extends StatelessWidget {
       alignment: AlignmentDirectional.center,
       children: [
         Container(height: 56),
-        IconButton(
-          icon: const Icon(Icons.notifications),
-          onPressed: () => {
-            if (showNotificationPageWhenPressed)
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const NotificationPage()),
-              )
-          },
-        ),
+        showNotificationPageWhenPressed
+            ? IconButton(
+                icon: const Icon(Icons.notifications),
+                onPressed: () => {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const NotificationPage()),
+                      )
+                    })
+            : const Icon(Icons.notifications),
         _buildBadge(context),
       ],
     );

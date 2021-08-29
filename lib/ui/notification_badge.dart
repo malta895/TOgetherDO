@@ -46,6 +46,7 @@ class NotificationBadge extends StatelessWidget {
                         notificationCount < 100
                             ? Text(
                                 notificationCount.toString(),
+                                key: const Key("notification_count_text"),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),

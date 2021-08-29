@@ -125,6 +125,7 @@ class _NotificationPage extends State<NotificationPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextButton(
+                    key: Key("accept_text_button_${notification.userFromId}"),
                     style: TextButton.styleFrom(
                       side: const BorderSide(color: Colors.green, width: 1),
                     ),

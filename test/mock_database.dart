@@ -228,7 +228,7 @@ class TestUtils {
       "itemType": "multiFulfillmentMember",
       "maxQuantity": 6,
       "name": "multiFulfillmentMember",
-      "quantityPerMember": 2,
+      "quantityPerMember": 5,
       "usersCompletions": <String, int>{}
     };
 

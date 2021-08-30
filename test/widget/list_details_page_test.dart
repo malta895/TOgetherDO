@@ -9,6 +9,7 @@ import 'package:mobile_applications/services/list_manager.dart';
 import 'package:mobile_applications/services/manager_config.dart';
 import 'package:mobile_applications/ui/lists_details_page/new_item_page.dart';
 import 'package:mobile_applications/ui/lists_page.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 import '../mock_database.dart';
 
@@ -261,7 +262,7 @@ void main() {
       },
     );
 
-    testWidgets(
+    /*testWidgets(
       'Testing completion of a multiFulfillmentMember item',
       (tester) async {
         await tester
@@ -302,6 +303,79 @@ void main() {
                 matching:
                     find.byWidgetPredicate((widget) => widget is ListTile)),
             findsOneWidget);
+      },
+    );*/
+
+    testWidgets(
+      'Testing numberPicker for multiFulfillmentMember item',
+      (tester) async {
+        await tester
+            .pumpWidget(TestUtils.createScreen(screen: const ListsPage()));
+        await tester.pumpAndSettle();
+
+        //click on list1
+        await tester.tap(find.byKey(const Key("list1_id")));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byIcon(Icons.add_circle).first);
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AlertDialog), findsOneWidget);
+        expect(find.byType(NumberPicker), findsOneWidget);
+
+        var numberPickerFinder = find.byKey(Key("numberPickerKey"));
+
+        var numberPicker =
+            tester.firstWidget(numberPickerFinder) as NumberPicker;
+        expect(numberPicker.maxValue, 5);
+        expect(numberPicker.minValue, 0);
+
+        //we complete it by 1 and we check again
+        final item =
+            await ListAppItemManager.instanceForList("list1_id", "user1_id")
+                .getByUid("item3_id");
+
+        await ListAppItemManager.instanceForList("list1_id", "user1_id")
+            .fulfillItem("user3_id", "list1_id", item!, 4);
+        await tester.pumpAndSettle();
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+        expect(find.byType(ListsPage), findsOneWidget);
+        //click again on list1
+        await tester.tap(find.byKey(const Key("list1_id")));
+        await tester.pumpAndSettle();
+
+        expect(find.text("4 / 6"), findsOneWidget);
+        await tester.tap(find.text("4 / 6"));
+        await tester.pumpAndSettle();
+
+        expect(
+            find.ancestor(
+                of: find.text("John DoeFriend"),
+                matching:
+                    find.byWidgetPredicate((widget) => widget is ListTile)),
+            findsOneWidget);
+        expect(
+            find.ancestor(
+                of: find.text("4"),
+                matching:
+                    find.byWidgetPredicate((widget) => widget is ListTile)),
+            findsOneWidget);
+
+        await tester.pageBack();
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byIcon(Icons.add_circle).first);
+        await tester.pumpAndSettle();
+
+        expect(find.byType(AlertDialog), findsOneWidget);
+        expect(find.byType(NumberPicker), findsOneWidget);
+
+        numberPicker = tester.firstWidget(numberPickerFinder) as NumberPicker;
+        expect(numberPicker.maxValue, 2);
+        expect(numberPicker.minValue, 0);
       },
     );
 

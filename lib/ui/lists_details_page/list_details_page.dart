@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/list_item.dart';
@@ -247,78 +248,165 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
 
   Widget itemDetailsAlertDialog(
       BuildContext context, BaseItem item, ListAppUser creator) {
+    final nameFieldController = TextEditingController(text: item.name);
+
+    String _newName = '';
+    String _newDescription = '';
+
+    final descriptionFieldController = TextEditingController(
+        text: item.description ?? 'This item has no description');
     return AlertDialog(
         scrollable: true,
         title: Text("Item details"),
         content: Container(
-            height: 350,
+            height: 400,
             child: Column(children: [
-              Card(
-                color: Theme.of(context).primaryColor.withAlpha(50),
-                child: ListTile(
-                    title: Text(
-                      item.name,
+              StatefulBuilder(builder: (context, setNameState) {
+                return ListTile(
+                    title: TextField(
+                      controller: nameFieldController,
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.all(8.0),
+                        border: OutlineInputBorder(
+                          gapPadding: 2.0,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(12.0)),
+                          borderSide: BorderSide(
+                              color:
+                                  Theme.of(context).textTheme.headline1!.color!,
+                              width: 1.0),
+                        ),
+                        labelText: "Name",
+                        labelStyle: TextStyle(
+                            color:
+                                Theme.of(context).textTheme.headline1!.color),
+                        hintText: "Insert a new name",
+                        hintStyle: TextStyle(fontStyle: FontStyle.italic),
+                      ),
+                      onChanged: (value) {
+                        setNameState(() {
+                          _newName = value;
+                        });
+                      },
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
-                    subtitle: Text("Name"),
                     trailing: ((widget.listAppList.listStatus ==
                                     ListStatus.draft ||
                                 widget.listAppList.listType ==
                                     ListType.public) &&
                             _loggedInListAppUser.databaseId == item.creatorUid)
-                        ? IconButton(
-                            onPressed: () async {
-                              await _changeItemName(context, item);
-                              Navigator.pop(context);
-                            },
-                            icon: Icon(Icons.edit))
-                        : null),
-              ),
-              (item.description != null && item.description != "")
-                  ? Card(
-                      color: Theme.of(context).primaryColor.withAlpha(50),
-                      child: ListTile(
-                          title: Text(item.description!,
-                              style: TextStyle(fontWeight: FontWeight.w600)),
-                          subtitle: Text("Description"),
-                          trailing: ((widget.listAppList.listStatus ==
-                                          ListStatus.draft ||
-                                      widget.listAppList.listType ==
-                                          ListType.public) &&
-                                  _loggedInListAppUser.databaseId ==
-                                      item.creatorUid)
-                              ? IconButton(
-                                  onPressed: () async {
-                                    await _changeItemDescription(context, item);
-                                    Navigator.pop(context);
-                                  },
-                                  icon: Icon(Icons.edit))
-                              : null),
-                    )
-                  : Card(
-                      color: Theme.of(context).primaryColor.withAlpha(50),
-                      child: ListTile(
-                          title: Text("This item has no description available",
-                              style: TextStyle(fontStyle: FontStyle.italic)),
-                          trailing: ((widget.listAppList.listStatus ==
-                                          ListStatus.draft ||
-                                      widget.listAppList.listType ==
-                                          ListType.public) &&
-                                  _loggedInListAppUser.databaseId ==
-                                      item.creatorUid)
-                              ? IconButton(
-                                  onPressed: () async {
-                                    await _changeItemDescription(context, item);
-                                    Navigator.pop(context);
-                                  },
-                                  icon: Icon(Icons.edit))
-                              : null)),
+                        ? ((_newName.isNotEmpty && _newName != item.name)
+                            ? IconButton(
+                                onPressed: () async {
+                                  //await _changeItemName(context, item);
+                                  await ListAppItemManager.instanceForList(
+                                          widget.listAppList.databaseId!,
+                                          _loggedInListAppUser.databaseId!)
+                                      .updateItemName(_newName, item);
+
+                                  setState(() {
+                                    item.name = _newName;
+                                  });
+                                  FocusScope.of(context).unfocus();
+                                  Fluttertoast.showToast(
+                                    msg: "Updated item name!",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.CENTER,
+                                    timeInSecForIosWeb: 1,
+                                    backgroundColor: Colors.green,
+                                    textColor: Colors.white,
+                                    fontSize: 16.0,
+                                  );
+                                },
+                                icon: Icon(Icons.edit))
+                            : IconButton(
+                                onPressed: null, icon: Icon(Icons.edit)))
+                        : null);
+              }),
+              StatefulBuilder(builder: (context, setDescriptionState) {
+                return ListTile(
+                    title: TextField(
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      controller: descriptionFieldController,
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.all(8.0),
+                        border: OutlineInputBorder(
+                          gapPadding: 2.0,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(12.0)),
+                          borderSide: BorderSide(
+                              color:
+                                  Theme.of(context).textTheme.headline1!.color!,
+                              width: 1.0),
+                        ),
+                        labelText: "Description",
+                        labelStyle: TextStyle(
+                            color:
+                                Theme.of(context).textTheme.headline1!.color),
+                        hintText: "Insert a new description",
+                        hintStyle: TextStyle(fontStyle: FontStyle.italic),
+                      ),
+                      onChanged: (value) {
+                        setDescriptionState(() {
+                          _newDescription = value;
+                        });
+                      },
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    trailing: ((widget.listAppList.listStatus ==
+                                    ListStatus.draft ||
+                                widget.listAppList.listType ==
+                                    ListType.public) &&
+                            _loggedInListAppUser.databaseId == item.creatorUid)
+                        ? ((_newDescription.isNotEmpty &&
+                                _newDescription != item.description)
+                            ? IconButton(
+                                onPressed: () async {
+                                  //await _changeItemName(context, item);
+                                  await ListAppItemManager.instanceForList(
+                                          widget.listAppList.databaseId!,
+                                          _loggedInListAppUser.databaseId!)
+                                      .updateItemDescription(
+                                          _newDescription, item);
+
+                                  setState(() {
+                                    item.description = _newDescription;
+                                  });
+                                  FocusScope.of(context).unfocus();
+                                  Fluttertoast.showToast(
+                                    msg: "Updated item description!",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.CENTER,
+                                    timeInSecForIosWeb: 1,
+                                    backgroundColor: Colors.green,
+                                    textColor: Colors.white,
+                                    fontSize: 16.0,
+                                  );
+                                },
+                                icon: Icon(Icons.edit))
+                            : IconButton(
+                                onPressed: null, icon: Icon(Icons.edit)))
+                        : null);
+              }),
               Card(
                 color: Theme.of(context).primaryColor.withAlpha(50),
                 child: ListTile(
                   title: Text(creator.firstName + " " + creator.lastName,
                       style: TextStyle(fontWeight: FontWeight.w600)),
                   subtitle: Text("Creator"),
+                ),
+              ),
+              Card(
+                color: Theme.of(context).primaryColor.withAlpha(50),
+                child: ListTile(
+                  title: Text(item.itemType.toReadableString() +
+                      ((item.itemType == ItemType.multiFulfillment)
+                          ? "\n-Number of instances: ${item.maxQuantity}"
+                          : (item.itemType == ItemType.multiFulfillmentMember)
+                              ? "\n-Number of instances: ${item.maxQuantity}\n-Max quantity per member: ${item.quantityPerMember}"
+                              : "")),
+                  subtitle: Text("Type"),
                 ),
               ),
               ((widget.listAppList.listStatus == ListStatus.draft ||

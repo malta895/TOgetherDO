@@ -53,14 +53,20 @@ class _NewItemFormState extends State<_NewItemForm> {
   // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
   final _nameKey = GlobalKey();
+  final _descriptionKey = GlobalKey();
+  final _linkKey = GlobalKey();
 
   final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _linkController = TextEditingController();
 
   ItemType _selectedItemType = ItemType.simple;
   int _itemsCounter = 1;
   int _membersCounter = 1;
 
   String? _nameValidatorMessage;
+  String? _descriptionValidatorMessage;
+  String? _linkValidatorMessage;
 
   late final Map<ItemType, ExpandableController> _expandableControllers;
 
@@ -121,6 +127,68 @@ class _NewItemFormState extends State<_NewItemForm> {
                 },
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: TextFormField(
+                key: _descriptionKey,
+                onChanged: (_) {
+                  if (_descriptionValidatorMessage != null) {
+                    setState(() {
+                      _descriptionValidatorMessage = null;
+                      _formKey.currentState?.validate();
+                    });
+                  }
+                },
+                controller: _descriptionController,
+                cursorColor: Theme.of(context).textTheme.headline1!.color!,
+                decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.all(5.0),
+                    filled: true,
+                    fillColor: Theme.of(context).splashColor,
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(12.0)),
+                      borderSide: BorderSide(
+                          color: Theme.of(context).textTheme.headline1!.color!,
+                          width: 1.0),
+                    ),
+                    border: InputBorder.none,
+                    labelText: 'You can also enter a description',
+                    labelStyle: TextStyle(
+                        color: Theme.of(context).textTheme.headline1!.color)),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: TextFormField(
+                key: _linkKey,
+                onChanged: (_) {
+                  if (_linkValidatorMessage != null) {
+                    setState(() {
+                      _linkValidatorMessage = null;
+                      _formKey.currentState?.validate();
+                    });
+                  }
+                },
+                controller: _linkController,
+                cursorColor: Theme.of(context).textTheme.headline1!.color!,
+                decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.all(5.0),
+                    filled: true,
+                    fillColor: Theme.of(context).splashColor,
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(12.0)),
+                      borderSide: BorderSide(
+                          color: Theme.of(context).textTheme.headline1!.color!,
+                          width: 1.0),
+                    ),
+                    border: InputBorder.none,
+                    labelText: 'You can also add a link to a web page',
+                    labelStyle: TextStyle(
+                        color: Theme.of(context).textTheme.headline1!.color)),
+              ),
+            ),
 
             // divider "Choose the item type
             Row(
@@ -167,12 +235,16 @@ class _NewItemFormState extends State<_NewItemForm> {
                       case ItemType.simple:
                         newItem = SimpleItem(
                             name: _titleController.text,
+                            description: _descriptionController.text,
+                            link: _linkController.text,
                             creatorUid: widget.currentUser.databaseId!,
                             usersCompletions: {});
                         break;
                       case ItemType.multiFulfillment:
                         newItem = MultiFulfillmentItem(
                             name: _titleController.text,
+                            description: _descriptionController.text,
+                            link: _linkController.text,
                             maxQuantity: _itemsCounter,
                             creatorUid: widget.currentUser.databaseId!,
                             usersCompletions: {});
@@ -180,6 +252,8 @@ class _NewItemFormState extends State<_NewItemForm> {
                       case ItemType.multiFulfillmentMember:
                         newItem = MultiFulfillmentMemberItem(
                             name: _titleController.text,
+                            description: _descriptionController.text,
+                            link: _linkController.text,
                             maxQuantity: _itemsCounter,
                             quantityPerMember: _membersCounter,
                             creatorUid: widget.currentUser.databaseId!,
@@ -261,7 +335,7 @@ class _NewItemFormState extends State<_NewItemForm> {
     return ListTile(
       contentPadding: const EdgeInsets.all(5.0),
       title: Text(
-        "Number of people: ",
+        "Maximum quantity per single member: ",
         style: TextStyle(
             fontSize: 16, color: Theme.of(context).textTheme.headline1!.color),
       ),
@@ -310,7 +384,7 @@ class _NewItemFormState extends State<_NewItemForm> {
     return ListTile(
       contentPadding: const EdgeInsets.all(5.0),
       title: Text(
-        "Number of items: ",
+        "Total number of instances: ",
         style: TextStyle(
             fontSize: 16, color: Theme.of(context).textTheme.headline1!.color),
       ),

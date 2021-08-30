@@ -27,11 +27,11 @@ extension ParseToString on ItemType {
   String getDescription() {
     switch (this) {
       case ItemType.simple:
-        return 'The simple item can only be completed by one person';
+        return 'It can only be completed by one person';
       case ItemType.multiFulfillment:
-        return 'The multiFulfillment item can be completed once by each person in the list.';
+        return 'It can be completed once by each person in the list.';
       case ItemType.multiFulfillmentMember:
-        return 'The mumultiFulfillmentMember item can be completed more times by any member in the list';
+        return 'It can be completed more times by any member in the list';
     }
   }
 }

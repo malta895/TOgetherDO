@@ -202,15 +202,16 @@ void main() {
 
         expect(find.byType(AlertDialog), findsOneWidget);
 
-        await tester.tap(find.byIcon(Icons.edit).first);
+        await tester.tap(find.byType(TextField).first);
         await tester.pumpAndSettle();
 
-        expect(find.byType(AlertDialog), findsNWidgets(2));
-        expect(find.text("prova"), findsNWidgets(3));
         await tester.enterText(find.byType(TextField).first, "prova 1");
         await tester.pumpAndSettle();
 
-        await tester.tap(find.text("OK"));
+        await tester.tap(find.byIcon(Icons.edit).first);
+        await tester.pumpAndSettle();
+
+        await tester.pageBack();
         await tester.pumpAndSettle();
 
         expect(find.text("prova"), findsNothing);
@@ -221,16 +222,17 @@ void main() {
 
         expect(find.byType(AlertDialog), findsOneWidget);
 
+        await tester.tap(find.byType(TextField).at(1));
+        await tester.pumpAndSettle();
+
+        await tester.enterText(
+            find.byType(TextField).at(1), "item1 new description");
+        await tester.pumpAndSettle();
+
         await tester.tap(find.byIcon(Icons.edit).at(1));
         await tester.pumpAndSettle();
 
-        expect(find.byType(AlertDialog), findsNWidgets(2));
-        expect(find.text("item1 description"), findsNWidgets(2));
-        await tester.enterText(
-            find.byType(TextField).first, "item1 new description");
-        await tester.pumpAndSettle();
-
-        await tester.tap(find.text("OK"));
+        await tester.pageBack();
         await tester.pumpAndSettle();
 
         await tester.tap(find.text("prova 1"));

@@ -38,7 +38,7 @@ void main() {
         await tester.tap(find.text("Add new list item..."));
         await tester.pumpAndSettle();
 
-        expect(find.byType(TextFormField), findsOneWidget);
+        expect(find.byType(TextFormField), findsNWidgets(3));
         expect(find.text("Enter the item title"), findsOneWidget);
         expect(find.text("Simple item"), findsOneWidget);
         expect(find.text("Multiple instance item"), findsOneWidget);
@@ -64,7 +64,8 @@ void main() {
         await tester.tap(find.text("Simple item"));
         await tester.pumpAndSettle();
 
-        await tester.enterText(find.byType(TextFormField), "new simple item");
+        await tester.enterText(
+            find.byType(TextFormField).first, "new simple item");
         await tester.pumpAndSettle();
         await tester.tap(find.text("Submit"));
         await tester.pumpAndSettle();
@@ -90,12 +91,14 @@ void main() {
         await tester.tap(find.text("Multiple instance item"));
         await tester.pumpAndSettle();
 
-        expect(find.text("Number of items: "), findsNWidgets(2));
+        expect(find.text("Total number of instances: "), findsNWidgets(2));
         expect(find.byIcon(Icons.remove), findsNWidgets(3));
         expect(find.byIcon(Icons.add), findsNWidgets(3));
 
         await tester.enterText(
-            find.byType(TextFormField), "new multiple instance item");
+            find.byType(TextFormField).first, "new multiple instance item");
+        await tester.pumpAndSettle();
+        await tester.testTextInput.receiveAction(TextInputAction.done);
         await tester.pumpAndSettle();
         await tester.tap(find.text("Submit"));
         await tester.pumpAndSettle();
@@ -122,7 +125,7 @@ void main() {
         await tester.pumpAndSettle();
 
         await tester.enterText(
-            find.byType(TextFormField), "new multiple people item");
+            find.byType(TextFormField).first, "new multiple people item");
         await tester.pumpAndSettle();
         await tester.tap(find.text("Submit"));
         await tester.pumpAndSettle();

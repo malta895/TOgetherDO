@@ -22,9 +22,11 @@ class NewItemPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('New item'),
       ),
-      body: _NewItemForm(
-        currentList: currentList,
-        currentUser: currentUser,
+      body: SingleChildScrollView(
+        child: _NewItemForm(
+          currentList: currentList,
+          currentUser: currentUser,
+        ),
       ),
     );
   }
@@ -85,12 +87,12 @@ class _NewItemFormState extends State<_NewItemForm> {
     return Form(
       key: _formKey,
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.only(top: 10.0),
+              padding: const EdgeInsets.only(top: 5.0),
               child: TextFormField(
                 key: _nameKey,
                 onChanged: (_) {
@@ -128,7 +130,7 @@ class _NewItemFormState extends State<_NewItemForm> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 10.0),
+              padding: const EdgeInsets.only(top: 5.0),
               child: TextFormField(
                 key: _descriptionKey,
                 onChanged: (_) {
@@ -159,7 +161,7 @@ class _NewItemFormState extends State<_NewItemForm> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 10.0),
+              padding: const EdgeInsets.only(top: 5.0),
               child: TextFormField(
                 key: _linkKey,
                 onChanged: (_) {
@@ -195,7 +197,7 @@ class _NewItemFormState extends State<_NewItemForm> {
               children: <Widget>[
                 const Expanded(child: Divider()),
                 const Padding(
-                  padding: EdgeInsets.all(12.0),
+                  padding: EdgeInsets.all(8.0),
                   child: Text('Choose the item type'),
                 ),
                 const Expanded(child: Divider()),
@@ -207,7 +209,7 @@ class _NewItemFormState extends State<_NewItemForm> {
             //start of submit button part
             Padding(
               padding:
-                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 6.0),
+                  const EdgeInsets.symmetric(vertical: 14.0, horizontal: 6.0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   primary: Colors.pinkAccent[700],
@@ -235,16 +237,24 @@ class _NewItemFormState extends State<_NewItemForm> {
                       case ItemType.simple:
                         newItem = SimpleItem(
                             name: _titleController.text,
-                            description: _descriptionController.text,
-                            link: _linkController.text,
+                            description: _descriptionController.text != ''
+                                ? _descriptionController.text
+                                : null,
+                            link: _linkController.text != ''
+                                ? _linkController.text
+                                : null,
                             creatorUid: widget.currentUser.databaseId!,
                             usersCompletions: {});
                         break;
                       case ItemType.multiFulfillment:
                         newItem = MultiFulfillmentItem(
                             name: _titleController.text,
-                            description: _descriptionController.text,
-                            link: _linkController.text,
+                            description: _descriptionController.text != ''
+                                ? _descriptionController.text
+                                : null,
+                            link: _linkController.text != ''
+                                ? _linkController.text
+                                : null,
                             maxQuantity: _itemsCounter,
                             creatorUid: widget.currentUser.databaseId!,
                             usersCompletions: {});
@@ -252,8 +262,12 @@ class _NewItemFormState extends State<_NewItemForm> {
                       case ItemType.multiFulfillmentMember:
                         newItem = MultiFulfillmentMemberItem(
                             name: _titleController.text,
-                            description: _descriptionController.text,
-                            link: _linkController.text,
+                            description: _descriptionController.text != ''
+                                ? _descriptionController.text
+                                : null,
+                            link: _linkController.text != ''
+                                ? _linkController.text
+                                : null,
                             maxQuantity: _itemsCounter,
                             quantityPerMember: _membersCounter,
                             creatorUid: widget.currentUser.databaseId!,
@@ -333,7 +347,7 @@ class _NewItemFormState extends State<_NewItemForm> {
 
   ListTile _buildMultiFulfillmentMemberForm(BuildContext context) {
     return ListTile(
-      contentPadding: const EdgeInsets.all(5.0),
+      contentPadding: const EdgeInsets.all(4.0),
       title: Text(
         "Maximum quantity per single member: ",
         style: TextStyle(

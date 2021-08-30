@@ -19,6 +19,7 @@ exports.createNotification = functions.region('europe-west6').firestore.document
                 notificationType: 'listInvite',
                 status: 'pending',
                 listId: context.params.listId,
+                readStatus: "unread",
                 databaseId: '',
             };
             admin.firestore().collection('notifications').add(newNotification).then((ok) => console.log(ok)).catch((e) => console.log(e));
@@ -33,7 +34,7 @@ exports.createNotification = functions.region('europe-west6').firestore.document
                 status: 'pending',
                 listId: context.params.listId,
                 databaseId: ''
-            };
+            };s
 
             admin.firestore().collection('notifications').add(newNotification).then((ok) => console.log(ok)).catch((e) => console.log(e));
         }

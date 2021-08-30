@@ -107,11 +107,11 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
 
     final snapshotStream = unread
         ? firebaseCollection
-            .where("status", isEqualTo: "pending")
+            .where("readStatus", isNotEqualTo: "read")
             .where("userToId", isEqualTo: userId)
             .snapshots()
         : firebaseCollection
-            .where("status", isNotEqualTo: "pending")
+            .where("readStatus", isEqualTo: "read")
             .where("userToId", isEqualTo: userId)
             .snapshots();
 

@@ -31,6 +31,17 @@ class _NotificationPage extends State<NotificationPage> {
   final StreamController<List<ListAppNotification>>
       _readNotificationsStreamController = BehaviorSubject();
 
+  final Map<Timer, ListAppNotification> _readTimers = {};
+
+  @override
+  void dispose() {
+    _readTimers.forEach((timer, notification) {
+      timer.cancel();
+      ListAppNotificationManager.instance.saveToFirestore(notification);
+    });
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -70,6 +81,19 @@ class _NotificationPage extends State<NotificationPage> {
                 ? ListView.builder(
                     itemCount: notificationList.length,
                     itemBuilder: (context, i) {
+                      if (notificationList[i].readStatus ==
+                          NotificationReadStatus.opened) {
+                        notificationList[i].readStatus =
+                            NotificationReadStatus.read;
+
+                        Timer t = Timer(
+                            const Duration(seconds: 6),
+                            () async => await ListAppNotificationManager
+                                .instance
+                                .saveToFirestore(notificationList[i]));
+                        _readTimers[t] = notificationList[i];
+                      }
+
                       switch (notificationList[i].notificationType) {
                         case NotificationType.friendship:
                           return _buildFriendshipRow(
@@ -116,8 +140,7 @@ class _NotificationPage extends State<NotificationPage> {
                 radius: 25.0,
               ),
               title: Text(
-                notification.userFrom!.displayName +
-                    " sent you a friendship request",
+                "${notification.userFrom!.displayName} sent you a friendship request",
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: const Text("You can accept or decline the request"),
@@ -131,6 +154,7 @@ class _NotificationPage extends State<NotificationPage> {
                     ),
                     onPressed: () async {
                       notification.status = NotificationStatus.accepted;
+                      notification.readStatus = NotificationReadStatus.opened;
                       await ListAppNotificationManager.instance
                           .saveToFirestore(notification);
                     },
@@ -237,6 +261,9 @@ class _NotificationPage extends State<NotificationPage> {
                     onPressed: () async {
                       await ListAppNotificationManager.instance
                           .acceptNotification(notification.databaseId!);
+                      notification.readStatus = NotificationReadStatus.opened;
+                      await ListAppNotificationManager.instance
+                          .saveToFirestore(notification);
                     },
                     child: const Icon(
                       Icons.done,
@@ -252,6 +279,9 @@ class _NotificationPage extends State<NotificationPage> {
                   onPressed: () async {
                     await ListAppNotificationManager.instance
                         .rejectNotification(notification.databaseId!);
+                    notification.readStatus = NotificationReadStatus.opened;
+                    await ListAppNotificationManager.instance
+                        .saveToFirestore(notification);
                   },
                   child: const Icon(
                     Icons.close,
@@ -280,7 +310,7 @@ class _NotificationPage extends State<NotificationPage> {
               "You are now in the ${notification.list!.name} list!",
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            subtitle: const Text("Click on this tile to explore the list!"),
+            subtitle: const Text("Tap here to explore the list!"),
             onTap: () async {
               await ListAppListManager.instanceForUserUid(
                       notification.userFromId)

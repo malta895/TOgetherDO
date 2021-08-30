@@ -42,6 +42,17 @@ enum NotificationType {
   listInvite,
 }
 
+enum NotificationReadStatus {
+  /// The notification has never been viewed in the notification page
+  unread,
+
+  /// The notification is opened on screen
+  opened,
+
+  /// The notification has been read, and is not shown anymore among the new ones
+  read
+}
+
 enum FriendshipRequestMethod {
   /// the friendship has been requested by username
   username,
@@ -61,6 +72,8 @@ abstract class ListAppNotification extends BaseModel {
   /// The status of the notification regarding its acceptance
   NotificationStatus status;
 
+  NotificationReadStatus readStatus;
+
   //fields to be injected
   @JsonKey(ignore: true)
   ListAppUser? userTo;
@@ -74,6 +87,7 @@ abstract class ListAppNotification extends BaseModel {
     required this.userFromId,
     this.status = NotificationStatus.pending,
     required this.notificationType,
+    this.readStatus = NotificationReadStatus.unread,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : super(
@@ -124,6 +138,7 @@ class ListInviteNotification extends ListAppNotification {
     required this.listOwnerId,
     required this.listId,
     databaseId,
+    NotificationReadStatus? readStatus,
     createdAt,
     updatedAt,
   }) : super(
@@ -132,6 +147,7 @@ class ListInviteNotification extends ListAppNotification {
           userToId: userToId,
           userFromId: userFromId,
           status: status,
+          readStatus: readStatus ?? NotificationReadStatus.unread,
           createdAt: createdAt,
           updatedAt: updatedAt,
         );
@@ -152,6 +168,7 @@ class FriendshipNotification extends ListAppNotification {
     required this.friendshipRequestMethod,
     NotificationStatus status = NotificationStatus.pending,
     String? databaseId,
+    NotificationReadStatus? readStatus,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : super(
@@ -161,6 +178,7 @@ class FriendshipNotification extends ListAppNotification {
           userToId: userToId,
           userFromId: userFromId,
           status: status,
+          readStatus: readStatus ?? NotificationReadStatus.unread,
           updatedAt: updatedAt,
         );
 

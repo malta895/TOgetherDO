@@ -119,5 +119,3 @@ class _MaterialAppWithTheme extends StatelessWidget {
     return consumer;
   }
 }
-a]
-    

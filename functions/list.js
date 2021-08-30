@@ -34,13 +34,13 @@ exports.updateNotification = functisons.region('europe-west6').firestore.documen
         const oldMembers = change.before.data().members;
         const newMembers = change.after.data().members;
 
-        for (const [key, value] of Object.entries(newMembers)) {
-            console.log(`${key} ${value}`);
-            if (!oldMembers.hasOwnProperty(key)) {
+        for (const [userId, value] of Object.entries(newMembers)) {
+            console.log(`${userId} ${value}`);
+            if (!oldMembers.hasOwnProperty(userId)) {
                 let newNotification = {
                     userFromId: context.params.userId,
                     listOwnerId: context.params.userId,
-                    userToId: key,
+                    userToId: userId,
                     notificationType: 'listInvite',
                     status: 'pending',
                     readStatus: "unread",

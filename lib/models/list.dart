@@ -106,8 +106,11 @@ class ListAppList extends BaseModel {
           updatedAt: updatedAt,
         ) {
     if (membersAsUsers != null)
-      members = Map<String, bool>.fromIterable(membersAsUsers,
-          key: (k) => k.databaseId, value: (_) => false);
+      members = Map<String, bool>.fromIterable(
+        membersAsUsers,
+        key: (k) => k.databaseId,
+        value: (_) => false,
+      );
   }
 
   factory ListAppList.fromJson(Map<String, dynamic> json) =>

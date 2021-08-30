@@ -426,7 +426,7 @@ class _ProfilePageState extends State<ProfilePage> {
         appBar: AppBar(
             // leading: Icon(Icons.menu), // not needed, automatically added by Drawer
             title: Text(title),
-            actions: [const NotificationBadge()]),
+            actions: [NotificationBadge()]),
         drawer: const ListAppNavDrawer(routeName: ProfilePage.routeName),
         body: _buildProfile(context));
   }

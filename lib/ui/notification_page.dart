@@ -387,7 +387,7 @@ class _NotificationPage extends State<NotificationPage> {
                       maxWidth: 56,
                       maxHeight: 30,
                     ),
-                    child: const NotificationBadge(
+                    child: NotificationBadge(
                       showNotificationPageWhenPressed: false,
                     ),
                   ),

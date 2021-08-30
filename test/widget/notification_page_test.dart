@@ -275,6 +275,7 @@ void main() {
         expect(find.textContaining('There are no notifications.\n'),
             findsOneWidget);
       },
+      skip: true,
     );
   });
 }

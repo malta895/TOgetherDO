@@ -99,29 +99,25 @@ class _MaterialAppWithTheme extends StatelessWidget {
     ManagerConfig.firebaseMessaging
         ?.getInitialMessage()
         .then((RemoteMessage? message) {
-      Future.doWhile(() {
-        final materialAppCurrentState = _materialAppKey.currentState;
-        if (message == null || message.notification == null) return false;
-        if (materialAppCurrentState == null) return true;
-        Navigator.of(materialAppCurrentState.context)
-            .pushNamed(NotificationPage.routeName);
-        return false;
-      });
+      final materialAppCurrentState = _materialAppKey.currentState;
+      if (message == null || message.notification == null) return;
+      if (materialAppCurrentState == null) return;
+      Navigator.of(materialAppCurrentState.context)
+          .pushNamed(NotificationPage.routeName);
     });
 
     // when we open the app from a notification show the notifications page directly
     FirebaseMessaging.onMessageOpenedApp.listen(
       (RemoteMessage message) {
-        Future.doWhile(() {
-          final materialAppCurrentState = _materialAppKey.currentState;
-          if (message.notification == null) return false;
-          if (materialAppCurrentState == null) return true;
-          Navigator.of(materialAppCurrentState.context)
-              .pushNamed(NotificationPage.routeName);
-          return false;
-        });
+        final materialAppCurrentState = _materialAppKey.currentState;
+        if (message.notification == null) return;
+        if (materialAppCurrentState == null) return;
+        Navigator.of(materialAppCurrentState.context)
+            .pushNamed(NotificationPage.routeName);
       },
     );
     return consumer;
   }
 }
+a]
+    

@@ -6,7 +6,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/manager_config.dart';
 import 'package:mobile_applications/services/user_manager.dart';
@@ -19,10 +18,6 @@ import 'package:mobile_applications/ui/settings_page.dart';
 import 'package:mobile_applications/ui/theme.dart';
 import 'package:provider/provider.dart';
 
-Future<void> _messageHandler(RemoteMessage message) async {
-  FlutterAppBadger.updateBadgeCount(1);
-}
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -34,8 +29,6 @@ Future<void> main() async {
     firebaseFunctions: FirebaseFunctions.instanceFor(region: 'europe-west6'),
     firebaseMessaging: FirebaseMessaging.instance,
   );
-
-  FirebaseMessaging.onBackgroundMessage(_messageHandler);
 
   runApp(_MultiProviderApp());
 }

@@ -28,8 +28,6 @@ class ListsPage extends StatefulWidget {
 
 class _ListsPageState extends State<ListsPage>
     with SingleTickerProviderStateMixin {
-  static const String title = 'ListApp';
-
   late AnimationController _listsShowAnimationController;
 
   Future<List<ListAppList>>? _listsFuture;
@@ -125,7 +123,7 @@ class _ListsPageState extends State<ListsPage>
   Widget _buildAnimated(BuildContext context) {
     return AnimatedBuilder(
         animation: _listsShowAnimationController,
-        builder: (context, _) {
+        builder: (context, _s) {
           return FadeScaleTransition(
             // this animation is the fade-in/out when the entire list is loading
             animation: _listsShowAnimationController,
@@ -330,7 +328,21 @@ class _ListsPageState extends State<ListsPage>
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text(title),
+          title: RichText(
+            textScaleFactor: 2,
+            text: const TextSpan(
+              text: 'TO',
+              style: TextStyle(fontFamily: 'Oswald'),
+              children: <TextSpan>[
+                TextSpan(
+                    text: 'gether', style: TextStyle(fontFamily: 'Parisienne')),
+                TextSpan(
+                  text: 'DO',
+                  style: TextStyle(fontFamily: 'Oswald'),
+                ),
+              ],
+            ),
+          ),
           actions: [NotificationBadge()],
         ),
         drawer: const ListAppNavDrawer(routeName: ListsPage.routeName),

@@ -17,7 +17,6 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
-      title: Constants.appName,
       logo: Constants.appLogoPath,
       logoTag: Constants.logoTag,
       titleTag: Constants.titleTag,

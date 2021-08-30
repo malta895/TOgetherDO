@@ -38,7 +38,7 @@ class _NewListFormState extends State<_NewListForm> {
     _listTitleController = TextEditingController();
   }
 
-  late List<ListAppUser> members = [];
+  List<ListAppUser> members = [];
 
   Widget _buildListTitleField() {
     return Padding(
@@ -140,14 +140,15 @@ class _NewListFormState extends State<_NewListForm> {
           // otherwise.
           if (_formKey.currentState?.validate() == true) {
             final newList = ListAppList(
-                name: _listTitleController.text,
-                description: _listDescriptionController.text,
-                listType: _listTypeValue,
-                creatorUid: currentUser!.databaseId,
-                membersAsUsers: members,
-                listStatus: _listTypeValue == ListType.public
-                    ? ListStatus.saved
-                    : ListStatus.draft);
+              name: _listTitleController.text,
+              description: _listDescriptionController.text,
+              listType: _listTypeValue,
+              creatorUid: currentUser!.databaseId,
+              membersAsUsers: members,
+              listStatus: _listTypeValue == ListType.public
+                  ? ListStatus.saved
+                  : ListStatus.draft,
+            );
 
             // If the form is valid, display a Snackbar.
             // TODO se abbiamo tempo sarebbe carino mettere l'animazione che c'é
@@ -162,6 +163,10 @@ class _NewListFormState extends State<_NewListForm> {
                   .saveToFirestore(newList);
               await ListAppListManager.instanceForUserUid(user.uid)
                   .populateObjects(newList);
+
+              //remove non-confirmed members from newList
+              newList.membersAsUsers = [];
+
               snackBar.close();
               Navigator.of(context).pop<ListAppList?>(newList);
               isUploading = false;
@@ -301,6 +306,8 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                                   child: ListView.builder(
                                     itemCount: allFriends.length,
                                     itemBuilder: (context, i) {
+                                      final currentFriend =
+                                          allFriends.elementAt(i)!;
                                       return Container(
                                         decoration: const BoxDecoration(
                                             border: Border(
@@ -311,12 +318,18 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
                                         child: CheckboxListTile(
                                           activeColor:
                                               Theme.of(context).accentColor,
-                                          secondary: CircleAvatar(
-                                            backgroundImage: NetworkImage(
-                                                allFriends
-                                                    .elementAt(i)!
-                                                    .profilePictureURL!),
-                                          ),
+                                          secondary: currentFriend
+                                                      .profilePictureURL ==
+                                                  null
+                                              ? const CircleAvatar(
+                                                  backgroundImage: AssetImage(
+                                                      'assets/sample-profile.png'),
+                                                  radius: 25.0,
+                                                )
+                                              : CircleAvatar(
+                                                  backgroundImage: NetworkImage(
+                                                      currentFriend
+                                                          .profilePictureURL!)),
                                           value: selectedFriendsValues
                                               .elementAt(i),
                                           onChanged: (bool? newValue) {

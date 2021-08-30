@@ -331,7 +331,7 @@ class _ListsPageState extends State<ListsPage>
     return Scaffold(
         appBar: AppBar(
           title: const Text(title),
-          actions: [NotificationBadge()],
+          actions: [const NotificationBadge()],
         ),
         drawer: const ListAppNavDrawer(routeName: ListsPage.routeName),
         body: _buildListItems(context),

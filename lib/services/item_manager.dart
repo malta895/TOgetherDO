@@ -1,14 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/list_item.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/database_manager.dart';
 import 'package:mobile_applications/services/manager_config.dart';
 import 'package:mobile_applications/services/user_manager.dart';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:mobile_applications/models/exception.dart';
 
 /// The item manager. This is not a singleton as a new instance is created for each subcollection
 class ListAppItemManager extends DatabaseManager<BaseItem> {
@@ -43,16 +42,6 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
     _cachedInstances[listUid] = newInstance;
 
     return newInstance;
-  }
-
-  Future<BaseItem?> getItemByUid(String uid) async {
-    try {
-      final queryResult = await this.firebaseCollection.doc(uid).get();
-      return queryResult.data();
-    } on CheckedFromJsonException catch (e) {
-      print(e);
-      return null;
-    }
   }
 
   Future<List<BaseItem>> getItems() async {
@@ -235,20 +224,4 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
   Future<void> populateObjects(BaseItem item) async {
     // nothing to do here
   }
-
-  /*Future<bool> checkCompletionsForItem(String itemId) async {
-    final queryResult = await ManagerConfig.firebaseFirestoreInstance
-        .collection(ListAppUser.collectionName)
-        .doc(userUid)
-        .collection(ListAppList.collectionName)
-        .doc(listUid)
-        .collection("completions")
-        .where(itemId, isEqualTo: itemId)
-        .get();
-
-    print("COMPLETIONS");
-    print(queryResult.docs.first.data());
-
-    return queryResult.docs.isNotEmpty;
-  }*/
 }

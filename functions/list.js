@@ -25,24 +25,10 @@ exports.createNotification = functions.region('europe-west6').firestore.document
             admin.firestore().collection('notifications').add(newNotification).then((ok) => console.log(ok)).catch((e) => console.log(e));
         }
 
-        /*receivers.forEach(element => {
-            let newNotification = {
-                userFromId: sender.data().databaseId,
-                listOwnerId: context.params.userId,
-                userToId: element,
-                notificationType: 'listInvite',
-                status: 'pending',
-                listId: context.params.listId,
-                databaseId: ''
-            };s
-
-            admin.firestore().collection('notifications').add(newNotification).then((ok) => console.log(ok)).catch((e) => console.log(e));
-        }
-        );*/
     }
 );
 
-exports.updateNotification = functions.region('europe-west6').firestore.document('users/{userId}/lists/{listId}').onUpdate(
+exports.updateNotification = functisons.region('europe-west6').firestore.document('users/{userId}/lists/{listId}').onUpdate(
     async (change, context) => {
         //const sender = await admin.firestore().collection('users').doc(context.params.userId).get();
         const oldMembers = change.before.data().members;
@@ -57,6 +43,7 @@ exports.updateNotification = functions.region('europe-west6').firestore.document
                     userToId: key,
                     notificationType: 'listInvite',
                     status: 'pending',
+                    readStatus: "unread",
                     listId: context.params.listId,
                     databaseId: '',
                 };

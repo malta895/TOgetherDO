@@ -78,7 +78,9 @@ class TestUtils {
       "displayName": "John Doe",
       "email": "john@doe.com",
       "firstName": "John",
-      "friends": <String, bool>{},
+      "friends": <String, bool>{
+        "user1_id": true,
+      },
       "isNew": false,
       "lastName": "DoeSecond",
       "notificationTokens": [],

@@ -148,7 +148,8 @@ class _NotificationPage extends State<NotificationPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextButton(
-                    key: Key("accept_text_button_${notification.userFromId}"),
+                    key: Key(
+                        "accept_friend_text_button_${notification.userFromId}"),
                     style: TextButton.styleFrom(
                       side: const BorderSide(color: Colors.green, width: 1),
                     ),
@@ -167,11 +168,14 @@ class _NotificationPage extends State<NotificationPage> {
                     width: 10,
                   ),
                   TextButton(
+                      key: Key(
+                          "refuse_friend_text_button_${notification.userFromId}"),
                       style: TextButton.styleFrom(
                         side: const BorderSide(color: Colors.red, width: 1),
                       ),
                       onPressed: () async {
                         notification.status = NotificationStatus.rejected;
+                        notification.readStatus = NotificationReadStatus.opened;
                         await ListAppNotificationManager.instance
                             .saveToFirestore(notification);
                       },
@@ -214,9 +218,14 @@ class _NotificationPage extends State<NotificationPage> {
             width: 0.8,
           ))),
           child: ListTile(
-            leading: CircleAvatar(
-                backgroundImage:
-                    NetworkImage(notification.userFrom!.profilePictureURL!)),
+            leading: notification.userFrom?.profilePictureURL == null
+                ? const CircleAvatar(
+                    backgroundImage: AssetImage('assets/sample-profile.png'),
+                    radius: 25.0,
+                  )
+                : CircleAvatar(
+                    backgroundImage: NetworkImage(
+                        notification.userFrom!.profilePictureURL!)),
             title: Text(
               "You rejected ${notification.userFrom!.displayName}'s friendship request.",
               style: const TextStyle(fontWeight: FontWeight.bold),
@@ -255,6 +264,8 @@ class _NotificationPage extends State<NotificationPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextButton(
+                    key: Key(
+                        "accept_list_text_button_${notification.userFromId}"),
                     style: TextButton.styleFrom(
                       side: const BorderSide(color: Colors.green, width: 1),
                     ),
@@ -273,6 +284,8 @@ class _NotificationPage extends State<NotificationPage> {
                   width: 10,
                 ),
                 TextButton(
+                  key:
+                      Key("refuse_list_text_button_${notification.userFromId}"),
                   style: TextButton.styleFrom(
                     side: const BorderSide(color: Colors.red, width: 1),
                   ),

@@ -1,7 +1,6 @@
 import 'package:mobile_applications/models/list_item.dart';
 import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/models/user.dart';
-import 'package:mobile_applications/services/item_manager.dart';
 import 'package:test/test.dart';
 
 void main() {

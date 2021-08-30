@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 class NotificationBadge extends StatelessWidget {
   final bool showNotificationPageWhenPressed;
 
-  const NotificationBadge({
+  NotificationBadge({
     Key? key,
     this.showNotificationPageWhenPressed: true,
   }) : super(key: key);

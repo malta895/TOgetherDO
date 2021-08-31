@@ -8,16 +8,17 @@ exports.acceptInvite = functions.region('europe-west6').firestore.document('noti
     async (change, context) => {
         if (change.after.data().notificationType === "listInvite") {
             const accepted = change.after.data().status;
-            uid = change.after.data().userToId;
+            let uid = change.after.data().userToId;
 
-            list = await admin.firestore().collection('users').doc(change.after.data().listOwnerId).collection('lists').doc(change.after.data().listId).get();
+            let list = await admin.firestore().collection('users').doc(change.after.data().listOwnerId).collection('lists').doc(change.after.data().listId).get();
 
             console.log(list.data().members);
-            members = list.data().members;
+            let members = list.data().members;
             console.log(typeof (members));
 
             if (accepted === "accepted") {
                 members[uid] = true;
+
 
                 admin.firestore().collection('users').doc(change.after.data().listOwnerId).collection('lists').doc(change.after.data().listId).set({ members: members }, { merge: true });
 

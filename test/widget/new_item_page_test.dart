@@ -41,8 +41,8 @@ void main() {
         expect(find.byType(TextFormField), findsNWidgets(3));
         expect(find.text("Enter the item title"), findsOneWidget);
         expect(find.text("Simple item"), findsOneWidget);
-        expect(find.text("Multiple instance item"), findsOneWidget);
-        expect(find.text("Multiple People item"), findsOneWidget);
+        expect(find.text("Multiple personal item"), findsOneWidget);
+        expect(find.text("Multiple collaborative item"), findsOneWidget);
         expect(find.text("Submit"), findsOneWidget);
       },
     );
@@ -75,7 +75,7 @@ void main() {
     );
 
     testWidgets(
-      'Creation of a multiple instance item',
+      'Creation of a multiple personal item',
       (tester) async {
         await tester
             .pumpWidget(TestUtils.createScreen(screen: const ListsPage()));
@@ -88,7 +88,7 @@ void main() {
         await tester.tap(find.text("Add new list item..."));
         await tester.pumpAndSettle();
 
-        await tester.tap(find.text("Multiple instance item"));
+        await tester.tap(find.text("Multiple personal item"));
         await tester.pumpAndSettle();
 
         expect(find.text("Total number of instances: "), findsNWidgets(2));
@@ -96,19 +96,19 @@ void main() {
         expect(find.byIcon(Icons.add), findsNWidgets(3));
 
         await tester.enterText(
-            find.byType(TextFormField).first, "new multiple instance item");
+            find.byType(TextFormField).first, "new multiple personal item");
         await tester.pumpAndSettle();
         await tester.testTextInput.receiveAction(TextInputAction.done);
         await tester.pumpAndSettle();
         await tester.tap(find.text("Submit"));
         await tester.pumpAndSettle();
 
-        expect(find.text("new multiple instance item"), findsOneWidget);
+        expect(find.text("new multiple personal item"), findsOneWidget);
       },
     );
 
     testWidgets(
-      'Creation of a multiple people item',
+      'Creation of a multiple collaborative item',
       (tester) async {
         await tester
             .pumpWidget(TestUtils.createScreen(screen: const ListsPage()));
@@ -121,16 +121,16 @@ void main() {
         await tester.tap(find.text("Add new list item..."));
         await tester.pumpAndSettle();
 
-        await tester.tap(find.text("Multiple People item"));
+        await tester.tap(find.text("Multiple collaborative item"));
         await tester.pumpAndSettle();
 
-        await tester.enterText(
-            find.byType(TextFormField).first, "new multiple people item");
+        await tester.enterText(find.byType(TextFormField).first,
+            "new multiple collaborative item");
         await tester.pumpAndSettle();
         await tester.tap(find.text("Submit"));
         await tester.pumpAndSettle();
 
-        expect(find.text("new multiple people item"), findsOneWidget);
+        expect(find.text("new multiple collaborative item"), findsOneWidget);
       },
     );
   });

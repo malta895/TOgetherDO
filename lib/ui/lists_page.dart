@@ -4,6 +4,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/user.dart';
@@ -268,9 +269,16 @@ class _ListsPageState extends State<ListsPage>
                   child: ListTile(
                     // the key is needed for testing
                     key: Key(listAppList.databaseId!),
-                    leading: const Icon(
-                      Icons.list,
-                      size: 40,
+                    leading: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        listAppList.listType == ListType.private
+                            ? const Icon(
+                                FontAwesomeIcons.userSecret,
+                                size: 30,
+                              )
+                            : const Icon(Icons.list, size: 40),
+                      ],
                     ),
                     trailing: Column(
                       children: [

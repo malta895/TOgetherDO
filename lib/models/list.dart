@@ -120,20 +120,3 @@ class ListAppList extends BaseModel {
     return _$ListAppListToJson(this);
   }
 }
-
-class ListAppFulfillment {
-  /// the user who completed the list item
-  final ListAppUser member;
-
-  /// The quantity completed by the user. At least can be 1
-  final int quantityCompleted;
-
-  /// if the list item has a price, this contains the amount countributed by the user
-  final double priceContribution;
-
-  ListAppFulfillment({
-    required this.member,
-    required this.quantityCompleted,
-    required this.priceContribution,
-  });
-}

@@ -42,7 +42,7 @@ extension ParseToString on ListType {
             ' managed by the creator, who can see and complete the items like the other members.';
       case ListType.private:
         return 'The items of a private list are added by the creator, '
-            'but it can be completed by the members only and the creator is not able to see who completed them.';
+            'but they can be completed by the members only and the creator is not able to see who completed them.';
     }
   }
 }

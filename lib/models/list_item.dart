@@ -18,9 +18,9 @@ extension ParseToString on ItemType {
       case ItemType.simple:
         return 'Simple item';
       case ItemType.multiFulfillment:
-        return 'Multiple instance item';
+        return 'Multiple personal item';
       case ItemType.multiFulfillmentMember:
-        return 'Multiple People item';
+        return 'Multiple collaborative item';
     }
   }
 
@@ -117,7 +117,7 @@ abstract class BaseItem extends BaseModel {
   }
 }
 
-///This item can have just one fulfiller
+///Simple Item: this item can have just one fulfiller
 @JsonSerializable(
   checked: true,
 ) // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
@@ -177,7 +177,7 @@ class SimpleItem extends BaseItem {
   }
 }
 
-/// List item with multiple fulfillments, members can fulfill once
+///Multiple personal item: item with multiple fulfillments, members can fulfill once
 @JsonSerializable(
   checked: true,
 ) // see https://flutter.dev/docs/development/data-and-backend/json#code-generation
@@ -242,7 +242,7 @@ class MultiFulfillmentItem extends BaseItem {
       _$MultiFulfillmentItemFromJson(json);
 }
 
-///List item with multiple fulfillments, members can fulfill more times
+///Multiple collaborative item: item with multiple fulfillments, members can fulfill more times
 @JsonSerializable(
   checked: true,
 ) // see https://flutter.dev/docs/development/data-and-backend/json#code-generation

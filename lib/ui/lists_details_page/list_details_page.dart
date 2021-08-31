@@ -154,14 +154,14 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                             color:
                                 Theme.of(context).textTheme.headline1!.color),
                         hintText: "Insert a new name",
-                        hintStyle: TextStyle(fontStyle: FontStyle.italic),
+                        hintStyle: const TextStyle(fontStyle: FontStyle.italic),
                       ),
                       onChanged: (value) {
                         setNameState(() {
                           _newName = value;
                         });
                       },
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     trailing: ((widget.listAppList.listStatus ==
                                     ListStatus.draft ||
@@ -191,8 +191,8 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                     fontSize: 16.0,
                                   );
                                 },
-                                icon: Icon(Icons.edit))
-                            : IconButton(
+                                icon: const Icon(Icons.edit))
+                            : const IconButton(
                                 onPressed: null, icon: Icon(Icons.edit)))
                         : null);
               }),
@@ -218,14 +218,14 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                             color:
                                 Theme.of(context).textTheme.headline1!.color),
                         hintText: "Insert a new description",
-                        hintStyle: TextStyle(fontStyle: FontStyle.italic),
+                        hintStyle: const TextStyle(fontStyle: FontStyle.italic),
                       ),
                       onChanged: (value) {
                         setDescriptionState(() {
                           _newDescription = value;
                         });
                       },
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     trailing: ((widget.listAppList.listStatus ==
                                     ListStatus.draft ||
@@ -257,8 +257,8 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                     fontSize: 16.0,
                                   );
                                 },
-                                icon: Icon(Icons.edit))
-                            : IconButton(
+                                icon: const Icon(Icons.edit))
+                            : const IconButton(
                                 onPressed: null, icon: Icon(Icons.edit)))
                         : null);
               }),
@@ -266,8 +266,8 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                 color: Theme.of(context).primaryColor.withAlpha(50),
                 child: ListTile(
                   title: Text(creator.firstName + " " + creator.lastName,
-                      style: TextStyle(fontWeight: FontWeight.w600)),
-                  subtitle: Text("Creator"),
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
+                  subtitle: const Text("Creator"),
                 ),
               ),
               Card(
@@ -279,7 +279,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                           : (item.itemType == ItemType.multiFulfillmentMember)
                               ? "\n-Number of instances: ${item.maxQuantity}\n-Max quantity per member: ${item.quantityPerMember}"
                               : "")),
-                  subtitle: Text("Type"),
+                  subtitle: const Text("Type"),
                 ),
               ),
               ((widget.listAppList.listStatus == ListStatus.draft ||
@@ -349,9 +349,10 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                   ? TextButton(
                       style: TextButton.styleFrom(
                           backgroundColor: Colors.cyan, primary: Colors.white),
-                      child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [Icon(Icons.attach_file), Text('Link')]),
+                      child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        const Icon(Icons.attach_file),
+                        const Text('Link')
+                      ]),
                       onPressed: () async {
                         if (item.link != null) {
                           _launchInBrowser(item.link!);
@@ -680,8 +681,9 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                   context: context,
                                   builder: (BuildContext context) {
                                     return AlertDialog(
-                                      title: Text("Item already fulfilled!"),
-                                      content: Text(
+                                      title:
+                                          const Text("Item already fulfilled!"),
+                                      content: const Text(
                                           "This item has been alredy fulfilled by other users."),
                                       actions: [
                                         TextButton(
@@ -691,7 +693,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                               primary: Colors.white,
                                               backgroundColor: Theme.of(context)
                                                   .accentColor),
-                                          child: Text("Got it!"),
+                                          child: const Text("Got it!"),
                                           onPressed: () {
                                             Navigator.of(context).pop(true);
                                           },
@@ -853,8 +855,8 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: Text("Item already fulfilled!"),
-                                  content: Text(
+                                  title: const Text("Item already fulfilled!"),
+                                  content: const Text(
                                       "This item has been alredy fulfilled by other users."),
                                   actions: [
                                     TextButton(
@@ -864,7 +866,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                           primary: Colors.white,
                                           backgroundColor:
                                               Theme.of(context).accentColor),
-                                      child: Text("Got it!"),
+                                      child: const Text("Got it!"),
                                       onPressed: () {
                                         Navigator.of(context).pop(true);
                                       },
@@ -1073,8 +1075,9 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                   context: context,
                                   builder: (BuildContext context) {
                                     return AlertDialog(
-                                      title: Text("Item already fulfilled!"),
-                                      content: Text(
+                                      title:
+                                          const Text("Item already fulfilled!"),
+                                      content: const Text(
                                           "This item has been alredy fulfilled by other users."),
                                       actions: [
                                         TextButton(
@@ -1084,7 +1087,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                               primary: Colors.white,
                                               backgroundColor: Theme.of(context)
                                                   .accentColor),
-                                          child: Text("Got it!"),
+                                          child: const Text("Got it!"),
                                           onPressed: () {
                                             Navigator.of(context).pop(true);
                                           },
@@ -1148,8 +1151,8 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: Text("Item already fulfilled!"),
-                                  content: Text(
+                                  title: const Text("Item already fulfilled!"),
+                                  content: const Text(
                                       "This item has been alredy fulfilled by other users."),
                                   actions: [
                                     TextButton(
@@ -1159,7 +1162,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                           primary: Colors.white,
                                           backgroundColor:
                                               Theme.of(context).accentColor),
-                                      child: Text("Got it!"),
+                                      child: const Text("Got it!"),
                                       onPressed: () {
                                         Navigator.of(context).pop(true);
                                       },
@@ -1188,7 +1191,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
             );
           },
           title: Text(aListItem.name),
-          trailing: Icon(Icons.edit));
+          trailing: const Icon(Icons.edit));
     } else {
       return ListTile(
           onTap: () {
@@ -1220,7 +1223,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                 title:
                     const Text("How many times have you completed this item?"),
                 content: NumberPicker(
-                  key: Key("numberPickerKey"),
+                  key: const Key("numberPickerKey"),
                   minValue: 0,
                   maxValue: (aListItem.usersCompletions.isNotEmpty &&
                           !aListItem.usersCompletions.keys
@@ -1464,13 +1467,13 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: option == "save"
-                ? Text("Do you want to save and publish this list?")
+                ? const Text("Do you want to save and publish this list?")
                 : Text(
                     "Are you sure you wish to ${doesUserOwnList ? 'delete' : 'leave'} the " +
                         widget.listAppList.name +
                         " list?"),
             content: option == "save"
-                ? Text(
+                ? const Text(
                     "You will not be able to add new items or modify existing ones")
                 : (doesUserOwnList
                     ? const Text(
@@ -1489,7 +1492,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                         Navigator.of(context).pop(true);
                         Navigator.of(context).pop(true);
                       },
-                      child: Text('OK'))
+                      child: const Text('OK'))
                   : TextButton(
                       style: TextButton.styleFrom(primary: Colors.red),
                       onPressed: () {

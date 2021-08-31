@@ -110,32 +110,34 @@ class _AddMemberDialogState extends State<AddMemberDialog> {
                                               icon: const Icon(
                                                 Icons.person_add_alt_rounded,
                                               ),
-                                              onPressed: () async {
-                                                await ListAppListManager
-                                                    .instanceForUserUid(
+                                              onPressed: () {
+                                                ListAppListManager
+                                                        .instanceForUserUid(
                                                   _currentUser.databaseId!,
-                                                ).addMemberToList(
+                                                )
+                                                    .addMemberToList(
                                                   widget.list.databaseId!,
                                                   newMember.databaseId!,
-                                                );
+                                                )
+                                                    .then((value) {
+                                                  // create notification for the new member
+                                                  final notification =
+                                                      ListInviteNotification(
+                                                    userToId:
+                                                        newMember.databaseId!,
+                                                    userFromId:
+                                                        _currentUser.databaseId,
+                                                    listOwnerId:
+                                                        widget.list.creatorUid!,
+                                                    listId:
+                                                        widget.list.databaseId!,
+                                                  );
 
-                                                // create notification for the new member
-                                                final notification =
-                                                    ListInviteNotification(
-                                                  userToId:
-                                                      newMember.databaseId!,
-                                                  userFromId:
-                                                      _currentUser.databaseId,
-                                                  listOwnerId:
-                                                      widget.list.creatorUid!,
-                                                  listId:
-                                                      widget.list.databaseId!,
-                                                );
-
-                                                await ListAppNotificationManager
-                                                    .instance
-                                                    .saveToFirestore(
-                                                        notification);
+                                                  ListAppNotificationManager
+                                                      .instance
+                                                      .saveToFirestore(
+                                                          notification);
+                                                });
 
                                                 Navigator.pop(context);
                                                 // not awaited because we let the dialog pop in the meantime

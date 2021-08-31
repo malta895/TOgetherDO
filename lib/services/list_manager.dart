@@ -134,8 +134,13 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
 
   Future<bool> removeMemberFromList(ListAppList list, String userId) async {
     list.members.remove(userId);
-    ListAppListManager.instanceForUser(
-            (await ListAppUserManager.instance.getByUid(list.creatorUid!))!)
+    for (final item in list.items) {
+      item.usersCompletions.remove(userId);
+      await ListAppItemManager.instanceForList(list.databaseId!, userId)
+          .saveToFirestore(item);
+    }
+
+    await ListAppListManager.instanceForUserUid(list.creatorUid!)
         .saveToFirestore(list);
 
     return true;

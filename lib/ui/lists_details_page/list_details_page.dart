@@ -1326,20 +1326,19 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                               return AlertDialog(
                                 title: const Text("Delete member"),
                                 content: Text(
-                                    "Are you sure you want to remove " +
-                                        member.displayName +
-                                        " from this list?"),
+                                  "Are you sure you want to remove ${member.displayName} from this list?",
+                                ),
                                 actions: <Widget>[
                                   TextButton(
                                       style: TextButton.styleFrom(
                                           primary: Colors.red),
                                       onPressed: () {
                                         ListAppListManager.instanceForUserUid(
-                                                _loggedInListAppUser
-                                                    .databaseId!)
-                                            .removeMemberFromList(
-                                                widget.listAppList,
-                                                member.databaseId!);
+                                          _loggedInListAppUser.databaseId!,
+                                        ).removeMemberFromList(
+                                          widget.listAppList,
+                                          member.databaseId!,
+                                        );
 
                                         setState(() {
                                           widget.listAppList.membersAsUsers
@@ -1583,11 +1582,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
   }
 
   Widget _buildMembersListView(BuildContext context) {
-    bool isAdmin;
-    if (!widget.canAddNewMembers)
-      isAdmin = false;
-    else
-      isAdmin = true;
+    final bool isAdmin = widget.canAddNewMembers;
 
     final allMembers = widget.listAppList.membersAsUsers;
     final membersListView = ListView.builder(
@@ -1677,7 +1672,6 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
       decoration: BoxDecoration(
         image: DecorationImage(
           image: const AssetImage('assets/list_default.png'),
-          //TODO image: aList.imageURL != null && alist.imageURL.isNotEmpy ? NetworkImage(aList.imageURL) :AssetImage('assets/list_default.png'),
           fit: BoxFit.cover,
           colorFilter: ColorFilter.mode(
               Colors.black.withOpacity(0.10), BlendMode.dstATop),
@@ -1729,9 +1723,11 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                         subtitle: _loggedInListAppUser.databaseId ==
                                 widget.listAppList.creatorUid
                             ? const Text(
-                                'Click on the three dots on the top in order to save and publish it')
+                                'Click on the three dots on the top in order to save and publish it',
+                              )
                             : const Text(
-                                'Wait until the creator saves and publishes it in order to complete items'),
+                                'Wait until the creator saves and publishes it in order to complete items',
+                              ),
                       ),
               ],
             ),

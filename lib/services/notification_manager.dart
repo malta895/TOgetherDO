@@ -65,7 +65,7 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
     }
   }
 
-  /// This streams emits the number of unread notifications of the cusrrent user.
+  /// This streams emits the number of unread notifications of the current user.
   Stream<int> getUnreadNotificationCountStream(
     String userId,
   ) async* {

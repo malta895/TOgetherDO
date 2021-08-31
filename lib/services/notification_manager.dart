@@ -65,17 +65,7 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
     }
   }
 
-  Future<bool> acceptNotification(String notificationId) async {
-    await firebaseCollection.doc(notificationId).update({"status": "accepted"});
-    return true;
-  }
-
-  Future<bool> rejectNotification(String notificationId) async {
-    await firebaseCollection.doc(notificationId).update({"status": "rejected"});
-    return true;
-  }
-
-  /// This streams emits the number of unread notifications of the current user.
+  /// This streams emits the number of unread notifications of the cusrrent user.
   Stream<int> getUnreadNotificationCountStream(
     String userId,
   ) async* {

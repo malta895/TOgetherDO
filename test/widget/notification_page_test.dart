@@ -275,7 +275,93 @@ void main() {
         expect(find.textContaining('There are no notifications.\n'),
             findsOneWidget);
       },
-      skip: true,
+    );
+
+    testWidgets(
+      'ListInvite notification refusal flow',
+      (tester) async {
+        // let's start from the home page
+        await tester
+            .pumpWidget(TestUtils.createScreen(screen: const ListsPage()));
+        await tester.pumpAndSettle();
+
+        final notifications = await ListAppNotificationManager.instance
+            .getNotificationsByUserId('user1_id', "createdAt");
+        for (final n in notifications)
+          await ListAppNotificationManager.instance.deleteInstance(n);
+
+        final notification = ListInviteNotification(
+          userFromId: "user2_id",
+          userToId: "user1_id",
+          listOwnerId: 'user2_id',
+          listId: 'list2_id',
+          status: NotificationStatus.pending,
+        );
+        ListAppNotificationManager.instance.saveToFirestore(notification);
+        await ListAppNotificationManager.instance.populateObjects(notification);
+
+        await tester.pumpAndSettle();
+        // there's a pending notification, it should be shown on the badge
+        expect(
+            find.byWidgetPredicate((widget) =>
+                widget is Text &&
+                widget.key == const Key("notification_count_text") &&
+                widget.data == '1'),
+            findsOneWidget);
+
+        await tester.tap(find.byType(NotificationBadge));
+        await tester.pumpAndSettle();
+
+        expect(find.text("NEW"), findsOneWidget);
+        expect(find.text("READ"), findsOneWidget);
+        expect(find.textContaining('John Doe added you to the list'),
+            findsOneWidget);
+
+        // check the read notifications tab
+        await tester.tap(
+          find.byWidgetPredicate(
+              (widget) => widget is Tab && widget.text == 'READ'),
+          warnIfMissed: false,
+        );
+        await tester.pumpAndSettle();
+        expect(find.textContaining('John Doe added you to the list'),
+            findsNothing);
+        expect(find.textContaining('There are no notifications.\n'),
+            findsOneWidget);
+
+        // go back to the unread and accept the notification
+        // check the read notifications tab
+        await tester.tap(
+          find.byWidgetPredicate(
+              (widget) => widget is Tab && widget.text == 'NEW'),
+          warnIfMissed: false,
+        );
+        await tester.pumpAndSettle();
+        expect(find.textContaining('John Doe added you to the list'),
+            findsOneWidget);
+
+        await tester
+            .tap(find.byKey(const Key("refuse_list_text_button_user2_id")));
+        await tester.pumpAndSettle();
+
+        // expect(find.textContaining('There are no notifications.\n'),
+        //     findsOneWidget);
+        //
+        // await tester.tap(find.byWidgetPredicate(
+        //     (widget) => widget is Tab && widget.text == 'READ'));
+        // await tester.pumpAndSettle();
+        expect(find.textContaining('John Doe added you to the list'),
+            findsNothing);
+        expect(
+          find.text("You rejected the invitation to the Famiglia list"),
+          findsOneWidget,
+        );
+
+        await ListAppNotificationManager.instance.deleteInstance(notification);
+        await tester.pumpAndSettle();
+        expect(find.textContaining('There are no notifications.\n'),
+            findsOneWidget);
+      },
     );
   });
 }

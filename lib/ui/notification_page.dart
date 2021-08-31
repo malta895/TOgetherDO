@@ -270,8 +270,7 @@ class _NotificationPage extends State<NotificationPage> {
                       side: const BorderSide(color: Colors.green, width: 1),
                     ),
                     onPressed: () async {
-                      await ListAppNotificationManager.instance
-                          .acceptNotification(notification.databaseId!);
+                      notification.status = NotificationStatus.accepted;
                       notification.readStatus = NotificationReadStatus.opened;
                       await ListAppNotificationManager.instance
                           .saveToFirestore(notification);
@@ -290,8 +289,7 @@ class _NotificationPage extends State<NotificationPage> {
                     side: const BorderSide(color: Colors.red, width: 1),
                   ),
                   onPressed: () async {
-                    await ListAppNotificationManager.instance
-                        .rejectNotification(notification.databaseId!);
+                    notification.status = NotificationStatus.rejected;
                     notification.readStatus = NotificationReadStatus.opened;
                     await ListAppNotificationManager.instance
                         .saveToFirestore(notification);

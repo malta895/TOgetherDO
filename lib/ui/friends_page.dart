@@ -6,9 +6,9 @@ import 'package:mobile_applications/models/exception.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/user_manager.dart';
-import 'package:mobile_applications/ui/widgets/empty_list_widget.dart';
 import 'package:mobile_applications/ui/navigation_drawer.dart';
 import 'package:mobile_applications/ui/notification_badge.dart';
+import 'package:mobile_applications/ui/widgets/empty_list_widget.dart';
 import 'package:provider/provider.dart';
 
 class FriendsPage extends StatefulWidget {

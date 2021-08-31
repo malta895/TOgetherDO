@@ -119,7 +119,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
     }
   }
 
-  Widget itemDetailsAlertDialog(
+  Widget _itemDetailsAlertDialog(
       BuildContext context, BaseItem item, ListAppUser creator) {
     final nameFieldController = TextEditingController(text: item.name);
 
@@ -137,6 +137,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
           StatefulBuilder(builder: (context, setNameState) {
             return ListTile(
                 title: TextField(
+                  enabled: _loggedInListAppUser.databaseId == item.creatorUid,
                   controller: nameFieldController,
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.all(8.0),
@@ -194,6 +195,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
           StatefulBuilder(builder: (context, setDescriptionState) {
             return ListTile(
                 title: TextField(
+                  enabled: _loggedInListAppUser.databaseId == item.creatorUid,
                   keyboardType: TextInputType.multiline,
                   maxLines: null,
                   controller: descriptionFieldController,
@@ -424,7 +426,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      return itemDetailsAlertDialog(
+                      return _itemDetailsAlertDialog(
                           context, aListItem, creator!);
                     },
                   );
@@ -499,7 +501,8 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return itemDetailsAlertDialog(context, aListItem, creator!);
+                    return _itemDetailsAlertDialog(
+                        context, aListItem, creator!);
                   },
                 );
               },
@@ -625,7 +628,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        return itemDetailsAlertDialog(
+                        return _itemDetailsAlertDialog(
                             context, aListItem, creator!);
                       },
                     );
@@ -800,7 +803,8 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return itemDetailsAlertDialog(context, aListItem, creator!);
+                    return _itemDetailsAlertDialog(
+                        context, aListItem, creator!);
                   },
                 );
               },
@@ -1016,7 +1020,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        return itemDetailsAlertDialog(
+                        return _itemDetailsAlertDialog(
                             context, aListItem, creator!);
                       },
                     );
@@ -1093,7 +1097,8 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return itemDetailsAlertDialog(context, aListItem, creator!);
+                    return _itemDetailsAlertDialog(
+                        context, aListItem, creator!);
                   },
                 );
               },
@@ -1171,7 +1176,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
             showDialog(
               context: context,
               builder: (BuildContext context) {
-                return itemDetailsAlertDialog(context, aListItem, creator!);
+                return _itemDetailsAlertDialog(context, aListItem, creator!);
               },
             );
           },
@@ -1183,7 +1188,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
             showDialog(
               context: context,
               builder: (BuildContext context) {
-                return itemDetailsAlertDialog(context, aListItem, creator!);
+                return _itemDetailsAlertDialog(context, aListItem, creator!);
               },
             );
           },

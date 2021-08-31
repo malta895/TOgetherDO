@@ -131,240 +131,234 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
     return AlertDialog(
         scrollable: true,
         title: const Text("Item details"),
-        content: Container(
-            height: 400,
-            child: Column(children: [
-              StatefulBuilder(builder: (context, setNameState) {
-                return ListTile(
-                    title: TextField(
-                      controller: nameFieldController,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.all(8.0),
-                        border: OutlineInputBorder(
-                          gapPadding: 2.0,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(12.0)),
-                          borderSide: BorderSide(
-                              color:
-                                  Theme.of(context).textTheme.headline1!.color!,
-                              width: 1.0),
-                        ),
-                        labelText: "Name",
-                        labelStyle: TextStyle(
+        content: SingleChildScrollView(
+          child: Container(
+              child: Column(children: [
+            StatefulBuilder(builder: (context, setNameState) {
+              return ListTile(
+                  title: TextField(
+                    controller: nameFieldController,
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.all(8.0),
+                      border: OutlineInputBorder(
+                        gapPadding: 2.0,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(12.0)),
+                        borderSide: BorderSide(
                             color:
-                                Theme.of(context).textTheme.headline1!.color),
-                        hintText: "Insert a new name",
-                        hintStyle: TextStyle(fontStyle: FontStyle.italic),
+                                Theme.of(context).textTheme.headline1!.color!,
+                            width: 1.0),
                       ),
-                      onChanged: (value) {
-                        setNameState(() {
-                          _newName = value;
-                        });
-                      },
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      labelText: "Name",
+                      labelStyle: TextStyle(
+                          color: Theme.of(context).textTheme.headline1!.color),
+                      hintText: "Insert a new name",
+                      hintStyle: TextStyle(fontStyle: FontStyle.italic),
                     ),
-                    trailing: ((widget.listAppList.listStatus ==
-                                    ListStatus.draft ||
-                                widget.listAppList.listType ==
-                                    ListType.public) &&
-                            _loggedInListAppUser.databaseId == item.creatorUid)
-                        ? ((_newName.isNotEmpty && _newName != item.name)
-                            ? IconButton(
-                                onPressed: () async {
-                                  //await _changeItemName(context, item);
-                                  await ListAppItemManager.instanceForList(
-                                          widget.listAppList.databaseId!,
-                                          _loggedInListAppUser.databaseId!)
-                                      .updateItemName(_newName, item);
-
-                                  setState(() {
-                                    item.name = _newName;
-                                  });
-                                  FocusScope.of(context).unfocus();
-                                  Fluttertoast.showToast(
-                                    msg: "Updated item name!",
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.CENTER,
-                                    timeInSecForIosWeb: 1,
-                                    backgroundColor: Colors.green,
-                                    textColor: Colors.white,
-                                    fontSize: 16.0,
-                                  );
-                                },
-                                icon: Icon(Icons.edit))
-                            : IconButton(
-                                onPressed: null, icon: Icon(Icons.edit)))
-                        : null);
-              }),
-              StatefulBuilder(builder: (context, setDescriptionState) {
-                return ListTile(
-                    title: TextField(
-                      keyboardType: TextInputType.multiline,
-                      maxLines: null,
-                      controller: descriptionFieldController,
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.all(8.0),
-                        border: OutlineInputBorder(
-                          gapPadding: 2.0,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(12.0)),
-                          borderSide: BorderSide(
-                              color:
-                                  Theme.of(context).textTheme.headline1!.color!,
-                              width: 1.0),
-                        ),
-                        labelText: "Description",
-                        labelStyle: TextStyle(
-                            color:
-                                Theme.of(context).textTheme.headline1!.color),
-                        hintText: "Insert a new description",
-                        hintStyle: TextStyle(fontStyle: FontStyle.italic),
-                      ),
-                      onChanged: (value) {
-                        setDescriptionState(() {
-                          _newDescription = value;
-                        });
-                      },
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    trailing: ((widget.listAppList.listStatus ==
-                                    ListStatus.draft ||
-                                widget.listAppList.listType ==
-                                    ListType.public) &&
-                            _loggedInListAppUser.databaseId == item.creatorUid)
-                        ? ((_newDescription.isNotEmpty &&
-                                _newDescription != item.description)
-                            ? IconButton(
-                                onPressed: () async {
-                                  //await _changeItemName(context, item);
-                                  await ListAppItemManager.instanceForList(
-                                          widget.listAppList.databaseId!,
-                                          _loggedInListAppUser.databaseId!)
-                                      .updateItemDescription(
-                                          _newDescription, item);
-
-                                  setState(() {
-                                    item.description = _newDescription;
-                                  });
-                                  FocusScope.of(context).unfocus();
-                                  Fluttertoast.showToast(
-                                    msg: "Updated item description!",
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.CENTER,
-                                    timeInSecForIosWeb: 1,
-                                    backgroundColor: Colors.green,
-                                    textColor: Colors.white,
-                                    fontSize: 16.0,
-                                  );
-                                },
-                                icon: Icon(Icons.edit))
-                            : IconButton(
-                                onPressed: null, icon: Icon(Icons.edit)))
-                        : null);
-              }),
-              Card(
-                color: Theme.of(context).primaryColor.withAlpha(50),
-                child: ListTile(
-                  title: Text(creator.firstName + " " + creator.lastName,
-                      style: TextStyle(fontWeight: FontWeight.w600)),
-                  subtitle: Text("Creator"),
-                ),
-              ),
-              Card(
-                color: Theme.of(context).primaryColor.withAlpha(50),
-                child: ListTile(
-                  title: Text(item.itemType.toReadableString() +
-                      ((item.itemType == ItemType.multiFulfillment)
-                          ? "\n-Number of instances: ${item.maxQuantity}"
-                          : (item.itemType == ItemType.multiFulfillmentMember)
-                              ? "\n-Number of instances: ${item.maxQuantity}\n-Max quantity per member: ${item.quantityPerMember}"
-                              : "")),
-                  subtitle: Text("Type"),
-                ),
-              ),
-              ((widget.listAppList.listStatus == ListStatus.draft ||
-                          widget.listAppList.listType == ListType.public) &&
-                      _loggedInListAppUser.databaseId == item.creatorUid)
-                  ? TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Colors.red, primary: Colors.white),
-                      child: const Text('DELETE'),
-                      onPressed: () async {
-                        return await showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text(
-                                  "Are you sure you wish to delete this item?"),
-                              actions: <Widget>[
-                                TextButton(
-                                    style: TextButton.styleFrom(
-                                        primary: Colors.red),
-                                    onPressed: () async {
-                                      final itemManagerInstance =
-                                          ListAppItemManager.instanceForList(
+                    onChanged: (value) {
+                      setNameState(() {
+                        _newName = value;
+                      });
+                    },
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  trailing: ((widget.listAppList.listStatus ==
+                                  ListStatus.draft ||
+                              widget.listAppList.listType == ListType.public) &&
+                          _loggedInListAppUser.databaseId == item.creatorUid)
+                      ? ((_newName.isNotEmpty && _newName != item.name)
+                          ? IconButton(
+                              onPressed: () async {
+                                //await _changeItemName(context, item);
+                                await ListAppItemManager.instanceForList(
                                         widget.listAppList.databaseId!,
-                                        widget.listAppList.creator!.databaseId!,
-                                      );
+                                        _loggedInListAppUser.databaseId!)
+                                    .updateItemName(_newName, item);
 
-                                      await itemManagerInstance
-                                          .deleteInstance(item);
-                                      setState(() {
-                                        widget.listAppList.items.removeWhere(
-                                            (element) => element == item);
-                                      });
-
-                                      Navigator.pop(context);
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text("DELETE")),
-                                TextButton(
-                                  onPressed: () =>
-                                      Navigator.of(context).pop(false),
-                                  child: const Text("CANCEL"),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      })
-                  : (_loggedInListAppUser.databaseId != item.creatorUid)
-                      ? TextButton(
-                          style: TextButton.styleFrom(
-                              backgroundColor: Colors.grey,
-                              primary: Colors.white),
-                          child: const Text(
-                              'Only the creator can delete the item'),
-                          onPressed: null,
-                        )
-                      : TextButton(
-                          style: TextButton.styleFrom(
-                              backgroundColor: Colors.grey,
-                              primary: Colors.white),
-                          child:
-                              const Text('You can no longer delete this item'),
-                          onPressed: null,
-                        ),
-              item.link != null
-                  ? TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Colors.cyan, primary: Colors.white),
-                      child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [Icon(Icons.attach_file), Text('Link')]),
-                      onPressed: () async {
-                        if (item.link != null) {
-                          _launchInBrowser(item.link!);
-                        }
-                      },
-                    )
-                  : TextButton(
-                      style: TextButton.styleFrom(
-                          backgroundColor: Colors.grey, primary: Colors.white),
-                      child: const Text('There is no link for this item'),
-                      onPressed: null,
+                                setState(() {
+                                  item.name = _newName;
+                                });
+                                FocusScope.of(context).unfocus();
+                                Fluttertoast.showToast(
+                                  msg: "Updated item name!",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.green,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0,
+                                );
+                              },
+                              icon: Icon(Icons.edit))
+                          : IconButton(onPressed: null, icon: Icon(Icons.edit)))
+                      : null);
+            }),
+            StatefulBuilder(builder: (context, setDescriptionState) {
+              return ListTile(
+                  title: TextField(
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    controller: descriptionFieldController,
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.all(8.0),
+                      border: OutlineInputBorder(
+                        gapPadding: 2.0,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(12.0)),
+                        borderSide: BorderSide(
+                            color:
+                                Theme.of(context).textTheme.headline1!.color!,
+                            width: 1.0),
+                      ),
+                      labelText: "Description",
+                      labelStyle: TextStyle(
+                          color: Theme.of(context).textTheme.headline1!.color),
+                      hintText: "Insert a new description",
+                      hintStyle: TextStyle(fontStyle: FontStyle.italic),
                     ),
-            ])));
+                    onChanged: (value) {
+                      setDescriptionState(() {
+                        _newDescription = value;
+                      });
+                    },
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  trailing: ((widget.listAppList.listStatus ==
+                                  ListStatus.draft ||
+                              widget.listAppList.listType == ListType.public) &&
+                          _loggedInListAppUser.databaseId == item.creatorUid)
+                      ? ((_newDescription.isNotEmpty &&
+                              _newDescription != item.description)
+                          ? IconButton(
+                              onPressed: () async {
+                                //await _changeItemName(context, item);
+                                await ListAppItemManager.instanceForList(
+                                        widget.listAppList.databaseId!,
+                                        _loggedInListAppUser.databaseId!)
+                                    .updateItemDescription(
+                                        _newDescription, item);
+
+                                setState(() {
+                                  item.description = _newDescription;
+                                });
+                                FocusScope.of(context).unfocus();
+                                Fluttertoast.showToast(
+                                  msg: "Updated item description!",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.CENTER,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.green,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0,
+                                );
+                              },
+                              icon: Icon(Icons.edit))
+                          : IconButton(onPressed: null, icon: Icon(Icons.edit)))
+                      : null);
+            }),
+            Card(
+              color: Theme.of(context).primaryColor.withAlpha(50),
+              child: ListTile(
+                title: Text(creator.firstName + " " + creator.lastName,
+                    style: TextStyle(fontWeight: FontWeight.w600)),
+                subtitle: Text("Creator"),
+              ),
+            ),
+            Card(
+              color: Theme.of(context).primaryColor.withAlpha(50),
+              child: ListTile(
+                title: Text(item.itemType.toReadableString() +
+                    ((item.itemType == ItemType.multiFulfillment)
+                        ? "\n-Number of instances: ${item.maxQuantity}"
+                        : (item.itemType == ItemType.multiFulfillmentMember)
+                            ? "\n-Number of instances: ${item.maxQuantity}\n-Max quantity per member: ${item.quantityPerMember}"
+                            : "")),
+                subtitle: Text("Type"),
+              ),
+            ),
+            ((widget.listAppList.listStatus == ListStatus.draft ||
+                        widget.listAppList.listType == ListType.public) &&
+                    _loggedInListAppUser.databaseId == item.creatorUid)
+                ? TextButton(
+                    style: TextButton.styleFrom(
+                        backgroundColor: Colors.red, primary: Colors.white),
+                    child: const Text('DELETE'),
+                    onPressed: () async {
+                      return await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text(
+                                "Are you sure you wish to delete this item?"),
+                            actions: <Widget>[
+                              TextButton(
+                                  style:
+                                      TextButton.styleFrom(primary: Colors.red),
+                                  onPressed: () async {
+                                    final itemManagerInstance =
+                                        ListAppItemManager.instanceForList(
+                                      widget.listAppList.databaseId!,
+                                      widget.listAppList.creator!.databaseId!,
+                                    );
+
+                                    await itemManagerInstance
+                                        .deleteInstance(item);
+                                    setState(() {
+                                      widget.listAppList.items.removeWhere(
+                                          (element) => element == item);
+                                    });
+
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text("DELETE")),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                                child: const Text("CANCEL"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    })
+                : (_loggedInListAppUser.databaseId != item.creatorUid)
+                    ? TextButton(
+                        style: TextButton.styleFrom(
+                            backgroundColor: Colors.grey,
+                            primary: Colors.white),
+                        child:
+                            const Text('Only the creator can delete the item'),
+                        onPressed: null,
+                      )
+                    : TextButton(
+                        style: TextButton.styleFrom(
+                            backgroundColor: Colors.grey,
+                            primary: Colors.white),
+                        child: const Text('You can no longer delete this item'),
+                        onPressed: null,
+                      ),
+            item.link != null
+                ? TextButton(
+                    style: TextButton.styleFrom(
+                        backgroundColor: Colors.cyan, primary: Colors.white),
+                    child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [Icon(Icons.attach_file), Text('Link')]),
+                    onPressed: () async {
+                      if (item.link != null) {
+                        _launchInBrowser(item.link!);
+                      }
+                    },
+                  )
+                : TextButton(
+                    style: TextButton.styleFrom(
+                        backgroundColor: Colors.grey, primary: Colors.white),
+                    child: const Text('There is no link for this item'),
+                    onPressed: null,
+                  ),
+          ])),
+        ));
   }
 
   Widget _buildItemRow(BuildContext context, BaseItem aListItem) {

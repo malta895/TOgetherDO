@@ -62,9 +62,9 @@ class _AddMemberDialogState extends State<AddMemberDialog> {
                         if (snapshot.hasData) {
                           final onlyNonPresentFriends = snapshot.data!;
 
-                          widget.list.membersAsUsers.forEach((element) {
-                            onlyNonPresentFriends.removeWhere(
-                                (e) => e!.username == element.username);
+                          widget.list.members.forEach((userId, _) {
+                            onlyNonPresentFriends
+                                .removeWhere((e) => e!.databaseId == userId);
                           });
 
                           if (onlyNonPresentFriends.isNotEmpty) {

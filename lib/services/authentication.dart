@@ -47,16 +47,12 @@ class ListAppAuthProvider with ChangeNotifier {
     await logout();
   }
 
-  static int _initializationCounter = 0;
-
   ListAppAuthProvider(this.firebaseAuth) {
     // Subscribe to login/logout events
     firebaseAuth.idTokenChanges().listen((User? user) async {
       if (user != null) await _createListAppUser(user);
       notifyListeners();
     });
-
-    _initializationCounter++;
 
     // Subscribe to user changes, e.g. username change
     ListAppUserManager.instance.addListener(() async {

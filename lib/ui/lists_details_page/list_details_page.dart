@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_applications/models/list.dart';
 import 'package:mobile_applications/models/list_item.dart';
@@ -126,8 +127,8 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
     String _newName = '';
     String _newDescription = '';
 
-    final descriptionFieldController = TextEditingController(
-        text: item.description ?? 'This item has no description');
+    final descriptionFieldController =
+        TextEditingController(text: item.description);
     return AlertDialog(
         scrollable: true,
         title: const Text("Item details"),
@@ -151,7 +152,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                     labelText: "Name",
                     labelStyle: TextStyle(
                         color: Theme.of(context).textTheme.headline1!.color),
-                    hintText: "Insert a new name",
+                    hintText: "Type here...",
                     hintStyle: const TextStyle(fontStyle: FontStyle.italic),
                   ),
                   onChanged: (value) {
@@ -212,7 +213,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                     labelText: "Description",
                     labelStyle: TextStyle(
                         color: Theme.of(context).textTheme.headline1!.color),
-                    hintText: "Insert a new description",
+                    hintText: "Type here...",
                     hintStyle: const TextStyle(fontStyle: FontStyle.italic),
                   ),
                   onChanged: (value) {
@@ -1684,7 +1685,11 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                 ListTile(
                   dense: true,
                   horizontalTitleGap: 0.5,
-                  leading: const Icon(Icons.list),
+                  leading: widget.listAppList.listType == ListType.private
+                      ? const Icon(
+                          FontAwesomeIcons.userSecret,
+                        )
+                      : const Icon(Icons.list),
                   title: Text(widget.listAppList.name,
                       style: const TextStyle(fontSize: 20)),
                   subtitle: widget.listAppList.description != null

@@ -48,15 +48,11 @@ class LoginScreen extends StatelessWidget {
         ),
       ],
       additionalSignupFields: [
-        UserFormField(
-            keyName: 'username',
-            displayName: 'Username',
-            icon: const Icon(FontAwesomeIcons.userAlt),
-            defaultValue: context
-                    .read<ListAppAuthProvider>()
-                    .loggedInListAppUser
-                    ?.username ??
-                ''),
+        const UserFormField(
+          keyName: 'username',
+          displayName: 'Username',
+          icon: Icon(FontAwesomeIcons.userAlt),
+        ),
         const UserFormField(keyName: 'firstName', displayName: 'Name'),
         const UserFormField(keyName: 'lastName', displayName: 'Surname'),
       ],

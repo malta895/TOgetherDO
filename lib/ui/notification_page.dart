@@ -154,10 +154,9 @@ class _NotificationPage extends State<NotificationPage> {
                       side: const BorderSide(color: Colors.green, width: 1),
                     ),
                     onPressed: () async {
-                      notification.status = NotificationStatus.accepted;
-                      notification.readStatus = NotificationReadStatus.opened;
                       await ListAppNotificationManager.instance
-                          .saveToFirestore(notification);
+                          .answerNotification(
+                              notification, NotificationStatus.accepted);
                     },
                     child: const Icon(
                       Icons.done,
@@ -174,10 +173,9 @@ class _NotificationPage extends State<NotificationPage> {
                         side: const BorderSide(color: Colors.red, width: 1),
                       ),
                       onPressed: () async {
-                        notification.status = NotificationStatus.rejected;
-                        notification.readStatus = NotificationReadStatus.opened;
                         await ListAppNotificationManager.instance
-                            .saveToFirestore(notification);
+                            .answerNotification(
+                                notification, NotificationStatus.rejected);
                       },
                       child: const Icon(
                         Icons.close,
@@ -264,21 +262,23 @@ class _NotificationPage extends State<NotificationPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextButton(
-                    key: Key(
-                        "accept_list_text_button_${notification.userFromId}"),
-                    style: TextButton.styleFrom(
-                      side: const BorderSide(color: Colors.green, width: 1),
-                    ),
-                    onPressed: () async {
-                      notification.status = NotificationStatus.accepted;
-                      notification.readStatus = NotificationReadStatus.opened;
-                      await ListAppNotificationManager.instance
-                          .saveToFirestore(notification);
-                    },
-                    child: const Icon(
-                      Icons.done,
-                      color: Colors.green,
-                    )),
+                  key:
+                      Key("accept_list_text_button_${notification.userFromId}"),
+                  style: TextButton.styleFrom(
+                    side: const BorderSide(color: Colors.green, width: 1),
+                  ),
+                  onPressed: () async {
+                    await ListAppNotificationManager.instance
+                        .answerNotification(
+                      notification,
+                      NotificationStatus.accepted,
+                    );
+                  },
+                  child: const Icon(
+                    Icons.done,
+                    color: Colors.green,
+                  ),
+                ),
                 const SizedBox(
                   width: 10,
                 ),
@@ -289,10 +289,11 @@ class _NotificationPage extends State<NotificationPage> {
                     side: const BorderSide(color: Colors.red, width: 1),
                   ),
                   onPressed: () async {
-                    notification.status = NotificationStatus.rejected;
-                    notification.readStatus = NotificationReadStatus.opened;
                     await ListAppNotificationManager.instance
-                        .saveToFirestore(notification);
+                        .answerNotification(
+                      notification,
+                      NotificationStatus.rejected,
+                    );
                   },
                   child: const Icon(
                     Icons.close,

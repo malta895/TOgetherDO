@@ -65,6 +65,55 @@ class ListAppNotificationManager extends DatabaseManager<ListAppNotification> {
     }
   }
 
+  Future<void> answerNotification(
+    ListAppNotification notification,
+    NotificationStatus answer,
+  ) async {
+    notification.status = answer;
+    notification.readStatus = NotificationReadStatus.opened;
+    switch (notification.notificationType) {
+      case NotificationType.friendship:
+        final friendshipNotification = notification as FriendshipNotification;
+        if (answer == NotificationStatus.accepted) {
+          friendshipNotification.userTo!.friends[notification.userFromId] =
+              true;
+          ListAppUserManager.instance
+              .saveToFirestore(friendshipNotification.userTo!);
+          friendshipNotification.userFrom!.friends[notification.userToId] =
+              true;
+        } else {
+          friendshipNotification.userTo!.friends
+              .remove(notification.userFromId);
+          friendshipNotification.userFrom!.friends
+              .remove(notification.userToId);
+        }
+
+        ListAppUserManager.instance
+            .saveToFirestore(friendshipNotification.userFrom!);
+
+        await saveToFirestore(friendshipNotification);
+
+        break;
+      case NotificationType.listInvite:
+        final listInviteNotification = notification as ListInviteNotification;
+
+        if (answer == NotificationStatus.accepted) {
+          listInviteNotification
+              .list!.members[listInviteNotification.userToId] = true;
+        } else {
+          listInviteNotification.list!.members
+              .remove(listInviteNotification.userToId);
+        }
+
+        await ListAppListManager.instanceForUserUid(
+                listInviteNotification.userFromId)
+            .saveToFirestore(listInviteNotification.list!);
+
+        await saveToFirestore(listInviteNotification);
+        break;
+    }
+  }
+
   /// This streams emits the number of unread notifications of the current user.
   Stream<int> getUnreadNotificationCountStream(
     String userId,

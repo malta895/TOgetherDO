@@ -32,7 +32,7 @@ void main() {
         await tester.pumpAndSettle();
 
         await tester.dragFrom(
-            tester.getTopLeft(find.byType(MaterialApp)), Offset(300, 0));
+            tester.getTopLeft(find.byType(MaterialApp)), const Offset(300, 0));
         await tester.pumpAndSettle();
 
         await tester.tap(find.text("John Doe"));

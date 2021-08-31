@@ -134,7 +134,7 @@ class ListInviteNotification extends ListAppNotification {
   ListInviteNotification({
     required userToId,
     required userFromId,
-    required NotificationStatus status,
+    NotificationStatus status = NotificationStatus.pending,
     required this.listOwnerId,
     required this.listId,
     databaseId,

@@ -325,7 +325,7 @@ void main() {
         expect(find.byType(AlertDialog), findsOneWidget);
         expect(find.byType(NumberPicker), findsOneWidget);
 
-        var numberPickerFinder = find.byKey(Key("numberPickerKey"));
+        var numberPickerFinder = find.byKey(const Key("numberPickerKey"));
 
         var numberPicker =
             tester.firstWidget(numberPickerFinder) as NumberPicker;

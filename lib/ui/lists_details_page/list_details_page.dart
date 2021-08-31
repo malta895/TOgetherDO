@@ -107,139 +107,12 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
     );
   }
 
-  Future<void> _changeItemName(BuildContext context, BaseItem aListItem) async {
-    final textFieldController = TextEditingController(text: aListItem.name);
-    final oldItemName = aListItem.name;
-    return await showDialog(
-        context: context,
-        builder: (context) {
-          String _newItemName = '';
-          // The stateful widget is necessary to keep updated the OK button enabled or disabled based on the current username value
-          return StatefulBuilder(builder: (context, setDialogState) {
-            return AlertDialog(
-              title: const Text('Enter a new name for this item'),
-              content: TextField(
-                controller: textFieldController,
-                decoration: const InputDecoration(hintText: "New name"),
-                onChanged: (value) {
-                  setDialogState(() {
-                    _newItemName = value;
-                  });
-                },
-              ),
-              actions: <Widget>[
-                TextButton(
-                  style: TextButton.styleFrom(
-                      backgroundColor: Colors.red, primary: Colors.white),
-                  child: const Text('CANCEL'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                      backgroundColor:
-                          (_newItemName.isEmpty || _newItemName == oldItemName)
-                              ? Colors.grey
-                              : Colors.green,
-                      primary: Colors.white),
-                  child: const Text('OK'),
-                  onPressed: () async {
-                    if (_newItemName.isEmpty || _newItemName == oldItemName) {
-                      return;
-                    }
-
-                    {
-                      await ListAppItemManager.instanceForList(
-                              widget.listAppList.databaseId!,
-                              _loggedInListAppUser.databaseId!)
-                          .updateItemName(_newItemName, aListItem);
-
-                      setState(() {
-                        aListItem.name = _newItemName;
-                      });
-
-                      Navigator.pop(context);
-                    }
-                  },
-                ),
-              ],
-            );
-          });
-        });
-  }
-
-  Future<void> _changeItemDescription(
-      BuildContext context, BaseItem aListItem) async {
-    final textFieldController =
-        TextEditingController(text: aListItem.description);
-    final oldItemDescription = aListItem.description;
-    return await showDialog(
-        context: context,
-        builder: (context) {
-          String _newItemDescription = '';
-          return StatefulBuilder(builder: (context, setDialogState) {
-            return AlertDialog(
-              title: const Text('Enter a new Description for this item'),
-              content: TextField(
-                controller: textFieldController,
-                decoration: const InputDecoration(hintText: "New Description"),
-                onChanged: (value) {
-                  setDialogState(() {
-                    _newItemDescription = value;
-                  });
-                },
-              ),
-              actions: <Widget>[
-                TextButton(
-                  style: TextButton.styleFrom(
-                      backgroundColor: Colors.red, primary: Colors.white),
-                  child: const Text('CANCEL'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                      backgroundColor:
-                          (_newItemDescription == oldItemDescription)
-                              ? Colors.grey
-                              : Colors.green,
-                      primary: Colors.white),
-                  child: const Text('OK'),
-                  onPressed: () async {
-                    if (_newItemDescription == oldItemDescription) {
-                      return;
-                    }
-
-                    {
-                      await ListAppItemManager.instanceForList(
-                              widget.listAppList.databaseId!,
-                              _loggedInListAppUser.databaseId!)
-                          .updateItemDescription(
-                              _newItemDescription, aListItem);
-
-                      setState(() {
-                        aListItem.description = _newItemDescription;
-                      });
-
-                      Navigator.pop(context);
-                    }
-                  },
-                ),
-              ],
-            );
-          });
-        });
-  }
-
   Future<void> _launchInBrowser(String url) async {
     if (await canLaunch(url)) {
       await launch(
         url,
         forceSafariVC: false,
         forceWebView: false,
-        headers: <String, String>{'my_header_key': 'my_header_value'},
       );
     } else {
       throw 'Could not launch $url';
@@ -257,7 +130,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
         text: item.description ?? 'This item has no description');
     return AlertDialog(
         scrollable: true,
-        title: Text("Item details"),
+        title: const Text("Item details"),
         content: Container(
             height: 400,
             child: Column(children: [
@@ -1856,15 +1729,15 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                         dense: true,
                         horizontalTitleGap: 0.5,
                         leading: const Icon(Icons.mode_edit),
-                        title: Text(
+                        title: const Text(
                           'This list is in draft mode',
                           style: TextStyle(fontSize: 16),
                         ),
                         subtitle: _loggedInListAppUser.databaseId ==
                                 widget.listAppList.creatorUid
-                            ? Text(
+                            ? const Text(
                                 'Click on the three dots on the top in order to save and publish it')
-                            : Text(
+                            : const Text(
                                 'Wait until the creator saves and publishes it in order to complete items'),
                       ),
               ],

@@ -123,7 +123,7 @@ class _ListsPageState extends State<ListsPage>
   Widget _buildAnimated(BuildContext context) {
     return AnimatedBuilder(
         animation: _listsShowAnimationController,
-        builder: (context, _s) {
+        builder: (context, _) {
           return FadeScaleTransition(
             // this animation is the fade-in/out when the entire list is loading
             animation: _listsShowAnimationController,
@@ -289,10 +289,9 @@ class _ListsPageState extends State<ListsPage>
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     isThreeLine: true,
-                    subtitle: Text((doesUserOwnList
-                            ? 'Me'
-                            : listAppList.creator?.username ?? 'unknown') +
-                        "\n${listAppList.length} element${listAppList.length == 1 ? '' : 's'}"),
+                    subtitle: Text(
+                      "${doesUserOwnList ? 'Me' : listAppList.creator?.username ?? 'unknown'}\n${listAppList.length} element${listAppList.length == 1 ? '' : 's'}",
+                    ),
                     onTap: () async {
                       await Navigator.push(
                         context,

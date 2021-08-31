@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_applications/models/list.dart';
+import 'package:mobile_applications/models/notification.dart';
 import 'package:mobile_applications/models/user.dart';
 import 'package:mobile_applications/services/authentication.dart';
 import 'package:mobile_applications/services/list_manager.dart';
+import 'package:mobile_applications/services/notification_manager.dart';
 import 'package:mobile_applications/services/user_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -164,7 +166,22 @@ class _NewListFormState extends State<_NewListForm> {
               await ListAppListManager.instanceForUserUid(user.uid)
                   .populateObjects(newList);
 
-              //remove non-confirmed members from newList
+              // create notifications for members
+              // we don't need to await them since they are sent to other devices
+              newList.members.forEach((userId, _) async {
+                final notification = ListInviteNotification(
+                  userToId: userId,
+                  userFromId: currentUser.databaseId!,
+                  listOwnerId: newList.databaseId!,
+                  listId: newList.databaseId!,
+                );
+
+                await ListAppNotificationManager.instance
+                    .saveToFirestore(notification);
+              });
+
+              // remove non-confirmed members from newList
+              // otherwise they'd be shown as already members until the first refresh
               newList.membersAsUsers = [];
 
               snackBar.close();

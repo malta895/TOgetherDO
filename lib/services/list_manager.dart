@@ -119,7 +119,6 @@ class ListAppListManager extends DatabaseManager<ListAppList> {
     }
 
     //inject items
-    // TODO we can remove it if we fetch them at need
     listAppList.items = await ListAppItemManager.instanceForList(
       listAppList.databaseId!,
       listAppList.creatorUid!,

@@ -373,7 +373,10 @@ class _NotificationPage extends State<NotificationPage> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(title),
+          title: const Text(
+            title,
+            style: TextStyle(fontFamily: "Oswald"),
+          ),
           bottom: TabBar(
             indicatorColor: Colors.white,
             tabs: [

@@ -1205,7 +1205,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
               aListItem.quantityFulfilledBy(_loggedInListAppUser);
           int _previousValue =
               aListItem.quantityFulfilledBy(_loggedInListAppUser);
-          print("previous " + _previousValue.toString());
+
           int added = 0;
           int difference = 0;
           return StatefulBuilder(builder: (context, setPickerState) {
@@ -1240,7 +1240,6 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                   onChanged: (value) => {
                     _previousValue < value ? added = 1 : added = 0,
                     difference = value - _previousValue,
-                    print("differenza " + difference.toString()),
                     setPickerState(() => _currentValue = value)
                   },
                 ),
@@ -1258,7 +1257,6 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                   widget.listAppList.databaseId!,
                                   aListItem,
                                   difference);
-                          print(aListItem.isFulfilled());
                         } else {
                           await ListAppItemManager.instanceForList(
                                   widget.listAppList.databaseId!,

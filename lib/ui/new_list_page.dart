@@ -312,7 +312,7 @@ class _AddMemberDialogState extends State<_AddMemberDialog> {
 
                           selectedFriendsValues =
                               List<bool?>.filled(allFriends.length, false);
-                          print(selectedFriendsValues);
+
                           return AlertDialog(
                             title: const Text("Choose members to add"),
                             content: StatefulBuilder(builder:

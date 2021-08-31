@@ -57,7 +57,6 @@ class ListAppAuthProvider with ChangeNotifier {
     });
 
     _initializationCounter++;
-    print('AuthProvider initialized $_initializationCounter times.');
 
     // Subscribe to user changes, e.g. username change
     ListAppUserManager.instance.addListener(() async {

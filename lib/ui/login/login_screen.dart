@@ -81,10 +81,6 @@ class LoginScreen extends StatelessWidget {
         return null;
       },
       onLogin: (loginData) async {
-        print('Login info');
-        print('Name: ${loginData.name}');
-        print('Password: ${loginData.password}');
-
         String? error = await context
             .read<ListAppAuthProvider>()
             .loginViaEmailPassword(loginData.name, loginData.password);
@@ -143,12 +139,7 @@ class LoginScreen extends StatelessWidget {
       },
       hideForgotPasswordButton:
           true, // TODO remove if password recover is implemented
-      onRecoverPassword: (name) {
-        print('Recover password info');
-        print('Name: $name');
-        // return _recoverPassword(name);
-        // TODO Show new password dialog
-      },
+      onRecoverPassword: (name) {},
       // showDebugButtons: true,
     );
   }

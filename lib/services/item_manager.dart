@@ -64,7 +64,7 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
   Future<bool> listItemNameExists(String name) async {
     final queryResult =
         await this.firebaseCollection.where("name", isEqualTo: name).get();
-    //print(queryResult.docs.first.data());
+
     return queryResult.docs.isNotEmpty;
   }
 
@@ -74,7 +74,6 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
           .firebaseCollection
           .doc(aListItem.databaseId)
           .update({'name': itemName});
-      //notifyListeners();
     } on FirebaseException catch (e) {
       print(e.message);
       throw ListAppException('An error occurred. Please try again later.');
@@ -138,7 +137,7 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
           if (fulfiller != null) {
             multiFulfillmentMemberItem.fulfillers.add(fulfiller);
           }
-          print(multiFulfillmentMemberItem.fulfillers);
+
           await ListAppItemManager.instanceForList(lid, uid)
               .saveToFirestore(multiFulfillmentMemberItem);
           return true;
@@ -213,9 +212,8 @@ class ListAppItemManager extends DatabaseManager<BaseItem> {
 
     item.usersCompletions.keys.map((e) async {
       final member = await ListAppUserManager.instance.getByUid(e);
-      print("MEMBER IN MULTIMEMBER GETFULFILLERS MANAGER");
-      print(member!.firstName);
-      members.add(member);
+
+      members.add(member!);
     });
     return members;
   }

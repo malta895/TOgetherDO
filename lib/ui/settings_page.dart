@@ -19,11 +19,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    provaNotifiche().then((value) {
-      print(value);
-    });
     return Scaffold(
-        appBar: AppBar(title: const Text('Settings')),
+        appBar: AppBar(
+          title: const Text(
+            'Settings',
+            style: TextStyle(fontFamily: "Oswald"),
+          ),
+        ),
         drawer: const ListAppNavDrawer(routeName: SettingsScreen.routeName),
         body: Column(children: [
           Container(
@@ -53,29 +55,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           notifier.toggleTheme();
                         }),
                   ))),
-/*          Container(
-              decoration: const BoxDecoration(
-                  border: Border(
-                      bottom: BorderSide(
-                //                   <--- left side
-                color: Colors.grey,
-                width: 0.8,
-              ))),
-              child: ListTile(
-                  title: Text(
-                    "Sync contacts",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: Theme.of(context).accentColor),
-                  ),
-                  subtitle: const Text("Synchronize your contacts",
-                      style: TextStyle(fontSize: 16, color: Colors.grey)),
-                  trailing: IconButton(
-                      icon: const Icon(Icons.sync_outlined),
-                      onPressed: () {
-                        print("Sync pushed");
-                      }))), */
           Container(
               decoration: const BoxDecoration(
                   border: Border(

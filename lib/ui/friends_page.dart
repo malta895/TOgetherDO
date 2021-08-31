@@ -323,8 +323,10 @@ class _FriendsListState extends State<FriendsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // leading: Icon(Icons.menu), // not needed, automatically added by Drawer
-        title: const Text(title),
+        title: const Text(
+          title,
+          style: TextStyle(fontFamily: "Oswald"),
+        ),
         actions: [NotificationBadge()],
       ),
       drawer: const ListAppNavDrawer(routeName: FriendsPage.routeName),

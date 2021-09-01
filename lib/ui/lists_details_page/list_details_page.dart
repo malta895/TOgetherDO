@@ -188,9 +188,9 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                 fontSize: 16.0,
                               );
                             },
-                            icon: const Icon(Icons.edit))
+                            icon: const Icon(Icons.save))
                         : const IconButton(
-                            onPressed: null, icon: Icon(Icons.edit)))
+                            onPressed: null, icon: Icon(Icons.save)))
                     : null);
           }),
           StatefulBuilder(builder: (context, setDescriptionState) {
@@ -230,7 +230,6 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                             _newDescription != item.description)
                         ? IconButton(
                             onPressed: () async {
-                              //await _changeItemName(context, item);
                               await ListAppItemManager.instanceForList(
                                       widget.listAppList.databaseId!,
                                       _loggedInListAppUser.databaseId!)
@@ -250,9 +249,9 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                 fontSize: 16.0,
                               );
                             },
-                            icon: const Icon(Icons.edit))
+                            icon: const Icon(Icons.save))
                         : const IconButton(
-                            onPressed: null, icon: Icon(Icons.edit)))
+                            onPressed: null, icon: Icon(Icons.save)))
                     : null);
           }),
           Card(

@@ -77,12 +77,6 @@ abstract class BaseItem extends BaseModel {
   int quantityFulfilledBy(ListAppUser member);
 
   bool isFulfilled();
-
-  //fulfill, aka complete, this list item, with a quantity. returns false if the item was fulfilled already
-  /*bool fulfill({required ListAppUser member, int quantityFulfilled = 0});
-
-  bool unfulfill({required ListAppUser member, int quantityUnfulfilled = 0});*/
-
   Set<ListAppUser> getFulfillers();
 
   factory BaseItem.fromJson(Map<String, dynamic> json) {

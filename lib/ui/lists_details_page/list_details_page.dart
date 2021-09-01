@@ -139,6 +139,8 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
             return ListTile(
                 title: TextField(
                   enabled: _loggedInListAppUser.databaseId == item.creatorUid,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
                   controller: nameFieldController,
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.all(8.0),

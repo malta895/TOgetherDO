@@ -182,7 +182,7 @@ void main() {
             findsOneWidget);
         expect(find.text("DELETE"), findsOneWidget);
         expect(find.text("There is no link for this item"), findsOneWidget);
-        expect(find.byIcon(Icons.edit), findsWidgets);
+        expect(find.byIcon(Icons.save), findsWidgets);
       },
     );
 
@@ -208,7 +208,7 @@ void main() {
         await tester.enterText(find.byType(TextField).first, "prova 1");
         await tester.pumpAndSettle();
 
-        await tester.tap(find.byIcon(Icons.edit).first);
+        await tester.tap(find.byIcon(Icons.save).first);
         await tester.pumpAndSettle();
 
         await tester.pageBack();
@@ -229,7 +229,7 @@ void main() {
             find.byType(TextField).at(1), "item1 new description");
         await tester.pumpAndSettle();
 
-        await tester.tap(find.byIcon(Icons.edit).at(1));
+        await tester.tap(find.byIcon(Icons.save).at(1));
         await tester.pumpAndSettle();
 
         await tester.pageBack();

@@ -14,6 +14,43 @@
       },
       "oauth_client": [
         {
+          "client_id": "165211053617-oo4k67hn9aeibdacngujbb7dnd44pu1b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.maltalawrence.listapp",
+            "certificate_hash": "75e7afbc215a24840cbccbffdb65a36ea0b8dafa"
+          }
+        },
+        {
+          "client_id": "165211053617-rt5634q1qj14oi4adpl6hmm6hco1cr19.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2dW6bPlYcshzbkF2lTiII7_0AWUKwt9A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "165211053617-rt5634q1qj14oi4adpl6hmm6hco1cr19.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:165211053617:android:a6d2fbc34bfd50ddc9ff10",
+        "android_client_info": {
+          "package_name": "com.maltalawrence.togetherdo"
+        }
+      },
+      "oauth_client": [
+        {
           "client_id": "165211053617-rt5634q1qj14oi4adpl6hmm6hco1cr19.apps.googleusercontent.com",
           "client_type": 3
         }

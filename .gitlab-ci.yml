@@ -6,7 +6,7 @@
 
 code_quality:
   stage: test
-  image: "cirrusci/flutter:1.22.5"
+  image: "cirrusci/flutter:stable"
   before_script:
     - pub global activate dart_code_metrics
     - export PATH="$PATH":"$HOME/.pub-cache/bin"
@@ -18,7 +18,7 @@ code_quality:
 
 test:
   stage: test
-  image: "cirrusci/flutter:1.22.5"
+  image: "cirrusci/flutter:stable"
   before_script:
     - pub global activate junitreport
     - export PATH="$PATH":"$HOME/.pub-cache/bin"
